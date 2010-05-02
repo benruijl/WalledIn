@@ -1,22 +1,24 @@
 package walledin.game;
 
-// local includes
 import walledin.engine.Renderer;
 
 public class Main {
-	Game mGame;
+	private final Game mGame;
+	private final Renderer renderer;
 
 	public Main() {
-		final Renderer renderer = new Renderer();
+		renderer = new Renderer();
 		mGame = new Game();
+	}
 
+	public void run() {
 		renderer.initialize("WalledIn");
 		renderer.addListener(mGame);
 		renderer.beginLoop();
 	}
 
 	public static void main(final String[] args) {
-		final Main game = new Main();
-
+		final Main main = new Main();
+		main.run();
 	}
 }

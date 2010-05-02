@@ -9,7 +9,13 @@ import walledin.engine.Renderer;
  * @author Ben Ruijl
  */
 public class GameMap {
-
+	/* Map data */
+	private final String name;
+	private final String texture;
+	private final int width;
+	private final int height;
+	private final Tile[] tiles;
+	
 	public GameMap(final String name, final String texture, final int width,
 			final int height, final Tile[] tiles) {
 		this.name = name;
@@ -38,13 +44,6 @@ public class GameMap {
 	public String getTexture() {
 		return texture;
 	}
-
-	/* Map data */
-	private final String name;
-	private final String texture;
-	private final int width;
-	private final int height;
-	private final Tile[] tiles;
 
 	/**
 	 * Creates a new game map. Specify a reader to choose the file format to

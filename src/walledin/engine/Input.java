@@ -19,6 +19,9 @@ public class Input implements KeyListener {
 
 		Up, Down
 	}
+	
+	private static Input ref = null;
+	private final Map<Integer, KeyState> mKeyStates;
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
@@ -70,7 +73,4 @@ public class Input implements KeyListener {
 
 		return ref;
 	}
-
-	private static Input ref = null;
-	private final Map<Integer, KeyState> mKeyStates;
 }

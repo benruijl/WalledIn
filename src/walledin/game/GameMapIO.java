@@ -7,7 +7,7 @@ package walledin.game;
  * @author ben
  */
 public interface GameMapIO {
-	public GameMap readFromFile(String filename);
+	GameMap readFromFile(String filename);
 
-	public boolean writeToFile(GameMap map, String filename);
+	boolean writeToFile(GameMap map, String filename);
 }

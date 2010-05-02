@@ -5,7 +5,8 @@
 package walledin.game;
 
 import java.awt.event.KeyEvent;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import walledin.engine.Input;
 import walledin.engine.Rectangle;
@@ -20,14 +21,11 @@ import walledin.engine.Vector2f;
  */
 public class Game implements RenderListener {
 
-	float fX;
-	GameMapIO mMapIO;
-	GameMap mMap;
-	Player mPlayer;
-	Vector<Rectangle> mWalls;
-
-	public Game() {
-	}
+	private float fX;
+	private GameMapIO mMapIO;
+	private GameMap mMap;
+	private Player mPlayer;
+	private List<Rectangle> mWalls;
 
 	public void update(final int ndt) {
 		final float moveSpeed = 4.0f;
@@ -61,7 +59,7 @@ public class Game implements RenderListener {
 			}
 		}
 		/* Update player position */
-		if (java.lang.Math.abs(vNewPos.x - mPlayer.getPos().x) > 0.1f) {
+		if (Math.abs(vNewPos.x - mPlayer.getPos().x) > 0.1f) {
 			mPlayer.Move(vNewPos.x - mPlayer.getPos().x); // FIXME, used only
 															// for foot
 															// animation
@@ -111,6 +109,6 @@ public class Game implements RenderListener {
 		mPlayer = new Player("player");
 		mPlayer.setPos(new Vector2f(10, 10));
 
-		mWalls = new Vector<Rectangle>();
+		mWalls = new ArrayList<Rectangle>();
 	}
 }

@@ -26,12 +26,12 @@ import com.sun.opengl.util.texture.Texture;
  */
 public class Renderer implements GLEventListener {
 
-	GLCanvas mCanvas;
-	GL gl;
-	GLU glu;
-	RenderListener mEvListener;
-	GLAutoDrawable mCurDrawable;
-	static float fx;
+	private GLCanvas mCanvas;
+	private GL gl;
+	private GLU glu;
+	private RenderListener mEvListener;
+	private GLAutoDrawable mCurDrawable;
+	private static float fx;
 	private long prevTime;
 	private int frameCount;
 	private int mWidth;

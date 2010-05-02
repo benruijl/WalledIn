@@ -21,12 +21,7 @@ import walledin.engine.TextureManager;
  * @author ben
  */
 public class GameMapIOXML implements GameMapIO {
-	private static Document dom;
-
-	public GameMapIOXML() {
-	}
-
-	private void parseXmlFile(final String filename) {
+	private Document parseXmlFile(final String filename) {
 		// get the factory
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -36,7 +31,7 @@ public class GameMapIOXML implements GameMapIO {
 			final DocumentBuilder db = dbf.newDocumentBuilder();
 
 			// parse using builder to get DOM representation of the XML file
-			dom = db.parse(filename);
+			return db.parse(filename);
 
 		} catch (final ParserConfigurationException pce) {
 			pce.printStackTrace();
@@ -45,9 +40,10 @@ public class GameMapIOXML implements GameMapIO {
 		} catch (final IOException ioe) {
 			ioe.printStackTrace();
 		}
+		return null;
 	}
 
-	private GameMap parseDocument() {
+	private GameMap parseDocument(Document dom) {
 		// get the root element
 		final Element docEle = dom.getDocumentElement();
 
@@ -134,11 +130,13 @@ public class GameMapIOXML implements GameMapIO {
 	 *            Filename of XML data
 	 * @return Returns true on success and false on failure
 	 */
+	@Override
 	public GameMap readFromFile(final String filename) {
-		parseXmlFile(filename);
-		return parseDocument();
+		Document dom = parseXmlFile(filename);
+		return parseDocument(dom);
 	}
 
+	@Override
 	public boolean writeToFile(final GameMap map, final String filename) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

@@ -9,7 +9,6 @@ import walledin.engine.Vector2f;
  * @author ben
  */
 public class Player {
-
 	private static final float fScale = 0.5f;
 	private String texID;
 	private Vector2f pos;

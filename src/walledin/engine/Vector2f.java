@@ -10,7 +10,8 @@ package walledin.engine;
  * @author ben
  */
 public class Vector2f {
-	public float x, y;
+	public float x;
+	public float y;
 
 	public Vector2f() {
 
