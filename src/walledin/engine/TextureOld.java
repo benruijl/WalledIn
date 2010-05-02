@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package walledin;
+package walledin.engine;
 
 import java.nio.ByteBuffer;
 

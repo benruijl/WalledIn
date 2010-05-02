@@ -3,9 +3,9 @@
  * and open the template in the editor.
  */
 
-package Game;
+package walledin.game;
 
-import walledin.Rectangle;
+import walledin.engine.Rectangle;
 
 /**
  *

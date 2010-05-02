@@ -1,7 +1,7 @@
-package Game;
+package walledin.game;
 
 // local includes
-import walledin.Renderer;
+import walledin.engine.Renderer;
 
 public class Main {
     Game mGame;

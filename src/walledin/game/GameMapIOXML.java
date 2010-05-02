@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Game;
+package walledin.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,7 +14,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import walledin.TextureManager;
+
+import walledin.engine.TextureManager;
 
 /**
  * Loads a map from an XML file

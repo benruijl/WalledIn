@@ -2,17 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package Game;
+package walledin.game;
 
 import java.awt.event.KeyEvent;
 import java.util.Vector;
 import sun.reflect.LangReflectAccess;
-import walledin.Input;
-import walledin.Rectangle;
-import walledin.RenderListener;
-import walledin.Renderer;
-import walledin.TextureManager;
-import walledin.Vector2f;
+import walledin.engine.Input;
+import walledin.engine.Rectangle;
+import walledin.engine.RenderListener;
+import walledin.engine.Renderer;
+import walledin.engine.TextureManager;
+import walledin.engine.Vector2f;
 
 /**
  *

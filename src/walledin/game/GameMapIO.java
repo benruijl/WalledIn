@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package Game;
+package walledin.game;
 
 /**
  * Reads or writes a map from or to a certain format. The details of

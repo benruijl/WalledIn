@@ -1,8 +1,8 @@
-package Game;
+package walledin.game;
 
-import walledin.Rectangle;
-import walledin.Renderer;
-import walledin.Vector2f;
+import walledin.engine.Rectangle;
+import walledin.engine.Renderer;
+import walledin.engine.Vector2f;
 
 /**
  * This class takes care of maintaining and drawing the tiled map.
