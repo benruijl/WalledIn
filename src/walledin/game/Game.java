@@ -27,7 +27,7 @@ public class Game implements RenderListener {
 	private Player mPlayer;
 	private List<Rectangle> mWalls;
 
-	public void update(final int ndt) {
+	public void update(final double delta) {
 		final float moveSpeed = 4.0f;
 		final Vector2f gravity = new Vector2f(0, 2.0f);
 

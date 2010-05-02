@@ -12,7 +12,7 @@ public interface RenderListener {
 
 	void init();
 
-	void update(int ndt);
+	void update(double delta);
 
 	void draw(Renderer renderer);
 }

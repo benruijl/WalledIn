@@ -23,10 +23,10 @@ public class Matrix2f {
 	 * Create a rotation matrix
 	 * @param rot Rotation in <b>radians</b>
 	 */
-	public Matrix2f(float rot)
+	public Matrix2f(double rot)
 	{
-		m[0] = m[4] = cos(rot);
-		m[1] = sin(rot);
+		m[0] = m[4] = (float) Math.cos(rot);
+		m[1] = (float) Math.sin(rot);
 		m[2] = -m[1];
 	}
 
