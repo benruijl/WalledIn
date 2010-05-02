@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package walledin.game;
 
 import java.io.IOException;
@@ -21,129 +17,129 @@ import walledin.engine.TextureManager;
 
 /**
  * Loads a map from an XML file
+ * 
  * @author ben
  */
 public class GameMapIOXML implements GameMapIO {
-    private static Document dom;
+	private static Document dom;
 
-    public GameMapIOXML() {
-    }
+	public GameMapIOXML() {
+	}
 
-    private void parseXmlFile(String filename) {
-        //get the factory
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+	private void parseXmlFile(final String filename) {
+		// get the factory
+		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-        try {
+		try {
 
-            //Using factory get an instance of document builder
-            DocumentBuilder db = dbf.newDocumentBuilder();
+			// Using factory get an instance of document builder
+			final DocumentBuilder db = dbf.newDocumentBuilder();
 
-            //parse using builder to get DOM representation of the XML file
-            dom = db.parse(filename);
+			// parse using builder to get DOM representation of the XML file
+			dom = db.parse(filename);
 
+		} catch (final ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (final SAXException se) {
+			se.printStackTrace();
+		} catch (final IOException ioe) {
+			ioe.printStackTrace();
+		}
+	}
 
-        } catch (ParserConfigurationException pce) {
-            pce.printStackTrace();
-        } catch (SAXException se) {
-            se.printStackTrace();
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
+	private GameMap parseDocument() {
+		// get the root element
+		final Element docEle = dom.getDocumentElement();
 
-    private GameMap parseDocument() {
-        //get the root element
-        Element docEle = dom.getDocumentElement();
+		final NodeList nl = docEle.getElementsByTagName("Map");
+		if (nl != null && nl.getLength() > 0) {
+			// map should only appear once
+			final Element el = (Element) nl.item(0);
 
-        NodeList nl = docEle.getElementsByTagName("Map");
-        if (nl != null && nl.getLength() > 0) {
-            // map should only appear once
-            Element el = (Element) nl.item(0);
+			// read the map data
+			final GameMap m = readData(el);
+			return m;
+		} else {
+			System.err.print("Error loading map.");
+		}
 
-            // read the map data
-            GameMap m = readData(el);
-            return m;
-        }
-        else
-            System.err.print("Error loading map.");
+		return null;
+	}
 
-        return null;
-    }
+	private GameMap readData(final Element mapElement) {
+		final String name = getTextValue(mapElement, "Name");
+		final String tex = getTextValue(mapElement, "Texture");
+		final int width = getIntValue(mapElement, "Width");
+		final int height = getIntValue(mapElement, "Height");
+		final Tile[] tiles = parseTiles(mapElement, "Tiles");
 
-    private GameMap readData(Element mapElement) {
-        String name = getTextValue(mapElement, "Name");
-        String tex = getTextValue(mapElement, "Texture");
-        int width = getIntValue(mapElement, "Width");
-        int height = getIntValue(mapElement, "Height");
-        Tile[] tiles = parseTiles(mapElement, "Tiles");
+		final String texRes = TextureManager.getInstance().LoadFromFile(tex);
 
-        String texRes = TextureManager.getInstance().LoadFromFile(tex);
+		final GameMap m = new GameMap(name, texRes, width, height, tiles);
 
-        GameMap m = new GameMap(name, texRes, width, height, tiles);
+		return m;
+	}
 
-        return m;
-    }
+	private Tile[] parseTiles(final Element ele, final String tagName) {
+		final String tiles = getTextValue(ele, tagName);
 
-    private Tile[] parseTiles(Element ele, String tagName) {
-        String tiles = getTextValue(ele, tagName);
+		final StringTokenizer st = new StringTokenizer(tiles);
+		final ArrayList<Tile> til = new ArrayList<Tile>();
 
-        StringTokenizer st = new StringTokenizer(tiles);
-        ArrayList<Tile> til = new ArrayList<Tile>();
+		while (st.hasMoreTokens()) {
+			final String s = st.nextToken();
 
+			til.add(new Tile(Integer.parseInt(s)));
+		}
 
-        while (st.hasMoreTokens()) {
-            String s = st.nextToken();
+		return til.toArray(new Tile[0]);
+	}
 
-            til.add(new Tile(Integer.parseInt(s)));
-        }
+	/**
+	 * I take a xml element and the tag name, look for the tag and get the text
+	 * content i.e for <employee><name>John</name></employee> xml snippet if the
+	 * Element points to employee node and tagName is 'name' I will return John
+	 */
+	private String getTextValue(final Element ele, final String tagName) {
+		String textVal = null;
+		final NodeList nl = ele.getElementsByTagName(tagName);
+		if (nl != null && nl.getLength() > 0) {
+			final Element el = (Element) nl.item(0);
+			textVal = el.getFirstChild().getNodeValue();
+		}
 
-        return til.toArray(new Tile[0]);
-    }
+		return textVal;
+	}
 
-    /**
-     * I take a xml element and the tag name, look for the tag and get
-     * the text content
-     * i.e for <employee><name>John</name></employee> xml snippet if
-     * the Element points to employee node and tagName is 'name' I will return John
-     */
-    private String getTextValue(Element ele, String tagName) {
-        String textVal = null;
-        NodeList nl = ele.getElementsByTagName(tagName);
-        if (nl != null && nl.getLength() > 0) {
-            Element el = (Element) nl.item(0);
-            textVal = el.getFirstChild().getNodeValue();
-        }
+	/**
+	 * Calls getTextValue and returns a int value
+	 */
+	private int getIntValue(final Element ele, final String tagName) {
+		// in production application you would catch the exception
+		try {
+			return Integer.parseInt(getTextValue(ele, tagName));
+		} catch (final NumberFormatException nu) {
 
-        return textVal;
-    }
+			System.err.print("Error converting to int in tag " + tagName + ": "
+					+ nu.getMessage());
+		}
 
-    /**
-     * Calls getTextValue and returns a int value
-     */
-    private int getIntValue(Element ele, String tagName) {
-        //in production application you would catch the exception
-        try
-        {
-        return Integer.parseInt(getTextValue(ele, tagName));
-        } catch (NumberFormatException nu) {
+		return 0;
+	}
 
-            System.err.print("Error converting to int in tag " + tagName + ": " + nu.getMessage());
-        }
+	/**
+	 * Reads map data from an XML file
+	 * 
+	 * @param filename
+	 *            Filename of XML data
+	 * @return Returns true on success and false on failure
+	 */
+	public GameMap readFromFile(final String filename) {
+		parseXmlFile(filename);
+		return parseDocument();
+	}
 
-        return 0;
-    }
-
-    /**
-     * Reads map data from an XML file
-     * @param filename Filename of XML data
-     * @return Returns true on success and false on failure
-     */
-    public GameMap readFromFile(String filename) {
-        parseXmlFile(filename);
-        return parseDocument();
-    }
-
-    public boolean writeToFile(GameMap map, String filename) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	public boolean writeToFile(final GameMap map, final String filename) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

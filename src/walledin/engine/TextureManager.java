@@ -15,112 +15,103 @@ import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureIO;
 
 /**
- *
+ * 
  * @author ben
  */
 public class TextureManager extends ResourceManager<String, Texture> {
 
-    @Override
-    public Object clone()
-            throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
-    }
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
 
-    public static TextureManager getInstance() {
-        if (ref == null) {
-            ref = new TextureManager();
-        }
+	public static TextureManager getInstance() {
+		if (ref == null) {
+			ref = new TextureManager();
+		}
 
-        return ref;
-    }
+		return ref;
+	}
 
-    private TextureManager() {
-        
-    }
-    private static TextureManager ref = null;
+	private TextureManager() {
 
-    String generateUniqueID() {
-        return "TEX_" + count().toString();
-    }
+	}
 
-    /*
-     * Returns the string ID of the texture. Useful for internal
-     * textures
-     *
-     * @Returns: string ID on succes, null on failure
-     */
-    public String LoadFromFile(String strFilename) {
-        String id = generateUniqueID();
+	private static TextureManager ref = null;
 
-        if (LoadFromFile(strFilename, id))
-            return id;
+	String generateUniqueID() {
+		return "TEX_" + count().toString();
+	}
 
-        return null;
-    }
+	/*
+	 * Returns the string ID of the texture. Useful for internal textures
+	 * 
+	 * @Returns: string ID on succes, null on failure
+	 */
+	public String LoadFromFile(final String strFilename) {
+		final String id = generateUniqueID();
 
-    /*
-     * Loads a texture from a file and links it with the given ID
-     */
-    public boolean LoadFromFile(String strFilename, String strTexID) {
-        try {
-            Texture tex = TextureIO.newTexture(new File(strFilename), true);
-            insert(strTexID, tex);
-            return true;
-            
-        } catch (IOException ex) {
-            Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (GLException ex) {
-            Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		if (LoadFromFile(strFilename, id)) {
+			return id;
+		}
 
-        return false;
-    }
+		return null;
+	}
 
-    /*   public boolean LoadFromFile(Renderer renderer, String strFilename, String strTexID) {
-    try {
-    BufferedImage img = ImageIO.read(new File(strFilename));
+	/*
+	 * Loads a texture from a file and links it with the given ID
+	 */
+	public boolean LoadFromFile(final String strFilename, final String strTexID) {
+		try {
+			final Texture tex = TextureIO.newTexture(new File(strFilename),
+					true);
+			insert(strTexID, tex);
+			return true;
 
-    if (img == null)
-    {
-    System.out.print("Could not load image " + strFilename);
-    return false;
-    }
+		} catch (final IOException ex) {
+			Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE,
+					null, ex);
+		} catch (final GLException ex) {
+			Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
 
+		return false;
+	}
 
-    TextureOld tex = new TextureOld();
-    tex.mMipmap = true;
-    tex.mWidth = img.getWidth();
-    tex.mHeight = img.getHeight();
-
-    switch (img.getType()) {
-    case BufferedImage.TYPE_3BYTE_BGR:
-    case BufferedImage.TYPE_CUSTOM: {
-    byte[] data = ((DataBufferByte) img.getRaster().getDataBuffer()).getData();
-    tex.mData = ByteBuffer.allocateDirect(data.length);
-    tex.mData.order(ByteOrder.nativeOrder());
-    tex.mData.put(data, 0, data.length);
-    break;
-    }
-    case BufferedImage.TYPE_INT_RGB: {
-    int[] data = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-    tex.mData = ByteBuffer.allocateDirect(data.length * 4); // 4 for int
-    tex.mData.order(ByteOrder.nativeOrder());
-    tex.mData.asIntBuffer().put(data, 0, data.length);
-    break;
-    }
-    default:
-    throw new RuntimeException("Unsupported image type " + img.getType());
-    }
-
-
-    renderer.linkTexture(tex);
-    insert(strTexID, tex);
-
-    } catch (IOException ex) {
-    Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    return true;
-
-    }*/
+	/*
+	 * public boolean LoadFromFile(Renderer renderer, String strFilename, String
+	 * strTexID) { try { BufferedImage img = ImageIO.read(new
+	 * File(strFilename));
+	 * 
+	 * if (img == null) { System.out.print("Could not load image " +
+	 * strFilename); return false; }
+	 * 
+	 * 
+	 * TextureOld tex = new TextureOld(); tex.mMipmap = true; tex.mWidth =
+	 * img.getWidth(); tex.mHeight = img.getHeight();
+	 * 
+	 * switch (img.getType()) { case BufferedImage.TYPE_3BYTE_BGR: case
+	 * BufferedImage.TYPE_CUSTOM: { byte[] data = ((DataBufferByte)
+	 * img.getRaster().getDataBuffer()).getData(); tex.mData =
+	 * ByteBuffer.allocateDirect(data.length);
+	 * tex.mData.order(ByteOrder.nativeOrder()); tex.mData.put(data, 0,
+	 * data.length); break; } case BufferedImage.TYPE_INT_RGB: { int[] data =
+	 * ((DataBufferInt) img.getRaster().getDataBuffer()).getData(); tex.mData =
+	 * ByteBuffer.allocateDirect(data.length * 4); // 4 for int
+	 * tex.mData.order(ByteOrder.nativeOrder());
+	 * tex.mData.asIntBuffer().put(data, 0, data.length); break; } default:
+	 * throw new RuntimeException("Unsupported image type " + img.getType()); }
+	 * 
+	 * 
+	 * renderer.linkTexture(tex); insert(strTexID, tex);
+	 * 
+	 * } catch (IOException ex) {
+	 * Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE, null,
+	 * ex); }
+	 * 
+	 * return true;
+	 * 
+	 * }
+	 */
 }

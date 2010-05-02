@@ -4,21 +4,19 @@ package walledin.game;
 import walledin.engine.Renderer;
 
 public class Main {
-    Game mGame;
+	Game mGame;
 
-    public Main() {
-        Renderer renderer = new Renderer();
-        mGame = new Game();
+	public Main() {
+		final Renderer renderer = new Renderer();
+		mGame = new Game();
 
-        renderer.initialize("WalledIn");
-        renderer.addListener(mGame);
-        renderer.beginLoop();
-    }
+		renderer.initialize("WalledIn");
+		renderer.addListener(mGame);
+		renderer.beginLoop();
+	}
 
+	public static void main(final String[] args) {
+		final Main game = new Main();
 
-
-    public static void main(String[] args) {
-        Main game = new Main();
-
-    }
+	}
 }

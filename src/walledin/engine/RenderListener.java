@@ -5,13 +5,14 @@
 package walledin.engine;
 
 /**
- *
+ * 
  * @author ben
  */
 public interface RenderListener {
 
-    void init();
-    void update(int ndt);
+	void init();
 
-    void draw(Renderer renderer);
+	void update(int ndt);
+
+	void draw(Renderer renderer);
 }

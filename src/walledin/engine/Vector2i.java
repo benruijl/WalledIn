@@ -6,36 +6,31 @@
 package walledin.engine;
 
 /**
- *
+ * 
  * @author ben
  */
 public class Vector2i {
-    public int x, y;
+	public int x, y;
 
-    public Vector2i()
-    {
+	public Vector2i() {
 
-    }
+	}
 
-    public Vector2i(int x, int y)
-    {
-        this.x = x;
-        this.y = y;
-    }
+	public Vector2i(final int x, final int y) {
+		this.x = x;
+		this.y = y;
+	}
 
-    public Vector2i add(Vector2i vec)
-    {
-        return new Vector2i(x + vec.x, y + vec.y);
-    }
+	public Vector2i add(final Vector2i vec) {
+		return new Vector2i(x + vec.x, y + vec.y);
+	}
 
-    public int dot(Vector2i vec)
-    {
-        return x * vec.x + y * vec.y;
-    }
+	public int dot(final Vector2i vec) {
+		return x * vec.x + y * vec.y;
+	}
 
-    public int lengthSquared()
-    {
-        return dot(this);
-    }
+	public int lengthSquared() {
+		return dot(this);
+	}
 
 }
