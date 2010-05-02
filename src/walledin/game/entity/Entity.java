@@ -5,9 +5,11 @@ import java.util.Map;
 
 public class Entity {
 	private final Map<Class<? extends Component>, Component> components;
+	private final String name;
 
-	public Entity() {
+	public Entity(String name) {
 		components = new HashMap<Class<? extends Component>, Component>();
+		this.name = name;
 	}
 
 	public void addComponent(Component component) {
