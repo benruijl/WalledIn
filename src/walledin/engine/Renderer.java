@@ -278,10 +278,36 @@ public class Renderer implements GLEventListener {
 
 		final Matrix2f mMat = new Matrix2f(mvmat[0], mvmat[1], mvmat[4],
 				mvmat[5]);
-		final Vector2f vNew = mMat.Apply(rect.leftTop());
+		final Vector2f vNew = mMat.apply(rect.leftTop());
 
 		return !(mvmat[12] + vNew.x() > mWidth || mvmat[12] + rect.right() < 0
 				|| mvmat[13] + vNew.y() > mHeight || mvmat[13] + rect.bottom() < 0);
+	}
+
+	/**
+	 * Converts screen coordinates to world coordinates. Useful for picking with
+	 * the mouse. This function assumes that the view matrix is orthogonal.
+	 * 
+	 * @param p
+	 *            Screen position in pixels
+	 * @return Returns world position
+	 */
+	public Vector2f screenToWorld(Vector2i p) {
+		Vector2f fp = new Vector2f(p.x, p.y);
+
+		// Create a rotation matrix, calculate its inverse and apply the camera
+		// translation
+		final Matrix2f invRot = new Matrix2f(mCam.getRot()).transpose();
+		final Vector2f vRes = invRot.apply(fp.sub(mCam.getPos()));
+		float fSXZ = mCam.getScale().x;
+		float fSXY = fSXZ * mCam.getScale().y;
+		float fSYZ = 1.0f;
+		float fInvDet = 1.0f / (fSXY * fSXZ);
+
+		vRes.x *= fInvDet * fSYZ;
+		vRes.y *= fInvDet * fSXZ;
+
+		return vRes;
 	}
 
 	/**

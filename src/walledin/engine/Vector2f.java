@@ -33,6 +33,10 @@ public class Vector2f {
 	public Vector2f add(final Vector2f vec) {
 		return new Vector2f(x + vec.x, y + vec.y);
 	}
+	
+	public Vector2f sub(final Vector2f vec) {
+		return new Vector2f(x - vec.x, y - vec.y);
+	}
 
 	public float dot(final Vector2f vec) {
 		return x * vec.x + y * vec.y;

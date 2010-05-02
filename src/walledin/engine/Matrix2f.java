@@ -1,12 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package walledin.engine;
 
+import java.lang.Math;
+
 /**
- * 
+ * A class for 2d matrices.
  * @author ben
  */
 public class Matrix2f {
@@ -21,17 +18,28 @@ public class Matrix2f {
 		m[2] = c;
 		m[3] = d;
 	}
+	
+	/**
+	 * Create a rotation matrix
+	 * @param rot Rotation in <b>radians</b>
+	 */
+	public Matrix2f(float rot)
+	{
+		m[0] = m[4] = cos(rot);
+		m[1] = sin(rot);
+		m[2] = -m[1];
+	}
 
-	public Vector2f Apply(final Vector2f vec) {
+	public Vector2f apply(final Vector2f vec) {
 		return new Vector2f(vec.x() * m[0] + vec.y() * m[2], vec.x() * m[1]
 				+ vec.y() * m[3]);
 	}
-
-	public Matrix2f Transpose() {
+	
+	public Matrix2f transpose() {
 		return new Matrix2f(m[0], m[2], m[1], m[3]);
 	}
 
-	public float Determinant() {
+	public float determinant() {
 		return m[0] * m[3] - m[1] * m[2];
 	}
 

@@ -27,6 +27,10 @@ public class Camera {
 		this.pos = pos;
 	}
 
+	/**
+	 * Get rotation in <b>radians</b>
+	 * @return Returns rotation in radians
+	 */
 	public float getRot() {
 		return rot;
 	}
