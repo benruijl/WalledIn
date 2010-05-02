@@ -5,7 +5,6 @@
 
 package walledin.game;
 
-import walledin.engine.Rectangle;
 
 /**
  *

@@ -6,7 +6,7 @@ package walledin.game;
 
 import java.awt.event.KeyEvent;
 import java.util.Vector;
-import sun.reflect.LangReflectAccess;
+
 import walledin.engine.Input;
 import walledin.engine.Rectangle;
 import walledin.engine.RenderListener;

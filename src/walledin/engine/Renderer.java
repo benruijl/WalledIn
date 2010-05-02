@@ -4,15 +4,21 @@
  */
 package walledin.engine;
 
-import com.sun.opengl.util.Animator;
-import com.sun.opengl.util.FPSAnimator;
-import com.sun.opengl.util.texture.Texture;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.media.opengl.*;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLCanvas;
+import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+
+import com.sun.opengl.util.Animator;
+import com.sun.opengl.util.FPSAnimator;
+import com.sun.opengl.util.texture.Texture;
 
 /**
  * 
