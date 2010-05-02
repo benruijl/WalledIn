@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package walledin.engine;
 
 import java.awt.BorderLayout;
@@ -14,24 +10,23 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.glu.GLU;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 import com.sun.opengl.util.texture.Texture;
 
 /**
+ * Renderer class. Takes care of rendering, window creation, context creation
+ * and update and draw dispatching
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public class Renderer implements GLEventListener {
 
 	private GLCanvas mCanvas;
 	private GL gl;
-	private GLU glu;
 	private RenderListener mEvListener;
 	private GLAutoDrawable mCurDrawable;
-	private static float fx;
 	private long prevTime;
 	private int frameCount;
 	private int mWidth;
@@ -98,19 +93,32 @@ public class Renderer implements GLEventListener {
 
 			beginDraw();
 			mEvListener.draw(this); // draw the frame
-			endDraw();
 		}
 	}
 
+	/**
+	 * Draws a textured rectangle to the screen. The full texture is used, and
+	 * the dimesions are kept.
+	 * 
+	 * @param strTex
+	 *            Texture name
+	 */
 	public void drawRect(final String strTex) {
 		final Texture tex = TextureManager.getInstance().get(strTex);
 		drawRect(strTex, new Rectangle(0, 0, tex.getWidth(), tex.getHeight()));
 
 	}
 
+	/**
+	 * Draws a textured rectangle to the screen. The full texture is used in the
+	 * mapping.
+	 * 
+	 * @param strTex
+	 *            Texture name
+	 * @param destRect
+	 *            Destination rectangle
+	 */
 	public void drawRect(final String strTex, final Rectangle destRect) {
-		// gl.glPushAttrib(GL.GL_ENABLE_BIT);
-		// TextureManager.getInstance().get(strTex).enable();
 		TextureManager.getInstance().get(strTex).bind();
 
 		gl.glBegin(GL.GL_QUADS);
@@ -123,12 +131,10 @@ public class Renderer implements GLEventListener {
 		gl.glTexCoord2f(1.0f, 0.0f);
 		gl.glVertex2f(destRect.right(), destRect.top());
 		gl.glEnd();
-
-		// gl.glPopAttrib();
 	}
 
 	/**
-	 * Draws a textured rectangle to the screen
+	 * Draws a textured rectangle to the screen. Assumes textures are enabled.
 	 * 
 	 * @param strTex
 	 *            Texture name
@@ -141,31 +147,8 @@ public class Renderer implements GLEventListener {
 	public void drawRect(final String strTex, final Rectangle texRect,
 			final Rectangle destRect) {
 
-		// check if visible. FIXME: create space partitioning
-		/*
-		 * if (!inFrustum(destRect)) { return; }
-		 */
-
-		// gl.glPushAttrib(GL.GL_ENABLE_BIT);
-
 		final Texture tex = TextureManager.getInstance().get(strTex);
-		// tex.enable();
 		tex.bind();
-
-		/*
-		 * gl.glBegin(GL.GL_QUADS); gl.glTexCoord2f(texRect.left() / (float)
-		 * tex.getWidth(), texRect.top() / (float) tex.getHeight());
-		 * gl.glVertex2f(destRect.left(), destRect.top());
-		 * gl.glTexCoord2f(texRect.left() / (float) tex.getWidth(),
-		 * texRect.bottom() / (float) tex.getHeight());
-		 * gl.glVertex2f(destRect.left(), destRect.bottom());
-		 * gl.glTexCoord2f(texRect.right() / (float) tex.getWidth(),
-		 * texRect.bottom() / (float) tex.getHeight());
-		 * gl.glVertex2f(destRect.right(), destRect.bottom());
-		 * gl.glTexCoord2f(texRect.right() / (float) tex.getWidth(),
-		 * texRect.top() / (float) tex.getHeight());
-		 * gl.glVertex2f(destRect.right(), destRect.top()); gl.glEnd();
-		 */
 
 		gl.glBegin(GL.GL_QUADS);
 		gl.glTexCoord2f(texRect.left(), texRect.top());
@@ -177,16 +160,23 @@ public class Renderer implements GLEventListener {
 		gl.glTexCoord2f(texRect.right(), texRect.top());
 		gl.glVertex2f(destRect.right(), destRect.top());
 		gl.glEnd();
-
-		// gl.glPopAttrib();
-
 	}
 
+	/**
+	 * Draws a textured rectangle to the screen. It uses the same dimensions on
+	 * the screen as the texture's.
+	 * 
+	 * @param strTex
+	 *            Texure name
+	 * @param texRect
+	 *            Specifies the subtexture
+	 * @param vPos
+	 *            Position to render to
+	 */
 	public void drawRect(final String strTex, final Rectangle texRect,
 			final Vector2f vPos) {
 		drawRect(strTex, texRect, new Rectangle(vPos.x(), vPos.y(), texRect
 				.width(), texRect.height()));
-
 	}
 
 	private void beginDraw() {
@@ -199,16 +189,11 @@ public class Renderer implements GLEventListener {
 		scale(mCam.getScale());
 	}
 
-	private void endDraw() {
-		// gl.glFlush(); is done automatically
-	}
-
 	public void init(final GLAutoDrawable glDrawable) {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
-		glu = new GLU();
 
-		gl.glClearColor(1, 1, 1, 0);
+		gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue background color
 		gl.glEnable(GL.GL_BLEND);
 		gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL.GL_TEXTURE_2D);
@@ -241,16 +226,33 @@ public class Renderer implements GLEventListener {
 
 	}
 
-	// opengl functions
+	/**
+	 * Translate the current matrix.
+	 * 
+	 * @param vec
+	 *            Translation vector
+	 */
 	public void translate(final Vector2f vec) {
 		gl.glTranslatef(vec.x(), vec.y(), 0);
 	}
 
+	/**
+	 * Rotate the current matrix.
+	 * 
+	 * @param rad
+	 *            Angle in <b>degrees</b>
+	 */
 	public void rotate(final float rad) {
 		gl.glRotatef(rad, 0, 0, 1);
 
 	}
 
+	/**
+	 * Scale (and mirror) the current matrix.
+	 * 
+	 * @param vec
+	 *            Scale vector. For mirroring, use negative numbers
+	 */
 	public void scale(final Vector2f vec) {
 		gl.glScalef(vec.x(), vec.y(), 1);
 
@@ -261,8 +263,15 @@ public class Renderer implements GLEventListener {
 				* 0.5f));
 	}
 
+	/**
+	 * Checks is a rectangle is in the current view frustum.
+	 * 
+	 * @param rect
+	 *            Rectangle to check
+	 * @return Returns true if the rectangle is fully or partially in the
+	 *         frustum.
+	 */
 	public boolean inFrustum(final Rectangle rect) {
-		// check if position is in viewport
 		final float[] mvmat = new float[16];
 
 		gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, mvmat, 0);
@@ -275,10 +284,16 @@ public class Renderer implements GLEventListener {
 				|| mvmat[13] + vNew.y() > mHeight || mvmat[13] + rect.bottom() < 0);
 	}
 
+	/**
+	 * Save the current matrix. Useful if doing transformations.
+	 */
 	public void pushMatrix() {
 		gl.glPushMatrix();
 	}
 
+	/**
+	 * Restore the previous matrix.
+	 */
 	public void popMatrix() {
 		gl.glPopMatrix();
 	}
