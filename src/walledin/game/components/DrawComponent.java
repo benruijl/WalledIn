@@ -10,4 +10,10 @@ public class DrawComponent extends Component {
 
 	}
 
+	@Override
+	public void onMessage(int message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

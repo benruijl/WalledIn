@@ -25,7 +25,7 @@ public class Entity {
 		components.put(clazz, component);
 	}
 
-	public <T extends Component> T get(Class<? extends Component> clazz) {
+	public <T extends Component> T get(Class<T> clazz) { // Class<? extends Component> 
 		return (T) components.get(clazz);
 	}
 

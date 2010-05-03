@@ -3,15 +3,18 @@ package walledin.game;
 import walledin.engine.Rectangle;
 import walledin.engine.Renderer;
 import walledin.engine.Vector2f;
+import walledin.game.components.DrawComponent;
+import walledin.game.components.PositionComponent;
+import walledin.game.entity.Entity;
 
 /**
  * 
  * @author ben
  */
-public class Player {
+public class Player extends Entity {
 	private static final float fScale = 0.5f;
 	private String texID;
-	private Vector2f pos;
+	//private Vector2f pos;
 	private final Rectangle boundRect;
 	private float footPos; // for basic walking animation, in radians
 	private boolean facingRight;
@@ -21,24 +24,31 @@ public class Player {
 	}
 
 	public Player(final String tex) {
+		super("Player");
+		
+		addComponent(new PositionComponent());
+		addComponent(new DrawComponent());
+		
 		texID = tex;
-		pos = new Vector2f();
+		
+		get(PositionComponent.class).getPos();
+		
 		boundRect = new Rectangle(0, 0, 96 * fScale, 96 * fScale);
 		facingRight = true;
 	}
 
 	public void Move(final float move) {
-		pos.x += move;
+		setPos(getPos().add(new Vector2f(move, 0)));
 		footPos += 0.4f;
 		facingRight = move >= 0.0f;
 	}
 
 	public Vector2f getPos() {
-		return pos;
+		return get(PositionComponent.class).getPos();
 	}
 
 	public void setPos(final Vector2f pos) {
-		this.pos = pos;
+		get(PositionComponent.class).setPos(pos);
 	}
 
 	public String getTexID() {
@@ -51,7 +61,7 @@ public class Player {
 
 	public void draw(final Renderer renderer) {
 		renderer.pushMatrix();
-		renderer.translate(pos);
+		renderer.translate(getPos());
 		renderer.scale(new Vector2f(fScale, fScale));
 		if (!facingRight) {
 			renderer.scale(new Vector2f(-1, 1));

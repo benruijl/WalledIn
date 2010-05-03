@@ -8,7 +8,7 @@ public abstract class Component implements RenderListener {
 	private Entity owner;
 
 	public void setOwner(Entity owner) {
-		if (owner != null) {
+		if (owner == null) {
 			throw new IllegalArgumentException(
 					"Cannot set owner before detaching");
 		}
@@ -18,7 +18,9 @@ public abstract class Component implements RenderListener {
 	public void detachFromOwner() {
 		this.owner = null;
 	}
-
+	
+	abstract public void onMessage(int message);
+	
 	@Override
 	public void draw(final Renderer renderer) {
 		
