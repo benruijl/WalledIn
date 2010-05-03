@@ -61,8 +61,8 @@ public class Game implements RenderListener {
 		/* Update player position */
 		if (Math.abs(vNewPos.x - mPlayer.getPos().x) > 0.1f) {
 			mPlayer.Move(vNewPos.x - mPlayer.getPos().x); // FIXME, used only
-															// for foot
-															// animation
+			// for foot
+			// animation
 		}
 		mPlayer.setPos(vNewPos);
 
@@ -76,7 +76,7 @@ public class Game implements RenderListener {
 
 	public void draw(final Renderer renderer) {
 		renderer.drawRect("sun", new Rectangle(60, 60, 64, 64)); // draw
-																	// background
+		// background
 
 		if (mMap != null) {
 			mMap.draw(renderer);
@@ -89,7 +89,15 @@ public class Game implements RenderListener {
 					235 / 256.0f), mWalls.get(i));
 		}
 
-		renderer.centerAround(mPlayer.getPos()); // FIXME: do somewhere else
+		/* FIXME: move these lines */
+		renderer.centerAround(mPlayer.getPos());
+
+		if (Input.getInstance().keyDown(KeyEvent.VK_F1))
+		{
+			renderer.toggleFullScreen();
+			Input.getInstance().setKeyUp(KeyEvent.VK_F1);
+		}
+			
 	}
 
 	/**

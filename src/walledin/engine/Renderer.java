@@ -2,6 +2,8 @@ package walledin.engine;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -23,6 +25,7 @@ import com.sun.opengl.util.texture.Texture;
  */
 public class Renderer implements GLEventListener {
 
+	private Frame win;
 	private GLCanvas mCanvas;
 	private GL gl;
 	private RenderListener mEvListener;
@@ -32,9 +35,12 @@ public class Renderer implements GLEventListener {
 	private int mWidth;
 	private int mHeight;
 	private Camera mCam;
+	private boolean isFullScreen;
+	private boolean isFirstRun;
+	private Animator anim;
 
 	public void initialize(final String strTitle) {
-		final Frame win = new Frame(strTitle);
+		win = new Frame(strTitle);
 		win.setSize(800, 600);
 		win.setLocation(0, 0);
 		win.setLayout(new BorderLayout());
@@ -43,6 +49,10 @@ public class Renderer implements GLEventListener {
 
 			@Override
 			public void windowClosing(final WindowEvent e) {
+
+				if (isFullScreen)
+					toggleFullScreen();
+
 				System.exit(0);
 			}
 		});
@@ -57,12 +67,48 @@ public class Renderer implements GLEventListener {
 
 		win.add(mCanvas, BorderLayout.CENTER);
 		win.setVisible(true);
+
 		mCanvas.requestFocus();
+		
+		isFirstRun = true;
+	}
+
+	/**
+	 * Toggle between windowed mode and full screen mode.
+	 * 
+	 * FIXME: this function works, but as the window is recreated in dispose(),
+	 * so is the GLcanvas. This means the init function is run, so resources
+	 * are loaded again.
+	 */
+	public void toggleFullScreen() {
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getDefaultScreenDevice();
+
+		if (isFullScreen || !gd.isFullScreenSupported()) {
+			win.setVisible(false);
+			win.dispose();
+			win.setUndecorated(false);
+			gd.setFullScreenWindow(null);
+			win.setVisible(true);
+			mCanvas.requestFocus();
+
+			isFullScreen = false;
+		} else {
+			win.setVisible(false);
+			win.dispose();
+			win.setUndecorated(true);
+			gd.setFullScreenWindow(win);
+			win.setVisible(true);
+			mCanvas.requestFocus();
+
+			isFullScreen = true;
+		}
+
 	}
 
 	public void beginLoop() {
 		// setup the animator
-		final Animator anim = new FPSAnimator(mCanvas, 60);
+		anim = new FPSAnimator(mCanvas, 60);
 		anim.start();
 
 	}
@@ -189,28 +235,34 @@ public class Renderer implements GLEventListener {
 		scale(mCam.getScale());
 	}
 
+	/**
+	 * This function is called on window creation and recreation
+	 */
 	public void init(final GLAutoDrawable glDrawable) {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
+			
+			gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue
+			gl.glEnable(GL.GL_BLEND);
+			gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
+			gl.glEnable(GL.GL_TEXTURE_2D);
 
-		gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue background color
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glEnable(GL.GL_TEXTURE_2D);
+			mEvListener.init();
 
-		mEvListener.init();
-
-		mCam = new Camera();
+			mCam = new Camera();
 	}
 
-	public void reshape(final GLAutoDrawable glad, final int i, final int i1,
-			final int i2, final int i3) {
-		mWidth = i2;
-		mHeight = i3;
+	public void reshape(final GLAutoDrawable glDrawable, final int x,
+			final int y, final int width, final int height) {
+		mCurDrawable = glDrawable;
+		gl = glDrawable.getGL();
+
+		mWidth = width;
+		mHeight = height;
 
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
-		gl.glOrtho(0, i2, i3, 0, -1, 1);
+		gl.glOrtho(0, mWidth, mHeight, 0, -1, 1);
 
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();

@@ -24,7 +24,11 @@ public class Entity {
 		component.setOwner(this);
 		components.put(clazz, component);
 	}
-	
+
+	public <T extends Component> T get(Class<? extends Component> clazz) {
+		return (T) components.get(clazz);
+	}
+
 	public Component removeComponent(Class<? extends Component> clazz) {
 		Component component = components.remove(clazz);
 		component.detachFromOwner();
