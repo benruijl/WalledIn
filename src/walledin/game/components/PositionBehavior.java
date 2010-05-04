@@ -2,10 +2,10 @@ package walledin.game.components;
 
 import walledin.engine.Vector2f;
 
-public class PositionComponent extends Component {
+public class PositionBehavior extends Behavior {
 	Vector2f pos;
 	
-	public PositionComponent() {
+	public PositionBehavior() {
 		pos = new Vector2f();
 	}
 
@@ -16,13 +16,4 @@ public class PositionComponent extends Component {
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
 	}
-
-	@Override
-	public void onMessage(int message) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-
 }

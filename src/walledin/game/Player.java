@@ -3,8 +3,8 @@ package walledin.game;
 import walledin.engine.Rectangle;
 import walledin.engine.Renderer;
 import walledin.engine.Vector2f;
-import walledin.game.components.DrawComponent;
-import walledin.game.components.PositionComponent;
+import walledin.game.components.RenderBehavior;
+import walledin.game.components.PositionBehavior;
 import walledin.game.entity.Entity;
 
 /**
@@ -26,12 +26,12 @@ public class Player extends Entity {
 	public Player(final String tex) {
 		super("Player");
 		
-		addComponent(new PositionComponent());
-		addComponent(new DrawComponent());
+		addBehavior(new PositionBehavior());
+		addBehavior(new RenderBehavior());
 		
 		texID = tex;
 		
-		get(PositionComponent.class).getPos();
+		getBehavior(PositionBehavior.class).getPos();
 		
 		boundRect = new Rectangle(0, 0, 96 * fScale, 96 * fScale);
 		facingRight = true;
@@ -44,11 +44,11 @@ public class Player extends Entity {
 	}
 
 	public Vector2f getPos() {
-		return get(PositionComponent.class).getPos();
+		return getBehavior(PositionBehavior.class).getPos();
 	}
 
 	public void setPos(final Vector2f pos) {
-		get(PositionComponent.class).setPos(pos);
+		getBehavior(PositionBehavior.class).setPos(pos);
 	}
 
 	public String getTexID() {
