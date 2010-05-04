@@ -55,7 +55,7 @@ public abstract class Behavior {
 	 *             if the class you asked for is not the class specified in
 	 *             attribute
 	 */
-	private <T> T getAttribute(Attribute attribute) {
+	protected <T> T getAttribute(Attribute attribute) {
 		return getOwner().getAttribute(attribute);
 	}
 
@@ -72,7 +72,7 @@ public abstract class Behavior {
 	 *             if the newObect is not of the class specified in the
 	 *             attribute
 	 */
-	private <T> T setAttribute(Attribute attribute, T newObject) {
+	protected <T> T setAttribute(Attribute attribute, T newObject) {
 		return getOwner().setAttribute(attribute, newObject);
 	}
 

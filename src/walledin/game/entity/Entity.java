@@ -106,7 +106,7 @@ public class Entity {
 	/**
 	 * Calls onMessage on all the behaviors of this entity
 	 */
-	public void onMessage(MessageType messageType, Object data) {
+	public void sendMessage(MessageType messageType, Object data) {
 		for (Behavior behavior : behaviors.values()) {
 			behavior.onMessage(messageType, data);
 		}
@@ -115,7 +115,7 @@ public class Entity {
 	/**
 	 * Calls onUpdate on all the behaviors of this entity
 	 */
-	public void onUpdate(double delta) {
+	public void sendUpdate(double delta) {
 		for (Behavior behavior : behaviors.values()) {
 			behavior.onUpdate(delta);
 		}

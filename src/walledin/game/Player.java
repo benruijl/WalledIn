@@ -5,9 +5,9 @@ import walledin.engine.Renderer;
 import walledin.engine.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.behaviors.PositionBehavior;
 import walledin.game.entity.behaviors.RenderBehavior;
 import walledin.game.entity.behaviors.RenderPlayerBehavior;
+import walledin.game.entity.behaviors.SpatialBehavior;
 
 /**
  * 
@@ -28,6 +28,7 @@ public class Player extends Entity {
 	public Player(final String tex) {
 		super("Player");
 		
+		addBehavior(new SpatialBehavior());
 		addBehavior(new RenderPlayerBehavior());
 		setAttribute(Attribute.POSITION, new Vector2f());
 			
@@ -35,6 +36,11 @@ public class Player extends Entity {
 		
 		boundRect = new Rectangle(0, 0, 96 * fScale, 96 * fScale);
 		facingRight = true;
+	}
+	
+	public Vector2f getPos()
+	{
+		return getAttribute(Attribute.POSITION);
 	}
 
 	public void Move(final float move) {

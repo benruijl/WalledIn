@@ -10,6 +10,7 @@ import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.Vector2f;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.MessageType;
 
 /**
@@ -61,7 +62,8 @@ public class Game implements RenderListener {
 			// for foot
 			// animation
 		}
-		mPlayer.setPos(vNewPos);
+		
+		mPlayer.setAttribute(Attribute.POSITION, vNewPos);
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
 			mWalls.add(new Rectangle(mPlayer.getPos().x() + 65, mPlayer
@@ -79,7 +81,7 @@ public class Game implements RenderListener {
 			mMap.draw(renderer);
 		}
 
-		mPlayer.onMessage(MessageType.RENDER, renderer); // render player
+		mPlayer.sendMessage(MessageType.RENDER, renderer); // render player
 
 		for (int i = 0; i < mWalls.size(); i++) {
 			renderer.drawRect("wall", new Rectangle(0.0f, 0.0f, 110 / 128.0f,
@@ -112,8 +114,8 @@ public class Game implements RenderListener {
 		mMap = mMapIO.readFromFile("data/map.xml"); // create map
 
 		mPlayer = new Player("player");
-		mPlayer.setPos(new Vector2f(10, 10));
-
+		mPlayer.setAttribute(Attribute.POSITION, new Vector2f(10, 10));
+		
 		mWalls = new ArrayList<Rectangle>();
 	}
 }
