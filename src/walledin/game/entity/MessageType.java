@@ -7,5 +7,6 @@ package walledin.game.entity;
  * 
  */
 public enum MessageType {
-	RENDER;
+	RENDER,
+	MOVE;
 }

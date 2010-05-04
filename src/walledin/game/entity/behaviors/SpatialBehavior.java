@@ -3,19 +3,21 @@ package walledin.game.entity.behaviors;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.MessageType;
 
-
-public class RenderBehavior extends Behavior {
+public class SpatialBehavior extends Behavior {
 
 	@Override
 	public void onMessage(MessageType messageType, Object data) {
-		// TODO Auto-generated method stub
-		
+		if (messageType == MessageType.MOVE)
+		{
+			
+		}
+
 	}
 
 	@Override
 	public void onUpdate(double delta) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

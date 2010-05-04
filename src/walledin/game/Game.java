@@ -10,6 +10,7 @@ import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.Vector2f;
+import walledin.game.entity.MessageType;
 
 /**
  * 
@@ -78,7 +79,7 @@ public class Game implements RenderListener {
 			mMap.draw(renderer);
 		}
 
-		mPlayer.draw(renderer);
+		mPlayer.onMessage(MessageType.RENDER, renderer); // render player
 
 		for (int i = 0; i < mWalls.size(); i++) {
 			renderer.drawRect("wall", new Rectangle(0.0f, 0.0f, 110 / 128.0f,

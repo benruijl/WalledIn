@@ -55,7 +55,7 @@ public class Entity {
 	}
 
 	/**
-	 * Gets the object bound to the attribute. Preforms an automatic cast you
+	 * Gets the object bound to the attribute. Performs an automatic cast, so
 	 * the user doesn't have to cast every time
 	 * 
 	 * @param attribute
