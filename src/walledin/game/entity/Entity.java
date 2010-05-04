@@ -55,14 +55,18 @@ public class Entity {
 	}
 
 	/**
-	 * Gets the object bound to the attribute
+	 * Gets the object bound to the attribute. Preforms an automatic cast you
+	 * the user doesn't have to cast every time
 	 * 
 	 * @param attribute
 	 *            The attribute to get
 	 * @return Returns the object bound to this attribute
+	 * @throws ClassCastException
+	 *             if the class you asked for is not the class specified in
+	 *             attribute
 	 */
-	public Object getAttribute(Attribute attribute) {
-		return attributes.get(attribute);
+	public <T> T getAttribute(Attribute attribute) {
+		return (T) attributes.get(attribute);
 	}
 
 	/**
@@ -73,9 +77,17 @@ public class Entity {
 	 * @param newObject
 	 *            Object to bind
 	 * @return Returns the object bound to the attribute before
+	 * @throws IllegalArgumentException
+	 *             if the newObect is not of the class specified in the
+	 *             attribute
 	 */
-	public Object setAttribute(Attribute attribute, Object newObject) {
-		return attributes.put(attribute, newObject);
+	public <T> T setAttribute(Attribute attribute, T newObject) {
+		if (attribute.clazz.isInstance(newObject)) {
+			return (T) attributes.put(attribute, newObject);
+		} else {
+			throw new IllegalArgumentException("Object should be of class: "
+					+ attribute.clazz.getName());
+		}
 	}
 
 	/**
