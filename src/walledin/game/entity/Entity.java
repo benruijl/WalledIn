@@ -3,11 +3,9 @@ package walledin.game.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import walledin.game.components.Behavior;
-import walledin.game.components.Message;
-
 public class Entity {
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
+	private final Map<Attribute, Object> attributes;
 	private final String name;
 
 	/**
@@ -17,6 +15,7 @@ public class Entity {
 	 */
 	public Entity(String name) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
+		attributes = new HashMap<Attribute, Object>();
 		this.name = name;
 	}
 
@@ -56,6 +55,30 @@ public class Entity {
 	}
 
 	/**
+	 * Gets the object bound to the attribute
+	 * 
+	 * @param attribute
+	 *            The attribute to get
+	 * @return Returns the object bound to this attribute
+	 */
+	public Object getAttribute(Attribute attribute) {
+		return attributes.get(attribute);
+	}
+
+	/**
+	 * Binds the object to the attribute and returns the old object
+	 * 
+	 * @param attribute
+	 *            The attribute to bind
+	 * @param newObject
+	 *            Object to bind
+	 * @return Returns the object bound to the attribute before
+	 */
+	public Object setAttribute(Attribute attribute, Object newObject) {
+		return attributes.put(attribute, newObject);
+	}
+
+	/**
 	 * Removes a behavior from this entity
 	 * 
 	 * @param clazz
@@ -71,9 +94,9 @@ public class Entity {
 	/**
 	 * Calls onMessage on all the behaviors of this entity
 	 */
-	public void onMessage(Message message, Object data) {
+	public void onMessage(MessageType messageType, Object data) {
 		for (Behavior behavior : behaviors.values()) {
-			behavior.onMessage(message, data);
+			behavior.onMessage(messageType, data);
 		}
 	}
 

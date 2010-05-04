@@ -1,6 +1,5 @@
-package walledin.game.components;
+package walledin.game.entity;
 
-import walledin.game.entity.Entity;
 
 /**
  * Base behavior class. Subclasses define specifiek behavior of its owner.
@@ -49,12 +48,12 @@ public abstract class Behavior {
 	 * Sends a message to this behavior. Subclasses should react to certain
 	 * messages.
 	 * 
-	 * @param message
+	 * @param messageType
 	 *            Enum that specifies the message type
 	 * @param data
 	 *            Message specific data
 	 */
-	public void onMessage(Message message, Object data) {
+	public void onMessage(MessageType messageType, Object data) {
 
 	}
 

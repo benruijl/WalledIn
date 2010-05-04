@@ -3,9 +3,9 @@ package walledin.game;
 import walledin.engine.Rectangle;
 import walledin.engine.Renderer;
 import walledin.engine.Vector2f;
-import walledin.game.components.RenderBehavior;
-import walledin.game.components.PositionBehavior;
 import walledin.game.entity.Entity;
+import walledin.game.entity.behaviors.PositionBehavior;
+import walledin.game.entity.behaviors.RenderBehavior;
 
 /**
  * 

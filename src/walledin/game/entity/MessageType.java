@@ -1,4 +1,4 @@
-package walledin.game.components;
+package walledin.game.entity;
 
 /**
  * All the possible messages that can be send to behaviors
@@ -6,6 +6,6 @@ package walledin.game.components;
  * @author wouter
  * 
  */
-public enum Message {
-
+public enum MessageType {
+	RENDER;
 }

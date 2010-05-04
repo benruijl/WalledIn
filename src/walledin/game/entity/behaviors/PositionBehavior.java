@@ -1,6 +1,7 @@
-package walledin.game.components;
+package walledin.game.entity.behaviors;
 
 import walledin.engine.Vector2f;
+import walledin.game.entity.Behavior;
 
 public class PositionBehavior extends Behavior {
 	Vector2f pos;
