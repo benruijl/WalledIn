@@ -6,33 +6,34 @@ import walledin.game.entity.Behavior;
 import walledin.game.entity.MessageType;
 
 public class SpatialBehavior extends Behavior {
-	private Vector2f pos;
+	private Vector2f position;
 	private Vector2f velocity;
 
 	@Override
 	public void onMessage(MessageType messageType, Object data) {
-		if (messageType == MessageType.MOVE)
-		{
-			pos = getAttribute(Attribute.POSITION);
-			pos.add((Vector2f)data);
-			setAttribute(Attribute.POSITION, pos);
+		if (messageType == MessageType.ATTRIBUTE_SET) {
+			Attribute attribute = (Attribute) data;
+			switch (attribute) {
+			case POSITION:
+				position = getAttribute(attribute);
+				break;
+			case VELOCITY:
+				velocity = getAttribute(attribute);
+				break;
+			}
 		}
-		
-		if (messageType == MessageType.SETPOS)
-		{
-			setAttribute(Attribute.POSITION, (Vector2f)data);
-		}
-
 	}
 
 	@Override
 	public void onUpdate(double delta) {
-		// TODO Auto-generated method stub
-
+		Vector2f scaledVelocity = new Vector2f(velocity);
+		scaledVelocity.scale((float) delta);
+		position = position.add(scaledVelocity);
+		setAttribute(Attribute.POSITION, position);
 	}
-	
+
 	public Vector2f getPosition() {
-		return pos;
+		return position;
 	}
 
 }

@@ -17,6 +17,11 @@ public class Vector2f {
 		this.y = y;
 	}
 
+	public Vector2f(Vector2f vector) {
+		this.x = vector.x;
+		this.y = vector.y;
+	}
+
 	public float x() {
 		return x;
 	}
@@ -39,5 +44,10 @@ public class Vector2f {
 
 	public float lengthSquared() {
 		return dot(this);
+	}
+
+	public void scale(float amount) {
+		x *= amount;
+		y *= amount;
 	}
 }

@@ -38,6 +38,7 @@ public class Renderer implements GLEventListener {
 	private boolean isFullScreen;
 	private boolean isFirstRun;
 	private Animator anim;
+	private long lastUpdate;
 
 	public void initialize(final String strTitle) {
 		win = new Frame(strTitle);
@@ -71,6 +72,8 @@ public class Renderer implements GLEventListener {
 		mCanvas.requestFocus();
 		
 		isFirstRun = true;
+		
+		lastUpdate = System.nanoTime();
 	}
 
 	/**
@@ -134,8 +137,14 @@ public class Renderer implements GLEventListener {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
 
+		long currentTime = System.nanoTime();
+		double delta = currentTime - lastUpdate;
+		 // Delta is in seconds. 10^9 nanoseconds per second
+		delta /= 1000 * 1000 * 1000;
+		lastUpdate = currentTime;
+		
 		if (mEvListener != null) {
-			mEvListener.update(0); // FIXME, use real delta time
+			mEvListener.update(delta); // FIXME, use real delta time
 
 			beginDraw();
 			mEvListener.draw(this); // draw the frame

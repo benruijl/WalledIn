@@ -83,7 +83,9 @@ public class Entity {
 	 */
 	public <T> T setAttribute(Attribute attribute, T newObject) {
 		if (attribute.clazz.isInstance(newObject)) {
-			return (T) attributes.put(attribute, newObject);
+			T result = (T) attributes.put(attribute, newObject);
+			sendMessage(MessageType.ATTRIBUTE_SET, attribute);
+			return result;
 		} else {
 			throw new IllegalArgumentException("Object should be of class: "
 					+ attribute.clazz.getName());

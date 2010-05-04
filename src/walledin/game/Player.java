@@ -33,7 +33,7 @@ public class Player extends Entity {
 		return boundRect;
 	}
 	
-	public Vector2f getPos()
+	public Vector2f getPosition()
 	{
 		return getAttribute(Attribute.POSITION);
 	}

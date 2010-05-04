@@ -18,7 +18,6 @@ import walledin.game.entity.MessageType;
  * @author ben
  */
 public class Game implements RenderListener {
-
 	private float fX;
 	private GameMapIO mMapIO;
 	private GameMap mMap;
@@ -28,18 +27,18 @@ public class Game implements RenderListener {
 	public void update(final double delta) {
 		mPlayer.sendUpdate(delta);
 		
-		Vector2f vNewPos = mPlayer.getAttribute(Attribute.POSITION);
+		Vector2f vNewPos = mPlayer.getPosition();
 
 		/* Do very basic collision detection */
 		for (int i = 0; i < mWalls.size(); i++) {
 			if (mPlayer.getBoundRect().addOffset(vNewPos).intersects(
 					mWalls.get(i))) {
-				vNewPos = mPlayer.getPos(); // do no update
+				vNewPos = mPlayer.getPosition(); // do no update
 			}
 		}
 		/* Update player position */
-		if (Math.abs(vNewPos.x - mPlayer.getPos().x) > 0.1f) {
-			mPlayer.move(vNewPos.x - mPlayer.getPos().x); // FIXME, used only
+		if (Math.abs(vNewPos.x - mPlayer.getPosition().x) > 0.1f) {
+			mPlayer.move(vNewPos.x - mPlayer.getPosition().x); // FIXME, used only
 			// for foot
 			// animation
 		}
@@ -47,8 +46,8 @@ public class Game implements RenderListener {
 		mPlayer.setAttribute(Attribute.POSITION, vNewPos);
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
-			mWalls.add(new Rectangle(mPlayer.getPos().x() + 65, mPlayer
-					.getPos().y(), 30, 90));
+			mWalls.add(new Rectangle(mPlayer.getPosition().x() + 65, mPlayer
+					.getPosition().y(), 30, 90));
 			Input.getInstance().setKeyUp(KeyEvent.VK_SPACE);
 		}
 
@@ -70,7 +69,7 @@ public class Game implements RenderListener {
 		}
 
 		/* FIXME: move these lines */
-		renderer.centerAround(mPlayer.getPos());
+		renderer.centerAround(mPlayer.getPosition());
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_F1))
 		{
