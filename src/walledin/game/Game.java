@@ -26,28 +26,9 @@ public class Game implements RenderListener {
 	private List<Rectangle> mWalls;
 
 	public void update(final double delta) {
-		final float moveSpeed = 4.0f;
-		final Vector2f gravity = new Vector2f(0, 2.0f);
-
-		Vector2f vNewPos = mPlayer.getPos();
-
-		vNewPos = vNewPos.add(gravity); // do gravity
-
-		if (Input.getInstance().keyDown(KeyEvent.VK_RIGHT)) {
-			vNewPos.x += moveSpeed;
-		}
-
-		if (Input.getInstance().keyDown(KeyEvent.VK_LEFT)) {
-			vNewPos.x -= moveSpeed;
-		}
-
-		if (Input.getInstance().keyDown(KeyEvent.VK_UP)) {
-			vNewPos.y -= moveSpeed;
-		}
-
-		if (Input.getInstance().keyDown(KeyEvent.VK_DOWN)) {
-			vNewPos.y += moveSpeed;
-		}
+		mPlayer.sendUpdate(delta);
+		
+		Vector2f vNewPos = mPlayer.getAttribute(Attribute.POSITION);
 
 		/* Do very basic collision detection */
 		for (int i = 0; i < mWalls.size(); i++) {
@@ -58,7 +39,7 @@ public class Game implements RenderListener {
 		}
 		/* Update player position */
 		if (Math.abs(vNewPos.x - mPlayer.getPos().x) > 0.1f) {
-			mPlayer.Move(vNewPos.x - mPlayer.getPos().x); // FIXME, used only
+			mPlayer.move(vNewPos.x - mPlayer.getPos().x); // FIXME, used only
 			// for foot
 			// animation
 		}
@@ -113,7 +94,7 @@ public class Game implements RenderListener {
 		mMapIO = new GameMapIOXML(); // choose XML as format
 		mMap = mMapIO.readFromFile("data/map.xml"); // create map
 
-		mPlayer = new Player("player");
+		mPlayer = new Player("Player01","player");
 		mPlayer.setAttribute(Attribute.POSITION, new Vector2f(10, 10));
 		
 		mWalls = new ArrayList<Rectangle>();

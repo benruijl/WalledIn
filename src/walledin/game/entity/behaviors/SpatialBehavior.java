@@ -6,8 +6,8 @@ import walledin.game.entity.Behavior;
 import walledin.game.entity.MessageType;
 
 public class SpatialBehavior extends Behavior {
-	Vector2f pos;
-	Vector2f velocity;
+	private Vector2f pos;
+	private Vector2f velocity;
 
 	@Override
 	public void onMessage(MessageType messageType, Object data) {
@@ -29,6 +29,10 @@ public class SpatialBehavior extends Behavior {
 	public void onUpdate(double delta) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public Vector2f getPosition() {
+		return pos;
 	}
 
 }

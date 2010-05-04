@@ -3,17 +3,17 @@ package walledin.game;
 import walledin.engine.Renderer;
 
 public class Main {
-	private final Game mGame;
+	private final Game game;
 	private final Renderer renderer;
 
 	public Main() {
 		renderer = new Renderer();
-		mGame = new Game();
+		game = new Game();
 	}
 
 	public void run() {
 		renderer.initialize("WalledIn");
-		renderer.addListener(mGame);
+		renderer.addListener(game);
 		renderer.beginLoop();
 	}
 
