@@ -3,11 +3,18 @@ package walledin.game.entity.behaviors;
 import walledin.engine.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
+import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class SpatialBehavior extends Behavior {
 	private Vector2f position;
 	private Vector2f velocity;
+	
+	public SpatialBehavior(Entity owner)
+	{
+		super(owner);
+		setAttribute(Attribute.POSITION, new Vector2f());
+	}
 
 	@Override
 	public void onMessage(MessageType messageType, Object data) {

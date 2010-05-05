@@ -36,13 +36,7 @@ public class Game implements RenderListener {
 				vNewPos = mPlayer.getPosition(); // do no update
 			}
 		}
-		/* Update player position */
-		if (Math.abs(vNewPos.x - mPlayer.getPosition().x) > 0.1f) {
-			mPlayer.move(vNewPos.x - mPlayer.getPosition().x); // FIXME, used only
-			// for foot
-			// animation
-		}
-		
+				
 		mPlayer.setAttribute(Attribute.POSITION, vNewPos);
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {

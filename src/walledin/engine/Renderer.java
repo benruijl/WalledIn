@@ -144,7 +144,7 @@ public class Renderer implements GLEventListener {
 		lastUpdate = currentTime;
 		
 		if (mEvListener != null) {
-			mEvListener.update(delta); // FIXME, use real delta time
+			mEvListener.update(delta); // TODO: verify if delta is correct
 
 			beginDraw();
 			mEvListener.draw(this); // draw the frame

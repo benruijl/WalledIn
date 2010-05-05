@@ -4,14 +4,19 @@ import walledin.engine.Rectangle;
 import walledin.engine.Renderer;
 import walledin.engine.Vector2f;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class RenderPlayerBehavior extends RenderBehavior {
 	private final String texture;
 	private Vector2f pos;
+	private Vector2f scale;
 
-	public RenderPlayerBehavior(String texture) {
+	public RenderPlayerBehavior(Entity owner, String texture) {
+		super(owner);
 		this.texture = texture;
+
+		scale = new Vector2f(0.5f, 0.5f); // standard scale
 	}
 
 	private void render(Renderer renderer) {
@@ -20,17 +25,19 @@ public class RenderPlayerBehavior extends RenderBehavior {
 		pos = getOwner().getAttribute(Attribute.POSITION);
 		renderer.translate(pos);
 
-		/*
-		 * renderer.scale(new Vector2f(fScale, fScale)); if (!facingRight) {
-		 * renderer.scale(new Vector2f(-1, 1)); }
-		 */
+		renderer.scale(scale);
 
-		float footPos = 0.0f;
+		if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
+			renderer.scale(new Vector2f(-1, 1));
+		}
+
+		float footPos = getAttribute(Attribute.WALKANIMFRAME);
 
 		renderer.drawRect(texture, new Rectangle(96 / 256.0f, 0, 96 / 256.0f,
 				96 / 128.0f), new Rectangle(0, 0, 96, 96)); // render background
-		renderer.drawRect(texture, new Rectangle(0, 0, 96 / 256.0f,
-				96 / 128.0f), new Rectangle(0, 0, 96, 96)); // draw body
+		renderer.drawRect(texture,
+				new Rectangle(0, 0, 96 / 256.0f, 96 / 128.0f), new Rectangle(0,
+						0, 96, 96)); // draw body
 		renderer.drawRect(texture, new Rectangle(70 / 256.0f, 96 / 128.0f,
 				20 / 256.0f, 32 / 128.0f), new Rectangle(45, 30, 20, 32)); // eyes
 		renderer.drawRect(texture, new Rectangle(70 / 256.0f, 96 / 128.0f,

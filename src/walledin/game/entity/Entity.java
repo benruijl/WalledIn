@@ -35,7 +35,6 @@ public class Entity {
 					+ "] already contains Component of class: "
 					+ behavior.getClass().getName());
 		}
-		behavior.setOwner(this);
 		behaviors.put(clazz, behavior);
 	}
 
@@ -51,7 +50,13 @@ public class Entity {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Behavior> T getBehavior(Class<T> clazz) {
-		return (T) behaviors.get(clazz);
+		T beh = (T) behaviors.get(clazz);
+
+		if (beh != null)
+			return beh;
+		else
+			throw new IllegalArgumentException("Object " + name
+					+ " does not have behaviour of class " + clazz.getName());
 	}
 
 	/**
@@ -65,8 +70,15 @@ public class Entity {
 	 *             if the class you asked for is not the class specified in
 	 *             attribute
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> T getAttribute(Attribute attribute) {
-		return (T) attributes.get(attribute);
+		T att = (T) attributes.get(attribute);
+
+		if (att != null)
+			return att;
+		else
+			throw new IllegalArgumentException("Object " + name
+					+ " does not have attribute " + attribute.name());
 	}
 
 	/**
@@ -81,6 +93,7 @@ public class Entity {
 	 *             if the newObect is not of the class specified in the
 	 *             attribute
 	 */
+	@SuppressWarnings("unchecked")
 	public <T> T setAttribute(Attribute attribute, T newObject) {
 		if (attribute.clazz.isInstance(newObject)) {
 			T result = (T) attributes.put(attribute, newObject);
@@ -101,7 +114,6 @@ public class Entity {
 	 */
 	public Behavior removeBehavior(Class<? extends Behavior> clazz) {
 		Behavior behavior = behaviors.remove(clazz);
-		behavior.detachFromOwner();
 		return behavior;
 	}
 

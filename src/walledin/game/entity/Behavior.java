@@ -1,37 +1,17 @@
 package walledin.game.entity;
 
 /**
- * Base behavior class. Subclasses define specifiek behavior of its owner.
+ * Base behavior class. Subclasses define specific behavior of its owner.
  * 
  * @author wouter
  * 
  */
 public abstract class Behavior {
 	private Entity owner;
-
-	/**
-	 * Sets the owner of the entity. This should only be called by the Entity
-	 * class
-	 * 
-	 * @param owner
-	 *            The entity that owns this behavior instance
-	 * @throws IllegalArgumentException
-	 *             thrown when the behavior is already owned by another entity
-	 */
-	public void setOwner(Entity owner) {
-		if (this.owner != null) {
-			throw new IllegalArgumentException(
-					"Cannot set owner before detaching");
-		}
+	
+	public Behavior(Entity owner)
+	{
 		this.owner = owner;
-	}
-
-	/**
-	 * Detaches from owner. This method should only be called from the Entity
-	 * class
-	 */
-	public void detachFromOwner() {
-		this.owner = null;
 	}
 
 	/**

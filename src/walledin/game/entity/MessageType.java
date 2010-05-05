@@ -8,5 +8,6 @@ package walledin.game.entity;
  */
 public enum MessageType {
 	RENDER,
-	ATTRIBUTE_SET;
+	ATTRIBUTE_SET,
+	WALKED;
 }
