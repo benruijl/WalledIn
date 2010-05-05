@@ -15,6 +15,8 @@ import com.sun.opengl.util.texture.TextureIO;
  * @author ben
  */
 public class TextureManager extends ResourceManager<String, Texture> {
+	private final static Logger LOG = Logger.getLogger(TextureManager.class
+			.getName());
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
@@ -65,11 +67,9 @@ public class TextureManager extends ResourceManager<String, Texture> {
 			return true;
 
 		} catch (final IOException ex) {
-			Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE,
-					null, ex);
+			LOG.log(Level.SEVERE, null, ex);
 		} catch (final GLException ex) {
-			Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE,
-					null, ex);
+			LOG.log(Level.SEVERE, null, ex);
 		}
 
 		return false;
@@ -102,9 +102,7 @@ public class TextureManager extends ResourceManager<String, Texture> {
 	 * 
 	 * renderer.linkTexture(tex); insert(strTexID, tex);
 	 * 
-	 * } catch (IOException ex) {
-	 * Logger.getLogger(TextureManager.class.getName()).log(Level.SEVERE, null,
-	 * ex); }
+	 * } catch (IOException ex) { LOG.log(Level.SEVERE, null, ex); }
 	 * 
 	 * return true;
 	 * 

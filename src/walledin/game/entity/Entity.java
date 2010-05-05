@@ -2,8 +2,10 @@ package walledin.game.entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class Entity {
+	private final static Logger LOG = Logger.getLogger(Entity.class.getName());
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
 	private final Map<Attribute, Object> attributes;
 	private final String name;
@@ -52,11 +54,12 @@ public class Entity {
 	public <T extends Behavior> T getBehavior(Class<T> clazz) {
 		T beh = (T) behaviors.get(clazz);
 
-		if (beh != null)
+		if (beh != null) {
 			return beh;
-		else
+		} else {
 			throw new IllegalArgumentException("Object " + name
 					+ " does not have behaviour of class " + clazz.getName());
+		}
 	}
 
 	/**
@@ -74,11 +77,12 @@ public class Entity {
 	public <T> T getAttribute(Attribute attribute) {
 		T att = (T) attributes.get(attribute);
 
-		if (att != null)
+		if (att != null) {
 			return att;
-		else
+		} else {
 			throw new IllegalArgumentException("Object " + name
 					+ " does not have attribute " + attribute.name());
+		}
 	}
 
 	/**
@@ -96,6 +100,10 @@ public class Entity {
 	@SuppressWarnings("unchecked")
 	public <T> T setAttribute(Attribute attribute, T newObject) {
 		if (attribute.clazz.isInstance(newObject)) {
+			if (newObject == null) {
+				LOG.warning("Storing null value for attribute " + attribute
+						+ " of entity " + name);
+			}
 			T result = (T) attributes.put(attribute, newObject);
 			sendMessage(MessageType.ATTRIBUTE_SET, attribute);
 			return result;
