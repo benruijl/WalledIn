@@ -255,6 +255,10 @@ public class Renderer implements GLEventListener {
 			gl.glEnable(GL.GL_BLEND);
 			gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
 			gl.glEnable(GL.GL_TEXTURE_2D);
+			
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+
 
 			mEvListener.init();
 

@@ -28,9 +28,9 @@ public class Tile {
 	 * set
 	 */
 	private void updateRect() { // FIXME: hardcoded
-		mRect = new Rectangle(tileNumber % 16 * 64.0f / 1024.0f,
-				tileNumber / 16 * 64.0f / 1024.0f, 64.0f / 1024.0f,
-				64.0f / 1024.0f);
+		mRect = new Rectangle(tileNumber % 16 * 64.000f / 1024.000f + 1.000f / 1024.000f, tileNumber / 16 * 64.000f / 1024.000f  + 1.000f / 1024.000f,
+				64.000f / 1024.000f - 2.000f / 1024.000f,
+				64.000f / 1024.000f - 2.000f / 1024.000f); // the offset changes fixes off-by-one errors
 	}
 
 }

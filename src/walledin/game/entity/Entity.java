@@ -52,14 +52,12 @@ public class Entity {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Behavior> T getBehavior(Class<T> clazz) {
-		T beh = (T) behaviors.get(clazz);
-
-		if (beh != null) {
-			return beh;
-		} else {
+		if (!behaviors.containsKey(clazz))
 			throw new IllegalArgumentException("Object " + name
 					+ " does not have behaviour of class " + clazz.getName());
-		}
+
+		T beh = (T) behaviors.get(clazz);
+		return beh;
 	}
 
 	/**
@@ -75,14 +73,12 @@ public class Entity {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T getAttribute(Attribute attribute) {
-		T att = (T) attributes.get(attribute);
-
-		if (att != null) {
-			return att;
-		} else {
+		if (!attributes.containsKey(attribute))
 			throw new IllegalArgumentException("Object " + name
 					+ " does not have attribute " + attribute.name());
-		}
+
+		T att = (T) attributes.get(attribute);
+		return att;
 	}
 
 	/**
