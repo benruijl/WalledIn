@@ -1,12 +1,17 @@
 package walledin.game.entity;
 
 import walledin.engine.Vector2f;
+import walledin.game.Tile;
 
 public enum Attribute {
 	POSITION(Vector2f.class),
 	VELOCITY(Vector2f.class),
 	ORIENTATION(Integer.class),
-	WALKANIMFRAME(Float.class);
+	WALK_ANIM_FRAME(Float.class),
+	NAME(String.class),
+	WIDTH(Integer.class),
+	HEIGHT(Integer.class),
+	TILES(Tile.class);
 
 	public final Class<?> clazz;
 

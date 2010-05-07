@@ -18,7 +18,6 @@ import walledin.game.entity.MessageType;
  * @author ben
  */
 public class Game implements RenderListener {
-	private float fX;
 	private GameMapIO mMapIO;
 	private GameMap mMap;
 	private Player mPlayer;
@@ -48,13 +47,9 @@ public class Game implements RenderListener {
 	}
 
 	public void draw(final Renderer renderer) {
-		renderer.drawRect("sun", new Rectangle(60, 60, 64, 64)); // draw
-		// background
+		renderer.drawRect("sun", new Rectangle(60, 60, 64, 64));
 
-		if (mMap != null) {
-			mMap.draw(renderer);
-		}
-
+		mMap.sendMessage(MessageType.RENDER, renderer); // render map
 		mPlayer.sendMessage(MessageType.RENDER, renderer); // render player
 
 		for (int i = 0; i < mWalls.size(); i++) {

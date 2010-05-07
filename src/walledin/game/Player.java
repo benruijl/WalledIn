@@ -4,7 +4,6 @@ import walledin.engine.Rectangle;
 import walledin.engine.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.behaviors.AnimationBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.RenderPlayerBehavior;

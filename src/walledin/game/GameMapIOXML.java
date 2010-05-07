@@ -85,7 +85,9 @@ public class GameMapIOXML implements GameMapIO {
 		while (st.hasMoreTokens()) {
 			final String s = st.nextToken();
 
-			til.add(new Tile(Integer.parseInt(s)));
+			// FIXME: expand the XML file so that it reads information about the
+			// tile texture
+			til.add(new Tile(Integer.parseInt(s), 16, 64, 64, 1024, 1024, false));
 		}
 
 		return til.toArray(new Tile[0]);

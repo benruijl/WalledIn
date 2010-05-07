@@ -11,7 +11,7 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 	public PlayerAnimationBehavior(Entity owner)
 	{
 		super(owner);
-		setAttribute(Attribute.WALKANIMFRAME, new Float(0));
+		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
 		animSpeed = 0.6f;
 	}
 	
@@ -21,7 +21,7 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 		{
 			walkAnimFrame += animSpeed;
 			walkAnimFrame %= 2 * Math.PI;
-			setAttribute(Attribute.WALKANIMFRAME, new Float(walkAnimFrame));
+			setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
 		}
 
 	}

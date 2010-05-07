@@ -3,34 +3,40 @@ package walledin.game;
 import walledin.engine.Rectangle;
 
 /**
+ * This class keeps track of information of a single tile in a map. It stores
+ * whether the tile is solid and the texture rectangle for example.
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public class Tile {
 	private final int tileNumber;
-	private Rectangle mRect;
+	private Rectangle texRect;
+	private boolean solid;
 
-	public Tile(final int tileNumber) {
+	public Tile(final int tileNumber, final int tileNumPerLine,
+			final int tileWidth, final int tileHeight, final int texWidth,
+			final int texHeight, boolean solid) {
+
 		this.tileNumber = tileNumber;
-		updateRect();
+		this.solid = solid;
+
+		// the offset fixes off-by-one errors
+		this.texRect = new Rectangle((tileNumber % 16 * tileWidth + 1.000f)
+				/ texWidth,
+				(tileNumber / 16 * tileHeight + 1.000f) / texHeight,
+				(tileWidth - 2.000f) / texWidth, (tileHeight - 2.000f)
+						/ texHeight);
 	}
 
 	public int getTileNumber() {
 		return tileNumber;
 	}
 
-	public Rectangle getRect() {
-		return mRect;
+	public boolean isSolid() {
+		return solid;
 	}
 
-	/**
-	 * An update of the texture rectangle is required when the tile number is
-	 * set
-	 */
-	private void updateRect() { // FIXME: hardcoded
-		mRect = new Rectangle(tileNumber % 16 * 64.000f / 1024.000f + 1.000f / 1024.000f, tileNumber / 16 * 64.000f / 1024.000f  + 1.000f / 1024.000f,
-				64.000f / 1024.000f - 2.000f / 1024.000f,
-				64.000f / 1024.000f - 2.000f / 1024.000f); // the offset changes fixes off-by-one errors
+	public Rectangle getTexRect() {
+		return texRect;
 	}
-
 }

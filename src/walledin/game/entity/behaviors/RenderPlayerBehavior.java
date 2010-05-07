@@ -31,7 +31,7 @@ public class RenderPlayerBehavior extends RenderBehavior {
 			renderer.scale(new Vector2f(-1, 1));
 		}
 
-		float footPos = getAttribute(Attribute.WALKANIMFRAME);
+		float footPos = getAttribute(Attribute.WALK_ANIM_FRAME);
 
 		renderer.drawRect(texture, new Rectangle(96 / 256.0f, 0, 96 / 256.0f,
 				96 / 128.0f), new Rectangle(0, 0, 96, 96)); // render background
