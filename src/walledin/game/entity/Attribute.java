@@ -1,5 +1,6 @@
 package walledin.game.entity;
 
+import walledin.engine.Rectangle;
 import walledin.engine.Vector2f;
 import walledin.game.Tile;
 
@@ -11,7 +12,8 @@ public enum Attribute {
 	NAME(String.class),
 	WIDTH(Integer.class),
 	HEIGHT(Integer.class),
-	TILES(Tile.class);
+	TILES(Tile.class),
+	BOUNDING_BOX(Rectangle.class);
 
 	public final Class<?> clazz;
 
