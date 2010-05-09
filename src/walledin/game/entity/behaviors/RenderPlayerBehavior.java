@@ -1,8 +1,9 @@
 package walledin.game.entity.behaviors;
 
 import walledin.engine.Renderer;
-import walledin.engine.math.Rectangle;
+import walledin.engine.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -13,7 +14,7 @@ public class RenderPlayerBehavior extends RenderBehavior {
 	private Vector2f scale;
 
 	public RenderPlayerBehavior(Entity owner, String texture) {
-		super(owner);
+		super(owner, ZValues.PLAYER);
 		this.texture = texture;
 
 		scale = new Vector2f(0.5f, 0.5f); // standard scale
@@ -28,6 +29,7 @@ public class RenderPlayerBehavior extends RenderBehavior {
 		renderer.scale(scale);
 
 		if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
+			renderer.translate(new Vector2f(scale.x() * 96 * 2, 0));
 			renderer.scale(new Vector2f(-1, 1));
 		}
 

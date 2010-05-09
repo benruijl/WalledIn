@@ -3,6 +3,7 @@ package walledin.game.entity.behaviors;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.game.Tile;
+import walledin.game.ZValues;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
@@ -16,7 +17,7 @@ public class MapRenderBehavior extends RenderBehavior {
 
 	public MapRenderBehavior(Entity owner, String texture, int width,
 			int height, Tile[] tiles) {
-		super(owner);
+		super(owner, ZValues.MAP); 
 
 		this.texture = texture;
 		this.width = width;

@@ -1,5 +1,7 @@
 package walledin.game.entity.behaviors;
 
+import walledin.game.ZValues;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -8,9 +10,10 @@ import walledin.game.entity.MessageType;
 public class RenderBehavior extends Behavior {
 	
 
-	public RenderBehavior(Entity owner) {
+	public RenderBehavior(Entity owner, ZValues z) {
 		super(owner);
-		// TODO Auto-generated constructor stub
+		
+		setAttribute(Attribute.Z_INDEX, z.z);
 	}
 
 	@Override
