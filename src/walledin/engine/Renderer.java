@@ -13,6 +13,11 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
+import walledin.engine.math.Matrix2f;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
+import walledin.engine.math.Vector2i;
+
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
 import com.sun.opengl.util.texture.Texture;
@@ -178,13 +183,13 @@ public class Renderer implements GLEventListener {
 
 		gl.glBegin(GL.GL_QUADS);
 		gl.glTexCoord2f(0.0f, 0.0f);
-		gl.glVertex2f(destRect.left(), destRect.top());
+		gl.glVertex2f(destRect.getLeft(), destRect.getTop());
 		gl.glTexCoord2f(0.0f, 1.0f);
-		gl.glVertex2f(destRect.left(), destRect.bottom());
+		gl.glVertex2f(destRect.getLeft(), destRect.getBottom());
 		gl.glTexCoord2f(1.0f, 1.0f);
-		gl.glVertex2f(destRect.right(), destRect.bottom());
+		gl.glVertex2f(destRect.getRight(), destRect.getBottom());
 		gl.glTexCoord2f(1.0f, 0.0f);
-		gl.glVertex2f(destRect.right(), destRect.top());
+		gl.glVertex2f(destRect.getRight(), destRect.getTop());
 		gl.glEnd();
 	}
 
@@ -206,14 +211,14 @@ public class Renderer implements GLEventListener {
 		tex.bind();
 
 		gl.glBegin(GL.GL_QUADS);
-		gl.glTexCoord2f(texRect.left(), texRect.top());
-		gl.glVertex2f(destRect.left(), destRect.top());
-		gl.glTexCoord2f(texRect.left(), texRect.bottom());
-		gl.glVertex2f(destRect.left(), destRect.bottom());
-		gl.glTexCoord2f(texRect.right(), texRect.bottom());
-		gl.glVertex2f(destRect.right(), destRect.bottom());
-		gl.glTexCoord2f(texRect.right(), texRect.top());
-		gl.glVertex2f(destRect.right(), destRect.top());
+		gl.glTexCoord2f(texRect.getLeft(), texRect.getTop());
+		gl.glVertex2f(destRect.getLeft(), destRect.getTop());
+		gl.glTexCoord2f(texRect.getLeft(), texRect.getBottom());
+		gl.glVertex2f(destRect.getLeft(), destRect.getBottom());
+		gl.glTexCoord2f(texRect.getRight(), texRect.getBottom());
+		gl.glVertex2f(destRect.getRight(), destRect.getBottom());
+		gl.glTexCoord2f(texRect.getRight(), texRect.getTop());
+		gl.glVertex2f(destRect.getRight(), destRect.getTop());
 		gl.glEnd();
 	}
 
@@ -231,7 +236,7 @@ public class Renderer implements GLEventListener {
 	public void drawRect(final String strTex, final Rectangle texRect,
 			final Vector2f vPos) {
 		drawRect(strTex, texRect, new Rectangle(vPos.x(), vPos.y(), texRect
-				.width(), texRect.height()));
+				.getWidth(), texRect.getHeight()));
 	}
 
 	private void beginDraw() {
@@ -343,10 +348,10 @@ public class Renderer implements GLEventListener {
 
 		final Matrix2f mMat = new Matrix2f(mvmat[0], mvmat[1], mvmat[4],
 				mvmat[5]);
-		final Vector2f vNew = mMat.apply(rect.leftTop());
+		final Vector2f vNew = mMat.apply(rect.getLeftTop());
 
-		return !(mvmat[12] + vNew.x() > mWidth || mvmat[12] + rect.right() < 0
-				|| mvmat[13] + vNew.y() > mHeight || mvmat[13] + rect.bottom() < 0);
+		return !(mvmat[12] + vNew.x() > mWidth || mvmat[12] + rect.getRight() < 0
+				|| mvmat[13] + vNew.y() > mHeight || mvmat[13] + rect.getBottom() < 0);
 	}
 
 	/**

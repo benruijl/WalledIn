@@ -6,6 +6,7 @@ package walledin.engine;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * A generic resource manager.
@@ -13,27 +14,29 @@ import java.util.Map;
  * @author ben
  */
 public class ResourceManager<U, T> {
-	private final Map<U, T> mResList;
+	private final static Logger LOG = Logger.getLogger(ResourceManager.class
+			.getName());
+	private final Map<U, T> resources;
 
 	public ResourceManager() {
-		mResList = new HashMap<U, T>();
+		resources = new HashMap<U, T>();
 	}
 
-	boolean insert(final U key, final T value) {
-		if (mResList.containsKey(key)) {
-			System.err.print("Key " + key.toString() + "already exists");
+	protected boolean put(final U key, final T value) {
+		if (resources.containsKey(key)) {
+			LOG.warning("Key " + key.toString() + "already exists");
 			return false;
 		}
 
-		mResList.put(key, value);
+		resources.put(key, value);
 		return true;
 	}
 
-	Integer count() {
-		return mResList.size();
+	protected int getCount() {
+		return resources.size();
 	}
 
-	T get(final U key) {
-		return mResList.get(key);
+	protected T get(final U key) {
+		return resources.get(key);
 	}
 }

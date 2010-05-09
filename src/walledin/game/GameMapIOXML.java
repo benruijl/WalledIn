@@ -69,7 +69,7 @@ public class GameMapIOXML implements GameMapIO {
 		final int height = getIntValue(mapElement, "Height");
 		final Tile[] tiles = parseTiles(mapElement, "Tiles");
 
-		final String texRes = TextureManager.getInstance().LoadFromFile(tex);
+		final String texRes = TextureManager.getInstance().loadFromFile(tex);
 
 		final GameMap m = new GameMap(name, texRes, width, height, tiles);
 

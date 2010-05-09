@@ -1,7 +1,7 @@
 package walledin.game.entity;
 
-import walledin.engine.Rectangle;
-import walledin.engine.Vector2f;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 import walledin.game.Tile;
 
 public enum Attribute {
