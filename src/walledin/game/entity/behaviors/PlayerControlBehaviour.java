@@ -44,7 +44,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 			y += MOVE_SPEED;
 		}
 		
-		velocity.add(new Vector2f(x,y));
+		velocity = velocity.add(new Vector2f(x,y));
 		
 		setAttribute(Attribute.VELOCITY, velocity);
 		super.onUpdate(delta);

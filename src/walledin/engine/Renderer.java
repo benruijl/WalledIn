@@ -75,9 +75,9 @@ public class Renderer implements GLEventListener {
 		win.setVisible(true);
 
 		mCanvas.requestFocus();
-		
+
 		isFirstRun = true;
-		
+
 		lastUpdate = System.nanoTime();
 	}
 
@@ -85,8 +85,8 @@ public class Renderer implements GLEventListener {
 	 * Toggle between windowed mode and full screen mode.
 	 * 
 	 * FIXME: this function works, but as the window is recreated in dispose(),
-	 * so is the GLcanvas. This means the init function is run, so resources
-	 * are loaded again.
+	 * so is the GLcanvas. This means the init function is run, so resources are
+	 * loaded again.
 	 */
 	public void toggleFullScreen() {
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
@@ -144,10 +144,10 @@ public class Renderer implements GLEventListener {
 
 		long currentTime = System.nanoTime();
 		double delta = currentTime - lastUpdate;
-		 // Delta is in seconds. 10^9 nanoseconds per second
+		// Delta is in seconds. 10^9 nanoseconds per second
 		delta /= 1000 * 1000 * 1000;
 		lastUpdate = currentTime;
-		
+
 		if (mEvListener != null) {
 			mEvListener.update(delta); // TODO: verify if delta is correct
 
@@ -166,7 +166,6 @@ public class Renderer implements GLEventListener {
 	public void drawRect(final String strTex) {
 		final Texture tex = TextureManager.getInstance().get(strTex);
 		drawRect(strTex, new Rectangle(0, 0, tex.getWidth(), tex.getHeight()));
-
 	}
 
 	/**
@@ -207,8 +206,24 @@ public class Renderer implements GLEventListener {
 	public void drawRect(final String strTex, final Rectangle texRect,
 			final Rectangle destRect) {
 
-		final Texture tex = TextureManager.getInstance().get(strTex);
-		tex.bind();
+		final Texture texture = TextureManager.getInstance().get(strTex);
+		drawRect(texture, texRect, destRect);
+	}
+
+	/**
+	 * Draws a textured rectangle to the screen. Assumes textures are enabled.
+	 * 
+	 * @param texture
+	 *            The Texture
+	 * @param texRect
+	 *            Specifies the subtexture
+	 * @param destRect
+	 *            Specifies the destination on the screen. It can be used to
+	 *            scale and translate the image.
+	 */
+	public void drawRect(final Texture texture, final Rectangle texRect,
+			final Rectangle destRect) {
+		texture.bind();
 
 		gl.glBegin(GL.GL_QUADS);
 		gl.glTexCoord2f(texRect.getLeft(), texRect.getTop());
@@ -220,6 +235,21 @@ public class Renderer implements GLEventListener {
 		gl.glTexCoord2f(texRect.getRight(), texRect.getTop());
 		gl.glVertex2f(destRect.getRight(), destRect.getTop());
 		gl.glEnd();
+	}
+
+	/**
+	 * Draws a textured rectangle to the screen. Assumes textures are enabled.
+	 * 
+	 * @param texturePartID
+	 *            The name of the texture part that has to be drawn.
+	 * @param destination
+	 *            Specifies the destination on the screen. It can be used to
+	 *            scale and translate the image.
+	 */
+	public void drawTexturePart(final String texturePartID,
+			final Rectangle destination) {
+		TexturePart part = TexturePartManager.getInstance().get(texturePartID);
+		drawRect(part.getTexture(), part.getRectangle(), destination);
 	}
 
 	/**
@@ -235,8 +265,8 @@ public class Renderer implements GLEventListener {
 	 */
 	public void drawRect(final String strTex, final Rectangle texRect,
 			final Vector2f vPos) {
-		drawRect(strTex, texRect, new Rectangle(vPos.getX(), vPos.getY(), texRect
-				.getWidth(), texRect.getHeight()));
+		drawRect(strTex, texRect, new Rectangle(vPos.getX(), vPos.getY(),
+				texRect.getWidth(), texRect.getHeight()));
 	}
 
 	private void beginDraw() {
@@ -255,19 +285,18 @@ public class Renderer implements GLEventListener {
 	public void init(final GLAutoDrawable glDrawable) {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
-			
-			gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue
-			gl.glEnable(GL.GL_BLEND);
-			gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
-			gl.glEnable(GL.GL_TEXTURE_2D);
-			
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
-			gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
 
+		gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue
+		gl.glEnable(GL.GL_BLEND);
+		gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL.GL_TEXTURE_2D);
 
-			mEvListener.init();
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
 
-			mCam = new Camera();
+		mEvListener.init();
+
+		mCam = new Camera();
 	}
 
 	public void reshape(final GLAutoDrawable glDrawable, final int x,
@@ -350,8 +379,10 @@ public class Renderer implements GLEventListener {
 				mvmat[5]);
 		final Vector2f vNew = mMat.apply(rect.getLeftTop());
 
-		return !(mvmat[12] + vNew.getX() > mWidth || mvmat[12] + rect.getRight() < 0
-				|| mvmat[13] + vNew.getY() > mHeight || mvmat[13] + rect.getBottom() < 0);
+		return !(mvmat[12] + vNew.getX() > mWidth
+				|| mvmat[12] + rect.getRight() < 0
+				|| mvmat[13] + vNew.getY() > mHeight || mvmat[13]
+				+ rect.getBottom() < 0);
 	}
 
 	/**
@@ -375,7 +406,7 @@ public class Renderer implements GLEventListener {
 		float fInvDet = 1.0f / (fSXY * fSXZ);
 
 		vRes = vRes.scale(fInvDet * fSYZ);
-		
+
 		return vRes;
 	}
 

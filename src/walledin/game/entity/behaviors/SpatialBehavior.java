@@ -34,7 +34,7 @@ public class SpatialBehavior extends Behavior {
 	@Override
 	public void onUpdate(double delta) {
 		Vector2f scaledVelocity = new Vector2f(velocity);
-		scaledVelocity.scale((float) delta);
+		scaledVelocity = scaledVelocity.scale((float) delta);
 		position = position.add(scaledVelocity);
 		setAttribute(Attribute.POSITION, position);
 	}

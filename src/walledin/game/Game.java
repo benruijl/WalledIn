@@ -10,11 +10,11 @@ import walledin.engine.Input;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
+import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.MessageType;
 
 /**
  * 
@@ -40,7 +40,9 @@ public class Game implements RenderListener {
 				Attribute.POSITION);
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
-			walls.add(new Rectangle(vNewPos.getX() + 65, vNewPos.getY(), 30, 90));
+			walls
+					.add(new Rectangle(vNewPos.getX() + 65, vNewPos.getY(), 30,
+							90));
 			Input.getInstance().setKeyUp(KeyEvent.VK_SPACE);
 		}
 
@@ -48,9 +50,9 @@ public class Game implements RenderListener {
 
 	public void draw(final Renderer renderer) {
 		renderer.drawRect("sun", new Rectangle(60, 60, 64, 64));
-		
+
 		drawOrder.draw(renderer); // draw all entities in correct order
-		
+
 		for (int i = 0; i < walls.size(); i++) {
 			renderer.drawRect("wall", new Rectangle(0.0f, 0.0f, 110 / 128.0f,
 					235 / 256.0f), walls.get(i));
@@ -72,19 +74,31 @@ public class Game implements RenderListener {
 	public void init() {
 		entities = new LinkedHashMap<String, Entity>();
 		drawOrder = new DrawOrderManager();
-		
-		TextureManager.getInstance().loadFromFile("data/tiles.png", "tiles");
-		TextureManager.getInstance().loadFromFile("data/zon.png", "sun");
-		TextureManager.getInstance().loadFromFile("data/player.png", "player");
-		TextureManager.getInstance().loadFromFile("data/wall.png", "wall");
-		TextureManager.getInstance().loadFromFile("data/game.png", "game");
 
+		loadTextures();
+		createTextureParts();
 
 		GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
-		entities.put("Player01", new Player("Player01","player"));
-		entities.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(10, 10));
+		entities.put("Player01", new Player("Player01", "player", "player_eyes"));
+		entities.get("Player01").setAttribute(Attribute.POSITION,
+				new Vector2f(10, 10));
 		drawOrder.add(entities.values()); // add to draw list
+	}
+
+	private void loadTextures() {
+		TextureManager manager = TextureManager.getInstance();
+		manager.loadFromFile("data/tiles.png", "tiles");
+		manager.loadFromFile("data/zon.png", "sun");
+		manager.loadFromFile("data/player.png", "player");
+		manager.loadFromFile("data/wall.png", "wall");
+		manager.loadFromFile("data/game.png", "game");
+	}
+
+	private void createTextureParts() {
+		TexturePartManager manager = TexturePartManager.getInstance();
+		manager.createTexturePart("player_eyes", "player", new Rectangle(
+				70 / 256.0f, 96 / 128.0f, 20 / 256.0f, 32 / 128.0f));
 	}
 }

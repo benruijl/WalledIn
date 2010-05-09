@@ -12,10 +12,12 @@ public class RenderPlayerBehavior extends RenderBehavior {
 	private final String texture;
 	private Vector2f pos;
 	private Vector2f scale;
+	private String eyesTexturePart;
 
-	public RenderPlayerBehavior(Entity owner, String texture) {
+	public RenderPlayerBehavior(Entity owner, String texture, String eyesTexturePart) {
 		super(owner, ZValues.PLAYER);
 		this.texture = texture;
+		this.eyesTexturePart = eyesTexturePart;
 
 		scale = new Vector2f(0.5f, 0.5f); // standard scale
 	}
@@ -40,10 +42,8 @@ public class RenderPlayerBehavior extends RenderBehavior {
 		renderer.drawRect(texture,
 				new Rectangle(0, 0, 96 / 256.0f, 96 / 128.0f), new Rectangle(0,
 						0, 96, 96)); // draw body
-		renderer.drawRect(texture, new Rectangle(70 / 256.0f, 96 / 128.0f,
-				20 / 256.0f, 32 / 128.0f), new Rectangle(45, 30, 20, 32)); // eyes
-		renderer.drawRect(texture, new Rectangle(70 / 256.0f, 96 / 128.0f,
-				20 / 256.0f, 32 / 128.0f), new Rectangle(55, 30, 20, 32)); // eyes
+		renderer.drawTexturePart(eyesTexturePart, new Rectangle(45, 30, 20, 32)); // eyes
+		renderer.drawTexturePart(eyesTexturePart, new Rectangle(55, 30, 20, 32)); // eyes
 
 		// render foot
 		renderer
