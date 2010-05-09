@@ -2,6 +2,7 @@ package walledin.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -10,6 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -18,17 +20,18 @@ import walledin.game.GameMap;
 import walledin.game.Tile;
 
 public class XMLReader {
-	private Document parseXmlFile(final String filename) {
+	Document dom;
+	Element root;
+
+	public boolean open(final String filename) {
 		// get the factory
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		try {
-
-			// Using factory get an instance of document builder
 			final DocumentBuilder db = dbf.newDocumentBuilder();
-
-			// parse using builder to get DOM representation of the XML file
-			return db.parse(filename);
+			dom = db.parse(filename);
+			root = dom.getDocumentElement();
+			return true;
 
 		} catch (final ParserConfigurationException pce) {
 			pce.printStackTrace();
@@ -37,57 +40,68 @@ public class XMLReader {
 		} catch (final IOException ioe) {
 			ioe.printStackTrace();
 		}
-		return null;
+		return false;
 	}
-
-	private GameMap parseDocument(Document dom) {
-		// get the root element
-		final Element docEle = dom.getDocumentElement();
-
-		final NodeList nl = docEle.getElementsByTagName("Map");
-		if (nl != null && nl.getLength() > 0) {
-			// map should only appear once
-			final Element el = (Element) nl.item(0);
-
-			// read the map data
-			final GameMap m = readData(el);
-			return m;
-		} else {
-			System.err.print("Error loading map.");
-		}
-
-		return null;
+	
+	public Element getRootElement()
+	{
+		return root;
 	}
 
 	/**
-	 * I take a xml element and the tag name, look for the tag and get the text
-	 * content i.e for <employee><name>John</name></employee> xml snippet if the
-	 * Element points to employee node and tagName is 'name' I will return John
+	 * Gets all the child elements with name <i>tag</i> of the element el.
+	 * @param el Current element
+	 * @param tag Tag name
+	 * @return List of sub-elements with name tag or null on failure
 	 */
-	private String getTextValue(final Element ele, final String tagName) {
+	public List<Element> getElements(Element el, String tag) {
+		final NodeList nl = el.getElementsByTagName(tag);
+		if (nl == null)
+			return null;
+
+		List<Element> childElements = new ArrayList<Element>();
+		
+		for (int i = 0; i < nl.getLength(); i++)
+			childElements.add((Element)nl.item(i));
+		
+		return childElements;
+	}
+
+	/**
+	 * Returns the text value of a tag in the given element.
+	 * Example:</br> XML file:<book><name>ABC</name></book>
+	 * This function will return ABC. 
+	 * @param el Current element
+	 * @param tag Tag name
+	 * @return Text of the value of tag node, or null on failure
+	 */
+	public String getTextValue(final Element el, final String tag) {
 		String textVal = null;
-		final NodeList nl = ele.getElementsByTagName(tagName);
+		final NodeList nl = el.getElementsByTagName(tag);
+		
 		if (nl != null && nl.getLength() > 0) {
-			final Element el = (Element) nl.item(0);
-			textVal = el.getFirstChild().getNodeValue();
+			final Element childEl = (Element) nl.item(0);
+			textVal = childEl.getFirstChild().getNodeValue();
 		}
 
 		return textVal;
 	}
 
 	/**
-	 * Calls getTextValue and returns a int value
+	 * Calls getTextValue and returns a integer value
+	 * @param ele Current element
+	 * @param tag Tag name
+	 * @return Integer value in tag, or null on failure
 	 */
-	private int getIntValue(final Element ele, final String tagName) {
-		// in production application you would catch the exception
+	public Integer getIntValue(final Element el, final String tag) {
 		try {
-			return Integer.parseInt(getTextValue(ele, tagName));
+			return Integer.parseInt(getTextValue(el, tag));
 		} catch (final NumberFormatException nu) {
 
-			System.err.print("Error converting to int in tag " + tagName + ": "
+			System.err.print("Error converting to int in tag " + tag + ": "
 					+ nu.getMessage());
 		}
 
-		return 0;
+		return null;
 	}
 }
