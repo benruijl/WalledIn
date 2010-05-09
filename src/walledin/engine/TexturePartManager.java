@@ -32,8 +32,10 @@ public class TexturePartManager extends ResourceManager<String, TexturePart> {
 	public boolean createTexturePart(String texturePartID, String textureID,
 			Rectangle rectangle) {
 		Texture texture = TextureManager.getInstance().get(textureID);
-		Rectangle scaledRectangle = rectangle.scaleAll(new Vector2f(texture
-				.getWidth(), texture.getHeight()));
+		float width = (float) texture.getWidth();
+		float height = (float) texture.getHeight();
+		Vector2f scale = new Vector2f(1 / width, 1 / height);
+		Rectangle scaledRectangle = rectangle.scaleAll(scale);
 		TexturePart part = new TexturePart(texture, scaledRectangle);
 		return put(texturePartID, part);
 	}
