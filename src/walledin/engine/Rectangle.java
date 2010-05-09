@@ -23,49 +23,49 @@ public class Rectangle {
 		this.height = height;
 	}
 
-	public Float left() {
+	public float getLeft() {
 		return x;
 	}
 
-	public Float top() {
+	public float getTop() {
 		return y;
 	}
 
-	public Float width() {
+	public float getWidth() {
 		return width;
 	}
 
-	public Float height() {
+	public float getHeight() {
 		return height;
 	}
 
-	public float right() {
+	public float getRight() {
 		return x + width;
 	}
 
-	public float bottom() {
+	public float getBottom() {
 		return y + height;
 	}
 
-	public Vector2f leftTop() {
+	public Vector2f getLeftTop() {
 		return new Vector2f(x, y);
 	}
 
-	public Vector2f rightTop() {
-		return new Vector2f(right(), y);
+	public Vector2f getRightTop() {
+		return new Vector2f(getRight(), y);
 	}
 
-	public Vector2f rightBottom() {
-		return new Vector2f(right(), bottom());
+	public Vector2f getRightBottom() {
+		return new Vector2f(getRight(), getBottom());
 	}
 
-	public Vector2f leftBottom() {
-		return new Vector2f(x, bottom());
+	public Vector2f getLeftBottom() {
+		return new Vector2f(x, getBottom());
 	}
 
 	public boolean intersects(final Rectangle rect) {
-		return rect.right() > left() && rect.left() < right()
-				&& rect.bottom() > top() && rect.top() < bottom();
+		return rect.getRight() > getLeft() && rect.getLeft() < getRight()
+				&& rect.getBottom() > getTop() && rect.getTop() < getBottom();
 	}
 
 	public Rectangle addOffset(final Vector2f vPos) {
