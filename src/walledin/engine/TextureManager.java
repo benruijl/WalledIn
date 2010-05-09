@@ -74,38 +74,4 @@ public class TextureManager extends ResourceManager<String, Texture> {
 
 		return false;
 	}
-
-	/*
-	 * public boolean LoadFromFile(Renderer renderer, String strFilename, String
-	 * strTexID) { try { BufferedImage img = ImageIO.read(new
-	 * File(strFilename));
-	 * 
-	 * if (img == null) { System.out.print("Could not load image " +
-	 * strFilename); return false; }
-	 * 
-	 * 
-	 * TextureOld tex = new TextureOld(); tex.mMipmap = true; tex.mWidth =
-	 * img.getWidth(); tex.mHeight = img.getHeight();
-	 * 
-	 * switch (img.getType()) { case BufferedImage.TYPE_3BYTE_BGR: case
-	 * BufferedImage.TYPE_CUSTOM: { byte[] data = ((DataBufferByte)
-	 * img.getRaster().getDataBuffer()).getData(); tex.mData =
-	 * ByteBuffer.allocateDirect(data.length);
-	 * tex.mData.order(ByteOrder.nativeOrder()); tex.mData.put(data, 0,
-	 * data.length); break; } case BufferedImage.TYPE_INT_RGB: { int[] data =
-	 * ((DataBufferInt) img.getRaster().getDataBuffer()).getData(); tex.mData =
-	 * ByteBuffer.allocateDirect(data.length * 4); // 4 for int
-	 * tex.mData.order(ByteOrder.nativeOrder());
-	 * tex.mData.asIntBuffer().put(data, 0, data.length); break; } default:
-	 * throw new RuntimeException("Unsupported image type " + img.getType()); }
-	 * 
-	 * 
-	 * renderer.linkTexture(tex); insert(strTexID, tex);
-	 * 
-	 * } catch (IOException ex) { LOG.log(Level.SEVERE, null, ex); }
-	 * 
-	 * return true;
-	 * 
-	 * }
-	 */
 }
