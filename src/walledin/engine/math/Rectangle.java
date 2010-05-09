@@ -68,7 +68,7 @@ public class Rectangle {
 				&& rect.getBottom() > getTop() && rect.getTop() < getBottom();
 	}
 
-	public Rectangle addOffset(final Vector2f vPos) {
+	public Rectangle translate(final Vector2f vPos) {
 		return new Rectangle(x + vPos.x, y + vPos.y, width, height);
 	}
 }

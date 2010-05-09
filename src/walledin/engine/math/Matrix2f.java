@@ -31,8 +31,8 @@ public class Matrix2f {
 	}
 
 	public Vector2f apply(final Vector2f vec) {
-		return new Vector2f(vec.x() * m[0] + vec.y() * m[2], vec.x() * m[1]
-				+ vec.y() * m[3]);
+		return new Vector2f(vec.getX() * m[0] + vec.getY() * m[2], vec.getX() * m[1]
+				+ vec.getY() * m[3]);
 	}
 	
 	public Matrix2f transpose() {

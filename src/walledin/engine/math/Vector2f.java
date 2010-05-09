@@ -22,11 +22,11 @@ public class Vector2f {
 		this.y = vector.y;
 	}
 
-	public float x() {
+	public float getX() {
 		return x;
 	}
 
-	public float y() {
+	public float getY() {
 		return y;
 	}
 

@@ -235,7 +235,7 @@ public class Renderer implements GLEventListener {
 	 */
 	public void drawRect(final String strTex, final Rectangle texRect,
 			final Vector2f vPos) {
-		drawRect(strTex, texRect, new Rectangle(vPos.x(), vPos.y(), texRect
+		drawRect(strTex, texRect, new Rectangle(vPos.getX(), vPos.getY(), texRect
 				.getWidth(), texRect.getHeight()));
 	}
 
@@ -303,7 +303,7 @@ public class Renderer implements GLEventListener {
 	 *            Translation vector
 	 */
 	public void translate(final Vector2f vec) {
-		gl.glTranslatef(vec.x(), vec.y(), 0);
+		gl.glTranslatef(vec.getX(), vec.getY(), 0);
 	}
 
 	/**
@@ -324,7 +324,7 @@ public class Renderer implements GLEventListener {
 	 *            Scale vector. For mirroring, use negative numbers
 	 */
 	public void scale(final Vector2f vec) {
-		gl.glScalef(vec.x(), vec.y(), 1);
+		gl.glScalef(vec.getX(), vec.getY(), 1);
 
 	}
 
@@ -350,8 +350,8 @@ public class Renderer implements GLEventListener {
 				mvmat[5]);
 		final Vector2f vNew = mMat.apply(rect.getLeftTop());
 
-		return !(mvmat[12] + vNew.x() > mWidth || mvmat[12] + rect.getRight() < 0
-				|| mvmat[13] + vNew.y() > mHeight || mvmat[13] + rect.getBottom() < 0);
+		return !(mvmat[12] + vNew.getX() > mWidth || mvmat[12] + rect.getRight() < 0
+				|| mvmat[13] + vNew.getY() > mHeight || mvmat[13] + rect.getBottom() < 0);
 	}
 
 	/**

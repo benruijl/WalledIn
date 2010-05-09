@@ -58,8 +58,7 @@ public class TextureManager extends ResourceManager<String, Texture> {
 		try {
 			final Texture texture = TextureIO.newTexture(new File(filename),
 					true);
-			put(textureID, texture);
-			return true;
+			return put(textureID, texture);
 
 		} catch (final IOException ex) {
 			LOG.log(Level.SEVERE, null, ex);
