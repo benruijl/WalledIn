@@ -10,11 +10,12 @@ package walledin.engine.math;
  * @author ben
  */
 public class Vector2i {
-	public int x;
-	public int y;
+	public final int x;
+	public final int y;
 
 	public Vector2i() {
-
+		x = 0;
+		y = 0;
 	}
 
 	public Vector2i(final int x, final int y) {

@@ -5,11 +5,12 @@ package walledin.engine.math;
  * @author ben
  */
 public class Vector2f {
-	public float x;
-	public float y;
+	public final float x;
+	public final float y;
 
 	public Vector2f() {
-
+		x = 0;
+		y = 0;
 	}
 
 	public Vector2f(final float x, final float y) {
@@ -33,7 +34,7 @@ public class Vector2f {
 	public Vector2f add(final Vector2f vec) {
 		return new Vector2f(x + vec.x, y + vec.y);
 	}
-	
+
 	public Vector2f sub(final Vector2f vec) {
 		return new Vector2f(x - vec.x, y - vec.y);
 	}
@@ -46,8 +47,7 @@ public class Vector2f {
 		return dot(this);
 	}
 
-	public void scale(float amount) {
-		x *= amount;
-		y *= amount;
+	public Vector2f scale(float amount) {
+		return new Vector2f(x * amount, y * amount);
 	}
 }

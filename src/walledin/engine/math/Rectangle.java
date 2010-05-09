@@ -9,10 +9,16 @@ package walledin.engine.math;
  * @author ben
  */
 public class Rectangle {
-
-	private float x, y, width, height;
+	private final float x;
+	private final float y;
+	private final float width;
+	private final float height;
 
 	public Rectangle() {
+		x = 0;
+		y = 0;
+		width = 0;
+		height = 0;
 	}
 
 	public Rectangle(final float x, final float y, final float width,
@@ -70,5 +76,13 @@ public class Rectangle {
 
 	public Rectangle translate(final Vector2f vPos) {
 		return new Rectangle(x + vPos.x, y + vPos.y, width, height);
+	}
+
+	public Rectangle scaleSize(final Vector2f scale) {
+		return new Rectangle(x, y, width * scale.getX(), height * scale.getY());
+	}
+
+	public Rectangle scaleAll(final Vector2f scale) {
+		return new Rectangle(x, y, width * scale.getX(), height * scale.getY());
 	}
 }

@@ -368,15 +368,14 @@ public class Renderer implements GLEventListener {
 		// Create a rotation matrix, calculate its inverse and apply the camera
 		// translation
 		final Matrix2f invRot = new Matrix2f(mCam.getRot()).transpose();
-		final Vector2f vRes = invRot.apply(fp.sub(mCam.getPos()));
+		Vector2f vRes = invRot.apply(fp.sub(mCam.getPos()));
 		float fSXZ = mCam.getScale().x;
 		float fSXY = fSXZ * mCam.getScale().y;
 		float fSYZ = 1.0f;
 		float fInvDet = 1.0f / (fSXY * fSXZ);
 
-		vRes.x *= fInvDet * fSYZ;
-		vRes.y *= fInvDet * fSXZ;
-
+		vRes = vRes.scale(fInvDet * fSYZ);
+		
 		return vRes;
 	}
 

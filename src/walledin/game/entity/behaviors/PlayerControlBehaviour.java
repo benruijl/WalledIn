@@ -22,24 +22,29 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 	@Override
 	public void onUpdate(double delta) {
 		Vector2f velocity = new Vector2f(GRAVITY); // do gravity
-
+		
+		float x = 0;
+		float y = 0;
+		
 		if (Input.getInstance().keyDown(KeyEvent.VK_RIGHT)) {
-			velocity.x += MOVE_SPEED;
+			x += MOVE_SPEED;
 			setAttribute(Attribute.ORIENTATION, new Integer(1));
 			getOwner().sendMessage(MessageType.WALKED, null);
 			
 		}
 		if (Input.getInstance().keyDown(KeyEvent.VK_LEFT)) {
-			velocity.x -= MOVE_SPEED;
+			x -= MOVE_SPEED;
 			setAttribute(Attribute.ORIENTATION, new Integer(-1));
 			getOwner().sendMessage(MessageType.WALKED, null);
 		}
 		if (Input.getInstance().keyDown(KeyEvent.VK_UP)) {
-			velocity.y -= MOVE_SPEED;
+			y -= MOVE_SPEED;
 		}
 		if (Input.getInstance().keyDown(KeyEvent.VK_DOWN)) {
-			velocity.y += MOVE_SPEED;
+			y += MOVE_SPEED;
 		}
+		
+		velocity.add(new Vector2f(x,y));
 		
 		setAttribute(Attribute.VELOCITY, velocity);
 		super.onUpdate(delta);
