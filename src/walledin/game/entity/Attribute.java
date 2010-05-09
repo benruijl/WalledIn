@@ -13,7 +13,8 @@ public enum Attribute {
 	WIDTH(Integer.class),
 	HEIGHT(Integer.class),
 	TILES(Tile.class),
-	BOUNDING_BOX(Rectangle.class);
+	BOUNDING_BOX(Rectangle.class),
+	Z_INDEX(Integer.class);
 
 	public final Class<?> clazz;
 

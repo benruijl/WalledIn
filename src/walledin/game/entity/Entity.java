@@ -20,6 +20,15 @@ public class Entity {
 		attributes = new HashMap<Attribute, Object>();
 		this.name = name;
 	}
+	
+	/**
+	 * Get the name of the entity
+	 * @return Name of the entity
+	 */
+	public String getName()
+	{
+		return name;
+	}
 
 	/**
 	 * Adds a behavior to this class
@@ -58,6 +67,18 @@ public class Entity {
 
 		T beh = (T) behaviors.get(clazz);
 		return beh;
+	}
+
+	/**
+	 * Checks if entity has a certain attribute. Useful in situations where you
+	 * want to filter some entities.
+	 * 
+	 * @param attribute
+	 *            The attribute to check
+	 * @return True if entity has attribute, else false
+	 */
+	public boolean hasAttribute(Attribute attribute) {
+		return attributes.containsKey(attribute);
 	}
 
 	/**

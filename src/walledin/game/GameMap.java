@@ -10,6 +10,16 @@ import walledin.game.entity.behaviors.MapRenderBehavior;
  * @author Ben Ruijl
  */
 public class GameMap extends Entity {
+	
+	/**
+	 * Creates a new game map
+	 * @param name Map name
+	 * @param texture Map texture
+	 * @param width Width of map
+	 * @param height Height of map
+	 * @param tiles Tile information
+	 * @param z z-index for drawing
+	 */
 	public GameMap(final String name, final String texture, final int width,
 			final int height, final Tile[] tiles) {
 		super(name);
