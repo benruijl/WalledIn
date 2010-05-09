@@ -8,7 +8,7 @@ import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.RenderPlayerBehavior;
 
 public class Player extends Entity {
-	public Player(final String name, final String texture, String eyesTexturePart) {
+	public Player(final String name) {
 		super(name);
 		
 		setAttribute(Attribute.ORIENTATION, new Integer(1)); // start looking to the right
@@ -17,7 +17,7 @@ public class Player extends Entity {
 		setAttribute(Attribute.BOUNDING_BOX, new Rectangle(0, 0, 96 * fScale, 96 * fScale));
 		
 		addBehavior(new PlayerControlBehaviour(this));
-		addBehavior(new RenderPlayerBehavior(this, texture, eyesTexturePart));
+		addBehavior(new RenderPlayerBehavior(this));
 		addBehavior(new PlayerAnimationBehavior(this));
 	}
 }

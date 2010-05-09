@@ -83,6 +83,7 @@ public class Rectangle {
 	}
 
 	public Rectangle scaleAll(final Vector2f scale) {
-		return new Rectangle(x, y, width * scale.getX(), height * scale.getY());
+		return new Rectangle(x * scale.getX(), y * scale.getY(), width
+				* scale.getX(), height * scale.getY());
 	}
 }

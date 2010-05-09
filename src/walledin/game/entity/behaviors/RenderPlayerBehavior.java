@@ -9,15 +9,20 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class RenderPlayerBehavior extends RenderBehavior {
-	private final String texture;
+	private static final Rectangle EYE_RIGHT_RECT = new Rectangle(55, 30, 20,
+			32);
+	private static final Rectangle EYE_LEFT_RECT = new Rectangle(45, 30, 20, 32);
+	private static final Rectangle BODY_RECT = new Rectangle(0, 0, 96, 96);
+	private static final String PLAYER_EYES = "player_eyes";
+	private static final String PLAYER_FOOT = "player_foot";
+	private static final String PLAYER_BACKGROUND_FOOT = "player_background_foot";
+	private static final String PLAYER_BODY = "player_body";
+	private static final String PLAYER_BACKGROUND = "player_background";
 	private Vector2f pos;
 	private Vector2f scale;
-	private String eyesTexturePart;
 
-	public RenderPlayerBehavior(Entity owner, String texture, String eyesTexturePart) {
+	public RenderPlayerBehavior(Entity owner) {
 		super(owner, ZValues.PLAYER);
-		this.texture = texture;
-		this.eyesTexturePart = eyesTexturePart;
 
 		scale = new Vector2f(0.5f, 0.5f); // standard scale
 	}
@@ -37,26 +42,16 @@ public class RenderPlayerBehavior extends RenderBehavior {
 
 		float footPos = getAttribute(Attribute.WALK_ANIM_FRAME);
 
-		renderer.drawRect(texture, new Rectangle(96 / 256.0f, 0, 96 / 256.0f,
-				96 / 128.0f), new Rectangle(0, 0, 96, 96)); // render background
-		renderer.drawRect(texture,
-				new Rectangle(0, 0, 96 / 256.0f, 96 / 128.0f), new Rectangle(0,
-						0, 96, 96)); // draw body
-		renderer.drawTexturePart(eyesTexturePart, new Rectangle(45, 30, 20, 32)); // eyes
-		renderer.drawTexturePart(eyesTexturePart, new Rectangle(55, 30, 20, 32)); // eyes
+		renderer.drawTexturePart(PLAYER_BACKGROUND, BODY_RECT);
+		renderer.drawTexturePart(PLAYER_BODY, BODY_RECT);
+		renderer.drawTexturePart(PLAYER_EYES, EYE_LEFT_RECT);
+		renderer.drawTexturePart(PLAYER_EYES, EYE_RIGHT_RECT);
 
 		// render foot
-		renderer
-				.drawRect(texture, new Rectangle(192 / 256.0f, 64 / 128.0f,
-						96 / 256.0f, 32 / 128.0f), new Rectangle(
-						(float) (java.lang.Math.cos(footPos) * 8.0 + 35.0), 60,
-						96, 32));
-
-		renderer
-				.drawRect(texture, new Rectangle(192 / 256.0f, 32 / 128.0f,
-						96 / 256.0f, 32 / 128.0f), new Rectangle(
-						(float) (java.lang.Math.cos(footPos) * 8.0 + 35.0), 60,
-						96, 32)); // foot
+		float footX = (float) (Math.cos(footPos) * 8.0 + 35.0);
+		Rectangle footRect = new Rectangle(footX, 60, 96, 32);
+		renderer.drawTexturePart(PLAYER_BACKGROUND_FOOT, footRect);
+		renderer.drawTexturePart(PLAYER_FOOT, footRect);
 
 		renderer.popMatrix();
 	}

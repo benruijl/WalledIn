@@ -81,7 +81,7 @@ public class Game implements RenderListener {
 		GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
-		entities.put("Player01", new Player("Player01", "player", "player_eyes"));
+		entities.put("Player01", new Player("Player01"));
 		entities.get("Player01").setAttribute(Attribute.POSITION,
 				new Vector2f(10, 10));
 		drawOrder.add(entities.values()); // add to draw list
@@ -98,7 +98,15 @@ public class Game implements RenderListener {
 
 	private void createTextureParts() {
 		TexturePartManager manager = TexturePartManager.getInstance();
-		manager.createTexturePart("player_eyes", "player", new Rectangle(
-				70 / 256.0f, 96 / 128.0f, 20 / 256.0f, 32 / 128.0f));
+		manager.createTexturePart("player_eyes", "player", new Rectangle(70,
+				96, 20, 32));
+		manager.createTexturePart("player_background", "player", new Rectangle(
+				96, 0, 96, 96));
+		manager.createTexturePart("player_body", "player", new Rectangle(0, 0,
+				96, 96));
+		manager.createTexturePart("player_background_foot", "player",
+				new Rectangle(192, 64, 96, 32));
+		manager.createTexturePart("player_foot", "player", new Rectangle(192,
+				32, 96, 32));
 	}
 }
