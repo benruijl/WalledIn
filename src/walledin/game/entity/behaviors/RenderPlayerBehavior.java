@@ -1,7 +1,7 @@
 package walledin.game.entity.behaviors;
 
 import walledin.engine.Renderer;
-import walledin.engine.Rectangle;
+import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
@@ -29,7 +29,7 @@ public class RenderPlayerBehavior extends RenderBehavior {
 		renderer.scale(scale);
 
 		if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
-			renderer.translate(new Vector2f(scale.x() * 96 * 2, 0));
+			renderer.translate(new Vector2f(scale.getX() * 96 * 2, 0));
 			renderer.scale(new Vector2f(-1, 1));
 		}
 
