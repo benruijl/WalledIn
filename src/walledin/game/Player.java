@@ -1,6 +1,6 @@
 package walledin.game;
 
-import walledin.engine.Rectangle;
+import walledin.engine.math.Rectangle;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;

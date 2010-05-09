@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import walledin.engine.Input;
-import walledin.engine.Rectangle;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
-import walledin.engine.Vector2f;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;

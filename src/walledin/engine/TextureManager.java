@@ -32,7 +32,7 @@ public class TextureManager extends ResourceManager<String, Texture> {
 
 	}
 
-	String generateUniqueID() {
+	private String generateUniqueID() {
 		return "TEX_" + getCount();
 	}
 
@@ -41,10 +41,10 @@ public class TextureManager extends ResourceManager<String, Texture> {
 	 * 
 	 * @Returns: string ID on succes, null on failure
 	 */
-	public String loadFromFile(final String strFilename) {
+	public String loadFromFile(final String filename) {
 		final String id = generateUniqueID();
 
-		if (loadFromFile(strFilename, id)) {
+		if (loadFromFile(filename, id)) {
 			return id;
 		}
 
@@ -54,11 +54,11 @@ public class TextureManager extends ResourceManager<String, Texture> {
 	/*
 	 * Loads a texture from a file and links it with the given ID
 	 */
-	public boolean loadFromFile(final String strFilename, final String strTexID) {
+	public boolean loadFromFile(final String filename, final String textureID) {
 		try {
-			final Texture tex = TextureIO.newTexture(new File(strFilename),
+			final Texture texture = TextureIO.newTexture(new File(filename),
 					true);
-			put(strTexID, tex);
+			put(textureID, texture);
 			return true;
 
 		} catch (final IOException ex) {

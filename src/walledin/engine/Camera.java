@@ -1,5 +1,7 @@
 package walledin.engine;
 
+import walledin.engine.math.Vector2f;
+
 /**
  * 
  * @author ben

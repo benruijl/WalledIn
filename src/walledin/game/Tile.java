@@ -1,6 +1,6 @@
 package walledin.game;
 
-import walledin.engine.Rectangle;
+import walledin.engine.math.Rectangle;
 
 /**
  * This class keeps track of information of a single tile in a map. It stores

@@ -3,7 +3,7 @@ package walledin.game.entity.behaviors;
 import java.awt.event.KeyEvent;
 
 import walledin.engine.Input;
-import walledin.engine.Vector2f;
+import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
