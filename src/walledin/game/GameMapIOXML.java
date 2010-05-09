@@ -1,19 +1,11 @@
 package walledin.game;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import walledin.engine.TextureManager;
+import walledin.util.XMLReader;
 
 /**
  * Loads a map from an XML file
@@ -21,63 +13,14 @@ import walledin.engine.TextureManager;
  * @author ben
  */
 public class GameMapIOXML implements GameMapIO {
-	private Document parseXmlFile(final String filename) {
-		// get the factory
-		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-		try {
-
-			// Using factory get an instance of document builder
-			final DocumentBuilder db = dbf.newDocumentBuilder();
-
-			// parse using builder to get DOM representation of the XML file
-			return db.parse(filename);
-
-		} catch (final ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (final SAXException se) {
-			se.printStackTrace();
-		} catch (final IOException ioe) {
-			ioe.printStackTrace();
-		}
-		return null;
-	}
-
-	private GameMap parseDocument(Document dom) {
-		// get the root element
-		final Element docEle = dom.getDocumentElement();
-
-		final NodeList nl = docEle.getElementsByTagName("Map");
-		if (nl != null && nl.getLength() > 0) {
-			// map should only appear once
-			final Element el = (Element) nl.item(0);
-
-			// read the map data
-			final GameMap m = readData(el);
-			return m;
-		} else {
-			System.err.print("Error loading map.");
-		}
-
-		return null;
-	}
-
-	private GameMap readData(final Element mapElement) {
-		final String name = getTextValue(mapElement, "Name");
-		final String tex = getTextValue(mapElement, "Texture");
-		final int width = getIntValue(mapElement, "Width");
-		final int height = getIntValue(mapElement, "Height");
-		final Tile[] tiles = parseTiles(mapElement, "Tiles");
-
-		final String texRes = TextureManager.getInstance().loadFromFile(tex);
-
-		final GameMap m = new GameMap(name, texRes, width, height, tiles);
-
-		return m;
-	}
-
-	private Tile[] parseTiles(final Element ele, final String tagName) {
-		final String tiles = getTextValue(ele, tagName);
+	/**
+	 * Reads tile information
+	 * @param reader XML reader
+	 * @param el Current element
+	 * @return An array of tiles
+	 */
+	private Tile[] parseTiles(final XMLReader reader, final Element el) {
+		final String tiles = reader.getTextValue(el, "Tiles");
 
 		final StringTokenizer st = new StringTokenizer(tiles);
 		final ArrayList<Tile> til = new ArrayList<Tile>();
@@ -94,38 +37,6 @@ public class GameMapIOXML implements GameMapIO {
 	}
 
 	/**
-	 * I take a xml element and the tag name, look for the tag and get the text
-	 * content i.e for <employee><name>John</name></employee> xml snippet if the
-	 * Element points to employee node and tagName is 'name' I will return John
-	 */
-	private String getTextValue(final Element ele, final String tagName) {
-		String textVal = null;
-		final NodeList nl = ele.getElementsByTagName(tagName);
-		if (nl != null && nl.getLength() > 0) {
-			final Element el = (Element) nl.item(0);
-			textVal = el.getFirstChild().getNodeValue();
-		}
-
-		return textVal;
-	}
-
-	/**
-	 * Calls getTextValue and returns a int value
-	 */
-	private int getIntValue(final Element ele, final String tagName) {
-		// in production application you would catch the exception
-		try {
-			return Integer.parseInt(getTextValue(ele, tagName));
-		} catch (final NumberFormatException nu) {
-
-			System.err.print("Error converting to int in tag " + tagName + ": "
-					+ nu.getMessage());
-		}
-
-		return 0;
-	}
-
-	/**
 	 * Reads map data from an XML file
 	 * 
 	 * @param filename
@@ -134,8 +45,34 @@ public class GameMapIOXML implements GameMapIO {
 	 */
 	@Override
 	public GameMap readFromFile(final String filename) {
-		Document dom = parseXmlFile(filename);
-		return parseDocument(dom);
+		XMLReader reader = new XMLReader();
+
+		if (reader.open(filename)) {
+			List<Element> elList = reader.getElements(reader.getRootElement(),
+					"Map");
+
+			// assumes there is only one map
+			if (elList != null && elList.size() > 0) {
+				Element map = elList.get(0);
+
+				final String name = reader.getTextValue(map, "Name");
+				final String tex = reader.getTextValue(map, "Texture");
+				final int width = reader.getIntValue(map, "Width");
+				final int height = reader.getIntValue(map, "Height");
+				final Tile[] tiles = parseTiles(reader, map);
+
+				final String texRes = TextureManager.getInstance()
+						.loadFromFile(tex);
+
+				final GameMap m = new GameMap(name, texRes, width, height,
+						tiles);
+
+				return m;
+			} else
+				return null;
+		}
+
+		return null;
 	}
 
 	@Override
