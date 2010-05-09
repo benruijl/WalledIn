@@ -21,7 +21,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 
 	@Override
 	public void onUpdate(double delta) {
-		Vector2f velocity = new Vector2f();//GRAVITY); // do gravity
+		Vector2f velocity = new Vector2f(GRAVITY); // do gravity
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_RIGHT)) {
 			velocity.x += MOVE_SPEED;

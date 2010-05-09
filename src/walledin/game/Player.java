@@ -20,6 +20,5 @@ public class Player extends Entity {
 		addBehavior(new RenderPlayerBehavior(this, texture));
 		addBehavior(new PlayerAnimationBehavior(this));
 	}
-
 }
 

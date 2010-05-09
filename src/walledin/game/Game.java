@@ -21,29 +21,25 @@ import walledin.game.entity.MessageType;
  * @author ben
  */
 public class Game implements RenderListener {
-	private List<Rectangle> mWalls;
+	private List<Rectangle> walls;
 	private Map<String, Entity> entities;
+
+	public Game() {
+		entities = new LinkedHashMap<String, Entity>();
+		walls = new ArrayList<Rectangle>();
+	}
 
 	public void update(final double delta) {
 		/* Update all entities */
-		for (Entity ent:entities.values()) {
+		for (Entity ent : entities.values()) {
 			ent.sendUpdate(delta);
 		}
-		
-		Vector2f vNewPos = entities.get("Player01").getAttribute(Attribute.POSITION);
 
-		/* Do very basic collision detection */
-		/*for (int i = 0; i < mWalls.size(); i++) {
-			if (player.getBoundRect().addOffset(vNewPos).intersects(
-					mWalls.get(i))) {
-				vNewPos = player.getPosition(); // do no update
-			}
-		}
-				
-		player.setAttribute(Attribute.POSITION, vNewPos);*/
+		Vector2f vNewPos = entities.get("Player01").getAttribute(
+				Attribute.POSITION);
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
-			mWalls.add(new Rectangle(vNewPos.x() + 65, vNewPos.y(), 30, 90));
+			walls.add(new Rectangle(vNewPos.x() + 65, vNewPos.y(), 30, 90));
 			Input.getInstance().setKeyUp(KeyEvent.VK_SPACE);
 		}
 
@@ -51,35 +47,31 @@ public class Game implements RenderListener {
 
 	public void draw(final Renderer renderer) {
 		renderer.drawRect("sun", new Rectangle(60, 60, 64, 64));
-		
+
 		/* Draw all entities */
-		for (Entity ent:entities.values()) {
-			ent.sendMessage(MessageType.RENDER, renderer);
+		for (Entity entity : entities.values()) {
+			entity.sendMessage(MessageType.RENDER, renderer);
 		}
 
-
-		for (int i = 0; i < mWalls.size(); i++) {
+		for (int i = 0; i < walls.size(); i++) {
 			renderer.drawRect("wall", new Rectangle(0.0f, 0.0f, 110 / 128.0f,
-					235 / 256.0f), mWalls.get(i));
+					235 / 256.0f), walls.get(i));
 		}
 
 		/* FIXME: move these lines */
-		renderer.centerAround((Vector2f)entities.get("Player01").getAttribute(Attribute.POSITION));
+		renderer.centerAround((Vector2f) entities.get("Player01").getAttribute(
+				Attribute.POSITION));
 
-		if (Input.getInstance().keyDown(KeyEvent.VK_F1))
-		{
+		if (Input.getInstance().keyDown(KeyEvent.VK_F1)) {
 			renderer.toggleFullScreen();
 			Input.getInstance().setKeyUp(KeyEvent.VK_F1);
 		}
-			
 	}
 
 	/**
 	 * Initialise game
 	 */
 	public void init() {
-		entities = new LinkedHashMap<String, Entity>();
-		
 		TextureManager.getInstance().LoadFromFile("data/tiles.png", "tiles");
 		TextureManager.getInstance().LoadFromFile("data/zon.png", "sun");
 		TextureManager.getInstance().LoadFromFile("data/player.png", "player");
@@ -87,11 +79,10 @@ public class Game implements RenderListener {
 		TextureManager.getInstance().LoadFromFile("data/game.png", "game");
 
 		GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
-		
+
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
-		entities.put("Player01", new Player("Player01","player"));
-		entities.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(10, 10));
-		
-		mWalls = new ArrayList<Rectangle>();
+		entities.put("Player01", new Player("Player01", "player"));
+		entities.get("Player01").setAttribute(Attribute.POSITION,
+				new Vector2f(10, 10));
 	}
 }
