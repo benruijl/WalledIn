@@ -72,11 +72,11 @@ public class Game implements RenderListener {
 	 * Initialise game
 	 */
 	public void init() {
-		TextureManager.getInstance().LoadFromFile("data/tiles.png", "tiles");
-		TextureManager.getInstance().LoadFromFile("data/zon.png", "sun");
-		TextureManager.getInstance().LoadFromFile("data/player.png", "player");
-		TextureManager.getInstance().LoadFromFile("data/wall.png", "wall");
-		TextureManager.getInstance().LoadFromFile("data/game.png", "game");
+		TextureManager.getInstance().loadFromFile("data/tiles.png", "tiles");
+		TextureManager.getInstance().loadFromFile("data/zon.png", "sun");
+		TextureManager.getInstance().loadFromFile("data/player.png", "player");
+		TextureManager.getInstance().loadFromFile("data/wall.png", "wall");
+		TextureManager.getInstance().loadFromFile("data/game.png", "game");
 
 		GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
