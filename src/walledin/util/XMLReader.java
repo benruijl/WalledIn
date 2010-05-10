@@ -104,4 +104,14 @@ public class XMLReader {
 
 		return null;
 	}
+
+	public Element getFirstElement(Element element, String tag) {
+		List<Element> elementList = getElements(element, tag);
+		// assumes there is only one map
+		if (elementList != null && !elementList.isEmpty()) {
+			return elementList.get(0);
+		} else {
+			return null;
+		}
+	}
 }

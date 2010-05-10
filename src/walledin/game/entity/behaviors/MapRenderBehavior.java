@@ -1,5 +1,7 @@
 package walledin.game.entity.behaviors;
 
+import java.util.List;
+
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.game.Tile;
@@ -8,18 +10,15 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class MapRenderBehavior extends RenderBehavior {
-	final private String texture;
 	final float tileWidth = 32.0f;
 	final int stepSize = 10;
 	final int height;
 	final int width;
-	final Tile[] tiles;
+	final List<Tile> tiles;
 
-	public MapRenderBehavior(Entity owner, String texture, int width,
-			int height, Tile[] tiles) {
-		super(owner, ZValues.MAP); 
-
-		this.texture = texture;
+	public MapRenderBehavior(final Entity owner, final int width,
+			final int height, final List<Tile> tiles) {
+		super(owner, ZValues.MAP);
 		this.width = width;
 		this.height = height;
 		this.tiles = tiles;
@@ -35,12 +34,12 @@ public class MapRenderBehavior extends RenderBehavior {
 										* stepSize))) {
 					for (int i = 0; i < Math.min(stepSize, height - sh); i++) {
 						for (int j = 0; j < Math.min(stepSize, width - sw); j++) {
-							final Tile tile = tiles[(sh + i) * width + sw + j];
-
-							renderer.drawRect(texture, tile.getTexRect(),
-									new Rectangle((sw + j) * tileWidth,
-											(sh + i) * tileWidth, tileWidth,
-											tileWidth));
+							final Tile tile = tiles.get((sh + i) * width + sw
+									+ j);
+							renderer.drawTexturePart(tile.getType()
+									.getTexturePartID(), new Rectangle((sw + j)
+									* tileWidth, (sh + i) * tileWidth,
+									tileWidth, tileWidth));
 						}
 					}
 				}
@@ -50,9 +49,10 @@ public class MapRenderBehavior extends RenderBehavior {
 	}
 
 	@Override
-	public void onMessage(MessageType messageType, Object data) {
-		if (messageType == MessageType.RENDER)
+	public void onMessage(final MessageType messageType, final Object data) {
+		if (messageType == MessageType.RENDER) {
 			render((Renderer) data);
+		}
 
 	}
 

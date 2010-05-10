@@ -2,9 +2,9 @@ package walledin.game;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
+
 import org.w3c.dom.Element;
-import walledin.engine.TextureManager;
+
 import walledin.util.XMLReader;
 
 /**
@@ -13,27 +13,41 @@ import walledin.util.XMLReader;
  * @author ben
  */
 public class GameMapIOXML implements GameMapIO {
+	// FIXME dont use instance vars for this...
+	private int width;
+	private int height;
+
 	/**
 	 * Reads tile information
-	 * @param reader XML reader
-	 * @param el Current element
-	 * @return An array of tiles
+	 * 
+	 * @param reader
+	 *            XML reader
+	 * @param element
+	 *            Current element
+	 * @return An list of tiles
 	 */
-	private Tile[] parseTiles(final XMLReader reader, final Element el) {
-		final String tiles = reader.getTextValue(el, "Tiles");
-
-		final StringTokenizer st = new StringTokenizer(tiles);
-		final ArrayList<Tile> til = new ArrayList<Tile>();
-
-		while (st.hasMoreTokens()) {
-			final String s = st.nextToken();
-
-			// FIXME: expand the XML file so that it reads information about the
-			// tile texture
-			til.add(new Tile(Integer.parseInt(s), 16, 64, 64, 1024, 1024, false));
+	private List<Tile> parseTiles(final XMLReader reader, final Element element) {
+		final List<Tile> result = new ArrayList<Tile>();
+		final String tiles = reader.getTextValue(element, "tiles");
+		final String[] rows = tiles.split("\n");
+		int x = 0;
+		int y = 0;
+		for (final String row : rows) {
+			if (row.trim().isEmpty()) {
+				continue;
+			}
+			y=0;
+			for (final char mapChar : row.trim().toCharArray()) {
+				final TileType type = TileType.getTile(mapChar);
+				final Tile tile = new Tile(type, x, y);
+				result.add(tile);
+				y++;
+			}
+			x++;
 		}
-
-		return til.toArray(new Tile[0]);
+		height = x + 1;
+		width = y + 1;
+		return result;
 	}
 
 	/**
@@ -45,34 +59,21 @@ public class GameMapIOXML implements GameMapIO {
 	 */
 	@Override
 	public GameMap readFromFile(final String filename) {
-		XMLReader reader = new XMLReader();
+		final XMLReader reader = new XMLReader();
 
 		if (reader.open(filename)) {
-			List<Element> elList = reader.getElements(reader.getRootElement(),
-					"Map");
+			final Element map = reader.getRootElement();
 
-			// assumes there is only one map
-			if (elList != null && elList.size() > 0) {
-				Element map = elList.get(0);
+			final String name = reader.getTextValue(map, "name");
+			final List<Tile> tiles = parseTiles(reader, map);
 
-				final String name = reader.getTextValue(map, "Name");
-				final String tex = reader.getTextValue(map, "Texture");
-				final int width = reader.getIntValue(map, "Width");
-				final int height = reader.getIntValue(map, "Height");
-				final Tile[] tiles = parseTiles(reader, map);
+			final GameMap m = new GameMap(name, width, height, tiles);
 
-				final String texRes = TextureManager.getInstance()
-						.loadFromFile(tex);
-
-				final GameMap m = new GameMap(name, texRes, width, height,
-						tiles);
-
-				return m;
-			} else
-				return null;
+			return m;
+		} else {
+			return null;
 		}
 
-		return null;
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package walledin.game;
 
-import walledin.engine.math.Rectangle;
 
 /**
  * This class keeps track of information of a single tile in a map. It stores
@@ -9,34 +8,25 @@ import walledin.engine.math.Rectangle;
  * @author Ben Ruijl
  */
 public class Tile {
-	private final int tileNumber;
-	private Rectangle texRect;
-	private boolean solid;
+	private final TileType type;
+	private final int x;
+	private final int y;
 
-	public Tile(final int tileNumber, final int tileNumPerLine,
-			final int tileWidth, final int tileHeight, final int texWidth,
-			final int texHeight, boolean solid) {
-
-		this.tileNumber = tileNumber;
-		this.solid = solid;
-
-		// the offset fixes off-by-one errors
-		this.texRect = new Rectangle((tileNumber % 16 * tileWidth + 1.000f)
-				/ texWidth,
-				(tileNumber / 16 * tileHeight + 1.000f) / texHeight,
-				(tileWidth - 2.000f) / texWidth, (tileHeight - 2.000f)
-						/ texHeight);
+	public Tile(final TileType type, final int x, final int y) {
+		this.x = x;
+		this.y = y;
+		this.type = type;
 	}
 
-	public int getTileNumber() {
-		return tileNumber;
+	public TileType getType() {
+		return type;
 	}
 
-	public boolean isSolid() {
-		return solid;
+	public int getX() {
+		return x;
 	}
 
-	public Rectangle getTexRect() {
-		return texRect;
+	public int getY() {
+		return y;
 	}
 }

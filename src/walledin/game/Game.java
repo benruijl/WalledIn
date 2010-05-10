@@ -21,7 +21,9 @@ import walledin.game.entity.Entity;
  * @author ben
  */
 public class Game implements RenderListener {
-	private List<Rectangle> walls;
+	private static final int TILE_SIZE = 64;
+	private static final int TILES_PER_LINE = 16;
+	private final List<Rectangle> walls;
 	private Map<String, Entity> entities;
 	private DrawOrderManager drawOrder;
 
@@ -32,11 +34,11 @@ public class Game implements RenderListener {
 
 	public void update(final double delta) {
 		/* Update all entities */
-		for (Entity ent : entities.values()) {
+		for (final Entity ent : entities.values()) {
 			ent.sendUpdate(delta);
 		}
 
-		Vector2f vNewPos = entities.get("Player01").getAttribute(
+		final Vector2f vNewPos = entities.get("Player01").getAttribute(
 				Attribute.POSITION);
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
@@ -78,7 +80,7 @@ public class Game implements RenderListener {
 		loadTextures();
 		createTextureParts();
 
-		GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
+		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
 		entities.put("Player01", new Player("Player01"));
@@ -88,7 +90,7 @@ public class Game implements RenderListener {
 	}
 
 	private void loadTextures() {
-		TextureManager manager = TextureManager.getInstance();
+		final TextureManager manager = TextureManager.getInstance();
 		manager.loadFromFile("data/tiles.png", "tiles");
 		manager.loadFromFile("data/zon.png", "sun");
 		manager.loadFromFile("data/player.png", "player");
@@ -97,7 +99,7 @@ public class Game implements RenderListener {
 	}
 
 	private void createTextureParts() {
-		TexturePartManager manager = TexturePartManager.getInstance();
+		final TexturePartManager manager = TexturePartManager.getInstance();
 		manager.createTexturePart("player_eyes", "player", new Rectangle(70,
 				96, 20, 32));
 		manager.createTexturePart("player_background", "player", new Rectangle(
@@ -108,5 +110,50 @@ public class Game implements RenderListener {
 				new Rectangle(192, 64, 96, 32));
 		manager.createTexturePart("player_foot", "player", new Rectangle(192,
 				32, 96, 32));
+		manager.createTexturePart("tile_empty", "tiles",
+				createMapTextureRectangle(0, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_filled", "tiles",
+				createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_top_grass_end_left", "tiles",
+				createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_top_grass_end_right", "tiles",
+				createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_top_grass", "tiles",
+				createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_left_grass", "tiles",
+				createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_left_mud", "tiles",
+				createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_right_mud", "tiles",
+				createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_top_left_grass", "tiles",
+				createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_bottom_left_mud", "tiles",
+				createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_bottom_right_mud", "tiles",
+				createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_top_left_grass_end", "tiles",
+				createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+		manager.createTexturePart("tile_bottom_mud", "tiles",
+				createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
+						TILE_SIZE));
+	}
+
+	private Rectangle createMapTextureRectangle(final int tileNumber,
+			final int tileNumPerLine, final int tileWidth, final int tileHeight) {
+		return new Rectangle((tileNumber % 16 * tileWidth + 1), (tileNumber
+				/ 16 * tileHeight + 1), (tileWidth - 2), (tileHeight - 2));
 	}
 }
