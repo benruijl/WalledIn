@@ -5,7 +5,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
-import walledin.game.entity.behaviors.RenderPlayerBehavior;
+import walledin.game.entity.behaviors.PlayerRenderBehavior;
 
 public class Player extends Entity {
 	public Player(final String name) {
@@ -19,7 +19,7 @@ public class Player extends Entity {
 				96 * fScale));
 
 		addBehavior(new PlayerControlBehaviour(this));
-		addBehavior(new RenderPlayerBehavior(this));
+		addBehavior(new PlayerRenderBehavior(this));
 		addBehavior(new PlayerAnimationBehavior(this));
 	}
 }

@@ -8,7 +8,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class RenderPlayerBehavior extends RenderBehavior {
+public class PlayerRenderBehavior extends RenderBehavior {
 	private static final Rectangle EYE_RIGHT_RECT = new Rectangle(55, 30, 20,
 			32);
 	private static final Rectangle EYE_LEFT_RECT = new Rectangle(45, 30, 20, 32);
@@ -21,7 +21,7 @@ public class RenderPlayerBehavior extends RenderBehavior {
 	private Vector2f pos;
 	private final Vector2f scale;
 
-	public RenderPlayerBehavior(final Entity owner) {
+	public PlayerRenderBehavior(final Entity owner) {
 		super(owner, ZValues.PLAYER);
 
 		scale = new Vector2f(0.5f, 0.5f); // standard scale
