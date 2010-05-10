@@ -15,18 +15,18 @@ public class Entity {
 	 * @param name
 	 *            Name of the component
 	 */
-	public Entity(String name) {
+	public Entity(final String name) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		this.name = name;
 	}
-	
+
 	/**
 	 * Get the name of the entity
+	 * 
 	 * @return Name of the entity
 	 */
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 
@@ -39,8 +39,8 @@ public class Entity {
 	 *             Thrown when the entity already contains an behavior of this
 	 *             type
 	 */
-	public void addBehavior(Behavior behavior) {
-		Class<? extends Behavior> clazz = behavior.getClass();
+	public void addBehavior(final Behavior behavior) {
+		final Class<? extends Behavior> clazz = behavior.getClass();
 		if (behaviors.containsKey(clazz)) {
 			throw new IllegalArgumentException("Entity [" + toString()
 					+ "] already contains Component of class: "
@@ -60,12 +60,13 @@ public class Entity {
 	 *         behavior of this class
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends Behavior> T getBehavior(Class<T> clazz) {
-		if (!behaviors.containsKey(clazz))
+	public <T extends Behavior> T getBehavior(final Class<T> clazz) {
+		if (!behaviors.containsKey(clazz)) {
 			throw new IllegalArgumentException("Object " + name
 					+ " does not have behaviour of class " + clazz.getName());
+		}
 
-		T beh = (T) behaviors.get(clazz);
+		final T beh = (T) behaviors.get(clazz);
 		return beh;
 	}
 
@@ -77,7 +78,7 @@ public class Entity {
 	 *            The attribute to check
 	 * @return True if entity has attribute, else false
 	 */
-	public boolean hasAttribute(Attribute attribute) {
+	public boolean hasAttribute(final Attribute attribute) {
 		return attributes.containsKey(attribute);
 	}
 
@@ -93,12 +94,13 @@ public class Entity {
 	 *             attribute
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getAttribute(Attribute attribute) {
-		if (!attributes.containsKey(attribute))
+	public <T> T getAttribute(final Attribute attribute) {
+		if (!attributes.containsKey(attribute)) {
 			throw new IllegalArgumentException("Object " + name
 					+ " does not have attribute " + attribute.name());
+		}
 
-		T att = (T) attributes.get(attribute);
+		final T att = (T) attributes.get(attribute);
 		return att;
 	}
 
@@ -115,13 +117,13 @@ public class Entity {
 	 *             attribute
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T setAttribute(Attribute attribute, T newObject) {
+	public <T> T setAttribute(final Attribute attribute, final T newObject) {
 		if (attribute.clazz.isInstance(newObject)) {
 			if (newObject == null) {
 				LOG.warning("Storing null value for attribute " + attribute
 						+ " of entity " + name);
 			}
-			T result = (T) attributes.put(attribute, newObject);
+			final T result = (T) attributes.put(attribute, newObject);
 			sendMessage(MessageType.ATTRIBUTE_SET, attribute);
 			return result;
 		} else {
@@ -137,16 +139,16 @@ public class Entity {
 	 *            Class of the behavior to be removed
 	 * @return The behavior that was removed
 	 */
-	public Behavior removeBehavior(Class<? extends Behavior> clazz) {
-		Behavior behavior = behaviors.remove(clazz);
+	public Behavior removeBehavior(final Class<? extends Behavior> clazz) {
+		final Behavior behavior = behaviors.remove(clazz);
 		return behavior;
 	}
 
 	/**
 	 * Calls onMessage on all the behaviors of this entity
 	 */
-	public void sendMessage(MessageType messageType, Object data) {
-		for (Behavior behavior : behaviors.values()) {
+	public void sendMessage(final MessageType messageType, final Object data) {
+		for (final Behavior behavior : behaviors.values()) {
 			behavior.onMessage(messageType, data);
 		}
 	}
@@ -154,8 +156,8 @@ public class Entity {
 	/**
 	 * Calls onUpdate on all the behaviors of this entity
 	 */
-	public void sendUpdate(double delta) {
-		for (Behavior behavior : behaviors.values()) {
+	public void sendUpdate(final double delta) {
+		for (final Behavior behavior : behaviors.values()) {
 			behavior.onUpdate(delta);
 		}
 	}

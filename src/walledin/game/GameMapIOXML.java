@@ -36,7 +36,7 @@ public class GameMapIOXML implements GameMapIO {
 			if (row.trim().isEmpty()) {
 				continue;
 			}
-			y=0;
+			y = 0;
 			for (final char mapChar : row.trim().toCharArray()) {
 				final TileType type = TileType.getTile(mapChar);
 				final Tile tile = new Tile(type, x, y);

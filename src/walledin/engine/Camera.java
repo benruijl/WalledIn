@@ -26,6 +26,7 @@ public class Camera {
 
 	/**
 	 * Get rotation in <b>radians</b>
+	 * 
 	 * @return Returns rotation in radians
 	 */
 	public float getRot() {

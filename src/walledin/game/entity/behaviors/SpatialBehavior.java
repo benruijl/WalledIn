@@ -9,17 +9,16 @@ import walledin.game.entity.MessageType;
 public class SpatialBehavior extends Behavior {
 	private Vector2f position;
 	private Vector2f velocity;
-	
-	public SpatialBehavior(Entity owner)
-	{
+
+	public SpatialBehavior(final Entity owner) {
 		super(owner);
 		setAttribute(Attribute.POSITION, new Vector2f());
 	}
 
 	@Override
-	public void onMessage(MessageType messageType, Object data) {
+	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.ATTRIBUTE_SET) {
-			Attribute attribute = (Attribute) data;
+			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
 			case POSITION:
 				position = getAttribute(attribute);
@@ -32,7 +31,7 @@ public class SpatialBehavior extends Behavior {
 	}
 
 	@Override
-	public void onUpdate(double delta) {
+	public void onUpdate(final double delta) {
 		Vector2f scaledVelocity = new Vector2f(velocity);
 		scaledVelocity = scaledVelocity.scale((float) delta);
 		position = position.add(scaledVelocity);

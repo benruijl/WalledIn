@@ -18,7 +18,7 @@ public enum Attribute {
 
 	public final Class<?> clazz;
 
-	private Attribute(Class<?> clazz) {
+	private Attribute(final Class<?> clazz) {
 		this.clazz = clazz;
 	}
 }

@@ -29,14 +29,14 @@ public class TexturePartManager extends ResourceManager<String, TexturePart> {
 
 	}
 
-	public boolean createTexturePart(String texturePartID, String textureID,
-			Rectangle rectangle) {
-		Texture texture = TextureManager.getInstance().get(textureID);
-		float width = (float) texture.getWidth();
-		float height = (float) texture.getHeight();
-		Vector2f scale = new Vector2f(1 / width, 1 / height);
-		Rectangle scaledRectangle = rectangle.scaleAll(scale);
-		TexturePart part = new TexturePart(texture, scaledRectangle);
+	public boolean createTexturePart(final String texturePartID,
+			final String textureID, final Rectangle rectangle) {
+		final Texture texture = TextureManager.getInstance().get(textureID);
+		final float width = texture.getWidth();
+		final float height = texture.getHeight();
+		final Vector2f scale = new Vector2f(1 / width, 1 / height);
+		final Rectangle scaledRectangle = rectangle.scaleAll(scale);
+		final TexturePart part = new TexturePart(texture, scaledRectangle);
 		return put(texturePartID, part);
 	}
 }

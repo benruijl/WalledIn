@@ -56,8 +56,9 @@ public class Renderer implements GLEventListener {
 			@Override
 			public void windowClosing(final WindowEvent e) {
 
-				if (isFullScreen)
+				if (isFullScreen) {
 					toggleFullScreen();
+				}
 
 				System.exit(0);
 			}
@@ -89,8 +90,8 @@ public class Renderer implements GLEventListener {
 	 * loaded again.
 	 */
 	public void toggleFullScreen() {
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
-				.getDefaultScreenDevice();
+		final GraphicsDevice gd = GraphicsEnvironment
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
 		if (isFullScreen || !gd.isFullScreenSupported()) {
 			win.setVisible(false);
@@ -142,7 +143,7 @@ public class Renderer implements GLEventListener {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
 
-		long currentTime = System.nanoTime();
+		final long currentTime = System.nanoTime();
 		double delta = currentTime - lastUpdate;
 		// Delta is in seconds. 10^9 nanoseconds per second
 		delta /= 1000 * 1000 * 1000;
@@ -248,7 +249,8 @@ public class Renderer implements GLEventListener {
 	 */
 	public void drawTexturePart(final String texturePartID,
 			final Rectangle destination) {
-		TexturePart part = TexturePartManager.getInstance().get(texturePartID);
+		final TexturePart part = TexturePartManager.getInstance().get(
+				texturePartID);
 		drawRect(part.getTexture(), part.getRectangle(), destination);
 	}
 
@@ -393,17 +395,17 @@ public class Renderer implements GLEventListener {
 	 *            Screen position in pixels
 	 * @return Returns world position
 	 */
-	public Vector2f screenToWorld(Vector2i p) {
-		Vector2f fp = new Vector2f(p.x, p.y);
+	public Vector2f screenToWorld(final Vector2i p) {
+		final Vector2f fp = new Vector2f(p.x, p.y);
 
 		// Create a rotation matrix, calculate its inverse and apply the camera
 		// translation
 		final Matrix2f invRot = new Matrix2f(mCam.getRot()).transpose();
 		Vector2f vRes = invRot.apply(fp.sub(mCam.getPos()));
-		float fSXZ = mCam.getScale().x;
-		float fSXY = fSXZ * mCam.getScale().y;
-		float fSYZ = 1.0f;
-		float fInvDet = 1.0f / (fSXY * fSXZ);
+		final float fSXZ = mCam.getScale().x;
+		final float fSXY = fSXZ * mCam.getScale().y;
+		final float fSYZ = 1.0f;
+		final float fInvDet = 1.0f / (fSXY * fSXZ);
 
 		vRes = vRes.scale(fInvDet * fSYZ);
 

@@ -19,15 +19,15 @@ public class RenderPlayerBehavior extends RenderBehavior {
 	private static final String PLAYER_BODY = "player_body";
 	private static final String PLAYER_BACKGROUND = "player_background";
 	private Vector2f pos;
-	private Vector2f scale;
+	private final Vector2f scale;
 
-	public RenderPlayerBehavior(Entity owner) {
+	public RenderPlayerBehavior(final Entity owner) {
 		super(owner, ZValues.PLAYER);
 
 		scale = new Vector2f(0.5f, 0.5f); // standard scale
 	}
 
-	private void render(Renderer renderer) {
+	private void render(final Renderer renderer) {
 		renderer.pushMatrix();
 
 		pos = getOwner().getAttribute(Attribute.POSITION);
@@ -40,7 +40,7 @@ public class RenderPlayerBehavior extends RenderBehavior {
 			renderer.scale(new Vector2f(-1, 1));
 		}
 
-		float footPos = getAttribute(Attribute.WALK_ANIM_FRAME);
+		final float footPos = getAttribute(Attribute.WALK_ANIM_FRAME);
 
 		renderer.drawTexturePart(PLAYER_BACKGROUND, BODY_RECT);
 		renderer.drawTexturePart(PLAYER_BODY, BODY_RECT);
@@ -48,8 +48,8 @@ public class RenderPlayerBehavior extends RenderBehavior {
 		renderer.drawTexturePart(PLAYER_EYES, EYE_RIGHT_RECT);
 
 		// render foot
-		float footX = (float) (Math.cos(footPos) * 8.0 + 35.0);
-		Rectangle footRect = new Rectangle(footX, 60, 96, 32);
+		final float footX = (float) (Math.cos(footPos) * 8.0 + 35.0);
+		final Rectangle footRect = new Rectangle(footX, 60, 96, 32);
 		renderer.drawTexturePart(PLAYER_BACKGROUND_FOOT, footRect);
 		renderer.drawTexturePart(PLAYER_FOOT, footRect);
 
@@ -57,7 +57,7 @@ public class RenderPlayerBehavior extends RenderBehavior {
 	}
 
 	@Override
-	public void onMessage(MessageType messageType, Object data) {
+	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.RENDER) {
 			render((Renderer) data);
 		}

@@ -13,12 +13,13 @@ import walledin.game.entity.MessageType;
 public class DrawOrderManager {
 	private static class ZOrderComperator implements Comparator<Entity> {
 		@Override
-		public int compare(Entity o1, Entity o2) {
-			int zA = (Integer) o1.getAttribute(Attribute.Z_INDEX);
-			int zB = (Integer) o2.getAttribute(Attribute.Z_INDEX);
+		public int compare(final Entity o1, final Entity o2) {
+			final int zA = (Integer) o1.getAttribute(Attribute.Z_INDEX);
+			final int zB = (Integer) o2.getAttribute(Attribute.Z_INDEX);
 
-			if (zA == zB)
+			if (zA == zB) {
 				return o1.getName().compareTo(o2.getName());
+			}
 
 			return zA - zB;
 		}
@@ -28,7 +29,7 @@ public class DrawOrderManager {
 
 	public DrawOrderManager() {
 		super();
-		this.entityList = new TreeSet<Entity>(new ZOrderComperator());
+		entityList = new TreeSet<Entity>(new ZOrderComperator());
 	}
 
 	/**
@@ -37,10 +38,11 @@ public class DrawOrderManager {
 	 * @param Collection
 	 *            of entities to be added
 	 */
-	public void add(Collection<Entity> Collection) {
-		for (Entity en : Collection) {
-			if (en.hasAttribute(Attribute.Z_INDEX))
+	public void add(final Collection<Entity> Collection) {
+		for (final Entity en : Collection) {
+			if (en.hasAttribute(Attribute.Z_INDEX)) {
 				entityList.add(en);
+			}
 		}
 	}
 
@@ -51,10 +53,10 @@ public class DrawOrderManager {
 	 *            Entity to be added
 	 * @return True if added, false if not
 	 */
-	public boolean add(Entity e) {
-		if (!e.hasAttribute(Attribute.Z_INDEX))
+	public boolean add(final Entity e) {
+		if (!e.hasAttribute(Attribute.Z_INDEX)) {
 			return false;
-
+		}
 		return entityList.add(e);
 	}
 
@@ -62,9 +64,10 @@ public class DrawOrderManager {
 		return entityList;
 	}
 
-	public void draw(Renderer renderer) {
+	public void draw(final Renderer renderer) {
 		/* Draw all entities in the correct order */
-		for (Entity ent : entityList)
+		for (final Entity ent : entityList) {
 			ent.sendMessage(MessageType.RENDER, renderer);
+		}
 	}
 }

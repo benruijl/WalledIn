@@ -7,10 +7,9 @@ package walledin.game.entity;
  * 
  */
 public abstract class Behavior {
-	private Entity owner;
-	
-	public Behavior(Entity owner)
-	{
+	private final Entity owner;
+
+	public Behavior(final Entity owner) {
 		this.owner = owner;
 	}
 
@@ -35,7 +34,7 @@ public abstract class Behavior {
 	 *             if the class you asked for is not the class specified in
 	 *             attribute
 	 */
-	protected <T> T getAttribute(Attribute attribute) {
+	protected <T> T getAttribute(final Attribute attribute) {
 		return getOwner().getAttribute(attribute);
 	}
 
@@ -52,7 +51,7 @@ public abstract class Behavior {
 	 *             if the newObect is not of the class specified in the
 	 *             attribute
 	 */
-	protected <T> T setAttribute(Attribute attribute, T newObject) {
+	protected <T> T setAttribute(final Attribute attribute, final T newObject) {
 		return getOwner().setAttribute(attribute, newObject);
 	}
 

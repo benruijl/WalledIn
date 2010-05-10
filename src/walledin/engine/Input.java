@@ -19,7 +19,7 @@ public class Input implements KeyListener {
 
 		Up, Down
 	}
-	
+
 	private static Input ref = null;
 	private final Map<Integer, KeyState> mKeyStates;
 

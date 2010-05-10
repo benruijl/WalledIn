@@ -9,7 +9,7 @@ public class TexturePart {
 	private final Texture texture;
 	private final Rectangle rectangle;
 
-	public TexturePart(Texture texture, Rectangle rectangle) {
+	public TexturePart(final Texture texture, final Rectangle rectangle) {
 		this.texture = texture;
 		this.rectangle = rectangle;
 	}

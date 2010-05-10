@@ -18,7 +18,7 @@ public class TextureManager extends ResourceManager<String, Texture> {
 	private final static Logger LOG = Logger.getLogger(TextureManager.class
 			.getName());
 	private static final TextureManager INSTANCE = new TextureManager();
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		throw new CloneNotSupportedException();

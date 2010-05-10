@@ -18,9 +18,9 @@ public class Vector2f {
 		this.y = y;
 	}
 
-	public Vector2f(Vector2f vector) {
-		this.x = vector.x;
-		this.y = vector.y;
+	public Vector2f(final Vector2f vector) {
+		x = vector.x;
+		y = vector.y;
 	}
 
 	public float getX() {
@@ -47,7 +47,7 @@ public class Vector2f {
 		return dot(this);
 	}
 
-	public Vector2f scale(float amount) {
+	public Vector2f scale(final float amount) {
 		return new Vector2f(x * amount, y * amount);
 	}
 }
