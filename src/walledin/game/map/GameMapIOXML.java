@@ -28,7 +28,7 @@ public class GameMapIOXML implements GameMapIO {
 	 */
 	private List<Tile> parseTiles(final XMLReader reader, final Element element) {
 		final List<Tile> result = new ArrayList<Tile>();
-		final String tiles = reader.getTextValue(element, "tiles");
+		final String tiles = XMLReader.getTextValue(element, "tiles");
 		final String[] rows = tiles.split("\n");
 		int x = 0;
 		int y = 0;
@@ -64,7 +64,7 @@ public class GameMapIOXML implements GameMapIO {
 		if (reader.open(filename)) {
 			final Element map = reader.getRootElement();
 
-			final String name = reader.getTextValue(map, "name");
+			final String name = XMLReader.getTextValue(map, "name");
 			final List<Tile> tiles = parseTiles(reader, map);
 
 			final GameMap m = new GameMap(name, width, height, tiles);

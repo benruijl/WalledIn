@@ -33,13 +33,13 @@ public class ItemFactory {
 	 *            Element in XML file
 	 * @return Returns the created item
 	 */
-	private void addFunction(String familyName, final String texPart, final Element el) {
+	private void addFunction(final String familyName, final String texPart, final Element el) {
 		if (familyName.equals("healthkit")) {
 			itemContructionFunctions.put("healthkit",
 					new ItemConstructionFunction() {
 
 						@Override
-						public Item create(String itemName) {
+						public Item create(final String itemName) {
 							return new HealthKitItem(itemName, texPart);
 						}
 					});
@@ -53,23 +53,23 @@ public class ItemFactory {
 	 *            XML file
 	 * @return True on success, false on failure
 	 */
-	public boolean loadFromXML(String filename) {
-		XMLReader reader = new XMLReader();
+	public boolean loadFromXML(final String filename) {
+		final XMLReader reader = new XMLReader();
 
 		if (reader.open(filename)) {
-			List<Element> elList = XMLReader.getElements(reader
+			final List<Element> elList = XMLReader.getElements(reader
 					.getRootElement(), "item");
 
-			String texture = reader.getRootElement().getAttribute("texture");
-			String texName = reader.getRootElement().getAttribute("texname");
+			final String texture = reader.getRootElement().getAttribute("texture");
+			final String texName = reader.getRootElement().getAttribute("texname");
 			TextureManager.getInstance().loadFromFile(texture, texName); // load
 			// texture
 
-			for (Element cur : elList) {
-				String familyName = XMLReader.getTextValue(cur, "name");
+			for (final Element cur : elList) {
+				final String familyName = XMLReader.getTextValue(cur, "name");
 
-				Element texurePart = XMLReader.getFirstElement(cur, "texpart");
-				String texPartName = XMLReader.getTextValue(texurePart, "name");
+				final Element texurePart = XMLReader.getFirstElement(cur, "texpart");
+				final String texPartName = XMLReader.getTextValue(texurePart, "name");
 				final int x = XMLReader.getIntValue(texurePart, "x");
 				final int y = XMLReader.getIntValue(texurePart, "y");
 				final int width = XMLReader.getIntValue(texurePart, "width");
@@ -95,12 +95,13 @@ public class ItemFactory {
 	 *            The name of the item to be created
 	 * @return Returns an item or null on failure
 	 */
-	public Item create(String familyName, String itemName) {
-		if (!itemContructionFunctions.containsKey(familyName))
+	public Item create(final String familyName, final String itemName) {
+		if (!itemContructionFunctions.containsKey(familyName)) {
 			throw new IllegalArgumentException(
 					"Item "
 							+ familyName
 							+ " is not found in the database. Are the items loaded correctly?");
+		}
 
 		return itemContructionFunctions.get(familyName).create(itemName);
 	}

@@ -77,7 +77,7 @@ public class Game implements RenderListener {
 		entities = new LinkedHashMap<String, Entity>();
 		drawOrder = new DrawOrderManager();
 
-		long time = System.nanoTime();
+		final long time = System.nanoTime();
         loadTextures();
         double diff = System.nanoTime() - time;
         diff /= 1000000000;
@@ -97,7 +97,7 @@ public class Game implements RenderListener {
 		final ItemFactory fac = new ItemFactory();
 		fac.loadFromXML("data/items.xml"); // load all item information
 		
-		Item hk = fac.create("healthkit", "healthkit01");
+		final Item hk = fac.create("healthkit", "healthkit01");
 		entities.put(hk.getName(), hk);
 		
 		drawOrder.add(entities.values()); // add to draw list

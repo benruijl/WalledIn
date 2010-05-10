@@ -182,7 +182,7 @@ public class Renderer implements GLEventListener {
 	 *            Destination rectangle
 	 */
 	public void drawRect(final String strTex, final Rectangle destRect) {
-		Texture texture = TextureManager.getInstance().get(strTex);
+		final Texture texture = TextureManager.getInstance().get(strTex);
 		bindTexture(texture);
 
 		gl.glBegin(GL.GL_QUADS);
@@ -197,7 +197,7 @@ public class Renderer implements GLEventListener {
 		gl.glEnd();
 	}
 
-	private void bindTexture(Texture texture) {
+	private void bindTexture(final Texture texture) {
 		if (texture != lastTexture) {
 			texture.bind();
 			lastTexture = texture;
