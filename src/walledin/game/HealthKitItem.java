@@ -1,12 +1,10 @@
 package walledin.game;
 
-import org.w3c.dom.Element;
-
 import walledin.game.entity.MessageType;
 
 public class HealthKitItem extends Item {
 
-	public HealthKitItem(String name, String texPart, Element el) {
+	public HealthKitItem(String name, String texPart) {
 		super(name, texPart);
 		
 	}

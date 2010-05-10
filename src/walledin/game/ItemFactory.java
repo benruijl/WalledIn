@@ -29,8 +29,9 @@ public class ItemFactory {
 	 */
 	private Item create(String familyName, String texPart, Element el)
 	{
-		if (familyName.equals("healthkit"))
-			return new HealthKitItem("PROT_HK", texPart, el);
+		if (familyName.equals("healthkit")) {
+			return new HealthKitItem("PROT_HK", texPart);
+		}
 		
 		return null;
 	}
@@ -52,17 +53,15 @@ public class ItemFactory {
 			String texName = reader.getRootElement().getAttribute("texname");
 			TextureManager.getInstance().loadFromFile(texture, texName); // load texture
 			
-			for (int i = 0; i < elList.size(); i++)
-			{
-				Element cur = elList.get(i);
+			for (Element cur: elList) {
 				String familyName = XMLReader.getTextValue(cur, "name");
 								
-				List<Element> texEls = XMLReader.getElements(cur, "texpart");
-				String texPartName = XMLReader.getTextValue(texEls.get(0), "name");
-				final int x = XMLReader.getIntValue(texEls.get(0), "x");
-				final int y = XMLReader.getIntValue(texEls.get(0), "y");
-				final int width = XMLReader.getIntValue(texEls.get(0), "width");
-				final int height = XMLReader.getIntValue(texEls.get(0), "height");
+				Element texurePart = XMLReader.getFirstElement(cur, "texpart");
+				String texPartName = XMLReader.getTextValue(texurePart, "name");
+				final int x = XMLReader.getIntValue(texurePart, "x");
+				final int y = XMLReader.getIntValue(texurePart, "y");
+				final int width = XMLReader.getIntValue(texurePart, "width");
+				final int height = XMLReader.getIntValue(texurePart, "height");
 				
 				TexturePartManager.getInstance().createTexturePart(texPartName, texName, new Rectangle(x, y, width, height));
 				
