@@ -97,7 +97,7 @@ public class Game implements RenderListener {
 		final ItemFactory fac = new ItemFactory();
 		fac.loadFromXML("data/items.xml"); // load all item information
 		
-		Item hk = fac.get("healthkit", "healthkit01");
+		Item hk = fac.create("healthkit", "healthkit01");
 		entities.put(hk.getName(), hk);
 		
 		drawOrder.add(entities.values()); // add to draw list
