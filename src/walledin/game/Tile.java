@@ -1,9 +1,8 @@
 package walledin.game;
 
-
 /**
  * This class keeps track of information of a single tile in a map. It stores
- * whether the tile is solid and the texture rectangle for example.
+ * the tile type and the coordinates.
  * 
  * @author Ben Ruijl
  */

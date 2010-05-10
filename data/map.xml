@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <map>
 	<name>Default</name>
-	<texture>data/tiles.png</texture>
-	<width>64</width>
-	<height>48</height>
+	<items>
+		<item type="healthkit" x="4" y="4" />
+	</items>
 	<tiles>
 		################################################################
 		#                                                              #
