@@ -1,4 +1,4 @@
-package walledin.game;
+package walledin.game.map;
 
 import java.util.List;
 

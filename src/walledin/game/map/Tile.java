@@ -1,4 +1,4 @@
-package walledin.game;
+package walledin.game.map;
 
 /**
  * This class keeps track of information of a single tile in a map. It stores

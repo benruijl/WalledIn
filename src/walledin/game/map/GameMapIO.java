@@ -1,4 +1,4 @@
-package walledin.game;
+package walledin.game.map;
 
 /**
  * Reads or writes a map from or to a certain format. The details of the format

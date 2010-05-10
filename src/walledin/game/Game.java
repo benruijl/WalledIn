@@ -15,6 +15,8 @@ import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.map.GameMapIO;
+import walledin.game.map.GameMapIOXML;
 
 /**
  * 

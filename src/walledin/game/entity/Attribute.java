@@ -2,7 +2,7 @@ package walledin.game.entity;
 
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.Tile;
+import walledin.game.map.Tile;
 
 public enum Attribute {
 	POSITION(Vector2f.class),

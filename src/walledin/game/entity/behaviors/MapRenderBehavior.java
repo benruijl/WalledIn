@@ -4,10 +4,10 @@ import java.util.List;
 
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
-import walledin.game.Tile;
 import walledin.game.ZValues;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
+import walledin.game.map.Tile;
 
 public class MapRenderBehavior extends RenderBehavior {
 	final float tileWidth = 32.0f;
