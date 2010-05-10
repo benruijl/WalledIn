@@ -33,7 +33,7 @@ public class ItemFactory {
 	 *            Element in XML file
 	 * @return Returns the created item
 	 */
-	private void addFunction(String familyName, final String texPart, Element el) {
+	private void addFunction(String familyName, final String texPart, final Element el) {
 		if (familyName.equals("healthkit")) {
 			itemContructionFunctions.put("healthkit",
 					new ItemConstructionFunction() {
