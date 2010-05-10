@@ -8,7 +8,7 @@ public class Entity {
 	private final static Logger LOG = Logger.getLogger(Entity.class.getName());
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
 	private final Map<Attribute, Object> attributes;
-	private final String name;
+	private String name;
 
 	/**
 	 * 
@@ -28,6 +28,15 @@ public class Entity {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * Set the name of the entity
+	 * 
+	 * @return Name of the entity
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**

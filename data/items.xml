@@ -1,0 +1,12 @@
+<items texture="data/game.png" texname="TEX_ITEMS">
+    <item>
+        <name>healthkit</name>
+        <texpart>
+            <name>healthkit0</name>
+            <x>320</x>
+            <y>64</y>
+            <width>64</width>
+            <height>64</height>
+        </texpart>
+    </item>
+</items>

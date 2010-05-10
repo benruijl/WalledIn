@@ -118,7 +118,7 @@ public class Renderer implements GLEventListener {
 
 	public void beginLoop() {
 		// setup the animator
-		anim = new FPSAnimator(mCanvas, 60);
+		anim = new Animator(mCanvas);
 		anim.start();
 
 	}
@@ -134,14 +134,14 @@ public class Renderer implements GLEventListener {
 	 *            The current GL context
 	 */
 	public void display(final GLAutoDrawable glDrawable) {
-		// if (frameCount > 10) {
-		// System.out.println((1000000000.0f * frameCount)
-		// / (System.nanoTime() - prevTime) + " ");
-		// prevTime = System.nanoTime();
-		// frameCount = 0;
-		// } else {
-		// frameCount++;
-		// }
+//		 if (frameCount > 10) {
+//		 System.out.println((1000000000.0f * frameCount)
+//		 / (System.nanoTime() - prevTime) + " ");
+//		 prevTime = System.nanoTime();
+//		 frameCount = 0;
+//		 } else {
+//		 frameCount++;
+//		 }
 
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();

@@ -50,7 +50,7 @@ public class XMLReader {
 	 *            Tag name
 	 * @return List of sub-elements with name tag or null on failure
 	 */
-	public List<Element> getElements(final Element el, final String tag) {
+	static public List<Element> getElements(final Element el, final String tag) {
 		final NodeList nl = el.getElementsByTagName(tag);
 		if (nl == null) {
 			return null;
@@ -75,7 +75,7 @@ public class XMLReader {
 	 *            Tag name
 	 * @return Text of the value of tag node, or null on failure
 	 */
-	public String getTextValue(final Element el, final String tag) {
+	static public String getTextValue(final Element el, final String tag) {
 		String textVal = null;
 		final NodeList nl = el.getElementsByTagName(tag);
 
@@ -96,7 +96,7 @@ public class XMLReader {
 	 *            Tag name
 	 * @return Integer value in tag, or null on failure
 	 */
-	public Integer getIntValue(final Element el, final String tag) {
+	static public Integer getIntValue(final Element el, final String tag) {
 		try {
 			return Integer.parseInt(getTextValue(el, tag));
 		} catch (final NumberFormatException nu) {
@@ -107,10 +107,10 @@ public class XMLReader {
 
 		return null;
 	}
-
-	public Element getFirstElement(final Element element, final String tag) {
+	
+	static public Element getFirstElement(final Element element, final String tag) {
 		final List<Element> elementList = getElements(element, tag);
-		// assumes there is only one map
+
 		if (elementList != null && !elementList.isEmpty()) {
 			return elementList.get(0);
 		} else {
