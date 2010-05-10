@@ -12,7 +12,10 @@ public class SpatialBehavior extends Behavior {
 
 	public SpatialBehavior(final Entity owner) {
 		super(owner);
-		setAttribute(Attribute.POSITION, new Vector2f()); // create attribute
+		position = new Vector2f();
+		velocity = new Vector2f();
+		setAttribute(Attribute.POSITION, position); // create attribute
+		setAttribute(Attribute.VELOCITY, velocity);
 	}
 
 	@Override
