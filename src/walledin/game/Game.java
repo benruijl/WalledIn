@@ -53,7 +53,7 @@ public class Game implements RenderListener {
 	}
 
 	public void draw(final Renderer renderer) {
-		renderer.drawRect("sun", new Rectangle(60, 60, 64, 64));
+		renderer.drawTexturePart("sun", new Rectangle(60, 60, 64, 64));
 
 		drawOrder.draw(renderer); // draw all entities in correct order
 
@@ -112,6 +112,7 @@ public class Game implements RenderListener {
 				new Rectangle(192, 64, 96, 32));
 		manager.createTexturePart("player_foot", "player", new Rectangle(192,
 				32, 96, 32));
+		manager.createTexturePart("sun", "sun", new Rectangle(60, 60, 64, 64));
 		manager.createTexturePart("tile_empty", "tiles",
 				createMapTextureRectangle(0, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
