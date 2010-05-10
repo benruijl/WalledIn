@@ -1,7 +1,7 @@
 package walledin.game;
 
 public enum ZValues {
-	MAP(-10), PLAYER(1), ITEM(0);
+	BACKGROUND(-20), MAP(-10), PLAYER(1), ITEM(0);
 
 	public final int z;
 

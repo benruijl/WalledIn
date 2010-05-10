@@ -53,8 +53,6 @@ public class Game implements RenderListener {
 	}
 
 	public void draw(final Renderer renderer) {
-		renderer.drawTexturePart("sun", new Rectangle(60, 60, 64, 64));
-
 		drawOrder.draw(renderer); // draw all entities in correct order
 
 		for (int i = 0; i < walls.size(); i++) {
@@ -85,6 +83,7 @@ public class Game implements RenderListener {
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
+		entities.put("Background", new Background("Background"));
 		entities.put("Player01", new Player("Player01"));
 		entities.get("Player01").setAttribute(Attribute.POSITION,
 				new Vector2f(10, 10));
