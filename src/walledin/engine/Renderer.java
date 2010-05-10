@@ -44,6 +44,7 @@ public class Renderer implements GLEventListener {
 	private boolean isFirstRun;
 	private Animator anim;
 	private long lastUpdate;
+	private Texture lastTexture;
 
 	public void initialize(final String strTitle) {
 		win = new Frame(strTitle);
@@ -133,12 +134,14 @@ public class Renderer implements GLEventListener {
 	 *            The current GL context
 	 */
 	public void display(final GLAutoDrawable glDrawable) {
-
-		/*
-		 * if (frameCount > 10) { System.out.print((1000000000.0f * frameCount)
-		 * / (System.nanoTime() - prevTime) + " "); prevTime =
-		 * System.nanoTime(); frameCount = 0; } else { frameCount++; }
-		 */
+		// if (frameCount > 10) {
+		// System.out.println((1000000000.0f * frameCount)
+		// / (System.nanoTime() - prevTime) + " ");
+		// prevTime = System.nanoTime();
+		// frameCount = 0;
+		// } else {
+		// frameCount++;
+		// }
 
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
@@ -179,7 +182,8 @@ public class Renderer implements GLEventListener {
 	 *            Destination rectangle
 	 */
 	public void drawRect(final String strTex, final Rectangle destRect) {
-		TextureManager.getInstance().get(strTex).bind();
+		Texture texture = TextureManager.getInstance().get(strTex);
+		bindTexture(texture);
 
 		gl.glBegin(GL.GL_QUADS);
 		gl.glTexCoord2f(0.0f, 0.0f);
@@ -191,6 +195,13 @@ public class Renderer implements GLEventListener {
 		gl.glTexCoord2f(1.0f, 0.0f);
 		gl.glVertex2f(destRect.getRight(), destRect.getTop());
 		gl.glEnd();
+	}
+
+	private void bindTexture(Texture texture) {
+		if (texture != lastTexture) {
+			texture.bind();
+			lastTexture = texture;
+		}
 	}
 
 	/**
@@ -224,7 +235,7 @@ public class Renderer implements GLEventListener {
 	 */
 	public void drawRect(final Texture texture, final Rectangle texRect,
 			final Rectangle destRect) {
-		texture.bind();
+		bindTexture(texture);
 
 		gl.glBegin(GL.GL_QUADS);
 		gl.glTexCoord2f(texRect.getLeft(), texRect.getTop());
