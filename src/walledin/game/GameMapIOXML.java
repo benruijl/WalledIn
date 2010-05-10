@@ -45,8 +45,8 @@ public class GameMapIOXML implements GameMapIO {
 			}
 			x++;
 		}
-		height = x + 1;
-		width = y + 1;
+		height = x;
+		width = y;
 		return result;
 	}
 
