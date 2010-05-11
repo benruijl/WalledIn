@@ -36,7 +36,7 @@ public class ResourceManager<U, T> {
 		return resources.size();
 	}
 
-	protected T get(final U key) {
+	public T get(final U key) {
 		return resources.get(key);
 	}
 }

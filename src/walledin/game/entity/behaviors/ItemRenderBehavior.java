@@ -1,6 +1,7 @@
 package walledin.game.entity.behaviors;
 
 import walledin.engine.Renderer;
+import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ZValues;
@@ -10,12 +11,13 @@ import walledin.game.entity.MessageType;
 
 public class ItemRenderBehavior extends RenderBehavior {
 	private final String texPart;
-	private static final Rectangle ITEM_RECT = new Rectangle(0, 0, 64, 64);
+	private final Rectangle ITEM_RECT;
 	
-	public ItemRenderBehavior(final Entity owner, final String texPart) {
+	public ItemRenderBehavior(final Entity owner, final String texPart, Rectangle destRect) {
 		super(owner, ZValues.ITEM);
 		
 		this.texPart = texPart;
+		ITEM_RECT = destRect;
 	}
 	
 	private void render(final Renderer renderer)

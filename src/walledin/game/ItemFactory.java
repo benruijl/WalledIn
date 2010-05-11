@@ -44,18 +44,30 @@ public class ItemFactory {
 	 *            Name of the family. i.e healthkit, armourkit.
 	 * @param texPart
 	 *            Texture part
+	 * @param scale	The scale with which to draw 
 	 * @param el
 	 *            Element in XML file
 	 * @return Returns the created item
 	 */
-	private void addFunction(final String familyName, final String texPart, final Element el) {
+	private void addFunction(final String familyName, final String texPart, final Rectangle destRect, final Element el) {
 		if (familyName.equals("healthkit")) {
 			itemContructionFunctions.put("healthkit",
 					new ItemConstructionFunction() {
 
 						@Override
 						public Item create(final String itemName) {
-							return new HealthKitItem(itemName, texPart);
+							return new HealthKitItem(itemName, texPart, destRect);
+						}
+					});
+		}
+		
+		if (familyName.equals("armourkit")) {
+			itemContructionFunctions.put("armourkit",
+					new ItemConstructionFunction() {
+
+						@Override
+						public Item create(final String itemName) {
+							return new ArmourKitItem(itemName, texPart, destRect);
 						}
 					});
 		}
@@ -77,11 +89,12 @@ public class ItemFactory {
 
 			final String texture = reader.getRootElement().getAttribute("texture");
 			final String texName = reader.getRootElement().getAttribute("texname");
-			TextureManager.getInstance().loadFromFile(texture, texName); // load
-			// texture
+			TextureManager.getInstance().loadFromFile(texture, texName);
 
-			for (final Element cur : elList) {
+			for (Element cur : elList) {
 				final String familyName = XMLReader.getTextValue(cur, "name");
+				final int destWidth = XMLReader.getIntValue(cur, "width");
+				final int destHeight = XMLReader.getIntValue(cur, "height");
 
 				final Element texurePart = XMLReader.getFirstElement(cur, "texpart");
 				final String texPartName = XMLReader.getTextValue(texurePart, "name");
@@ -93,7 +106,7 @@ public class ItemFactory {
 				TexturePartManager.getInstance().createTexturePart(texPartName,
 						texName, new Rectangle(x, y, width, height));
 
-				addFunction(familyName, texPartName, cur);
+				addFunction(familyName, texPartName, new Rectangle(0, 0, destWidth, destHeight), cur);
 			}
 
 		}

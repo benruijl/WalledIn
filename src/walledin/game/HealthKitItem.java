@@ -1,11 +1,12 @@
 package walledin.game;
 
+import walledin.engine.math.Rectangle;
 import walledin.game.entity.MessageType;
 
 public class HealthKitItem extends Item {
 
-	public HealthKitItem(final String name, final String texPart) {
-		super(name, texPart);
+	public HealthKitItem(final String name, final String texPart, Rectangle destRect) {
+		super(name, texPart, destRect);
 		
 	}
 	

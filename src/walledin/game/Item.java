@@ -1,16 +1,17 @@
 package walledin.game;
 
+import walledin.engine.math.Rectangle;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.ItemRenderBehavior;
 import walledin.game.entity.behaviors.SpatialBehavior;
 
 public class Item extends Entity implements Cloneable {
 
-	public Item(final String name, final String texPart) {
+	public Item(final String name, final String texPart, Rectangle destRect) {
 		super(name);
 		
 		addBehavior(new SpatialBehavior(this));
-		addBehavior(new ItemRenderBehavior(this, texPart));
+		addBehavior(new ItemRenderBehavior(this, texPart, destRect));
 	}
 	
 	@Override

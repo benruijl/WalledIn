@@ -3,6 +3,7 @@
 	<name>Default</name>
 	<items>
 		<item name="hk01" type="healthkit" x="300" y="420" />
+		<item name="ak01" type="armourkit" x="360" y="420" />
 	</items>
 	<tiles>
 		################################################################

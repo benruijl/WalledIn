@@ -108,6 +108,27 @@ public class XMLReader {
 		return null;
 	}
 	
+	/**
+	 * Calls getTextValue and returns a floating value
+	 * 
+	 * @param ele
+	 *            Current element
+	 * @param tag
+	 *            Tag name
+	 * @return Floating value in tag, or null on failure
+	 */
+	static public Float getFloatValue(final Element el, final String tag) {
+		try {
+			return Float.parseFloat(getTextValue(el, tag));
+		} catch (final NumberFormatException nu) {
+
+			System.err.print("Error converting to int in tag " + tag + ": "
+					+ nu.getMessage());
+		}
+
+		return null;
+	}
+	
 	static public Element getFirstElement(final Element element, final String tag) {
 		final List<Element> elementList = getElements(element, tag);
 
