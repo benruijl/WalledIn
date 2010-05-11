@@ -93,7 +93,7 @@ public class GameMapIOXML implements GameMapIO {
 			final List<Item> items = parseItems(map);
 			final List<Tile> tiles = parseTiles(map);
 
-			final GameMap m = new GameMap(name, width, height, tiles);
+			final GameMap m = new GameMap(name, width, height, tiles, items);
 
 			return m;
 		} else {

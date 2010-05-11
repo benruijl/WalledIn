@@ -83,6 +83,7 @@ public class Game implements RenderListener {
 		ItemFactory.getInstance().loadFromXML("data/items.xml"); // load all item information
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
+		
 
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
 		entities.put("Background", new Background("Background"));
@@ -90,9 +91,10 @@ public class Game implements RenderListener {
 		entities.get("Player01").setAttribute(Attribute.POSITION,
 				new Vector2f(10, 10));
 		
-
-		final Item hk = ItemFactory.getInstance().create("healthkit", "healthkit01");
-		entities.put(hk.getName(), hk);
+		//add map items like healthkits to entity list
+		List<Item> mapItems = entities.get("Map").getAttribute(Attribute.ITEM_LIST);
+		for (Item item : mapItems)
+			entities.put(item.getName(), item);
 		
 		drawOrder.add(entities.values()); // add to draw list
 	}

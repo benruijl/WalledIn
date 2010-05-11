@@ -1,5 +1,7 @@
 package walledin.game.entity;
 
+import java.util.List;
+
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.map.Tile;
@@ -14,7 +16,8 @@ public enum Attribute {
 	HEIGHT(Integer.class),
 	TILES(Tile.class),
 	BOUNDING_BOX(Rectangle.class),
-	Z_INDEX(Integer.class);
+	Z_INDEX(Integer.class),
+	ITEM_LIST(List.class);
 
 	public final Class<?> clazz;
 
