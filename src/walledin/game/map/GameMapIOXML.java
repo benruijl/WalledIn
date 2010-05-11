@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
+import walledin.engine.math.Vector2f;
+import walledin.game.Item;
+import walledin.game.ItemFactory;
+import walledin.game.entity.Attribute;
 import walledin.util.XMLReader;
 
 /**
@@ -26,7 +30,7 @@ public class GameMapIOXML implements GameMapIO {
 	 *            Current element
 	 * @return An list of tiles
 	 */
-	private List<Tile> parseTiles(final XMLReader reader, final Element element) {
+	private List<Tile> parseTiles(final Element element) {
 		final List<Tile> result = new ArrayList<Tile>();
 		final String tiles = XMLReader.getTextValue(element, "tiles");
 		final String[] rows = tiles.split("\n");
@@ -49,6 +53,27 @@ public class GameMapIOXML implements GameMapIO {
 		width = y;
 		return result;
 	}
+	
+	private List<Item> parseItems(final Element element)
+	{
+		List<Item> itList = new ArrayList<Item>();
+		Element itemsNode = XMLReader.getFirstElement(element, "items");
+		List<Element> items = XMLReader.getElements(itemsNode, "item");
+		
+		for (Element el : items)
+		{
+			String name = el.getAttribute("name");
+			String type = el.getAttribute("type");
+			int x = Integer.parseInt(el.getAttribute("x"));
+			int y = Integer.parseInt(el.getAttribute("y"));
+			
+			Item item = ItemFactory.getInstance().create(type, name);
+			item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
+			itList.add(item);
+		}
+		
+		return itList;
+	}
 
 	/**
 	 * Reads map data from an XML file
@@ -65,7 +90,8 @@ public class GameMapIOXML implements GameMapIO {
 			final Element map = reader.getRootElement();
 
 			final String name = XMLReader.getTextValue(map, "name");
-			final List<Tile> tiles = parseTiles(reader, map);
+			final List<Item> items = parseItems(map);
+			final List<Tile> tiles = parseTiles(map);
 
 			final GameMap m = new GameMap(name, width, height, tiles);
 

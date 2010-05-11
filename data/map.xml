@@ -2,7 +2,7 @@
 <map>
 	<name>Default</name>
 	<items>
-		<item type="healthkit" x="4" y="4" />
+		<item name="hk01" type="healthkit" x="40" y="40" />
 	</items>
 	<tiles>
 		################################################################

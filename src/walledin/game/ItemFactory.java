@@ -11,16 +11,31 @@ import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.util.XMLReader;
 
+/**
+ * Singleton class for creating items
+ */
 public class ItemFactory {
+	private static final ItemFactory INSTANCE = new ItemFactory();
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		throw new CloneNotSupportedException();
+	}
+
+	public static ItemFactory getInstance() {
+		return INSTANCE;
+	}
+
+	private ItemFactory() {
+		itemContructionFunctions = new HashMap<String, ItemConstructionFunction>();
+	}
+	
+	
 	private interface ItemConstructionFunction {
 		Item create(String itemName);
 	}
 
 	Map<String, ItemConstructionFunction> itemContructionFunctions;
-
-	public ItemFactory() {
-		itemContructionFunctions = new HashMap<String, ItemConstructionFunction>();
-	}
 
 	/**
 	 * creates a function that can create an item of this family and adds it.

@@ -77,14 +77,10 @@ public class Game implements RenderListener {
 		entities = new LinkedHashMap<String, Entity>();
 		drawOrder = new DrawOrderManager();
 
-		final long time = System.nanoTime();
         loadTextures();
-        double diff = System.nanoTime() - time;
-        diff /= 1000000000;
-        System.out.println(diff);
-		
-		
 		createTextureParts();
+		
+		ItemFactory.getInstance().loadFromXML("data/items.xml"); // load all item information
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
@@ -94,10 +90,8 @@ public class Game implements RenderListener {
 		entities.get("Player01").setAttribute(Attribute.POSITION,
 				new Vector2f(10, 10));
 		
-		final ItemFactory fac = new ItemFactory();
-		fac.loadFromXML("data/items.xml"); // load all item information
-		
-		final Item hk = fac.create("healthkit", "healthkit01");
+
+		final Item hk = ItemFactory.getInstance().create("healthkit", "healthkit01");
 		entities.put(hk.getName(), hk);
 		
 		drawOrder.add(entities.values()); // add to draw list
