@@ -7,5 +7,5 @@ package walledin.game.entity;
  * 
  */
 public enum MessageType {
-	RENDER, ATTRIBUTE_SET, WALKED;
+	RENDER, ATTRIBUTE_SET, WALKED, COLLIDED, RESTORE_HEALTH;
 }
