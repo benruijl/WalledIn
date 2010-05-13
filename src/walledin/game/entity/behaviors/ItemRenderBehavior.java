@@ -1,7 +1,6 @@
 package walledin.game.entity.behaviors;
 
 import walledin.engine.Renderer;
-import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ZValues;
