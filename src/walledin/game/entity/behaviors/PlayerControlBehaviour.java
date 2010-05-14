@@ -26,13 +26,13 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_RIGHT)) {
 			x += MOVE_SPEED;
-			setAttribute(Attribute.ORIENTATION, new Integer(1));
+			setAttribute(Attribute.ORIENTATION, 1);
 			getOwner().sendMessage(MessageType.WALKED, null);
 
 		}
 		if (Input.getInstance().keyDown(KeyEvent.VK_LEFT)) {
 			x -= MOVE_SPEED;
-			setAttribute(Attribute.ORIENTATION, new Integer(-1));
+			setAttribute(Attribute.ORIENTATION, -1);
 			getOwner().sendMessage(MessageType.WALKED, null);
 		}
 		if (Input.getInstance().keyDown(KeyEvent.VK_UP)) {

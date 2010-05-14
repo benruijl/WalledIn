@@ -118,7 +118,7 @@ public class Renderer implements GLEventListener {
 
 	public void beginLoop() {
 		// setup the animator
-		anim = new FPSAnimator(mCanvas,60);
+		anim = new FPSAnimator(mCanvas, 60);
 		anim.start();
 
 	}
