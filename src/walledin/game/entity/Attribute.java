@@ -15,11 +15,12 @@ public enum Attribute {
 	NAME(String.class),
 	WIDTH(Integer.class),
 	HEIGHT(Integer.class),
-	TILES(Tile.class),
+	TILES(List.class),
 	BOUNDING_BOX(Rectangle.class),
 	BOUNDING_CIRCLE(Circle.class),
 	Z_INDEX(Integer.class),
-	ITEM_LIST(List.class);
+	ITEM_LIST(List.class),
+	RENDER_TILE_SIZE(Float.class);
 
 	public final Class<?> clazz;
 

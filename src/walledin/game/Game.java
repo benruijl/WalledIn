@@ -15,6 +15,7 @@ import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.map.GameMap;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 
@@ -39,6 +40,10 @@ public class Game implements RenderListener {
 		for (final Entity ent : entities.values()) {
 			ent.sendUpdate(delta);
 		}
+		
+		/* Do collision detection */
+		CollisionManager col = new CollisionManager();
+		col.calculateCollisions((GameMap)entities.get("Map"), entities.values(), delta);
 
 		final Vector2f vNewPos = entities.get("Player01").getAttribute(
 				Attribute.POSITION);
@@ -89,7 +94,7 @@ public class Game implements RenderListener {
 		entities.put("Background", new Background("Background"));
 		entities.put("Player01", new Player("Player01"));
 		entities.get("Player01").setAttribute(Attribute.POSITION,
-				new Vector2f(10, 10));
+				new Vector2f(400, 300));
 		
 		//add map items like healthkits to entity list
 		List<Item> mapItems = entities.get("Map").getAttribute(Attribute.ITEM_LIST);

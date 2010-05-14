@@ -15,13 +15,13 @@ public class Player extends Entity {
 		setAttribute(Attribute.ORIENTATION, new Integer(1)); // start looking to
 																// the right
 
-		final float fScale = 0.5f; // FIXME
-		setAttribute(Attribute.BOUNDING_BOX, new Rectangle(0, 0, 96 * fScale,
-				96 * fScale));
-
 		addBehavior(new HealthBehavior(this, 100, 100));
 		addBehavior(new PlayerControlBehaviour(this));
 		addBehavior(new PlayerRenderBehavior(this));
 		addBehavior(new PlayerAnimationBehavior(this));
+		
+		final float fScale = 0.5f; // FIXME
+		setAttribute(Attribute.BOUNDING_BOX, new Rectangle(0, 0, 96 * fScale,
+				96 * fScale));
 	}
 }

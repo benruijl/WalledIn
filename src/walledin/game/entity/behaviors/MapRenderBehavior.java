@@ -5,6 +5,7 @@ import java.util.List;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.game.ZValues;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
@@ -22,6 +23,8 @@ public class MapRenderBehavior extends RenderBehavior {
 		this.width = width;
 		this.height = height;
 		this.tiles = tiles;
+		
+		setAttribute(Attribute.RENDER_TILE_SIZE, tileWidth);
 	}
 
 	private void render(final Renderer renderer) {

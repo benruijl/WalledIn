@@ -34,6 +34,7 @@ public class GameMap extends Entity {
 		setAttribute(Attribute.NAME, name);
 		setAttribute(Attribute.WIDTH, width);
 		setAttribute(Attribute.HEIGHT, height);
+		setAttribute(Attribute.TILES, tiles);
 		setAttribute(Attribute.ITEM_LIST,items);
 
 		addBehavior(new MapRenderBehavior(this, width, height, tiles));
