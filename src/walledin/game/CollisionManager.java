@@ -21,7 +21,8 @@ public class CollisionManager {
 		int width = map.getAttribute(Attribute.WIDTH);
 		
 		List<Tile> tiles = map.getAttribute(Attribute.TILES);
-		return tiles.get((int) (pos.x % tileSize) + width * (int)(pos.y / tileSize));
+
+		return tiles.get((int) (pos.x / tileSize) + width * (int)(pos.y / tileSize));
 	}
 	
 	public void calculateCollisions(GameMap map, Collection<Entity> entities, double delta) {
@@ -58,7 +59,8 @@ public class CollisionManager {
 				}
 				
 				ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-				
+				//ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldpos2.x, y - oldpos2.y));
+				ent.setAttribute(Attribute.VELOCITY, new Vector2f(((Vector2f)ent.getAttribute(Attribute.VELOCITY)).x, 0));
 			}
 		
 	}
