@@ -88,7 +88,7 @@ public class CollisionManager {
 				}
 
 				ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-				ent.setAttribute(Attribute.VELOCITY, new Vector2f(0, 0));
+				ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldPos.x, y - oldPos.y));
 			}
 
 	}
