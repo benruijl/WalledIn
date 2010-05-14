@@ -11,11 +11,11 @@ import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
 
 public class MapRenderBehavior extends RenderBehavior {
-	final float tileWidth = 32.0f;
-	final int stepSize = 10;
-	final int height;
-	final int width;
-	final List<Tile> tiles;
+	private final static float TILE_WIDTH = 32.0f;
+	private final static int STEP_SIZE = 10;
+	private final int height;
+	private final int width;
+	private final List<Tile> tiles;
 
 	public MapRenderBehavior(final Entity owner, final int width,
 			final int height, final List<Tile> tiles) {
@@ -24,25 +24,25 @@ public class MapRenderBehavior extends RenderBehavior {
 		this.height = height;
 		this.tiles = tiles;
 		
-		setAttribute(Attribute.RENDER_TILE_SIZE, tileWidth);
+		setAttribute(Attribute.RENDER_TILE_SIZE, TILE_WIDTH);
 	}
 
 	private void render(final Renderer renderer) {
 		/* Partition the map */
-		for (int sw = 0; sw < width; sw += stepSize) {
-			for (int sh = 0; sh < height; sh += stepSize) {
+		for (int sw = 0; sw < width; sw += STEP_SIZE) {
+			for (int sh = 0; sh < height; sh += STEP_SIZE) {
 				if (renderer
-						.inFrustum(new Rectangle(sw * tileWidth,
-								sh * tileWidth, tileWidth * stepSize, tileWidth
-										* stepSize))) {
-					for (int i = 0; i < Math.min(stepSize, height - sh); i++) {
-						for (int j = 0; j < Math.min(stepSize, width - sw); j++) {
+						.inFrustum(new Rectangle(sw * TILE_WIDTH,
+								sh * TILE_WIDTH, TILE_WIDTH * STEP_SIZE, TILE_WIDTH
+										* STEP_SIZE))) {
+					for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
+						for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
 							final Tile tile = tiles.get((sh + i) * width + sw
 									+ j);
 							renderer.drawTexturePart(tile.getType()
 									.getTexturePartID(), new Rectangle((sw + j)
-									* tileWidth, (sh + i) * tileWidth,
-									tileWidth, tileWidth));
+									* TILE_WIDTH, (sh + i) * TILE_WIDTH,
+									TILE_WIDTH, TILE_WIDTH));
 						}
 					}
 				}

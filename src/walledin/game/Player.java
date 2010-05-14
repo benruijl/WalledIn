@@ -12,7 +12,7 @@ public class Player extends Entity {
 	public Player(final String name) {
 		super(name);
 
-		setAttribute(Attribute.ORIENTATION, new Integer(1)); // start looking to
+		setAttribute(Attribute.ORIENTATION, 1); // start looking to
 																// the right
 
 		addBehavior(new HealthBehavior(this, 100, 100));
