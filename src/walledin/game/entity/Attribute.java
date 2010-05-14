@@ -5,7 +5,6 @@ import java.util.List;
 import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.map.Tile;
 
 public enum Attribute {
 	POSITION(Vector2f.class),
