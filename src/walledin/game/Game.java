@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
@@ -29,6 +30,7 @@ public class Game implements RenderListener {
 	private final List<Rectangle> walls;
 	private Map<String, Entity> entities;
 	private DrawOrderManager drawOrder;
+	private Font font;
 
 	public Game() {
 		entities = new LinkedHashMap<String, Entity>();
@@ -84,6 +86,9 @@ public class Game implements RenderListener {
 
         loadTextures();
 		createTextureParts();
+		
+		font = new Font(); // load font
+		font.readFromFile("data/arial20.font");
 		
 		ItemFactory.getInstance().loadFromXML("data/items.xml"); // load all item information
 
