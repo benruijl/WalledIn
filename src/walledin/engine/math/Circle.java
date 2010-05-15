@@ -25,6 +25,10 @@ public class Circle {
 	public void setPos(Vector2f pos) {
 		this.pos = pos;
 	}
+	
+	public Circle addPos(Vector2f pos) {
+		return new Circle(this.pos.add(pos), radius);
+	}
 
 	public void setRadius(float radius) {
 		this.radius = radius;
@@ -37,7 +41,7 @@ public class Circle {
 	public boolean intersects(Circle circ) {
 		return (getRadius() + circ.getRadius())
 				* (getRadius() + circ.getRadius()) > getPos()
-				.add(circ.getPos()).lengthSquared();
+				.sub(circ.getPos()).lengthSquared();
 	}
 
 	public static Circle fromRect(Rectangle rect) {

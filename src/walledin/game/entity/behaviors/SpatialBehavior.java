@@ -23,7 +23,7 @@ public class SpatialBehavior extends Behavior {
 		
 		setAttribute(Attribute.POSITION, position); // create attribute
 		setAttribute(Attribute.VELOCITY, velocity);
-		setAttribute(Attribute.BOUNDING_BOX, boundingBox);
+		setAttribute(Attribute.BOUNDING_RECT, boundingBox);
 		setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
 	}
 
@@ -39,7 +39,7 @@ public class SpatialBehavior extends Behavior {
 				velocity = getAttribute(attribute);
 				break;
 				
-			case BOUNDING_BOX:
+			case BOUNDING_RECT:
 				boundingBox = getAttribute(attribute);
 				boundingCircle = Circle.fromRect(boundingBox); // recreate circle
 				setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);

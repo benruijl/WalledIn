@@ -21,6 +21,6 @@ public class Player extends Entity {
 		addBehavior(new PlayerAnimationBehavior(this));
 		
 		// FIXME correct the drawing instead of the hack the bounding box
-		setAttribute(Attribute.BOUNDING_BOX, new Rectangle(0, 0, 44, 43));
+		setAttribute(Attribute.BOUNDING_RECT, new Rectangle(0, 0, 44, 43));
 	}
 }

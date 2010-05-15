@@ -19,6 +19,7 @@ public class HealthKitItem extends Item {
 		{
 			// assumes colliding entity has a health component
 			Entity ent = (Entity)data;
+			System.out.println(getName() + " collided with " + ent.getName());
 			ent.sendMessage(MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
 		}
 

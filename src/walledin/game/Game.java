@@ -42,8 +42,8 @@ public class Game implements RenderListener {
 		}
 		
 		/* Do collision detection */
-		CollisionManager col = new CollisionManager();
-		col.calculateCollisions((GameMap)entities.get("Map"), entities.values(), delta);
+		CollisionManager.calculateMapCollisions((GameMap)entities.get("Map"), entities.values(), delta);
+		CollisionManager.calculateEntityCollisions(entities.values(), delta);
 
 		final Vector2f vNewPos = entities.get("Player01").getAttribute(
 				Attribute.POSITION);

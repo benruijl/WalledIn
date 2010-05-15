@@ -15,7 +15,7 @@ public enum Attribute {
 	WIDTH(Integer.class),
 	HEIGHT(Integer.class),
 	TILES(List.class),
-	BOUNDING_BOX(Rectangle.class),
+	BOUNDING_RECT(Rectangle.class),
 	BOUNDING_CIRCLE(Circle.class),
 	Z_INDEX(Integer.class),
 	ITEM_LIST(List.class),
