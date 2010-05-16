@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.media.opengl.GLException;
 
 import com.sun.opengl.util.texture.Texture;
+import com.sun.opengl.util.texture.TextureData;
 import com.sun.opengl.util.texture.TextureIO;
 
 /**
@@ -67,5 +68,10 @@ public class TextureManager extends ResourceManager<String, Texture> {
 		}
 
 		return false;
+	}
+
+	public void loadFromTextureData(String name, TextureData texData) {
+		Texture tex = TextureIO.newTexture(texData);
+		put(name, tex);
 	}
 }

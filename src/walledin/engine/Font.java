@@ -5,20 +5,19 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.xml.internal.ws.util.ByteArrayBuffer;
+import javax.media.opengl.GL;
+
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
+
+import com.sun.opengl.util.texture.TextureData;
 
 public class Font {
-	
-	public class Glyph
-	{
+
+	public class Glyph {
 		public int width;
 		public int height;
 		public int advance;
@@ -28,44 +27,35 @@ public class Font {
 		public int startY;
 		public char charCode;
 	}
-	
+
 	private String name;
 	private int width;
 	private int height;
 	private int glyphCount;
 	private Map<Character, Glyph> glyphs;
-	
-	private int toBigEndian(int i)
-	{
-		return((i&0xff)<<24)+((i&0xff00)<<8)+((i&0xff0000)>>8)+((i>>24)&0xff);
+
+	/* Helper function */
+	private int toBigEndian(int i) {
+		return ((i & 0xff) << 24) + ((i & 0xff00) << 8) + ((i & 0xff0000) >> 8)
+				+ ((i >> 24) & 0xff);
 	}
-	
+
 	public boolean readFromFile(String filename) {
 		try {
-			DataInputStream in = new DataInputStream(
-					new BufferedInputStream(new FileInputStream(filename)));
+			DataInputStream in = new DataInputStream(new BufferedInputStream(
+					new FileInputStream(filename)));
 
 			try {
-				
 				int nameLength = toBigEndian(in.readInt());
-				System.out.println(nameLength);
 
-				
 				final byte[] nameBuf = new byte[nameLength];
-				in.read(nameBuf, 0, nameLength);	
+				in.read(nameBuf, 0, nameLength);
 				name = new String(nameBuf);
-				System.out.println("Font name: " + name); // for debugging
-				
+
 				glyphCount = toBigEndian(in.readInt());
-				System.out.println(glyphCount);
 				glyphs = new HashMap<Character, Glyph>();
-				
-				Charset charset = Charset.forName("UTF-8");
-				CharsetDecoder decoder = charset.newDecoder();
-				CharsetEncoder encoder = charset.newEncoder();
-				
-				for (int i = 0; i < glyphCount; i++)
-				{
+
+				for (int i = 0; i < glyphCount; i++) {
 					Glyph gl = new Glyph();
 					gl.width = toBigEndian(in.readInt());
 					gl.height = toBigEndian(in.readInt());
@@ -74,30 +64,35 @@ public class Font {
 					gl.bearingY = toBigEndian(in.readInt());
 					gl.startX = toBigEndian(in.readInt());
 					gl.startY = toBigEndian(in.readInt());
-					
-					// try to read an UTF-8 char, this is wrong
-					ByteBuffer b = ByteBuffer.wrap(new byte[8]);
-					b.asCharBuffer().append(in.readChar());
-					b.asCharBuffer().append(in.readChar());
-					b.asCharBuffer().append(in.readChar());
-					b.asCharBuffer().append(in.readChar());
-					gl.charCode = decoder.decode(b).get(0);					
+
+					// try to read an UTF-8 char
+					byte[] charCode = new byte[4];
+					in.read(charCode, 0, 4);
+					String s = new String(charCode, "UTF-8");
+					gl.charCode = s.charAt(0);
+
 					glyphs.put(gl.charCode, gl);
 				}
-				
+
 				// read texture information
 				width = toBigEndian(in.readInt());
 				height = toBigEndian(in.readInt());
-				final byte[] texBuf = new byte[width * height * 2];
-				in.read(texBuf, 0, width * height * 2);
-				
-				
-				System.out.println("Font read from file " +  filename + ".");
+				final byte[] texBufArray = new byte[width * height * 2];
+				in.read(texBufArray, 0, width * height * 2);
+				ByteBuffer texBuf = ByteBuffer.wrap(texBufArray);
+
+				TextureData texData = new TextureData(GL.GL_RGBA, width,
+						height, 0, GL.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE,
+						true, false, false, texBuf, null); // needs flusher?
+
+				// for now, use font name
+				TextureManager.getInstance().loadFromTextureData(name, texData);
+
 				in.close();
-				
+
 				return true;
 			}
-			
+
 			catch (IOException iox) {
 				System.out.println("Problems reading " + filename);
 				in.close();
@@ -109,6 +104,34 @@ public class Font {
 			System.out.println("IO Problems with " + filename);
 			return false;
 		}
+	}
+	
+	/**
+	 * Renders a character to the screen and transposes the current matrix
+	 * with the glyph advance.
+	 * @param renderer Current renderer
+	 * @param c Character to render
+	 * @param pos Position to render to
+	 */
+	public void renderChar(Renderer renderer, Character c, Vector2f pos)
+	{
+		if (!glyphs.containsKey(c))
+			return;
+		
+		Glyph glyph = glyphs.get(c);
+		
+		renderer.drawRect(name, new Rectangle(glyph.startX, glyph.startX, glyph.width, glyph.height), pos);
+		renderer.translate(new Vector2f(glyph.advance, 0));
+	}
+	
+	public void renderText(Renderer renderer, String text, Vector2f pos)
+	{
+		renderer.pushMatrix();
+		
+		for (int i = 0; i < text.length(); i++)
+			renderChar(renderer, text.charAt(i), pos);
+		
+		renderer.popMatrix();
 	}
 
 }
