@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import javax.media.opengl.GL;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
+import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureData;
 
 public class Font {
@@ -33,6 +35,10 @@ public class Font {
 	private int height;
 	private int glyphCount;
 	private Map<Character, Glyph> glyphs;
+
+	public String getName() {
+		return name;
+	}
 
 	/* Helper function */
 	private int toBigEndian(int i) {
@@ -79,11 +85,24 @@ public class Font {
 				height = toBigEndian(in.readInt());
 				final byte[] texBufArray = new byte[width * height * 2];
 				in.read(texBufArray, 0, width * height * 2);
-				ByteBuffer texBuf = ByteBuffer.wrap(texBufArray);
+
+				/*
+				 * for (int i = 0; i < width * height * 2; i+=2) { byte tmp =
+				 * texBufArray[i]; texBufArray[i] = texBufArray[i + 1];
+				 * texBufArray[i + 1] = tmp; }
+				 */
+
+				/*
+				 * ByteBuffer texBuf = ByteBuffer.allocateDirect(width * height
+				 * * 3); texBuf.order(ByteOrder.LITTLE_ENDIAN);
+				 * texBuf.put(texBufArray); //texBuf = texBuf.wrap(texBufArray);
+				 * texBuf.order(ByteOrder.BIG_ENDIAN);
+				 */
 
 				TextureData texData = new TextureData(GL.GL_RGBA, width,
 						height, 0, GL.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE,
-						true, false, false, texBuf, null); // needs flusher?
+						true, false, false, ByteBuffer.wrap(texBufArray), null); // needs
+				// flusher?
 
 				// for now, use font name
 				TextureManager.getInstance().loadFromTextureData(name, texData);
@@ -105,32 +124,43 @@ public class Font {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Renders a character to the screen and transposes the current matrix
-	 * with the glyph advance.
-	 * @param renderer Current renderer
-	 * @param c Character to render
-	 * @param pos Position to render to
+	 * Renders a character to the screen and transposes the current matrix with
+	 * the glyph advance.
+	 * 
+	 * @param renderer
+	 *            Current renderer
+	 * @param c
+	 *            Character to render
+	 * @param pos
+	 *            Position to render to
 	 */
-	public void renderChar(Renderer renderer, Character c, Vector2f pos)
-	{
+	public void renderChar(Renderer renderer, Character c, Vector2f pos) {
 		if (!glyphs.containsKey(c))
 			return;
-		
+
 		Glyph glyph = glyphs.get(c);
-		
-		renderer.drawRect(name, new Rectangle(glyph.startX, glyph.startX, glyph.width, glyph.height), pos);
+		Texture tex = TextureManager.getInstance().get(name);
+
+		// FIXME: calculate true texture positions somewhere else
+		renderer.drawRect(name, new Rectangle((glyph.startX + 0.500f)
+				/ (float) tex.getWidth(), (glyph.startY + 0.500f)
+				/ (float) tex.getHeight(),
+				(glyph.width - 1.000f) / (float) tex.getWidth(), (glyph.height - 1.000f)
+						/ (float) tex.getHeight()), new Rectangle(pos.getX()
+				+ glyph.bearingX, pos.getY() - glyph.bearingY, glyph.width,
+				glyph.height));
+
 		renderer.translate(new Vector2f(glyph.advance, 0));
 	}
-	
-	public void renderText(Renderer renderer, String text, Vector2f pos)
-	{
+
+	public void renderText(Renderer renderer, String text, Vector2f pos) {
 		renderer.pushMatrix();
-		
+
 		for (int i = 0; i < text.length(); i++)
 			renderChar(renderer, text.charAt(i), pos);
-		
+
 		renderer.popMatrix();
 	}
 

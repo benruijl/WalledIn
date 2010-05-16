@@ -62,7 +62,7 @@ public class Game implements RenderListener {
 	public void draw(final Renderer renderer) {
 		drawOrder.draw(renderer); // draw all entities in correct order
 		
-		font.renderText(renderer, "Testcase", new Vector2f(300, 300));
+		font.renderText(renderer, "This game rocks!", new Vector2f(300, 300));
 
 		for (int i = 0; i < walls.size(); i++) {
 			renderer.drawRect("wall", new Rectangle(0.0f, 0.0f, 110 / 128.0f,

@@ -265,23 +265,6 @@ public class Renderer implements GLEventListener {
 		drawRect(part.getTexture(), part.getRectangle(), destination);
 	}
 
-	/**
-	 * Draws a textured rectangle to the screen. It uses the same dimensions on
-	 * the screen as the texture's.
-	 * 
-	 * @param strTex
-	 *            Texure name
-	 * @param texRect
-	 *            Specifies the subtexture
-	 * @param vPos
-	 *            Position to render to
-	 */
-	public void drawRect(final String strTex, final Rectangle texRect,
-			final Vector2f vPos) {
-		drawRect(strTex, texRect, new Rectangle(vPos.getX(), vPos.getY(),
-				texRect.getWidth(), texRect.getHeight()));
-	}
-
 	private void beginDraw() {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		gl.glLoadIdentity();
@@ -301,9 +284,12 @@ public class Renderer implements GLEventListener {
 
 		gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue
 		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_ONE, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA); 
 		gl.glEnable(GL.GL_TEXTURE_2D);
 
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+		
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
 
