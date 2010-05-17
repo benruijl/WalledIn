@@ -8,21 +8,20 @@ import walledin.game.entity.behaviors.SpatialBehavior;
 
 public class Item extends Entity implements Cloneable {
 
-	public Item(final String name, final String texPart, Rectangle destRect) {
+	public Item(final String name, final String texPart,
+			final Rectangle destRect) {
 		super(name);
-		
+
 		addBehavior(new SpatialBehavior(this));
 		addBehavior(new ItemRenderBehavior(this, texPart, destRect));
-		
+
 		setAttribute(Attribute.BOUNDING_RECT, destRect);
 	}
-	
+
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		// TODO Auto-generated method stub
 		return super.clone();
 	}
-	
-
 
 }

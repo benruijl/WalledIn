@@ -53,25 +53,23 @@ public class GameMapIOXML implements GameMapIO {
 		width = y;
 		return result;
 	}
-	
-	private List<Item> parseItems(final Element element)
-	{
-		List<Item> itList = new ArrayList<Item>();
-		Element itemsNode = XMLReader.getFirstElement(element, "items");
-		List<Element> items = XMLReader.getElements(itemsNode, "item");
-		
-		for (Element el : items)
-		{
-			String name = el.getAttribute("name");
-			String type = el.getAttribute("type");
-			int x = Integer.parseInt(el.getAttribute("x"));
-			int y = Integer.parseInt(el.getAttribute("y"));
-			
-			Item item = ItemFactory.getInstance().create(type, name);
+
+	private List<Item> parseItems(final Element element) {
+		final List<Item> itList = new ArrayList<Item>();
+		final Element itemsNode = XMLReader.getFirstElement(element, "items");
+		final List<Element> items = XMLReader.getElements(itemsNode, "item");
+
+		for (final Element el : items) {
+			final String name = el.getAttribute("name");
+			final String type = el.getAttribute("type");
+			final int x = Integer.parseInt(el.getAttribute("x"));
+			final int y = Integer.parseInt(el.getAttribute("y"));
+
+			final Item item = ItemFactory.getInstance().create(type, name);
 			item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
 			itList.add(item);
 		}
-		
+
 		return itList;
 	}
 

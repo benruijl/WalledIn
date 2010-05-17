@@ -71,7 +71,7 @@ public class DrawOrderManager {
 		}
 	}
 
-	public void removeEntity(Entity entity) {
+	public void removeEntity(final Entity entity) {
 		entities.remove(entity);
 	}
 }

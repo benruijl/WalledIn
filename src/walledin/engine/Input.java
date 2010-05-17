@@ -36,7 +36,7 @@ public class Input implements KeyListener {
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // quick way out
 			// FIXME ... very ugly .. no way to do some kind of cleanup ..
 			// exit should be avoided in general
-			System.exit(0); 
+			System.exit(0);
 		}
 
 		mKeyStates.put(e.getKeyCode(), KeyState.Down);

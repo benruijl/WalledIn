@@ -39,11 +39,12 @@ public class Game implements RenderListener {
 		for (final Entity entity : entities.values()) {
 			entity.sendUpdate(delta);
 		}
-		
+
 		/* Do collision detection */
-		CollisionManager.calculateMapCollisions((GameMap)entities.get("Map"), entities.values(), delta);
+		CollisionManager.calculateMapCollisions((GameMap) entities.get("Map"),
+				entities.values(), delta);
 		CollisionManager.calculateEntityCollisions(entities.values(), delta);
-		
+
 		for (final Entity entity : entities.values()) {
 			if (entity.isMarkedRemoved()) {
 				removeEntity(entity.getName());
@@ -53,11 +54,11 @@ public class Game implements RenderListener {
 
 	public void draw(final Renderer renderer) {
 		drawOrder.draw(renderer); // draw all entities in correct order
-		
+
 		font.renderText(renderer, "This game rocks!", new Vector2f(300, 300));
 
 		// TODO: add HUD rendering
-		
+
 		/* FIXME: move these lines */
 		renderer.centerAround((Vector2f) entities.get("Player01").getAttribute(
 				Attribute.POSITION));
@@ -75,33 +76,36 @@ public class Game implements RenderListener {
 		entities = new LinkedHashMap<String, Entity>();
 		drawOrder = new DrawOrderManager();
 
-        loadTextures();
+		loadTextures();
 		createTextureParts();
-		
+
 		font = new Font(); // load font
 		font.readFromFile("data/arial20.font");
-		
-		ItemFactory.getInstance().loadFromXML("data/items.xml"); // load all item information
+
+		ItemFactory.getInstance().loadFromXML("data/items.xml"); // load all
+																	// item
+																	// information
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
-		
 
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
 		entities.put("Background", new Background("Background"));
 		entities.put("Player01", new Player("Player01"));
 		entities.get("Player01").setAttribute(Attribute.POSITION,
 				new Vector2f(400, 300));
-		
-		//add map items like healthkits to entity list
-		List<Item> mapItems = entities.get("Map").getAttribute(Attribute.ITEM_LIST);
-		for (Item item : mapItems)
+
+		// add map items like healthkits to entity list
+		final List<Item> mapItems = entities.get("Map").getAttribute(
+				Attribute.ITEM_LIST);
+		for (final Item item : mapItems) {
 			entities.put(item.getName(), item);
-		
+		}
+
 		drawOrder.add(entities.values()); // add to draw list
 	}
-	
-	public Entity removeEntity(String name) {
-		Entity entity = entities.remove(name);
+
+	public Entity removeEntity(final String name) {
+		final Entity entity = entities.remove(name);
 		drawOrder.removeEntity(entity);
 		return entity;
 	}

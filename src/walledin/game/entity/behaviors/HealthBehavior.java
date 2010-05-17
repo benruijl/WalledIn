@@ -6,30 +6,31 @@ import walledin.game.entity.MessageType;
 
 public class HealthBehavior extends Behavior {
 	private int health;
-	private int maxHealth;
+	private final int maxHealth;
 
-	public HealthBehavior(Entity owner, int maxHealth, int curHealth) {
+	public HealthBehavior(final Entity owner, final int maxHealth,
+			final int curHealth) {
 		super(owner);
 
-		this.health = curHealth;
+		health = curHealth;
 		this.maxHealth = maxHealth;
 	}
 
 	@Override
-	public void onMessage(MessageType messageType, Object data) {
-		if (messageType == MessageType.RESTORE_HEALTH)
-		{
-			int hp = (Integer)data;
-			if (health + hp > maxHealth)
+	public void onMessage(final MessageType messageType, final Object data) {
+		if (messageType == MessageType.RESTORE_HEALTH) {
+			final int hp = (Integer) data;
+			if (health + hp > maxHealth) {
 				health = maxHealth;
-			else
+			} else {
 				health += hp;
+			}
 		}
 
 	}
 
 	@Override
-	public void onUpdate(double delta) {
+	public void onUpdate(final double delta) {
 		// TODO Auto-generated method stub
 
 	}

@@ -73,7 +73,7 @@ public class Rectangle {
 		return rect.getRight() > getLeft() && rect.getLeft() < getRight()
 				&& rect.getBottom() > getTop() && rect.getTop() < getBottom();
 	}
-	
+
 	public Rectangle setPos(final Vector2f vPos) {
 		return new Rectangle(vPos.x, vPos.y, width, height);
 	}
