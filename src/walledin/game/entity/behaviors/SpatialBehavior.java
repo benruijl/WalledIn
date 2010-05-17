@@ -41,8 +41,8 @@ public class SpatialBehavior extends Behavior {
 
 			case BOUNDING_RECT:
 				boundingBox = getAttribute(attribute);
-				boundingCircle = Circle.fromRect(boundingBox); // recreate
-																// circle
+				// recreate circle
+				boundingCircle = Circle.fromRect(boundingBox);
 				setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
 				break;
 			}

@@ -82,9 +82,8 @@ public class Game implements RenderListener {
 		font = new Font(); // load font
 		font.readFromFile("data/arial20.font");
 
-		ItemFactory.getInstance().loadFromXML("data/items.xml"); // load all
-																	// item
-																	// information
+		// load all item information
+		ItemFactory.getInstance().loadFromXML("data/items.xml");
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
