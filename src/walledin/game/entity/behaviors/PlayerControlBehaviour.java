@@ -4,17 +4,32 @@ import java.awt.event.KeyEvent;
 
 import walledin.engine.Input;
 import walledin.engine.math.Vector2f;
+import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
-	private static final Vector2f GRAVITY = new Vector2f(0, 40.0f);
-	private static final float MOVE_SPEED = 80.0f;
+	private static final Vector2f GRAVITY = new Vector2f(0, 100.0f);
+	private static final float MOVE_SPEED = 140.0f;
+	private static final float JUMP_SPEED = 3500.0f;
+	private boolean canJump;
 
 	public PlayerControlBehaviour(final Entity owner) {
 		super(owner);
 		// TODO Auto-generated constructor stub
+	}
+	
+	@Override
+	public void onMessage(MessageType messageType, Object data) {
+		if (messageType == MessageType.COLLIDED)
+		{
+			CollisionData colData = (CollisionData)data;
+			canJump = colData.getNewPos().getY() < colData.getTheorPos().getY();
+		}
+
+		
+		super.onMessage(messageType, data);
 	}
 
 	@Override
@@ -38,8 +53,14 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 		if (Input.getInstance().keyDown(KeyEvent.VK_UP)) {
 			y -= MOVE_SPEED;
 		}
+		
 		if (Input.getInstance().keyDown(KeyEvent.VK_DOWN)) {
 			y += MOVE_SPEED;
+		}
+		
+		if (canJump && Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
+			y -= JUMP_SPEED;
+			canJump = false;
 		}
 
 		velocity = velocity.add(new Vector2f(x, y));

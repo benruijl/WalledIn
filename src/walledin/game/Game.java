@@ -50,12 +50,12 @@ public class Game implements RenderListener {
 		final Vector2f vNewPos = entities.get("Player01").getAttribute(
 				Attribute.POSITION);
 
-		if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
+		/*if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
 			walls
 					.add(new Rectangle(vNewPos.getX() + 65, vNewPos.getY(), 30,
 							90));
 			Input.getInstance().setKeyUp(KeyEvent.VK_SPACE);
-		}
+		}*/
 
 	}
 

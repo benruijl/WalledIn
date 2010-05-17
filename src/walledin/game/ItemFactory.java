@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
+import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.util.XMLReader;
 
 /**
@@ -56,7 +57,9 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
-							return new HealthKitItem(itemName, texPart, destRect);
+							Item hk = new Item(itemName, texPart, destRect);
+							hk.addBehavior(new HealthKitBehavior(hk, 10)); // FIXME: read strength from XML
+							return hk;
 						}
 					});
 		}
@@ -67,7 +70,7 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
-							return new ArmourKitItem(itemName, texPart, destRect);
+							return new Item(itemName, texPart, destRect); // TODO: read custom information
 						}
 					});
 		}

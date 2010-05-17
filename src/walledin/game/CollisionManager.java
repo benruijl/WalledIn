@@ -13,6 +13,56 @@ import walledin.game.map.GameMap;
 import walledin.game.map.Tile;
 
 public class CollisionManager {
+	
+	static public class CollisionData
+	{
+		private final Vector2f newPos;
+		private final Vector2f oldPos;
+		private final Vector2f theorPos;
+		private final Entity collisionEntity;
+		
+		
+		public final Vector2f getNewPos() {
+			return newPos;
+		}
+
+
+
+		public final Vector2f getOldPos() {
+			return oldPos;
+		}
+
+
+
+		public final Vector2f getTheorPos() {
+			return theorPos;
+		}
+
+
+
+		public final Entity getCollisionEntity() {
+			return collisionEntity;
+		}
+
+		
+
+		/**
+		 * @param newPos The position after the collision detection
+		 * @param oldPos The position before the velocity update
+		 * @param theorPos The theoretical position after the velocity update but before the collision check
+		 * @param collisionEntity The entity the entity that receives the message collided with
+		 */
+		public CollisionData(Vector2f newPos, Vector2f oldPos,
+				Vector2f theorPos, Entity collisionEntity) {
+			super();
+			this.newPos = newPos;
+			this.oldPos = oldPos;
+			this.theorPos = theorPos;
+			this.collisionEntity = collisionEntity;
+		}
+		
+		
+	}
 
 	static private Tile tileFromPixel(GameMap map, Vector2f pos) {
 		float tileSize = map.getAttribute(Attribute.RENDER_TILE_SIZE);
@@ -57,8 +107,12 @@ public class CollisionManager {
 				if (!rectA.intersects(rectB))
 					continue;
 
-				entArray[i].sendMessage(MessageType.COLLIDED, entArray[j]);
-				entArray[j].sendMessage(MessageType.COLLIDED, entArray[i]);
+				Vector2f posA = entArray[i].getAttribute(Attribute.POSITION);
+				Vector2f posB = entArray[j].getAttribute(Attribute.POSITION);
+							
+				// no response yet, so give the same data
+				entArray[i].sendMessage(MessageType.COLLIDED, new CollisionData(posA, posA, posA, entArray[j]));
+				entArray[j].sendMessage(MessageType.COLLIDED, new CollisionData(posB, posB, posB, entArray[i]));
 			}
 	}
 
@@ -129,6 +183,8 @@ public class CollisionManager {
 				ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
 				ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldPos.x,
 						y - oldPos.y));
+				
+				ent.sendMessage(MessageType.COLLIDED, new CollisionData(new Vector2f(x, y), oldPos, curPos, map));
 			}
 
 	}
