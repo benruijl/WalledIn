@@ -41,8 +41,8 @@ public class ItemFactory {
 	 * Creates a function that can create items of a particular family. It takes
 	 * care of reading extra information, specific for the item, from the XML.
 	 * 
-	 * The creation of the item involves adding the required behaviors and setting
-	 * its variables.
+	 * The creation of the item involves adding the required behaviors and
+	 * setting its variables.
 	 * 
 	 * @param familyName
 	 *            Name of the family. i.e healthkit, armourkit.
@@ -51,8 +51,8 @@ public class ItemFactory {
 	 * @param scale
 	 *            The scale with which to draw
 	 * @param el
-	 *            Element in XML file which contains item specific information, like
-	 *            health kit strength or armor penetration value
+	 *            Element in XML file which contains item specific information,
+	 *            like health kit strength or armor penetration value
 	 */
 	private void addFunction(final String familyName, final String texPart,
 			final Rectangle destRect, final Element el) {
@@ -62,7 +62,8 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
-							Item hk = new Item(itemName, familyName, texPart, destRect);
+							Item hk = new Item(itemName, familyName, texPart,
+									destRect);
 
 							// read extra data
 							int hkStrength = XMLReader.getIntValue(el,
