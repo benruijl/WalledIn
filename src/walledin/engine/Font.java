@@ -86,19 +86,6 @@ public class Font {
 				final byte[] texBufArray = new byte[width * height * 2];
 				in.read(texBufArray, 0, width * height * 2);
 
-				/*
-				 * for (int i = 0; i < width * height * 2; i+=2) { byte tmp =
-				 * texBufArray[i]; texBufArray[i] = texBufArray[i + 1];
-				 * texBufArray[i + 1] = tmp; }
-				 */
-
-				/*
-				 * ByteBuffer texBuf = ByteBuffer.allocateDirect(width * height
-				 * * 3); texBuf.order(ByteOrder.LITTLE_ENDIAN);
-				 * texBuf.put(texBufArray); //texBuf = texBuf.wrap(texBufArray);
-				 * texBuf.order(ByteOrder.BIG_ENDIAN);
-				 */
-
 				TextureData texData = new TextureData(GL.GL_RGBA, width,
 						height, 0, GL.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE,
 						true, false, false, ByteBuffer.wrap(texBufArray), null); // needs
