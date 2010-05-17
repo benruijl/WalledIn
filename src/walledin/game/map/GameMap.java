@@ -29,9 +29,8 @@ public class GameMap extends Entity {
 	 */
 	public GameMap(final String name, final int width, final int height,
 			final List<Tile> tiles, List<Item> items) {
-		super(name);
-
-		setAttribute(Attribute.NAME, name);
+		super(name, "map");
+		
 		setAttribute(Attribute.WIDTH, width);
 		setAttribute(Attribute.HEIGHT, height);
 		setAttribute(Attribute.TILES, tiles);

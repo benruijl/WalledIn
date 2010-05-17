@@ -10,7 +10,7 @@ import walledin.game.entity.behaviors.PlayerRenderBehavior;
 
 public class Player extends Entity {
 	public Player(final String name) {
-		super(name);
+		super(name, "player");
 
 		setAttribute(Attribute.ORIENTATION, 1); // start looking to
 																// the right

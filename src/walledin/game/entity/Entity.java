@@ -8,17 +8,19 @@ public class Entity {
 	private final static Logger LOG = Logger.getLogger(Entity.class.getName());
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
 	private final Map<Attribute, Object> attributes;
-	private String name;
+	private final String name;
+	private final String familyName;
 
 	/**
 	 * 
 	 * @param name
 	 *            Name of the component
 	 */
-	public Entity(final String name) {
+	public Entity(final String name, final String familyName) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		this.name = name;
+		this.familyName = familyName;
 	}
 
 	/**
@@ -28,15 +30,6 @@ public class Entity {
 	 */
 	public String getName() {
 		return name;
-	}
-	
-	/**
-	 * Set the name of the entity
-	 * 
-	 * @return Name of the entity
-	 */
-	public void setName(final String name) {
-		this.name = name;
 	}
 
 	/**
@@ -169,5 +162,9 @@ public class Entity {
 		for (final Behavior behavior : behaviors.values()) {
 			behavior.onUpdate(delta);
 		}
+	}
+
+	public String getFamilyName() {
+		return familyName;
 	}
 }
