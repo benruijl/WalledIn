@@ -62,8 +62,8 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
-							final Item hk = new Item(itemName, familyName, texPart,
-									destRect);
+							final Item hk = new Item(itemName, familyName,
+									texPart, destRect);
 
 							// read extra data
 							final int hkStrength = XMLReader.getIntValue(el,

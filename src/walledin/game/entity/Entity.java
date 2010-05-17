@@ -35,15 +35,6 @@ public class Entity {
 	}
 
 	/**
-	 * Set the name of the entity
-	 * 
-	 * @return Name of the entity
-	 */
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	/**
 	 * Adds a behavior to this class
 	 * 
 	 * @param behavior

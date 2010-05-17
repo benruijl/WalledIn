@@ -144,7 +144,7 @@ public class CollisionManager {
 				float x = curPos.x; // new x position after collision
 				float y = curPos.y; // new y position after collision
 				final float eps = 0.001f; // small value to prevent floating
-											// errors
+				// errors
 
 				// VERTICAL CHECK - move vertically only
 				rect = rect.setPos(new Vector2f(oldPos.x, curPos.y));
