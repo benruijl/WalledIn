@@ -27,14 +27,12 @@ import walledin.game.map.GameMapIOXML;
 public class Game implements RenderListener {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
-	private final List<Rectangle> walls;
 	private Map<String, Entity> entities;
 	private DrawOrderManager drawOrder;
 	private Font font;
 
 	public Game() {
 		entities = new LinkedHashMap<String, Entity>();
-		walls = new ArrayList<Rectangle>();
 	}
 
 	public void update(final double delta) {
@@ -46,17 +44,6 @@ public class Game implements RenderListener {
 		/* Do collision detection */
 		CollisionManager.calculateMapCollisions((GameMap)entities.get("Map"), entities.values(), delta);
 		CollisionManager.calculateEntityCollisions(entities.values(), delta);
-
-		final Vector2f vNewPos = entities.get("Player01").getAttribute(
-				Attribute.POSITION);
-
-		/*if (Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
-			walls
-					.add(new Rectangle(vNewPos.getX() + 65, vNewPos.getY(), 30,
-							90));
-			Input.getInstance().setKeyUp(KeyEvent.VK_SPACE);
-		}*/
-
 	}
 
 	public void draw(final Renderer renderer) {
@@ -64,11 +51,8 @@ public class Game implements RenderListener {
 		
 		font.renderText(renderer, "This game rocks!", new Vector2f(300, 300));
 
-		for (int i = 0; i < walls.size(); i++) {
-			renderer.drawRect("wall", new Rectangle(0.0f, 0.0f, 110 / 128.0f,
-					235 / 256.0f), walls.get(i));
-		}
-
+		// TODO: add HUD rendering
+		
 		/* FIXME: move these lines */
 		renderer.centerAround((Vector2f) entities.get("Player01").getAttribute(
 				Attribute.POSITION));

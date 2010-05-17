@@ -30,8 +30,7 @@ public class ItemFactory {
 	private ItemFactory() {
 		itemContructionFunctions = new HashMap<String, ItemConstructionFunction>();
 	}
-	
-	
+
 	private interface ItemConstructionFunction {
 		Item create(String itemName);
 	}
@@ -39,18 +38,24 @@ public class ItemFactory {
 	Map<String, ItemConstructionFunction> itemContructionFunctions;
 
 	/**
-	 * creates a function that can create an item of this family and adds it.
+	 * Creates a function that can create items of a particular family. It takes
+	 * care of reading extra information, specific for the item, from the XML.
+	 * 
+	 * The creation of the item involves adding the required behaviors and setting
+	 * its variables.
 	 * 
 	 * @param familyName
 	 *            Name of the family. i.e healthkit, armourkit.
 	 * @param texPart
 	 *            Texture part
-	 * @param scale	The scale with which to draw 
+	 * @param scale
+	 *            The scale with which to draw
 	 * @param el
-	 *            Element in XML file
-	 * @return Returns the created item
+	 *            Element in XML file which contains item specific information, like
+	 *            health kit strength or armor penetration value
 	 */
-	private void addFunction(final String familyName, final String texPart, final Rectangle destRect, final Element el) {
+	private void addFunction(final String familyName, final String texPart,
+			final Rectangle destRect, final Element el) {
 		if (familyName.equals("healthkit")) {
 			itemContructionFunctions.put("healthkit",
 					new ItemConstructionFunction() {
@@ -58,19 +63,28 @@ public class ItemFactory {
 						@Override
 						public Item create(final String itemName) {
 							Item hk = new Item(itemName, texPart, destRect);
-							hk.addBehavior(new HealthKitBehavior(hk, 10)); // FIXME: read strength from XML
+
+							// read extra data
+							int hkStrength = XMLReader.getIntValue(el,
+									"strength");
+							hk
+									.addBehavior(new HealthKitBehavior(hk,
+											hkStrength));
 							return hk;
 						}
 					});
 		}
-		
+
 		if (familyName.equals("armourkit")) {
 			itemContructionFunctions.put("armourkit",
 					new ItemConstructionFunction() {
 
 						@Override
 						public Item create(final String itemName) {
-							return new Item(itemName, texPart, destRect); // TODO: read custom information
+							return new Item(itemName, texPart, destRect); // TODO:
+							// read
+							// custom
+							// information
 						}
 					});
 		}
@@ -90,8 +104,10 @@ public class ItemFactory {
 			final List<Element> elList = XMLReader.getElements(reader
 					.getRootElement(), "item");
 
-			final String texture = reader.getRootElement().getAttribute("texture");
-			final String texName = reader.getRootElement().getAttribute("texname");
+			final String texture = reader.getRootElement().getAttribute(
+					"texture");
+			final String texName = reader.getRootElement().getAttribute(
+					"texname");
 			TextureManager.getInstance().loadFromFile(texture, texName);
 
 			for (Element cur : elList) {
@@ -99,8 +115,10 @@ public class ItemFactory {
 				final int destWidth = XMLReader.getIntValue(cur, "width");
 				final int destHeight = XMLReader.getIntValue(cur, "height");
 
-				final Element texurePart = XMLReader.getFirstElement(cur, "texpart");
-				final String texPartName = XMLReader.getTextValue(texurePart, "name");
+				final Element texurePart = XMLReader.getFirstElement(cur,
+						"texpart");
+				final String texPartName = XMLReader.getTextValue(texurePart,
+						"name");
 				final int x = XMLReader.getIntValue(texurePart, "x");
 				final int y = XMLReader.getIntValue(texurePart, "y");
 				final int width = XMLReader.getIntValue(texurePart, "width");
@@ -109,7 +127,8 @@ public class ItemFactory {
 				TexturePartManager.getInstance().createTexturePart(texPartName,
 						texName, new Rectangle(x, y, width, height));
 
-				addFunction(familyName, texPartName, new Rectangle(0, 0, destWidth, destHeight), cur);
+				addFunction(familyName, texPartName, new Rectangle(0, 0,
+						destWidth, destHeight), cur);
 			}
 
 		}
