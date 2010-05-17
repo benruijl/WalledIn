@@ -25,11 +25,11 @@ public class DrawOrderManager {
 		}
 	}
 
-	SortedSet<Entity> entityList;
+	SortedSet<Entity> entities;
 
 	public DrawOrderManager() {
 		super();
-		entityList = new TreeSet<Entity>(new ZOrderComperator());
+		entities = new TreeSet<Entity>(new ZOrderComperator());
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class DrawOrderManager {
 	public void add(final Collection<Entity> Collection) {
 		for (final Entity en : Collection) {
 			if (en.hasAttribute(Attribute.Z_INDEX)) {
-				entityList.add(en);
+				entities.add(en);
 			}
 		}
 	}
@@ -57,17 +57,21 @@ public class DrawOrderManager {
 		if (!e.hasAttribute(Attribute.Z_INDEX)) {
 			return false;
 		}
-		return entityList.add(e);
+		return entities.add(e);
 	}
 
 	public SortedSet<Entity> getList() {
-		return entityList;
+		return entities;
 	}
 
 	public void draw(final Renderer renderer) {
 		/* Draw all entities in the correct order */
-		for (final Entity ent : entityList) {
+		for (final Entity ent : entities) {
 			ent.sendMessage(MessageType.RENDER, renderer);
 		}
+	}
+
+	public void removeEntity(final Entity entity) {
+		entities.remove(entity);
 	}
 }

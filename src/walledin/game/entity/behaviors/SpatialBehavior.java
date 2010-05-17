@@ -20,7 +20,7 @@ public class SpatialBehavior extends Behavior {
 		velocity = new Vector2f();
 		boundingBox = new Rectangle();
 		boundingCircle = new Circle();
-		
+
 		setAttribute(Attribute.POSITION, position); // create attribute
 		setAttribute(Attribute.VELOCITY, velocity);
 		setAttribute(Attribute.BOUNDING_RECT, boundingBox);
@@ -38,10 +38,11 @@ public class SpatialBehavior extends Behavior {
 			case VELOCITY:
 				velocity = getAttribute(attribute);
 				break;
-				
+
 			case BOUNDING_RECT:
 				boundingBox = getAttribute(attribute);
-				boundingCircle = Circle.fromRect(boundingBox); // recreate circle
+				boundingCircle = Circle.fromRect(boundingBox); // recreate
+																// circle
 				setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
 				break;
 			}

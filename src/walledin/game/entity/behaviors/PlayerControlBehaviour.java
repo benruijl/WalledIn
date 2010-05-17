@@ -19,16 +19,14 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 		super(owner);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	@Override
-	public void onMessage(MessageType messageType, Object data) {
-		if (messageType == MessageType.COLLIDED)
-		{
-			CollisionData colData = (CollisionData)data;
+	public void onMessage(final MessageType messageType, final Object data) {
+		if (messageType == MessageType.COLLIDED) {
+			final CollisionData colData = (CollisionData) data;
 			canJump = colData.getNewPos().getY() < colData.getTheorPos().getY();
 		}
 
-		
 		super.onMessage(messageType, data);
 	}
 
@@ -53,11 +51,11 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 		if (Input.getInstance().keyDown(KeyEvent.VK_UP)) {
 			y -= MOVE_SPEED;
 		}
-		
+
 		if (Input.getInstance().keyDown(KeyEvent.VK_DOWN)) {
 			y += MOVE_SPEED;
 		}
-		
+
 		if (canJump && Input.getInstance().keyDown(KeyEvent.VK_SPACE)) {
 			y -= JUMP_SPEED;
 			canJump = false;

@@ -62,11 +62,11 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
-							Item hk = new Item(itemName, familyName, texPart,
+							final Item hk = new Item(itemName, familyName, texPart,
 									destRect);
 
 							// read extra data
-							int hkStrength = XMLReader.getIntValue(el,
+							final int hkStrength = XMLReader.getIntValue(el,
 									"strength");
 							hk
 									.addBehavior(new HealthKitBehavior(hk,
@@ -110,7 +110,7 @@ public class ItemFactory {
 					"texname");
 			TextureManager.getInstance().loadFromFile(texture, texName);
 
-			for (Element cur : elList) {
+			for (final Element cur : elList) {
 				final String familyName = XMLReader.getTextValue(cur, "name");
 				final int destWidth = XMLReader.getIntValue(cur, "width");
 				final int destHeight = XMLReader.getIntValue(cur, "height");

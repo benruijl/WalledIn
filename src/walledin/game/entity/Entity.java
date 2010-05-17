@@ -10,6 +10,7 @@ public class Entity {
 	private final Map<Attribute, Object> attributes;
 	private final String name;
 	private final String familyName;
+	private boolean markedRemoved;
 
 	/**
 	 * 
@@ -21,6 +22,7 @@ public class Entity {
 		attributes = new HashMap<Attribute, Object>();
 		this.name = name;
 		this.familyName = familyName;
+		markedRemoved = false;
 	}
 
 	/**
@@ -30,6 +32,15 @@ public class Entity {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Set the name of the entity
+	 * 
+	 * @return Name of the entity
+	 */
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	/**
@@ -166,5 +177,16 @@ public class Entity {
 
 	public String getFamilyName() {
 		return familyName;
+	}
+
+	/**
+	 * Mark this entity for removal
+	 */
+	public void remove() {
+		markedRemoved = true;
+	}
+
+	public boolean isMarkedRemoved() {
+		return markedRemoved;
 	}
 }

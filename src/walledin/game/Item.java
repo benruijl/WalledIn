@@ -9,7 +9,7 @@ import walledin.game.entity.behaviors.SpatialBehavior;
 public class Item extends Entity implements Cloneable {
 
 	public Item(final String name, final String familyName,
-			final String texPart, Rectangle destRect) {
+			final String texPart, final Rectangle destRect) {
 		super(name, familyName);
 
 		addBehavior(new SpatialBehavior(this));
