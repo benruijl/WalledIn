@@ -9,6 +9,7 @@ public class Entity {
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
 	private final Map<Attribute, Object> attributes;
 	private String name;
+	private boolean markedRemoved;
 
 	/**
 	 * 
@@ -19,6 +20,7 @@ public class Entity {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		this.name = name;
+		markedRemoved = false;
 	}
 
 	/**
@@ -29,7 +31,7 @@ public class Entity {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Set the name of the entity
 	 * 
@@ -169,5 +171,16 @@ public class Entity {
 		for (final Behavior behavior : behaviors.values()) {
 			behavior.onUpdate(delta);
 		}
+	}
+
+	/**
+	 * Mark this entity for removal
+	 */
+	public void remove() {
+		markedRemoved = true;
+	}
+
+	public boolean isMarkedRemoved() {
+		return markedRemoved;
 	}
 }

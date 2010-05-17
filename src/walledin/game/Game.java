@@ -1,7 +1,6 @@
 package walledin.game;
 
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,13 +36,19 @@ public class Game implements RenderListener {
 
 	public void update(final double delta) {
 		/* Update all entities */
-		for (final Entity ent : entities.values()) {
-			ent.sendUpdate(delta);
+		for (final Entity entity : entities.values()) {
+			entity.sendUpdate(delta);
 		}
 		
 		/* Do collision detection */
 		CollisionManager.calculateMapCollisions((GameMap)entities.get("Map"), entities.values(), delta);
 		CollisionManager.calculateEntityCollisions(entities.values(), delta);
+		
+		for (final Entity entity : entities.values()) {
+			if (entity.isMarkedRemoved()) {
+				removeEntity(entity.getName());
+			}
+		}
 	}
 
 	public void draw(final Renderer renderer) {
@@ -93,6 +98,12 @@ public class Game implements RenderListener {
 			entities.put(item.getName(), item);
 		
 		drawOrder.add(entities.values()); // add to draw list
+	}
+	
+	public Entity removeEntity(String name) {
+		Entity entity = entities.remove(name);
+		drawOrder.removeEntity(entity);
+		return entity;
 	}
 
 	private void loadTextures() {
