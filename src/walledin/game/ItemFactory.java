@@ -38,7 +38,11 @@ public class ItemFactory {
 	Map<String, ItemConstructionFunction> itemContructionFunctions;
 
 	/**
-	 * creates a function that can create an item of this family and adds it.
+	 * Creates a function that can create items of a particular family. It takes
+	 * care of reading extra information, specific for the item, from the XML.
+	 * 
+	 * The creation of the item involves adding the required behaviors and setting
+	 * its variables.
 	 * 
 	 * @param familyName
 	 *            Name of the family. i.e healthkit, armourkit.
@@ -47,8 +51,8 @@ public class ItemFactory {
 	 * @param scale
 	 *            The scale with which to draw
 	 * @param el
-	 *            Element in XML file
-	 * @return Returns the created item
+	 *            Element in XML file which contains item specific information, like
+	 *            health kit strength or armor penetration value
 	 */
 	private void addFunction(final String familyName, final String texPart,
 			final Rectangle destRect, final Element el) {
@@ -58,13 +62,14 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
-							Item hk = new Item(itemName, familyName, texPart,
-									destRect);
-							hk.addBehavior(new HealthKitBehavior(hk, 10)); // FIXME:
-																			// read
-																			// strength
-																			// from
-																			// XML
+							Item hk = new Item(itemName, familyName, texPart, destRect);
+
+							// read extra data
+							int hkStrength = XMLReader.getIntValue(el,
+									"strength");
+							hk
+									.addBehavior(new HealthKitBehavior(hk,
+											hkStrength));
 							return hk;
 						}
 					});
@@ -76,8 +81,9 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
+							// TODO: read custom information
 							return new Item(itemName, familyName, texPart,
-									destRect); // TODO: read custom information
+									destRect);
 						}
 					});
 		}

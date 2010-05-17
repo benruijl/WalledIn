@@ -10,6 +10,7 @@
             <width>64</width>
             <height>64</height>
         </texpart>
+        <strength>10</strength>
     </item>
     <item>
         <name>armourkit</name>

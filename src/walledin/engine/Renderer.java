@@ -35,17 +35,23 @@ public class Renderer implements GLEventListener {
 	private GL gl;
 	private RenderListener mEvListener;
 	private GLAutoDrawable mCurDrawable;
-	private long prevTime;
-	private int frameCount;
 	private int mWidth;
 	private int mHeight;
 	private Camera mCam;
 	private boolean isFullScreen;
-	private boolean isFirstRun;
 	private Animator anim;
 	private long lastUpdate;
 	private Texture lastTexture;
 
+	/* FPS counting */
+	private long prevTime;
+	private int frameCount;
+	
+	/**
+	 * Initializes the renderer. It creates the window
+	 * and a GL render canvas.
+	 * @param strTitle Title name of the window
+	 */
 	public void initialize(final String strTitle) {
 		win = new Frame(strTitle);
 		win.setSize(800, 600);
@@ -78,17 +84,15 @@ public class Renderer implements GLEventListener {
 
 		mCanvas.requestFocus();
 
-		isFirstRun = true;
-
 		lastUpdate = System.nanoTime();
 	}
 
 	/**
 	 * Toggle between windowed mode and full screen mode.
 	 * 
-	 * FIXME: this function works, but as the window is recreated in dispose(),
-	 * so is the GLcanvas. This means the init function is run, so resources are
-	 * loaded again.
+	 * FIXME: this function works on some systems. The window is recreated in
+	 * dispose() and so is the GLcanvas. This means the init function is called
+	 * again, so resources are loaded again.
 	 */
 	public void toggleFullScreen() {
 		final GraphicsDevice gd = GraphicsEnvironment
@@ -116,6 +120,10 @@ public class Renderer implements GLEventListener {
 
 	}
 
+	/**
+	 * Begin the render loop by starting an animator.
+	 * The animator is set to run at 60 FPS.
+	 */
 	public void beginLoop() {
 		// setup the animator
 		anim = new FPSAnimator(mCanvas, 60);
@@ -133,15 +141,16 @@ public class Renderer implements GLEventListener {
 	 * @param glDrawable
 	 *            The current GL context
 	 */
+	@Override
 	public void display(final GLAutoDrawable glDrawable) {
-//		 if (frameCount > 10) {
-//		 System.out.println((1000000000.0f * frameCount)
-//		 / (System.nanoTime() - prevTime) + " ");
-//		 prevTime = System.nanoTime();
-//		 frameCount = 0;
-//		 } else {
-//		 frameCount++;
-//		 }
+		// if (frameCount > 10) {
+		// System.out.println((1000000000.0f * frameCount)
+		// / (System.nanoTime() - prevTime) + " ");
+		// prevTime = System.nanoTime();
+		// frameCount = 0;
+		// } else {
+		// frameCount++;
+		// }
 
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
@@ -197,6 +206,10 @@ public class Renderer implements GLEventListener {
 		gl.glEnd();
 	}
 
+	/**
+	 * Binds a texture if it differs from the previously bound texture.
+	 * @param texture Texture to bind
+	 */
 	private void bindTexture(final Texture texture) {
 		if (texture != lastTexture) {
 			texture.bind();
@@ -265,6 +278,10 @@ public class Renderer implements GLEventListener {
 		drawRect(part.getTexture(), part.getRectangle(), destination);
 	}
 
+	/**
+	 * To be called when the rendering of the current frame starts. It clears
+	 * the buffers, and applies the camera transformations.
+	 */
 	private void beginDraw() {
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		gl.glLoadIdentity();
@@ -276,20 +293,24 @@ public class Renderer implements GLEventListener {
 	}
 
 	/**
-	 * This function is called on window creation and recreation
+	 * This function is called on window creation and recreation. It sets the
+	 * basic OpenGL settings and creates the camera.
 	 */
+	@Override
 	public void init(final GLAutoDrawable glDrawable) {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
 
 		gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue
 		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA); 
+		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL.GL_TEXTURE_2D);
 
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-		
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER,
+				GL.GL_LINEAR);
+		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER,
+				GL.GL_LINEAR);
+
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
 		gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
 
@@ -298,6 +319,22 @@ public class Renderer implements GLEventListener {
 		mCam = new Camera();
 	}
 
+	/**
+	 * Called when the window is resized. It sets up a new projection matrix
+	 * from the new window width and height.
+	 * 
+	 * @param glDrawable
+	 *            The new GL context
+	 * @param x
+	 *            New x coordinate of window
+	 * @param y
+	 *            New y coordinate of window
+	 * @param width
+	 *            New width of the window
+	 * @param height
+	 *            New height of the window
+	 */
+	@Override
 	public void reshape(final GLAutoDrawable glDrawable, final int x,
 			final int y, final int width, final int height) {
 		mCurDrawable = glDrawable;
@@ -314,14 +351,21 @@ public class Renderer implements GLEventListener {
 		gl.glLoadIdentity();
 	}
 
+	/**
+	 * Implementation not required. Do not call.
+	 */
+	@Override
 	public void displayChanged(final GLAutoDrawable glad, final boolean bln,
 			final boolean bln1) {
-		// throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+	/**
+	 * Add an event listener for
+	 * 
+	 * @param listener
+	 */
 	public void addListener(final RenderListener listener) {
 		mEvListener = listener;
-
 	}
 
 	/**
@@ -356,6 +400,10 @@ public class Renderer implements GLEventListener {
 
 	}
 
+	/**
+	 * Centers the camera around a specific point.
+	 * @param vec The point the camera will center around
+	 */
 	public void centerAround(final Vector2f vec) {
 		mCam.setPos(new Vector2f(-vec.x + mWidth * 0.5f, -vec.y + mHeight
 				* 0.5f));
@@ -421,5 +469,14 @@ public class Renderer implements GLEventListener {
 	 */
 	public void popMatrix() {
 		gl.glPopMatrix();
+	}
+	
+	/**
+	 * Resets the current matrix (modelview, projection etc.) to
+	 * its identity. The identity is a 4 dimensional unit matrix.
+	 */
+	public void loadIdentity()
+	{
+		gl.glLoadIdentity();
 	}
 }
