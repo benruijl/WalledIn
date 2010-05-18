@@ -85,7 +85,7 @@ public class Renderer implements GLEventListener {
 
 		mCanvas.requestFocus();
 
-		lastUpdate = System.nanoTime();
+		lastUpdate = -1;
 	}
 
 	/**
@@ -156,6 +156,9 @@ public class Renderer implements GLEventListener {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
 
+		if (lastUpdate == -1) {
+			lastUpdate = System.nanoTime();
+		}
 		final long currentTime = System.nanoTime();
 		double delta = currentTime - lastUpdate;
 		// Delta is in seconds. 10^9 nanoseconds per second
