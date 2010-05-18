@@ -1,5 +1,26 @@
-WalledIn (working name)
+===== WalledIn =====         (working title)
 
-2D multiplayer action game
+A 2D multiplayer action game
 
-TODO: write proper README :P
+=== Gameplay ===
+
+Alot of the gameplay is not yet planned out, but the general idea will be the following:
+The player can run around and shoot the other players. The player can pick up items (health, armour, weapons). The player will be able to build walls or other kinds of obstructions in order to wall in the other players.
+
+What the winning conditions will be, how the walls or other obstructions are spawn and other cool features is still subject to discussion. Send us an email if you have a cool idea. 
+
+=== Building & Running ===
+
+Building is currently very easy. If you have eclipse you can simply import the project and it should run if you are on 64 bit Linux. If you are not you will have to find the native libs for JOGL (google is you friend) and change the native directory of the jogl.jar lib in the project config to where the native libs are located.
+
+If you want to compile and run it from the command line then you should include all the libs in the libs dir and set the correct path for the native libs when running.
+
+In the future we are planning to make a build script that makes a runnable jar file.
+
+=== Textures ===
+
+The textures are copied from the game teeworlds (http://www.teeworlds.com). We are planning to replace the textures but are using these during development.
+
+=== Misc ===
+
+The game is made in Java and uses JOGL OpenGL bindings to render the graphics. All the developers currently use Eclipse but It should also run on netbeans.
