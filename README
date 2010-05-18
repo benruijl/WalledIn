@@ -4,10 +4,18 @@ A 2D multiplayer action game
 
 === Gameplay ===
 
-Alot of the gameplay is not yet planned out, but the general idea will be the following:
-The player can run around and shoot the other players. The player can pick up items (health, armour, weapons). The player will be able to build walls or other kinds of obstructions in order to wall in the other players.
+The gameplay is currenly in an early alpha stage, but the general idea will be the following:
+The player can run around and shoot other players. The player can pick up items
+(health, armour, weapons). The player will be able to build walls or other
+kinds of obstructions in order to wall in the other players. The walls also
+give the player protection from bullets and can be used to build
+bridges and stairs. 
 
-What the winning conditions will be, how the walls or other obstructions are spawn and other cool features is still subject to discussion. Send us an email if you have a cool idea. 
+We aim at fast paced action.
+
+What the winning conditions will be, how the walls or other obstructions are
+spawned and what other cool features will be added, is still subject to
+discussion. Send us an email if you have a cool idea!
 
 === Building & Running ===
 
@@ -19,8 +27,22 @@ In the future we are planning to make a build script that makes a runnable jar f
 
 === Textures ===
 
-The textures are copied from the game teeworlds (http://www.teeworlds.com). We are planning to replace the textures but are using these during development.
+The textures are copied from the game teeworlds (http://www.teeworlds.com),
+with permission. We are planning to replace the textures, but we will use these during development.
+
+=== Help wanted ===
+
+If you are an experienced (game) developer, you are welcome to apply for a
+position in our team. Knowledge of OOP is a must, previous game development
+experience or experience with OpenGL is a plus.
+
+If you are a good artist, you are more than welcome to design player skins,
+level tiles, levels, menu backgrounds et cetera. 
+
+If you are interested or want more information, you can always send us an e-mail.
 
 === Misc ===
 
-The game is made in Java and uses JOGL OpenGL bindings to render the graphics. All the developers currently use Eclipse but It should also run on netbeans.
+The game is made in Java and uses JOGL OpenGL bindings to render the graphics.
+All the developers currently use Eclipse, but it should also run in Netbeans
+without trouble.
