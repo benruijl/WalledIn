@@ -19,7 +19,8 @@ public enum Attribute {
 	BOUNDING_CIRCLE(Circle.class),
 	Z_INDEX(Integer.class),
 	ITEM_LIST(List.class),
-	RENDER_TILE_SIZE(Float.class);
+	RENDER_TILE_SIZE(Float.class), 
+	HEALTH(Integer.class);
 
 	public final Class<?> clazz;
 
