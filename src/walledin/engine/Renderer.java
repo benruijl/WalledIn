@@ -43,9 +43,14 @@ public class Renderer implements GLEventListener {
 	private long lastUpdate;
 	private Texture lastTexture;
 
+	/* HUD settings */
+	private final int hudWidth = 800; // FIXME: adjust to aspect ratio
+	private final int hudHeight = 600;
+
 	/* FPS counting */
 	private long prevTime;
 	private int frameCount;
+	private float curFPS;
 
 	/**
 	 * Initializes the renderer. It creates the window and a GL render canvas.
@@ -131,6 +136,18 @@ public class Renderer implements GLEventListener {
 		anim.start();
 
 	}
+	
+	/**
+	 * Get the current FPS avaraged over 10 frames. 
+	 * @return Current FPS
+	 */
+	public float getFPS() {
+		return curFPS;
+	}
+
+	public void setCurFPS(float curFPS) {
+		this.curFPS = curFPS;
+	}
 
 	/**
 	 * This function does not only represent the display callback, but the
@@ -144,21 +161,23 @@ public class Renderer implements GLEventListener {
 	 */
 	@Override
 	public void display(final GLAutoDrawable glDrawable) {
-		// if (frameCount > 10) {
-		// System.out.println((1000000000.0f * frameCount)
-		// / (System.nanoTime() - prevTime) + " ");
-		// prevTime = System.nanoTime();
-		// frameCount = 0;
-		// } else {
-		// frameCount++;
-		// }
-
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
+		
+		/* Update FPS */
+		if (frameCount > 10) {
+			curFPS = (1000000000.0f * frameCount)
+					/ (System.nanoTime() - prevTime);
+			prevTime = System.nanoTime();
+			frameCount = 0;
+		} else {
+			frameCount++;
+		}
 
 		if (lastUpdate == -1) {
 			lastUpdate = System.nanoTime();
 		}
+		
 		final long currentTime = System.nanoTime();
 		double delta = currentTime - lastUpdate;
 		// Delta is in seconds. 10^9 nanoseconds per second
@@ -171,11 +190,12 @@ public class Renderer implements GLEventListener {
 			beginDraw();
 			mEvListener.draw(this); // draw the frame
 		}
+
 	}
 
 	/**
 	 * Draws a textured rectangle to the screen. The full texture is used, and
-	 * the dimesions are kept.
+	 * the dimensions are kept.
 	 * 
 	 * @param strTex
 	 *            Texture name
@@ -352,6 +372,26 @@ public class Renderer implements GLEventListener {
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glOrtho(0, mWidth, mHeight, 0, -1, 1);
+
+		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glLoadIdentity();
+	}
+
+	/**
+	 * This function transforms the current projection and modelview matrix to a
+	 * convenient one for the rendering of HUDs and GUIs. <br/>
+	 * <br/>
+	 * The projection will be orthogonal and will have a fixed width and height,
+	 * defined by hudWidth and hudHeight. <br/>
+	 * <br/>
+	 * The modelview matrix will be reset to its identity. <br/>
+	 * <br/>
+	 * TODO: make the fixed width and height depend on the aspect ratio
+	 */
+	public void startHUDRendering() {
+		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glOrtho(0, hudWidth, hudHeight, 0, -1, 1);
 
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();

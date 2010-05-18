@@ -56,9 +56,10 @@ public class Client {
 	public void draw(final Renderer renderer) {
 		drawOrder.draw(renderer); // draw all entities in correct order
 
-		font.renderText(renderer, "This game rocks!", new Vector2f(300, 300));
+		/* Render current FPS */
+		renderer.startHUDRendering();
+		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
 
-		// TODO: add HUD rendering
 
 		/* FIXME: move these lines */
 		renderer.centerAround((Vector2f) entities.get("Player01").getAttribute(

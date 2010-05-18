@@ -1,5 +1,6 @@
 package walledin.game.entity.behaviors;
 
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -14,6 +15,8 @@ public class HealthBehavior extends Behavior {
 
 		health = curHealth;
 		this.maxHealth = maxHealth;
+		
+		setAttribute(Attribute.HEALTH, health);
 	}
 
 	@Override
@@ -25,6 +28,8 @@ public class HealthBehavior extends Behavior {
 			} else {
 				health += hp;
 			}
+			
+			setAttribute(Attribute.HEALTH, health);
 		}
 
 	}
