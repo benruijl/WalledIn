@@ -12,6 +12,12 @@ public class ItemRenderBehavior extends RenderBehavior {
 	private final String texPart;
 	private final Rectangle ITEM_RECT;
 	
+	/**
+	 * Creates a new item rendering behavior.
+	 * @param owner Owner of behavior, an Item
+	 * @param texPart
+	 * @param destRect
+	 */
 	public ItemRenderBehavior(final Entity owner, final String texPart, Rectangle destRect) {
 		super(owner, ZValues.ITEM);
 		
@@ -19,6 +25,10 @@ public class ItemRenderBehavior extends RenderBehavior {
 		ITEM_RECT = destRect;
 	}
 	
+	/**
+	 * Generic item renderer. It draws the texture part to the screen at the item's position.
+	 * @param renderer
+	 */
 	private void render(final Renderer renderer)
 	{
 		renderer.drawTexturePart(texPart, ITEM_RECT.translate((Vector2f)getAttribute(Attribute.POSITION)));

@@ -19,6 +19,13 @@ import com.sun.opengl.util.texture.TextureData;
 
 public class Font {
 
+	/**
+	 * A glyph is the visual representation of a single character in a font. It
+	 * can be identified by its corresponding char code.
+	 * 
+	 * @author Ben Ruijl
+	 * 
+	 */
 	public class Glyph {
 		public int width;
 		public int height;
@@ -36,16 +43,34 @@ public class Font {
 	private int glyphCount;
 	private Map<Character, Glyph> glyphs;
 
+	/**
+	 * Get font name
+	 * 
+	 * @return Font name
+	 */
 	public String getName() {
 		return name;
 	}
 
-	/* Helper function */
+	/**
+	 * Converts a little endian int to big endian int
+	 * 
+	 * @param i
+	 *            little endian int
+	 * @return big endian int
+	 */
 	private int toBigEndian(int i) {
 		return ((i & 0xff) << 24) + ((i & 0xff00) << 8) + ((i & 0xff0000) >> 8)
 				+ ((i >> 24) & 0xff);
 	}
 
+	/**
+	 * Reads a font from a custom format
+	 * 
+	 * @param filename
+	 *            Font file. Custom .font format
+	 * @return True on success, false on failure
+	 */
 	public boolean readFromFile(String filename) {
 		try {
 			DataInputStream in = new DataInputStream(new BufferedInputStream(
@@ -114,7 +139,7 @@ public class Font {
 
 	/**
 	 * Renders a character to the screen and transposes the current matrix with
-	 * the glyph advance.
+	 * the glyph's advance.
 	 * 
 	 * @param renderer
 	 *            Current renderer
@@ -133,15 +158,21 @@ public class Font {
 		// FIXME: calculate true texture positions somewhere else
 		renderer.drawRect(name, new Rectangle((glyph.startX + 0.500f)
 				/ (float) tex.getWidth(), (glyph.startY + 0.500f)
-				/ (float) tex.getHeight(),
-				(glyph.width - 1.000f) / (float) tex.getWidth(), (glyph.height - 1.000f)
-						/ (float) tex.getHeight()), new Rectangle(pos.getX()
+				/ (float) tex.getHeight(), (glyph.width - 1.000f)
+				/ (float) tex.getWidth(), (glyph.height - 1.000f)
+				/ (float) tex.getHeight()), new Rectangle(pos.getX()
 				+ glyph.bearingX, pos.getY() - glyph.bearingY, glyph.width,
 				glyph.height));
 
 		renderer.translate(new Vector2f(glyph.advance, 0));
 	}
 
+	/**
+	 * Renders text to the screen.
+	 * @param renderer Current renderer
+	 * @param text Unicode text to render
+	 * @param pos Position to render to
+	 */
 	public void renderText(Renderer renderer, String text, Vector2f pos) {
 		renderer.pushMatrix();
 
