@@ -1,6 +1,5 @@
 package walledin.engine.math;
 
-
 /**
  * A class for 2d matrices.
  * 

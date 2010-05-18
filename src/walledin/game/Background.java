@@ -7,7 +7,7 @@ public class Background extends Entity {
 
 	public Background(final String name) {
 		super(name);
-		
+
 		addBehavior(new BackgroundRenderBehavior(this));
 	}
 

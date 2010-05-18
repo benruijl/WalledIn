@@ -107,7 +107,7 @@ public class XMLReader {
 
 		return null;
 	}
-	
+
 	/**
 	 * Calls getTextValue and returns a floating value
 	 * 
@@ -128,8 +128,9 @@ public class XMLReader {
 
 		return null;
 	}
-	
-	static public Element getFirstElement(final Element element, final String tag) {
+
+	static public Element getFirstElement(final Element element,
+			final String tag) {
 		final List<Element> elementList = getElements(element, tag);
 
 		if (elementList != null && !elementList.isEmpty()) {

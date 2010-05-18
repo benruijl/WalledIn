@@ -13,13 +13,13 @@ public class Player extends Entity {
 		super(name);
 
 		setAttribute(Attribute.ORIENTATION, 1); // start looking to
-																// the right
+		// the right
 
 		addBehavior(new HealthBehavior(this, 100, 100));
 		addBehavior(new PlayerControlBehaviour(this));
 		addBehavior(new PlayerRenderBehavior(this));
 		addBehavior(new PlayerAnimationBehavior(this));
-		
+
 		// FIXME correct the drawing instead of the hack the bounding box
 		setAttribute(Attribute.BOUNDING_RECT, new Rectangle(0, 0, 44, 43));
 	}

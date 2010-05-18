@@ -5,7 +5,6 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,8 +59,9 @@ public class Font {
 	 * @return big endian int
 	 */
 	private int toBigEndian(int i) {
+
 		return ((i & 0xff) << 24) + ((i & 0xff00) << 8) + ((i & 0xff0000) >> 8)
-				+ ((i >> 24) & 0xff);
+				+ (i >> 24 & 0xff);
 	}
 
 	/**
@@ -71,13 +71,13 @@ public class Font {
 	 *            Font file. Custom .font format
 	 * @return True on success, false on failure
 	 */
-	public boolean readFromFile(String filename) {
+	public boolean readFromFile(final String filename) {
 		try {
-			DataInputStream in = new DataInputStream(new BufferedInputStream(
-					new FileInputStream(filename)));
+			final DataInputStream in = new DataInputStream(
+					new BufferedInputStream(new FileInputStream(filename)));
 
 			try {
-				int nameLength = toBigEndian(in.readInt());
+				final int nameLength = toBigEndian(in.readInt());
 
 				final byte[] nameBuf = new byte[nameLength];
 				in.read(nameBuf, 0, nameLength);
@@ -87,7 +87,7 @@ public class Font {
 				glyphs = new HashMap<Character, Glyph>();
 
 				for (int i = 0; i < glyphCount; i++) {
-					Glyph gl = new Glyph();
+					final Glyph gl = new Glyph();
 					gl.width = toBigEndian(in.readInt());
 					gl.height = toBigEndian(in.readInt());
 					gl.advance = toBigEndian(in.readInt());
@@ -97,9 +97,9 @@ public class Font {
 					gl.startY = toBigEndian(in.readInt());
 
 					// try to read an UTF-8 char
-					byte[] charCode = new byte[4];
+					final byte[] charCode = new byte[4];
 					in.read(charCode, 0, 4);
-					String s = new String(charCode, "UTF-8");
+					final String s = new String(charCode, "UTF-8");
 					gl.charCode = s.charAt(0);
 
 					glyphs.put(gl.charCode, gl);
@@ -111,7 +111,7 @@ public class Font {
 				final byte[] texBufArray = new byte[width * height * 2];
 				in.read(texBufArray, 0, width * height * 2);
 
-				TextureData texData = new TextureData(GL.GL_RGBA, width,
+				final TextureData texData = new TextureData(GL.GL_RGBA, width,
 						height, 0, GL.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE,
 						true, false, false, ByteBuffer.wrap(texBufArray), null); // needs
 				// flusher?
@@ -124,14 +124,14 @@ public class Font {
 				return true;
 			}
 
-			catch (IOException iox) {
+			catch (final IOException iox) {
 				System.out.println("Problems reading " + filename);
 				in.close();
 				return false;
 			}
 		}
 
-		catch (IOException iox) {
+		catch (final IOException iox) {
 			System.out.println("IO Problems with " + filename);
 			return false;
 		}
@@ -148,12 +148,14 @@ public class Font {
 	 * @param pos
 	 *            Position to render to
 	 */
-	public void renderChar(Renderer renderer, Character c, Vector2f pos) {
-		if (!glyphs.containsKey(c))
+	public void renderChar(final Renderer renderer, final Character c,
+			final Vector2f pos) {
+		if (!glyphs.containsKey(c)) {
 			return;
+		}
 
-		Glyph glyph = glyphs.get(c);
-		Texture tex = TextureManager.getInstance().get(name);
+		final Glyph glyph = glyphs.get(c);
+		final Texture tex = TextureManager.getInstance().get(name);
 
 		// FIXME: calculate true texture positions somewhere else
 		renderer.drawRect(name, new Rectangle((glyph.startX + 0.500f)
@@ -161,6 +163,7 @@ public class Font {
 				/ (float) tex.getHeight(), (glyph.width - 1.000f)
 				/ (float) tex.getWidth(), (glyph.height - 1.000f)
 				/ (float) tex.getHeight()), new Rectangle(pos.getX()
+
 				+ glyph.bearingX, pos.getY() - glyph.bearingY, glyph.width,
 				glyph.height));
 
@@ -173,11 +176,12 @@ public class Font {
 	 * @param text Unicode text to render
 	 * @param pos Position to render to
 	 */
-	public void renderText(Renderer renderer, String text, Vector2f pos) {
+	public void renderText(final Renderer renderer, final String text, final Vector2f pos) {
 		renderer.pushMatrix();
 
-		for (int i = 0; i < text.length(); i++)
+		for (int i = 0; i < text.length(); i++) {
 			renderChar(renderer, text.charAt(i), pos);
+		}
 
 		renderer.popMatrix();
 	}

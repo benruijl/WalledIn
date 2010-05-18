@@ -70,8 +70,8 @@ public class TextureManager extends ResourceManager<String, Texture> {
 		return false;
 	}
 
-	public void loadFromTextureData(String name, TextureData texData) {
-		Texture tex = TextureIO.newTexture(texData);
+	public void loadFromTextureData(final String name, final TextureData texData) {
+		final Texture tex = TextureIO.newTexture(texData);
 		put(name, tex);
 	}
 }

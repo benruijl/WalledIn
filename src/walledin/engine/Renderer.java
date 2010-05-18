@@ -46,11 +46,12 @@ public class Renderer implements GLEventListener {
 	/* FPS counting */
 	private long prevTime;
 	private int frameCount;
-	
+
 	/**
-	 * Initializes the renderer. It creates the window
-	 * and a GL render canvas.
-	 * @param strTitle Title name of the window
+	 * Initializes the renderer. It creates the window and a GL render canvas.
+	 * 
+	 * @param strTitle
+	 *            Title name of the window
 	 */
 	public void initialize(final String strTitle) {
 		win = new Frame(strTitle);
@@ -121,8 +122,8 @@ public class Renderer implements GLEventListener {
 	}
 
 	/**
-	 * Begin the render loop by starting an animator.
-	 * The animator is set to run at 60 FPS.
+	 * Begin the render loop by starting an animator. The animator is set to run
+	 * at 60 FPS.
 	 */
 	public void beginLoop() {
 		// setup the animator
@@ -208,7 +209,9 @@ public class Renderer implements GLEventListener {
 
 	/**
 	 * Binds a texture if it differs from the previously bound texture.
-	 * @param texture Texture to bind
+	 * 
+	 * @param texture
+	 *            Texture to bind
 	 */
 	private void bindTexture(final Texture texture) {
 		if (texture != lastTexture) {
@@ -402,7 +405,9 @@ public class Renderer implements GLEventListener {
 
 	/**
 	 * Centers the camera around a specific point.
-	 * @param vec The point the camera will center around
+	 * 
+	 * @param vec
+	 *            The point the camera will center around
 	 */
 	public void centerAround(final Vector2f vec) {
 		mCam.setPos(new Vector2f(-vec.x + mWidth * 0.5f, -vec.y + mHeight
@@ -470,13 +475,12 @@ public class Renderer implements GLEventListener {
 	public void popMatrix() {
 		gl.glPopMatrix();
 	}
-	
+
 	/**
-	 * Resets the current matrix (modelview, projection etc.) to
-	 * its identity. The identity is a 4 dimensional unit matrix.
+	 * Resets the current matrix (modelview, projection etc.) to its identity.
+	 * The identity is a 4 dimensional unit matrix.
 	 */
-	public void loadIdentity()
-	{
+	public void loadIdentity() {
 		gl.glLoadIdentity();
 	}
 }
