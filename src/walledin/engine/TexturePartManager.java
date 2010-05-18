@@ -2,8 +2,8 @@ package walledin.engine;
 
 import java.util.logging.Logger;
 
-import walledin.engine.math.Rectangle;
-import walledin.engine.math.Vector2f;
+import walledin.math.Rectangle;
+import walledin.math.Vector2f;
 
 import com.sun.opengl.util.texture.Texture;
 

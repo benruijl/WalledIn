@@ -8,8 +8,8 @@ import org.w3c.dom.Element;
 
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
-import walledin.engine.math.Rectangle;
 import walledin.game.entity.behaviors.HealthKitBehavior;
+import walledin.math.Rectangle;
 import walledin.util.XMLReader;
 
 /**

@@ -1,10 +1,10 @@
 package walledin.game;
 
-import walledin.engine.math.Rectangle;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.ItemRenderBehavior;
 import walledin.game.entity.behaviors.SpatialBehavior;
+import walledin.math.Rectangle;
 
 public class Item extends Entity implements Cloneable {
 

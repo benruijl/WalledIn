@@ -1,4 +1,4 @@
-package walledin.engine.math;
+package walledin.math;
 
 /**
  * A class for 2d matrices.

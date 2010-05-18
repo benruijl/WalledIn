@@ -1,6 +1,6 @@
 package walledin.engine;
 
-import walledin.engine.math.Vector2f;
+import walledin.math.Vector2f;
 
 /**
  * 

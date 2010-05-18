@@ -3,13 +3,20 @@ package walledin.network;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import walledin.engine.math.Vector2f;
 import walledin.game.Item;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Entity;
 import walledin.game.map.Tile;
+import walledin.math.Vector2f;
 
 public class NetworkManager {
-	public void writeAttribute(final Attribute attribute, final Object data,
+	private void writeEntity(final Entity entity, final ByteBuffer buffer) {
+		writeString(entity.getFamilyName(), buffer);
+		writeString(entity.getName(), buffer);
+		// TODO write the attribs
+	}
+	
+	private void writeAttribute(final Attribute attribute, final Object data,
 			final ByteBuffer buffer) {
 		// Write attribute identification
 		buffer.putShort((short) attribute.ordinal());
@@ -48,8 +55,13 @@ public class NetworkManager {
 	private void writeItems(final List<Item> data, final ByteBuffer buffer) {
 		buffer.putInt(data.size());
 		for (final Item item : data) {
-			buffer.put(item.getName().getBytes());
+			writeString(item.getName(), buffer);
 		}
+	}
+
+	private void writeString(final String data, final ByteBuffer buffer) {
+		buffer.putInt(data.length());
+		buffer.put(data.getBytes());
 	}
 
 	private void writeInt(final int data, final ByteBuffer buffer) {

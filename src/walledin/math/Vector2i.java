@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package walledin.engine.math;
+package walledin.math;
 
 /**
  * 

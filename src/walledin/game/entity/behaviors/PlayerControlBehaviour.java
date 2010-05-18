@@ -3,11 +3,11 @@ package walledin.game.entity.behaviors;
 import java.awt.event.KeyEvent;
 
 import walledin.engine.Input;
-import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
+import walledin.math.Vector2f;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
 	private static final Vector2f GRAVITY = new Vector2f(0, 100.0f);

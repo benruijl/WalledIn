@@ -13,10 +13,10 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
-import walledin.engine.math.Matrix2f;
-import walledin.engine.math.Rectangle;
-import walledin.engine.math.Vector2f;
-import walledin.engine.math.Vector2i;
+import walledin.math.Matrix2f;
+import walledin.math.Rectangle;
+import walledin.math.Vector2f;
+import walledin.math.Vector2i;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;

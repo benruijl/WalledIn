@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import walledin.engine.math.Vector2f;
 import walledin.game.Item;
 import walledin.game.ItemFactory;
 import walledin.game.entity.Attribute;
+import walledin.math.Vector2f;
 import walledin.util.XMLReader;
 
 /**

@@ -1,4 +1,4 @@
-package walledin.engine.math;
+package walledin.math;
 
 /**
  * 

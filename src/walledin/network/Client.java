@@ -1,4 +1,4 @@
-package walledin.game;
+package walledin.network;
 
 import java.awt.event.KeyEvent;
 import java.util.LinkedHashMap;
@@ -7,10 +7,15 @@ import java.util.Map;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
-import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
+import walledin.game.Background;
+import walledin.game.CollisionManager;
+import walledin.game.DrawOrderManager;
+import walledin.game.Item;
+import walledin.game.ItemFactory;
+import walledin.game.Player;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.GameMap;
@@ -19,18 +24,14 @@ import walledin.game.map.GameMapIOXML;
 import walledin.math.Rectangle;
 import walledin.math.Vector2f;
 
-/**
- * 
- * @author ben
- */
-public class Game implements RenderListener {
+public class Client {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
 	private Map<String, Entity> entities;
 	private DrawOrderManager drawOrder;
 	private Font font;
 
-	public Game() {
+	public Client() {
 		entities = new LinkedHashMap<String, Entity>();
 	}
 

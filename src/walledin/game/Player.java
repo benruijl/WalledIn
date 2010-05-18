@@ -1,12 +1,12 @@
 package walledin.game;
 
-import walledin.engine.math.Rectangle;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.PlayerRenderBehavior;
+import walledin.math.Rectangle;
 
 public class Player extends Entity {
 	public Player(final String name) {

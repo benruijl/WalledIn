@@ -1,6 +1,6 @@
 package walledin.engine;
 
-import walledin.engine.math.Rectangle;
+import walledin.math.Rectangle;
 
 import com.sun.opengl.util.texture.Texture;
 
