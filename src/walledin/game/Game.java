@@ -133,7 +133,7 @@ public class Game implements RenderListener {
 				32, 96, 32));
 		manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
 		manager.createTexturePart("tile_empty", "tiles",
-				createMapTextureRectangle(0, TILES_PER_LINE, TILE_SIZE,
+				createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
 		manager.createTexturePart("tile_filled", "tiles",
 				createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
