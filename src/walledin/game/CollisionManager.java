@@ -191,7 +191,7 @@ public class CollisionManager {
 
 				ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
 				ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldPos.x,
-						y - oldPos.y));
+						y - oldPos.y).scale((float) (1 / delta)));
 
 				ent.sendMessage(MessageType.COLLIDED, new CollisionData(
 						new Vector2f(x, y), oldPos, curPos, map));
