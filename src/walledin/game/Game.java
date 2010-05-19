@@ -45,12 +45,15 @@ public class Game implements RenderListener {
 		/* Spawn bullets if key pressed */
 		if (Input.getInstance().keyDown(KeyEvent.VK_ENTER))
 		{
-			Item bullet = ItemFactory.getInstance().create("bullet", "bl0");
 			Entity player = entities.get("Player01");
-			Vector2f pos = player.getAttribute(Attribute.POSITION);
+			Vector2f playerPosition = player.getAttribute(Attribute.POSITION);
 			int or = player.getAttribute(Attribute.ORIENTATION);
-			bullet.setAttribute(Attribute.POSITION, pos.add(new Vector2f(or * 50.0f, 20.0f)));
-			bullet.setAttribute(Attribute.VELOCITY, new Vector2f(or * 40.0f, 0)); // bullet does not move?
+			Vector2f position = playerPosition.add(new Vector2f(or * 50.0f,
+					20.0f));
+			Vector2f velocity = new Vector2f(or * 40.0f, 0);
+			Item bullet = ItemFactory.getInstance().create("bullet", "bl0",
+					position, velocity);
+			// bullet does not move?
 			
 			entities.put(bullet.getName(), bullet);
 			drawOrder.add(bullet);
@@ -111,9 +114,8 @@ public class Game implements RenderListener {
 
 		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
 		entities.put("Background", new Background("Background"));
-		entities.put("Player01", new Player("Player01"));
-		entities.get("Player01").setAttribute(Attribute.POSITION,
-				new Vector2f(400, 300));
+		entities.put("Player01", new Player("Player01", new Vector2f(400, 300),
+				new Vector2f(0, 0)));
 
 		// add map items like healthkits to entity list
 		final List<Item> mapItems = entities.get("Map").getAttribute(

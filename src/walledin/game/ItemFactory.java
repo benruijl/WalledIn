@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 import walledin.game.entity.behaviors.BulletBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.util.XMLReader;
@@ -33,7 +34,7 @@ public class ItemFactory {
 	}
 
 	private interface ItemConstructionFunction {
-		Item create(String itemName);
+		Item create(String itemName, Vector2f position, Vector2f velocity);
 	}
 
 	Map<String, ItemConstructionFunction> itemContructionFunctions;
@@ -62,9 +63,10 @@ public class ItemFactory {
 					new ItemConstructionFunction() {
 
 						@Override
-						public Item create(final String itemName) {
+						public Item create(final String itemName,
+								final Vector2f position, final Vector2f velocity) {
 							final Item hk = new Item(itemName, texPart,
-									destRect);
+									destRect, position, velocity);
 
 							// read extra data
 							final int hkStrength = XMLReader.getIntValue(el,
@@ -82,8 +84,11 @@ public class ItemFactory {
 					new ItemConstructionFunction() {
 
 						@Override
-						public Item create(final String itemName) {
-							return new Item(itemName, texPart, destRect); // TODO:
+						public Item create(final String itemName,
+								final Vector2f position, final Vector2f velocity) {
+							return new Item(itemName, texPart, destRect,
+									position, velocity);
+							// TODO:
 							// read
 							// custom
 							// information
@@ -96,8 +101,10 @@ public class ItemFactory {
 					new ItemConstructionFunction() {
 
 						@Override
-						public Item create(final String itemName) {
-							final Item bl = new Item(itemName, texPart, destRect);
+						public Item create(final String itemName,
+								final Vector2f position, final Vector2f velocity) {
+							final Item bl = new Item(itemName, texPart,
+									destRect, position, velocity);
 								bl
 								.addBehavior(new BulletBehavior(bl));
 							return bl; // TODO:
@@ -160,9 +167,10 @@ public class ItemFactory {
 	 *            Family name
 	 * @param itemName
 	 *            The name of the item to be created
+	 * @param position 
 	 * @return Returns an item or null on failure
 	 */
-	public Item create(final String familyName, final String itemName) {
+	public Item create(final String familyName, final String itemName, final Vector2f position, final Vector2f velocity) {
 		if (!itemContructionFunctions.containsKey(familyName)) {
 			throw new IllegalArgumentException(
 					"Item "
@@ -170,6 +178,6 @@ public class ItemFactory {
 							+ " is not found in the database. Are the items loaded correctly?");
 		}
 
-		return itemContructionFunctions.get(familyName).create(itemName);
+		return itemContructionFunctions.get(familyName).create(itemName, position, velocity);
 	}
 }

@@ -65,8 +65,8 @@ public class GameMapIOXML implements GameMapIO {
 			final int x = Integer.parseInt(el.getAttribute("x"));
 			final int y = Integer.parseInt(el.getAttribute("y"));
 
-			final Item item = ItemFactory.getInstance().create(type, name);
-			item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
+			final Item item = ItemFactory.getInstance().create(type, name,
+					new Vector2f(x, y), new Vector2f(0, 0));
 			itList.add(item);
 		}
 
