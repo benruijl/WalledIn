@@ -89,6 +89,20 @@ public class ItemFactory {
 						}
 					});
 		}
+		
+		if (familyName.equals("bullet")) {
+			itemContructionFunctions.put("bullet",
+					new ItemConstructionFunction() {
+
+						@Override
+						public Item create(final String itemName) {
+							return new Item(itemName, texPart, destRect); // TODO:
+							// read
+							// custom
+							// information
+						}
+					});
+		}
 	}
 
 	/**

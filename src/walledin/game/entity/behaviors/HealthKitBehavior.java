@@ -1,6 +1,7 @@
 package walledin.game.entity.behaviors;
 
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -23,6 +24,8 @@ public class HealthKitBehavior extends Behavior {
 					+ colData.getCollisionEntity().getName());
 			colData.getCollisionEntity().sendMessage(
 					MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
+			
+			getOwner().remove(); // remove after usage
 		}
 	}
 

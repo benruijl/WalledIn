@@ -24,4 +24,17 @@
             <height>64</height>
         </texpart>
     </item>
+    <item>
+        <name>bullet</name>
+        <width>16</width>
+        <height>16</height>
+        <texpart>
+            <name>bullet0</name>
+            <x>334</x>
+            <y>213</y>
+            <width>32</width>
+            <height>32</height>
+        </texpart>
+        <strength>10</strength>
+    </item>
 </items>

@@ -1,6 +1,7 @@
 package walledin.game;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,25 +34,44 @@ public class Game implements RenderListener {
 	public Game() {
 		entities = new LinkedHashMap<String, Entity>();
 	}
-
+	
+	@Override
 	public void update(final double delta) {
 		/* Update all entities */
 		for (final Entity entity : entities.values()) {
 			entity.sendUpdate(delta);
 		}
-
+		
+		/* Spawn bullets if key pressed */
+		if (Input.getInstance().keyDown(KeyEvent.VK_ENTER))
+		{
+			Item bullet = ItemFactory.getInstance().create("bullet", "bl0");
+			Entity player = entities.get("Player01");
+			Vector2f pos = player.getAttribute(Attribute.POSITION);
+			int or = player.getAttribute(Attribute.ORIENTATION);
+			bullet.setAttribute(Attribute.POSITION, pos.add(new Vector2f(or * 50.0f, 20.0f)));
+			bullet.setAttribute(Attribute.VELOCITY, new Vector2f(or * 40.0f, 0)); // bullet does not move?
+			
+			entities.put(bullet.getName(), bullet);
+			drawOrder.add(bullet);
+		}
+		
 		/* Do collision detection */
 		CollisionManager.calculateMapCollisions((GameMap) entities.get("Map"),
 				entities.values(), delta);
 		CollisionManager.calculateEntityCollisions(entities.values(), delta);
 
-		for (final Entity entity : entities.values()) {
-			if (entity.isMarkedRemoved()) {
-				removeEntity(entity.getName());
-			}
-		}
+		/* Clean up entities which are flagged for removal */
+		List<Entity> removeList = new ArrayList<Entity>();
+		for (final Entity entity : entities.values())
+			if (entity.isMarkedRemoved())
+				removeList.add(entity);
+		
+		for (int i = 0; i < removeList.size(); i++)
+			removeEntity(removeList.get(i).getName());
 	}
-
+	
+	@Override
 	public void draw(final Renderer renderer) {
 		drawOrder.draw(renderer); // draw all entities in correct order
 
@@ -73,6 +93,7 @@ public class Game implements RenderListener {
 	/**
 	 * Initialize game
 	 */
+	@Override
 	public void init() {
 		entities = new LinkedHashMap<String, Entity>();
 		drawOrder = new DrawOrderManager();
