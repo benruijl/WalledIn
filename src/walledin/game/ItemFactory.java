@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
+import walledin.game.entity.behaviors.BulletBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.util.XMLReader;
 
@@ -96,10 +97,11 @@ public class ItemFactory {
 
 						@Override
 						public Item create(final String itemName) {
-							return new Item(itemName, texPart, destRect); // TODO:
-							// read
-							// custom
-							// information
+							final Item bl = new Item(itemName, texPart, destRect);
+								bl
+								.addBehavior(new BulletBehavior(bl));
+							return bl; // TODO:
+							
 						}
 					});
 		}
