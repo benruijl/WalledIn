@@ -9,7 +9,7 @@ import walledin.game.entity.Entity;
  * @author ben
  */
 public interface GameMapIO {
-	Entity readFromFile(String filename);
+	Entity readFromFile(final String filename);
 
-	boolean writeToFile(Entity map, String filename);
+	boolean writeToFile(final Entity map, final String filename);
 }

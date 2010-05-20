@@ -10,7 +10,10 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BackgroundRenderBehavior;
 import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.MapRenderBehavior;
+import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
+import walledin.game.entity.behaviors.PlayerRenderBehavior;
+import walledin.game.entity.behaviors.SpatialBehavior;
 import walledin.game.map.Tile;
 
 public class EntityFactory {
@@ -28,7 +31,12 @@ public class EntityFactory {
 	
 	public Entity create(final String familyName, final String entityName) {
 		final Entity ent = new Entity(familyName, entityName);
-		return entityContructionFunctions.get(familyName).create(ent);
+		EntityConstructionFunction func = entityContructionFunctions.get(familyName);
+		
+		if (func == null)
+			return new Entity(familyName, entityName); // return generic entity
+		
+		return func.create(ent);
 	}
 	
 	private Entity createPlayer(final Entity player) {
@@ -37,6 +45,8 @@ public class EntityFactory {
 
 		player.addBehavior(new HealthBehavior(player, 100, 100));
 		player.addBehavior(new PlayerControlBehaviour(player, null, null));
+		player.addBehavior(new PlayerAnimationBehavior(player));
+		player.addBehavior(new PlayerRenderBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
@@ -73,6 +83,7 @@ public class EntityFactory {
 		map.setAttribute(Attribute.TILES, tiles);
 		map.setAttribute(Attribute.ITEM_LIST, items);
 		
+		map.addBehavior(new SpatialBehavior(map, null, null));
 		map.addBehavior(new MapRenderBehavior(map, width, height, tiles));
 
 		return map;

@@ -38,8 +38,8 @@ public class DrawOrderManager {
 	 * @param Collection
 	 *            of entities to be added
 	 */
-	public void add(final Collection<Entity> Collection) {
-		for (final Entity en : Collection) {
+	public void add(final Collection<Entity> entitiesList) {
+		for (final Entity en : entitiesList) {
 			if (en.hasAttribute(Attribute.Z_INDEX)) {
 				entities.add(en);
 			}

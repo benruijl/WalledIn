@@ -131,7 +131,7 @@ public class Entity {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T setAttribute(final Attribute attribute, final T newObject) {
-		if (attribute.clazz.isInstance(newObject)) {
+		if (attribute.clazz.isInstance(newObject) || newObject == null) {
 			if (newObject == null) {
 				LOG.warning("Storing null value for attribute " + attribute
 						+ " of entity " + name);
