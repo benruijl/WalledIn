@@ -9,6 +9,7 @@ public class Entity {
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
 	private final Map<Attribute, Object> attributes;
 	private String name;
+	private String familyName;
 	private boolean markedRemoved;
 
 	/**
@@ -16,10 +17,11 @@ public class Entity {
 	 * @param name
 	 *            Name of the component
 	 */
-	public Entity(final String name) {
+	public Entity(final String familyName, final String name) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		this.name = name;
+		this.familyName = familyName;
 		markedRemoved = false;
 	}
 

@@ -28,12 +28,9 @@ import walledin.game.map.GameMapIOXML;
 public class Game implements RenderListener {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
-	private Map<String, Entity> entities;
-	private DrawOrderManager drawOrder;
 	private Font font;
 
 	public Game() {
-		entities = new LinkedHashMap<String, Entity>();
 	}
 	
 	@Override
@@ -63,7 +60,7 @@ public class Game implements RenderListener {
 		}
 		
 		/* Do collision detection */
-		CollisionManager.calculateMapCollisions((GameMap) entities.get("Map"),
+		CollisionManager.calculateMapCollisions(entities.get("Map"),
 				entities.values(), delta);
 		CollisionManager.calculateEntityCollisions(entities.values(), delta);
 
@@ -114,10 +111,15 @@ public class Game implements RenderListener {
 		ItemFactory.getInstance().loadFromXML("data/items.xml");
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
+		
+		EntityManager entityManager = EntityManager.getInstance();
 
-		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
-		entities.put("Background", new Background("Background"));
-		entities.put("Player01", new Player("Player01", new Vector2f(400, 300),
+		mMapIO.readFromFile("data/map.xml");
+		entityManager.create("Background", "Background");
+		entityManager.create("Player", "Player01"); 
+		entityManager.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(400, 300));
+				
+				Player("Player01", ,
 				new Vector2f(0, 0)));
 
 		// add map items like healthkits to entity list
