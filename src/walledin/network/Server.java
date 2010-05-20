@@ -24,23 +24,37 @@ import walledin.game.map.GameMapIOXML;
 import walledin.math.Vector2f;
 
 public class Server {
-	private static final int DATAGRAM_IDENTIFICATION = 0x47583454;
 	private static final int PORT = 1234;
 	private static final int BUFFER_SIZE = 1024 * 1024;
-	private static final byte LOGIN_MESSAGE = 0;
-	private static final byte INPUT_MESSAGE = 1;
-	private static final byte LOGOUT_MESSAGE = 2;
+	private static final int UPDATES_PER_SECOND = 60;
+	private static final int NANOSECONDS_PER_SECOND = 1000000000;
 	private Map<SocketAddress, Player> players;
 	private Map<Player, Set<Integer>> keysDown;
 	private Map<String, Entity> entities;
+	private Set<SocketAddress> newPlayers;
+	private Set<Entity> removedEntities;
+	private Set<Entity> newEntities;
 	private boolean running;
 	private ByteBuffer buffer;
+	private ServerEntityFactory entityFactory;
+	private NetworkManager networkManager;
+	private GameMap gameMap;
+	private long currentTime;
 
 	public Server() {
 		entities = new LinkedHashMap<String, Entity>();
 		players = new HashMap<SocketAddress, Player>();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
+		entityFactory = new ServerEntityFactory();
+		networkManager = new NetworkManager();
+		newEntities = new HashSet<Entity>();
+		removedEntities = new HashSet<Entity>();
+		newPlayers = new HashSet<SocketAddress>();
+	}
+
+	public static void main(String[] args) throws IOException {
+		new Server().run();
 	}
 
 	public void run() throws IOException {
@@ -48,19 +62,88 @@ public class Server {
 		DatagramChannel channel = DatagramChannel.open();
 		channel.connect(new InetSocketAddress(PORT));
 		channel.configureBlocking(false);
-		
-		double delta = 0.001;
-		long time = System.nanoTime();
+
+		running = true;
 		while (running) {
-			readDatagrams(channel);
-			delta = System.nanoTime() - time;
-			update(delta);
-			writeDatagrams(channel);
+			long time = System.nanoTime();
+			doLoop(channel);
+			double delta = System.nanoTime() - time;
+			// convert to sec
+			delta /= 1000000000;
+			long left = (long) ((1d / UPDATES_PER_SECOND - delta) * 1000);
+			//System.out.println(left + " " + delta);
+			try {
+				if (left > 0) {
+					Thread.sleep(left);
+				}
+			} catch (InterruptedException e) {
+				// TODO do something
+				e.printStackTrace();
+			}
 		}
 	}
 
-	private void writeDatagrams(DatagramChannel channel) {
-			
+	private void doLoop(DatagramChannel channel) throws IOException {
+		removedEntities.clear();
+		newEntities.clear();
+		newPlayers.clear();
+		readDatagrams(channel);
+		double delta = System.nanoTime() - currentTime;
+		currentTime = System.nanoTime();
+		// convert to sec
+		delta /= 1000000000;
+		update(delta);
+		writeDatagrams(channel);
+	}
+
+	private void writeDatagrams(DatagramChannel channel) throws IOException {
+		if (!newPlayers.isEmpty()) {
+			writeDatagramForNewPlayers();
+			buffer.flip();
+			for (SocketAddress socketAddress : newPlayers) {
+				channel.send(buffer, socketAddress);
+				buffer.rewind();
+			}
+		}
+		if (!players.isEmpty()) {
+			writeDatagramForExistingPlayers();
+			buffer.flip();
+			for (SocketAddress socketAddress : players.keySet()) {
+				if (newPlayers.contains(socketAddress)) {
+					channel.send(buffer, socketAddress);
+					buffer.rewind();
+				}
+			}
+		}
+	}
+
+	private void writeDatagramForExistingPlayers() {
+		buffer.limit(BUFFER_SIZE);
+		buffer.rewind();
+		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkManager.GAMESTATE_MESSAGE);
+		buffer.putInt(entities.size() + removedEntities.size());
+		for (Entity entity : entities.values()) {
+			if (newEntities.contains(entity)) {
+				networkManager.writeCreateEntity(entity, buffer);
+			} else {
+				networkManager.writeEntity(entity, buffer);
+			}
+		}
+		for (Entity entity : removedEntities) {
+			networkManager.writeRemoveEntity(entity, buffer);
+		}
+	}
+
+	private void writeDatagramForNewPlayers() {
+		buffer.limit(BUFFER_SIZE);
+		buffer.rewind();
+		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkManager.GAMESTATE_MESSAGE);
+		buffer.putInt(entities.size());
+		for (Entity entity : entities.values()) {
+			networkManager.writeCreateEntity(entity, buffer);
+		}
 	}
 
 	private void readDatagrams(DatagramChannel channel) throws IOException {
@@ -75,22 +158,22 @@ public class Server {
 
 	private void processDatagram(SocketAddress address) {
 		int ident = buffer.getInt();
-		if (ident == DATAGRAM_IDENTIFICATION) {
+		if (ident == NetworkManager.DATAGRAM_IDENTIFICATION) {
 			byte type = buffer.get();
 			switch (type) {
-			case LOGIN_MESSAGE:
+			case NetworkManager.LOGIN_MESSAGE:
 				int nameLength = buffer.getInt();
 				byte[] nameBytes = new byte[nameLength];
 				buffer.get(nameBytes);
 				String name = new String(nameBytes);
 				createPlayer(name, address);
 				break;
-			case LOGOUT_MESSAGE:
+			case NetworkManager.LOGOUT_MESSAGE:
 				removePlayer(address);
-			case INPUT_MESSAGE:
+			case NetworkManager.INPUT_MESSAGE:
 				short numKeys = buffer.getShort();
 				Set<Integer> keys = new HashSet<Integer>();
-				for (int i=0; i < numKeys; i++) {
+				for (int i = 0; i < numKeys; i++) {
 					keys.add((int) buffer.getShort());
 				}
 				Player player = players.get(address);
@@ -117,6 +200,7 @@ public class Server {
 
 	private void newEntity(Entity entity) {
 		entities.put(entity.getName(), entity);
+		newEntities.add(entity);
 	}
 
 	public void update(final double delta) {
@@ -126,8 +210,8 @@ public class Server {
 		}
 
 		/* Do collision detection */
-		CollisionManager.calculateMapCollisions((GameMap) entities.get("Map"),
-				entities.values(), delta);
+		CollisionManager.calculateMapCollisions(gameMap, entities.values(),
+				delta);
 		CollisionManager.calculateEntityCollisions(entities.values(), delta);
 
 		for (final Entity entity : entities.values()) {
@@ -148,11 +232,11 @@ public class Server {
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
-		newEntity(mMapIO.readFromFile("data/map.xml"));
+		gameMap = mapIO.readFromFile("data/map.xml");
+		newEntity(gameMap);
 
 		// add map items like healthkits to entity list
-		final List<Item> mapItems = entities.get("Map").getAttribute(
-				Attribute.ITEM_LIST);
+		final List<Item> mapItems = gameMap.getAttribute(Attribute.ITEM_LIST);
 		for (final Item item : mapItems) {
 			newEntity(item);
 		}
@@ -160,6 +244,7 @@ public class Server {
 
 	public Entity removeEntity(final String name) {
 		final Entity entity = entities.remove(name);
+		removedEntities.add(entity);
 		return entity;
 	}
 }

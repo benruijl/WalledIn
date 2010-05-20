@@ -2,6 +2,7 @@ package walledin.network;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Map;
 
 import walledin.game.Item;
 import walledin.game.entity.Attribute;
@@ -10,12 +11,41 @@ import walledin.game.map.Tile;
 import walledin.math.Vector2f;
 
 public class NetworkManager {
-	private void writeEntity(final Entity entity, final ByteBuffer buffer) {
+	public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
+	public static final byte LOGIN_MESSAGE = 0;
+	public static final byte INPUT_MESSAGE = 1;
+	public static final byte LOGOUT_MESSAGE = 2;
+	public static final byte GAMESTATE_MESSAGE = 3;
+	public static final byte CREATE_ENTITY = 1;
+	public static final byte REMOVE_ENTITY = 2;
+	public static final byte UPDATE_ENTITY = 3;
+
+	public void writeRemoveEntity(Entity entity, final ByteBuffer buffer) {
+		buffer.put(REMOVE_ENTITY);
+		writeString(entity.getName(), buffer);
+	}
+
+	public void writeEntity(Entity entity, final ByteBuffer buffer) {
+		buffer.put(UPDATE_ENTITY);
+		writeString(entity.getName(), buffer);
+		Map<Attribute, Object> attributes = entity.getChangedAttributes();
+		buffer.putInt(attributes.size());
+		for (Map.Entry<Attribute, Object> entry: attributes.entrySet()) {
+			writeAttribute(entry.getKey(), entry.getValue(), buffer);
+		}
+	}
+
+	public void writeCreateEntity(Entity entity, final ByteBuffer buffer) {
+		buffer.put(CREATE_ENTITY);
 		writeString(entity.getFamilyName(), buffer);
 		writeString(entity.getName(), buffer);
-		// TODO write the attribs
+		Map<Attribute, Object> attributes = entity.getNetworkAttributes();
+		buffer.putInt(attributes.size());
+		for (Map.Entry<Attribute, Object> entry: attributes.entrySet()) {
+			writeAttribute(entry.getKey(), entry.getValue(), buffer);
+		}
 	}
-	
+
 	private void writeAttribute(final Attribute attribute, final Object data,
 			final ByteBuffer buffer) {
 		// Write attribute identification

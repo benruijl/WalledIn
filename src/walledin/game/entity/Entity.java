@@ -1,13 +1,16 @@
 package walledin.game.entity;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class Entity {
 	private final static Logger LOG = Logger.getLogger(Entity.class.getName());
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
 	private final Map<Attribute, Object> attributes;
+	private Set<Attribute> changedAttributes;
 	private final String name;
 	private final String familyName;
 	private boolean markedRemoved;
@@ -20,6 +23,7 @@ public class Entity {
 	public Entity(final String name, final String familyName) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
+		changedAttributes = new HashSet<Attribute>();
 		this.name = name;
 		this.familyName = familyName;
 		markedRemoved = false;
@@ -128,12 +132,45 @@ public class Entity {
 						+ " of entity " + name);
 			}
 			final T result = (T) attributes.put(attribute, newObject);
+			if (attribute.sendOverNetwork) {
+				changedAttributes.add(attribute);
+			}
 			sendMessage(MessageType.ATTRIBUTE_SET, attribute);
 			return result;
 		} else {
 			throw new IllegalArgumentException("Object should be of class: "
 					+ attribute.clazz.getName());
 		}
+	}
+
+	/**
+	 * Get attributes that can be send over the network that have been changed
+	 * since the last call
+	 * 
+	 * @return The changed attributes
+	 */
+	public Map<Attribute, Object> getChangedAttributes() {
+		Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
+		for (Attribute attribute : changedAttributes) {
+			temp.put(attribute, attributes.get(attribute));
+		}
+		changedAttributes = new HashSet<Attribute>();
+		return temp;
+	}
+
+	/**
+	 * Gets the contents of all the network attributes
+	 * 
+	 * @return
+	 */
+	public Map<Attribute, Object> getNetworkAttributes() {
+		Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
+		for (Attribute attribute : attributes.keySet()) {
+			if (attribute.sendOverNetwork) {
+				temp.put(attribute, attributes.get(attribute));
+			}
+		}
+		return temp;
 	}
 
 	/**
