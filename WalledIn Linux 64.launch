@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
-<stringAttribute key="bad_container_name" value="/WalledIn/R"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/WalledIn/src/walledin/game/Main.java"/>
+<listEntry value="/WalledInJava/src/walledin/game/Main.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="walledin.game.Main"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="WalledIn"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="WalledInJava"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${project_loc}/libs/native/linux64"/>
 </launchConfiguration>
