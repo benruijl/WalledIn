@@ -102,15 +102,21 @@ public class Server {
 
 	private void removePlayer(SocketAddress address) {
 		Player player = players.get(address);
-		entities.remove(player.getName());
+		newPlayers.remove(player);
+		removeEntity(player.getName());
 	}
 
 	private void createPlayer(String name, SocketAddress address) {
 		Player player = new Player(name);
-		entities.put(name, player);
+		newEntity(player);
+		newPlayers.add(player);
 		player.setAttribute(Attribute.POSITION,
 				new Vector2f(400, 300));
 		players.put(address, player);
+	}
+
+	private void newEntity(Entity entity) {
+		entities.put(entity.getName(), entity);
 	}
 
 	public void update(final double delta) {
@@ -142,13 +148,13 @@ public class Server {
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
 
-		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
+		newEntity(mMapIO.readFromFile("data/map.xml"));
 
 		// add map items like healthkits to entity list
 		final List<Item> mapItems = entities.get("Map").getAttribute(
 				Attribute.ITEM_LIST);
 		for (final Item item : mapItems) {
-			entities.put(item.getName(), item);
+			newEntity(item);
 		}
 	}
 
