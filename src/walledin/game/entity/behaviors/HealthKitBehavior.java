@@ -1,7 +1,6 @@
 package walledin.game.entity.behaviors;
 
 import walledin.game.CollisionManager.CollisionData;
-import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;

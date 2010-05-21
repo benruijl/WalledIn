@@ -6,9 +6,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityFactory;
 import walledin.game.EntityManager;
-import walledin.game.Item;
 import walledin.game.ItemFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -58,8 +56,8 @@ public class GameMapIOXML implements GameMapIO {
 		return result;
 	}
 
-	private List<Item> parseItems(final Element element) {
-		final List<Item> itList = new ArrayList<Item>();
+	private List<Entity> parseItems(final Element element) {
+		final List<Entity> itList = new ArrayList<Entity>();
 		final Element itemsNode = XMLReader.getFirstElement(element, "items");
 		final List<Element> items = XMLReader.getElements(itemsNode, "item");
 
@@ -69,7 +67,7 @@ public class GameMapIOXML implements GameMapIO {
 			final int x = Integer.parseInt(el.getAttribute("x"));
 			final int y = Integer.parseInt(el.getAttribute("y"));
 
-			final Item item = ItemFactory.getInstance().create(type, name,
+			final Entity item = ItemFactory.getInstance().create(type, name,
 					new Vector2f(x, y), new Vector2f(0, 0));
 			itList.add(item);
 		}
@@ -92,7 +90,7 @@ public class GameMapIOXML implements GameMapIO {
 			final Element map = reader.getRootElement();
 
 			final String name = XMLReader.getTextValue(map, "name");
-			final List<Item> items = parseItems(map);
+			final List<Entity> items = parseItems(map);
 			final List<Tile> tiles = parseTiles(map);
 
 			final Entity m = new Entity("Map", name);
@@ -104,7 +102,7 @@ public class GameMapIOXML implements GameMapIO {
 			m.addBehavior(new MapRenderBehavior(m, width, height, tiles));
 			
 			EntityManager.getInstance().add(m);
-			EntityManager.getInstance().add((List<Entity>)(ArrayList)items);
+			EntityManager.getInstance().add(items);
 
 			return m;
 		} else {

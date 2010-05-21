@@ -41,7 +41,7 @@ public class Game implements RenderListener {
 			Vector2f position = playerPosition.add(new Vector2f(or * 50.0f,
 					20.0f));
 			Vector2f velocity = new Vector2f(or * 400.0f, 0);
-			Item bullet = ItemFactory.getInstance().create("bullet", "bl0",
+			Entity bullet = ItemFactory.getInstance().create("bullet", "bl0",
 					position, velocity);
 			
 			EntityManager.getInstance().add(bullet);
@@ -94,16 +94,6 @@ public class Game implements RenderListener {
 		entityManager.create("Background", "Background");
 		entityManager.create("Player", "Player01"); 
 		entityManager.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(400, 300));
-				
-
-		// add map items like healthkits to entity list
-	/*	final List<Item> mapItems = entityManager.get("Map").getAttribute(
-				Attribute.ITEM_LIST);
-		for (final Item item : mapItems) {
-			entities.put(item.getName(), item);
-		}
-
-		drawOrder.add(entities.values()); // add to draw list*/ // should be odone automatically
 	}
 
 	private void loadTextures() {

@@ -75,7 +75,7 @@ public class EntityFactory {
 	 * @param items
 	 */
 	public Entity createGameMap(final String name, final int width,
-			final int height, final List<Tile> tiles, final List<Item> items) {
+			final int height, final List<Tile> tiles, final List<Entity> items) {
 		final Entity map = new Entity("Map", name);
 
 		map.setAttribute(Attribute.WIDTH, width);

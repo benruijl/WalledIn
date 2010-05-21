@@ -33,6 +33,14 @@ public class Entity {
 	public String getName() {
 		return name;
 	}
+	
+	/**
+	 * Get the family name
+	 * @return Family name
+	 */
+	public String getfFamilyName() {
+		return familyName;
+	}
 
 	/**
 	 * Set the name of the entity

@@ -4,8 +4,6 @@ import java.awt.event.KeyEvent;
 
 import walledin.engine.Input;
 import walledin.engine.math.Vector2f;
-import walledin.game.Item;
-import walledin.game.ItemFactory;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
