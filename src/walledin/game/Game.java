@@ -1,10 +1,6 @@
 package walledin.game;
 
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
@@ -12,12 +8,10 @@ import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
-import walledin.engine.Input.KeyState;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.map.GameMap;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 
@@ -28,25 +22,20 @@ import walledin.game.map.GameMapIOXML;
 public class Game implements RenderListener {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
-	private Map<String, Entity> entities;
-	private DrawOrderManager drawOrder;
 	private Font font;
 
 	public Game() {
-		entities = new LinkedHashMap<String, Entity>();
 	}
 	
 	@Override
 	public void update(final double delta) {
 		/* Update all entities */
-		for (final Entity entity : entities.values()) {
-			entity.sendUpdate(delta);
-		}
+		EntityManager.getInstance().update(delta);
 		
 		/* Spawn bullets if key pressed */
 		if (Input.getInstance().keyDown(KeyEvent.VK_ENTER))
 		{
-			Entity player = entities.get("Player01");
+			Entity player = EntityManager.getInstance().get("Player01");
 			Vector2f playerPosition = player.getAttribute(Attribute.POSITION);
 			int or = player.getAttribute(Attribute.ORIENTATION);
 			Vector2f position = playerPosition.add(new Vector2f(or * 50.0f,
@@ -54,32 +43,19 @@ public class Game implements RenderListener {
 			Vector2f velocity = new Vector2f(or * 400.0f, 0);
 			Item bullet = ItemFactory.getInstance().create("bullet", "bl0",
 					position, velocity);
-			// bullet does not move?
 			
-			entities.put(bullet.getName(), bullet);
-			drawOrder.add(bullet);
+			EntityManager.getInstance().add(bullet);
 			
 			Input.getInstance().setKeyUp(KeyEvent.VK_ENTER);
 		}
 		
 		/* Do collision detection */
-		CollisionManager.calculateMapCollisions((GameMap) entities.get("Map"),
-				entities.values(), delta);
-		CollisionManager.calculateEntityCollisions(entities.values(), delta);
-
-		/* Clean up entities which are flagged for removal */
-		List<Entity> removeList = new ArrayList<Entity>();
-		for (final Entity entity : entities.values())
-			if (entity.isMarkedRemoved())
-				removeList.add(entity);
-		
-		for (int i = 0; i < removeList.size(); i++)
-			removeEntity(removeList.get(i).getName());
+		EntityManager.getInstance().doCollisionDetection(EntityManager.getInstance().get("Default"), delta);
 	}
 	
 	@Override
 	public void draw(final Renderer renderer) {
-		drawOrder.draw(renderer); // draw all entities in correct order
+		EntityManager.getInstance().draw(renderer); // draw all entities in correct order
 
 		/* Render current FPS */
 		renderer.startHUDRendering();
@@ -87,7 +63,7 @@ public class Game implements RenderListener {
 
 
 		/* FIXME: move these lines */
-		renderer.centerAround((Vector2f) entities.get("Player01").getAttribute(
+		renderer.centerAround((Vector2f) EntityManager.getInstance().get("Player01").getAttribute(
 				Attribute.POSITION));
 
 		if (Input.getInstance().keyDown(KeyEvent.VK_F1)) {
@@ -101,9 +77,6 @@ public class Game implements RenderListener {
 	 */
 	@Override
 	public void init() {
-		entities = new LinkedHashMap<String, Entity>();
-		drawOrder = new DrawOrderManager();
-
 		loadTextures();
 		createTextureParts();
 
@@ -114,26 +87,23 @@ public class Game implements RenderListener {
 		ItemFactory.getInstance().loadFromXML("data/items.xml");
 
 		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
+		
+		EntityManager entityManager = EntityManager.getInstance();
 
-		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
-		entities.put("Background", new Background("Background"));
-		entities.put("Player01", new Player("Player01", new Vector2f(400, 300),
-				new Vector2f(0, 0)));
+		mMapIO.readFromFile("data/map.xml");
+		entityManager.create("Background", "Background");
+		entityManager.create("Player", "Player01"); 
+		entityManager.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(400, 300));
+				
 
 		// add map items like healthkits to entity list
-		final List<Item> mapItems = entities.get("Map").getAttribute(
+	/*	final List<Item> mapItems = entityManager.get("Map").getAttribute(
 				Attribute.ITEM_LIST);
 		for (final Item item : mapItems) {
 			entities.put(item.getName(), item);
 		}
 
-		drawOrder.add(entities.values()); // add to draw list
-	}
-
-	public Entity removeEntity(final String name) {
-		final Entity entity = entities.remove(name);
-		drawOrder.removeEntity(entity);
-		return entity;
+		drawOrder.add(entities.values()); // add to draw list*/ // should be odone automatically
 	}
 
 	private void loadTextures() {

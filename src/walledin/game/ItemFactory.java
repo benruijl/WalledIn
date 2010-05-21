@@ -65,7 +65,7 @@ public class ItemFactory {
 						@Override
 						public Item create(final String itemName,
 								final Vector2f position, final Vector2f velocity) {
-							final Item hk = new Item(itemName, texPart,
+							final Item hk = new Item(familyName, itemName, texPart,
 									destRect, position, velocity);
 
 							// read extra data
@@ -86,7 +86,7 @@ public class ItemFactory {
 						@Override
 						public Item create(final String itemName,
 								final Vector2f position, final Vector2f velocity) {
-							return new Item(itemName, texPart, destRect,
+							return new Item(familyName, itemName, texPart, destRect,
 									position, velocity);
 							// TODO:
 							// read
@@ -103,7 +103,7 @@ public class ItemFactory {
 						@Override
 						public Item create(final String itemName,
 								final Vector2f position, final Vector2f velocity) {
-							final Item bl = new Item(itemName, texPart,
+							final Item bl = new Item(familyName, itemName, texPart,
 									destRect, position, velocity);
 								bl
 								.addBehavior(new BulletBehavior(bl));

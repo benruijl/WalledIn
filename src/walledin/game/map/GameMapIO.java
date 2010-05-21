@@ -1,5 +1,7 @@
 package walledin.game.map;
 
+import walledin.game.entity.Entity;
+
 /**
  * Reads or writes a map from or to a certain format. The details of the format
  * are taken care of by the classes that implement this interface.
@@ -7,7 +9,7 @@ package walledin.game.map;
  * @author ben
  */
 public interface GameMapIO {
-	GameMap readFromFile(String filename);
+	Entity readFromFile(final String filename);
 
-	boolean writeToFile(GameMap map, String filename);
+	boolean writeToFile(final Entity map, final String filename);
 }
