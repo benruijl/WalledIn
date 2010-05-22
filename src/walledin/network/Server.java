@@ -8,14 +8,11 @@ import java.nio.channels.DatagramChannel;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import walledin.game.CollisionManager;
-import walledin.game.EntityFactory;
 import walledin.game.EntityManager;
+import walledin.game.ServerEntityFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.GameMapIO;
@@ -42,7 +39,7 @@ public class Server {
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		networkManager = new NetworkManager();
 		newPlayers = new HashSet<SocketAddress>();
-		entityManager = new EntityManager(new EntityFactory());
+		entityManager = new EntityManager(new ServerEntityFactory());
 	}
 
 	public static void main(String[] args) throws IOException {

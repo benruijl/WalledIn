@@ -8,7 +8,7 @@ import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
-import walledin.game.EntityFactory;
+import walledin.game.ClientEntityFactory;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -31,7 +31,7 @@ public class Client implements RenderListener {
 	 */
 	public Client(Renderer renderer) {
 		this.renderer = renderer;
-		entityManager = new EntityManager(new EntityFactory());
+		entityManager = new EntityManager(new ClientEntityFactory());
 	}
 	
 	@Override
