@@ -106,4 +106,8 @@ public class EntityManager {
 				entities.values(), delta);
 		CollisionManager.calculateEntityCollisions(entities.values(), delta);
 	}
+
+	public void init() {
+		factory.loadItemsFromXML("data/items.xml");
+	}
 }
