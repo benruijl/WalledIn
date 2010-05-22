@@ -9,15 +9,10 @@ import walledin.engine.TexturePartManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BackgroundRenderBehavior;
-import walledin.game.entity.behaviors.BulletBehavior;
-import walledin.game.entity.behaviors.HealthBehavior;
-import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.game.entity.behaviors.ItemRenderBehavior;
 import walledin.game.entity.behaviors.MapRenderBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
-import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.PlayerRenderBehavior;
-import walledin.game.entity.behaviors.SpatialBehavior;
 import walledin.math.Rectangle;
 import walledin.util.XMLReader;
 
@@ -28,11 +23,10 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 	}
 
 	private Entity createPlayer(final Entity player) {
+		// TODO spatial is missing?
 		player.setAttribute(Attribute.ORIENTATION, 1); // start looking to
 		// the right
 
-		player.addBehavior(new HealthBehavior(player, 100, 100));
-		player.addBehavior(new PlayerControlBehaviour(player));
 		player.addBehavior(new PlayerAnimationBehavior(player));
 		player.addBehavior(new PlayerRenderBehavior(player));
 
@@ -55,34 +49,19 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 
 	private Entity createBullet(final String texPart, final Rectangle destRect,
 			final Element el, final Entity bl) {
-		bl.addBehavior(new SpatialBehavior(bl));
 		bl.addBehavior(new ItemRenderBehavior(bl, texPart, destRect));
-
-		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
-
-		bl.addBehavior(new BulletBehavior(bl));
 		return bl;
 	}
 
 	private Entity createArmorKit(final String texPart,
 			final Rectangle destRect, final Element el, final Entity ak) {
-		ak.addBehavior(new SpatialBehavior(ak));
 		ak.addBehavior(new ItemRenderBehavior(ak, texPart, destRect));
-
-		ak.setAttribute(Attribute.BOUNDING_RECT, destRect);
 		return ak;
 	}
 
 	private Entity createHealthKit(final String texPart,
 			final Rectangle destRect, final Element el, final Entity hk) {
-		hk.addBehavior(new SpatialBehavior(hk));
 		hk.addBehavior(new ItemRenderBehavior(hk, texPart, destRect));
-
-		hk.setAttribute(Attribute.BOUNDING_RECT, destRect);
-
-		// read extra data
-		final int hkStrength = XMLReader.getIntValue(el, "strength");
-		hk.addBehavior(new HealthKitBehavior(hk, hkStrength));
 		return hk;
 	}
 

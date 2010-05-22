@@ -4,19 +4,11 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import walledin.engine.TextureManager;
-import walledin.engine.TexturePartManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.behaviors.BackgroundRenderBehavior;
 import walledin.game.entity.behaviors.BulletBehavior;
 import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
-import walledin.game.entity.behaviors.ItemRenderBehavior;
-import walledin.game.entity.behaviors.MapRenderBehavior;
-import walledin.game.entity.behaviors.PlayerAnimationBehavior;
-import walledin.game.entity.behaviors.PlayerControlBehaviour;
-import walledin.game.entity.behaviors.PlayerRenderBehavior;
 import walledin.game.entity.behaviors.SpatialBehavior;
 import walledin.math.Rectangle;
 import walledin.util.XMLReader;
@@ -28,13 +20,13 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	}
 
 	private Entity createPlayer(final Entity player) {
+		// TODO spatial is missing?
 		player.setAttribute(Attribute.ORIENTATION, 1); // start looking to
 		// the right
 
 		player.addBehavior(new HealthBehavior(player, 100, 100));
-		player.addBehavior(new PlayerControlBehaviour(player));
-		player.addBehavior(new PlayerAnimationBehavior(player));
-		player.addBehavior(new PlayerRenderBehavior(player));
+		// player.addBehavior(new PlayerControlBehaviour(player));
+		// TODO create control simulation
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
@@ -43,40 +35,30 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		return player;
 	}
 
-	private Entity createBackground(final Entity ent) {
-		ent.addBehavior(new BackgroundRenderBehavior(ent));
-		return ent;
-	}
-
 	private Entity createGameMap(final Entity map) {
-		map.addBehavior(new MapRenderBehavior(map));
 		return map;
 	}
 
-	private Entity createBullet(final String texPart, final Rectangle destRect,
-			final Element el, final Entity bl) {
+	private Entity createBullet(final Rectangle destRect, final Element el,
+			final Entity bl) {
 		bl.addBehavior(new SpatialBehavior(bl));
-		bl.addBehavior(new ItemRenderBehavior(bl, texPart, destRect));
-
 		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		bl.addBehavior(new BulletBehavior(bl));
 		return bl;
 	}
 
-	private Entity createArmorKit(final String texPart,
-			final Rectangle destRect, final Element el, final Entity ak) {
+	private Entity createArmorKit(final Rectangle destRect, final Element el,
+			final Entity ak) {
 		ak.addBehavior(new SpatialBehavior(ak));
-		ak.addBehavior(new ItemRenderBehavior(ak, texPart, destRect));
 
 		ak.setAttribute(Attribute.BOUNDING_RECT, destRect);
 		return ak;
 	}
 
-	private Entity createHealthKit(final String texPart,
-			final Rectangle destRect, final Element el, final Entity hk) {
+	private Entity createHealthKit(final Rectangle destRect, final Element el,
+			final Entity hk) {
 		hk.addBehavior(new SpatialBehavior(hk));
-		hk.addBehavior(new ItemRenderBehavior(hk, texPart, destRect));
 
 		hk.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
@@ -103,8 +85,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	 *            Element in XML file which contains item specific information,
 	 *            like health kit strength or armor penetration value
 	 */
-	private void addFunction(final String familyName, final String texPart,
-			final Rectangle destRect, final Element el) {
+	private void addFunction(final String familyName, final Rectangle destRect,
+			final Element el) {
 
 		if (familyName.equals("healthkit")) {
 			entityContructionFunctions.put(familyName,
@@ -112,7 +94,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 
 						@Override
 						public Entity create(final Entity hk) {
-							return createHealthKit(texPart, destRect, el, hk);
+							return createHealthKit(destRect, el, hk);
 						}
 					});
 		}
@@ -123,7 +105,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 
 						@Override
 						public Entity create(final Entity ak) {
-							return createArmorKit(texPart, destRect, el, ak);
+							return createArmorKit(destRect, el, ak);
 						}
 					});
 		}
@@ -134,7 +116,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 
 						@Override
 						public Entity create(final Entity bl) {
-							return createBullet(texPart, destRect, el, bl);
+							return createBullet(destRect, el, bl);
 
 						}
 					});
@@ -148,15 +130,6 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 					@Override
 					public Entity create(final Entity ent) {
 						return createPlayer(ent);
-					}
-				});
-
-		entityContructionFunctions.put("Background",
-				new EntityConstructionFunction() {
-
-					@Override
-					public Entity create(final Entity ent) {
-						return createBackground(ent);
 					}
 				});
 
@@ -184,31 +157,13 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 			final List<Element> elList = XMLReader.getElements(reader
 					.getRootElement(), "item");
 
-			final String texture = reader.getRootElement().getAttribute(
-					"texture");
-			final String texName = reader.getRootElement().getAttribute(
-					"texname");
-			TextureManager.getInstance().loadFromFile(texture, texName);
-
 			for (final Element cur : elList) {
 				final String familyName = XMLReader.getTextValue(cur, "name");
 				final int destWidth = XMLReader.getIntValue(cur, "width");
 				final int destHeight = XMLReader.getIntValue(cur, "height");
 
-				final Element texurePart = XMLReader.getFirstElement(cur,
-						"texpart");
-				final String texPartName = XMLReader.getTextValue(texurePart,
-						"name");
-				final int x = XMLReader.getIntValue(texurePart, "x");
-				final int y = XMLReader.getIntValue(texurePart, "y");
-				final int width = XMLReader.getIntValue(texurePart, "width");
-				final int height = XMLReader.getIntValue(texurePart, "height");
-
-				TexturePartManager.getInstance().createTexturePart(texPartName,
-						texName, new Rectangle(x, y, width, height));
-
-				addFunction(familyName, texPartName, new Rectangle(0, 0,
-						destWidth, destHeight), cur);
+				addFunction(familyName, new Rectangle(0, 0, destWidth,
+						destHeight), cur);
 			}
 
 		}
