@@ -1,6 +1,8 @@
 package walledin.network;
 
 import java.awt.event.KeyEvent;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
@@ -24,6 +26,11 @@ public class Client implements RenderListener {
 	private Renderer renderer; // current renderer
 	private EntityManager entityManager;
 	private Entity map;
+	private SocketAddress host;
+	
+	public static void main(String[] args) {
+		// TODO create client and run it and is another thread start the renderer
+	}
 
 	/**
 	 * Create the client
@@ -32,6 +39,8 @@ public class Client implements RenderListener {
 	public Client(Renderer renderer) {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
+		// Hardcode the host for now
+		host = new InetSocketAddress("localhost", 1234);
 	}
 	
 	@Override
@@ -58,10 +67,8 @@ public class Client implements RenderListener {
 			Input.getInstance().setKeyUp(KeyEvent.VK_ENTER);
 		}
 		
-		/* Do collision detection */
-		entityManager.doCollisionDetection(map, delta);
-		
 		/* Center the camera around the player */
+		// TODO get player entity back from server so we know what to center on
 		renderer.centerAround((Vector2f) entityManager.get("Player01").getAttribute(
 				Attribute.POSITION));
 
@@ -100,8 +107,6 @@ public class Client implements RenderListener {
 		
 		map = mMapIO.readFromFile("data/map.xml");
 		entityManager.create("Background", "Background");
-		entityManager.create("Player", "Player01"); 
-		entityManager.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 	}
 
 	private void loadTextures() {
