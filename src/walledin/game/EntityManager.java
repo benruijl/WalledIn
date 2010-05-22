@@ -3,8 +3,10 @@ package walledin.game;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
@@ -15,9 +17,13 @@ public class EntityManager {
 	private DrawOrderManager drawOrderManager;
 	private EntityFactory factory;
 	private int uniqueNameCount = 0;
+	private Set<Entity> removed;
+	private Set<Entity> created;
 	
 	public EntityManager(EntityFactory factory) {
 		entities = new HashMap<String, Entity>();
+		removed = new HashSet<Entity>();
+		created = new HashSet<Entity>();
 		this.factory = factory;
 		drawOrderManager = new DrawOrderManager();
 	}
@@ -32,6 +38,7 @@ public class EntityManager {
 	{
 		Entity entity = factory.create(familyName, entityName);
 		add(entity);
+		created.add(entity);
 		return entity;
 	}
 	
@@ -70,6 +77,7 @@ public class EntityManager {
 	{
 		Entity entity = entities.remove(name);
 		drawOrderManager.removeEntity(entity);
+		removed.add(entity);
 		return entity;
 	}
 	
@@ -85,6 +93,10 @@ public class EntityManager {
 	
 	public void update(double delta)
 	{
+		// Clear the removed and created entities.
+		removed = new HashSet<Entity>();
+		created = new HashSet<Entity>();
+		
 		/* Clean up entities which are flagged for removal */
 		List<Entity> removeList = new ArrayList<Entity>();
 		for (final Entity entity : entities.values())
@@ -109,5 +121,18 @@ public class EntityManager {
 
 	public void init() {
 		factory.loadItemsFromXML("data/items.xml");
+	}
+
+	public Set<Entity> getRemoved() {
+		return removed;
+	}
+	
+	public Set<Entity> getCreated() {
+		return created;
+	}
+
+	public Collection<Entity> getAll() {
+		// TODO maybe only do readonly view...
+		return entities.values();
 	}
 }

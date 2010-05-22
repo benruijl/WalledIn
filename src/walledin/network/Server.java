@@ -5,6 +5,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -25,28 +26,21 @@ public class Server {
 	private static final int PORT = 1234;
 	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int UPDATES_PER_SECOND = 60;
-	private static final int NANOSECONDS_PER_SECOND = 1000000000;
 	private Map<SocketAddress, Entity> players;
 	private Map<Entity, Set<Integer>> keysDown;
-	private Map<String, Entity> entities;
 	private Set<SocketAddress> newPlayers;
-	private Set<Entity> removedEntities;
-	private Set<Entity> newEntities;
 	private boolean running;
 	private ByteBuffer buffer;
 	private NetworkManager networkManager;
-	private Entity gameMap;
+	private Entity map;
 	private long currentTime;
 	private final EntityManager entityManager;
 
 	public Server() {
-		entities = new LinkedHashMap<String, Entity>();
 		players = new HashMap<SocketAddress, Entity>();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		networkManager = new NetworkManager();
-		newEntities = new HashSet<Entity>();
-		removedEntities = new HashSet<Entity>();
 		newPlayers = new HashSet<SocketAddress>();
 		entityManager = new EntityManager(new EntityFactory());
 	}
@@ -82,8 +76,6 @@ public class Server {
 	}
 
 	private void doLoop(DatagramChannel channel) throws IOException {
-		removedEntities.clear();
-		newEntities.clear();
 		newPlayers.clear();
 		readDatagrams(channel);
 		double delta = System.nanoTime() - currentTime;
@@ -120,9 +112,12 @@ public class Server {
 		buffer.rewind();
 		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkManager.GAMESTATE_MESSAGE);
+		Set<Entity> removedEntities = entityManager.getRemoved();
+		Set<Entity> createdEntities = entityManager.getCreated();
+		Collection<Entity> entities = entityManager.getAll();
 		buffer.putInt(entities.size() + removedEntities.size());
-		for (Entity entity : entities.values()) {
-			if (newEntities.contains(entity)) {
+		for (Entity entity : entities) {
+			if (createdEntities.contains(entity)) {
 				networkManager.writeCreateEntity(entity, buffer);
 			} else {
 				networkManager.writeEntity(entity, buffer);
@@ -138,8 +133,9 @@ public class Server {
 		buffer.rewind();
 		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkManager.GAMESTATE_MESSAGE);
+		Collection<Entity> entities = entityManager.getAll();
 		buffer.putInt(entities.size());
-		for (Entity entity : entities.values()) {
+		for (Entity entity : entities) {
 			networkManager.writeCreateEntity(entity, buffer);
 		}
 	}
@@ -184,65 +180,32 @@ public class Server {
 	private void removePlayer(SocketAddress address) {
 		Entity player = players.get(address);
 		newPlayers.remove(player);
-		removeEntity(player.getName());
 	}
 
 	private void createPlayer(String name, SocketAddress address) {
 		Entity player = entityManager.create("Player", name);
-		newEntity(player);
 		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION,
 				new Vector2f(400, 300));
 		players.put(address, player);
 	}
-
-	private void newEntity(Entity entity) {
-		entities.put(entity.getName(), entity);
-		newEntities.add(entity);
-	}
-
+	
 	public void update(final double delta) {
 		/* Update all entities */
-		for (final Entity entity : entities.values()) {
-			entity.sendUpdate(delta);
-		}
-
+		entityManager.update(delta);
+		
 		/* Do collision detection */
-		CollisionManager.calculateMapCollisions(gameMap, entities.values(),
-				delta);
-		CollisionManager.calculateEntityCollisions(entities.values(), delta);
-
-		for (final Entity entity : entities.values()) {
-			if (entity.isMarkedRemoved()) {
-				removeEntity(entity.getName());
-			}
-		}
+		entityManager.doCollisionDetection(map, delta);
 	}
 
 	/**
 	 * Initialize game
 	 */
 	public void init() {
-		entities = new LinkedHashMap<String, Entity>();
-
 		// initialize entity manager
 		entityManager.init();
 
 		final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML as format
-
-		gameMap = mapIO.readFromFile("data/map.xml");
-		newEntity(gameMap);
-
-		// add map items like healthkits to entity list
-		final List<Entity> mapItems = gameMap.getAttribute(Attribute.ITEM_LIST);
-		for (final Entity item : mapItems) {
-			newEntity(item);
-		}
-	}
-
-	public Entity removeEntity(final String name) {
-		final Entity entity = entities.remove(name);
-		removedEntities.add(entity);
-		return entity;
+		map = mapIO.readFromFile("data/map.xml");
 	}
 }
