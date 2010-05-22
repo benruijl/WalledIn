@@ -23,8 +23,14 @@ public class Game implements RenderListener {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
 	private Font font;
+	private Renderer renderer; // current renderer
 
-	public Game() {
+	/**
+	 * Create the game
+	 * @param renderer Current renderer
+	 */
+	public Game(Renderer renderer) {
+		this.renderer = renderer;
 	}
 	
 	@Override
@@ -41,7 +47,9 @@ public class Game implements RenderListener {
 			Vector2f position = playerPosition.add(new Vector2f(or * 50.0f,
 					20.0f));
 			Vector2f velocity = new Vector2f(or * 400.0f, 0);
-			Entity bullet = ItemFactory.getInstance().create("bullet", "bl0",
+			
+			Entity bullet = ItemFactory.getInstance().create("bullet", 
+					EntityManager.getInstance().generateUniqueName("bullet"),
 					position, velocity);
 			
 			EntityManager.getInstance().add(bullet);
@@ -51,6 +59,16 @@ public class Game implements RenderListener {
 		
 		/* Do collision detection */
 		EntityManager.getInstance().doCollisionDetection(EntityManager.getInstance().get("Default"), delta);
+		
+		/* Center the camera around the player */
+		renderer.centerAround((Vector2f) EntityManager.getInstance().get("Player01").getAttribute(
+				Attribute.POSITION));
+
+		/* Toggle full screen, current not working correctly */
+		if (Input.getInstance().keyDown(KeyEvent.VK_F1)) {
+			renderer.toggleFullScreen();
+			Input.getInstance().setKeyUp(KeyEvent.VK_F1);
+		}
 	}
 	
 	@Override
@@ -60,16 +78,6 @@ public class Game implements RenderListener {
 		/* Render current FPS */
 		renderer.startHUDRendering();
 		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
-
-
-		/* FIXME: move these lines */
-		renderer.centerAround((Vector2f) EntityManager.getInstance().get("Player01").getAttribute(
-				Attribute.POSITION));
-
-		if (Input.getInstance().keyDown(KeyEvent.VK_F1)) {
-			renderer.toggleFullScreen();
-			Input.getInstance().setKeyUp(KeyEvent.VK_F1);
-		}
 	}
 
 	/**

@@ -8,7 +8,7 @@ public class Main {
 
 	public Main() {
 		renderer = new Renderer();
-		game = new Game();
+		game = new Game(renderer);
 	}
 
 	public void run() {

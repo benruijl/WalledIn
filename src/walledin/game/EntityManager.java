@@ -32,6 +32,7 @@ public class EntityManager {
 	private Map<String, Entity> entities;
 	private DrawOrderManager drawOrderManager;
 	private EntityFactory factory;
+	private int uniqueNameCount = 0;
 	
 	/**
 	 * Creates a new Entity and adds it to the entities list.
@@ -46,6 +47,24 @@ public class EntityManager {
 		return entity;
 	}
 	
+	/**
+	 * Generates a unique name for an object. Useful when generating entities in
+	 * runtime. The entities will be named in the following format: ENT_<i>familyname</i>_<i>num</i>,
+	 * where <i>familyname</i> is the family name and <i>num</i> is the number of already generated
+	 * unique names.
+	 * @param familyName Name of the item's family
+	 * @return Unique entity name
+	 */
+	public String generateUniqueName(String familyName)
+	{
+		uniqueNameCount++;
+		return "ENT_" + familyName + "_" + Integer.toString(uniqueNameCount);
+	}
+	
+	/**
+	 * Adds an entity to the list.
+	 * @param entity Entity to add
+	 */
 	public void add(Entity entity)
 	{
 		entities.put(entity.getName(), entity);

@@ -38,7 +38,7 @@ public class EntityFactory {
 		
 		return func.create(ent);
 	}
-	
+		
 	private Entity createPlayer(final Entity player) {
 		player.setAttribute(Attribute.ORIENTATION, 1); // start looking to
 		// the right
