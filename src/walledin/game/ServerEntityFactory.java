@@ -36,6 +36,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	}
 
 	private Entity createGameMap(final Entity map) {
+		map.setAttribute(Attribute.RENDER_TILE_SIZE,32f);
 		return map;
 	}
 
