@@ -24,6 +24,8 @@ public class Game implements RenderListener {
 	private static final int TILES_PER_LINE = 16;
 	private Font font;
 	private Renderer renderer; // current renderer
+	private EntityManager entityManager;
+	private Entity map;
 
 	/**
 	 * Create the game
@@ -31,17 +33,18 @@ public class Game implements RenderListener {
 	 */
 	public Game(Renderer renderer) {
 		this.renderer = renderer;
+		entityManager = new EntityManager(new EntityFactory());
 	}
 	
 	@Override
 	public void update(final double delta) {
 		/* Update all entities */
-		EntityManager.getInstance().update(delta);
+		entityManager.update(delta);
 		
 		/* Spawn bullets if key pressed */
 		if (Input.getInstance().keyDown(KeyEvent.VK_ENTER))
 		{
-			Entity player = EntityManager.getInstance().get("Player01");
+			Entity player = entityManager.get("Player01");
 			Vector2f playerPosition = player.getAttribute(Attribute.POSITION);
 			int or = player.getAttribute(Attribute.ORIENTATION);
 			Vector2f position = playerPosition.add(new Vector2f(or * 50.0f,
@@ -49,19 +52,19 @@ public class Game implements RenderListener {
 			Vector2f velocity = new Vector2f(or * 400.0f, 0);
 			
 			Entity bullet = ItemFactory.getInstance().create("bullet", 
-					EntityManager.getInstance().generateUniqueName("bullet"),
+					entityManager.generateUniqueName("bullet"),
 					position, velocity);
 			
-			EntityManager.getInstance().add(bullet);
+			entityManager.add(bullet);
 			
 			Input.getInstance().setKeyUp(KeyEvent.VK_ENTER);
 		}
 		
 		/* Do collision detection */
-		EntityManager.getInstance().doCollisionDetection(EntityManager.getInstance().get("Default"), delta);
+		entityManager.doCollisionDetection(map, delta);
 		
 		/* Center the camera around the player */
-		renderer.centerAround((Vector2f) EntityManager.getInstance().get("Player01").getAttribute(
+		renderer.centerAround((Vector2f) entityManager.get("Player01").getAttribute(
 				Attribute.POSITION));
 
 		/* Toggle full screen, current not working correctly */
@@ -73,7 +76,7 @@ public class Game implements RenderListener {
 	
 	@Override
 	public void draw(final Renderer renderer) {
-		EntityManager.getInstance().draw(renderer); // draw all entities in correct order
+		entityManager.draw(renderer); // draw all entities in correct order
 
 		/* Render current FPS */
 		renderer.startHUDRendering();
@@ -95,11 +98,9 @@ public class Game implements RenderListener {
 		// load all item information
 		ItemFactory.getInstance().loadFromXML("data/items.xml");
 
-		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
+		final GameMapIO mMapIO = new GameMapIOXML(entityManager); // choose XML as format
 		
-		EntityManager entityManager = EntityManager.getInstance();
-
-		mMapIO.readFromFile("data/map.xml");
+		map = mMapIO.readFromFile("data/map.xml");
 		entityManager.create("Background", "Background");
 		entityManager.create("Player", "Player01"); 
 		entityManager.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(400, 300));
