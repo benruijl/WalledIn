@@ -497,7 +497,7 @@ public class Renderer implements GLEventListener {
 		return mvmat[12] + leftTop.getX() < mWidth
 				&& mvmat[12] + rightBottom.getX() > 0
 				&& mvmat[13] + leftTop.getY() < mHeight 
-				&& mvmat[13] + rightBottom.getX() > 0;
+				&& mvmat[13] + rightBottom.getY() > 0;
 	}
 
 	/**
