@@ -1,83 +1,93 @@
 package walledin.network;
 
 import java.awt.event.KeyEvent;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
+import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
-import walledin.game.Background;
-import walledin.game.CollisionManager;
-import walledin.game.DrawOrderManager;
-import walledin.game.Item;
+import walledin.game.EntityFactory;
+import walledin.game.EntityManager;
 import walledin.game.ItemFactory;
-import walledin.game.Player;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.map.GameMap;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.math.Rectangle;
 import walledin.math.Vector2f;
 
-public class Client {
+public class Client implements RenderListener {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
-	private Map<String, Entity> entities;
-	private DrawOrderManager drawOrder;
 	private Font font;
+	private Renderer renderer; // current renderer
+	private EntityManager entityManager;
+	private Entity map;
 
-	public Client() {
-		entities = new LinkedHashMap<String, Entity>();
+	/**
+	 * Create the client
+	 * @param renderer Current renderer
+	 */
+	public Client(Renderer renderer) {
+		this.renderer = renderer;
+		entityManager = new EntityManager(new EntityFactory());
 	}
-
+	
+	@Override
 	public void update(final double delta) {
 		/* Update all entities */
-		for (final Entity entity : entities.values()) {
-			entity.sendUpdate(delta);
+		entityManager.update(delta);
+		
+		/* Spawn bullets if key pressed */
+		if (Input.getInstance().keyDown(KeyEvent.VK_ENTER))
+		{
+			Entity player = entityManager.get("Player01");
+			Vector2f playerPosition = player.getAttribute(Attribute.POSITION);
+			int or = player.getAttribute(Attribute.ORIENTATION);
+			Vector2f position = playerPosition.add(new Vector2f(or * 50.0f,
+					20.0f));
+			Vector2f velocity = new Vector2f(or * 400.0f, 0);
+			
+			Entity bullet = ItemFactory.getInstance().create("bullet", 
+					entityManager.generateUniqueName("bullet"),
+					position, velocity);
+			
+			entityManager.add(bullet);
+			
+			Input.getInstance().setKeyUp(KeyEvent.VK_ENTER);
 		}
-
+		
 		/* Do collision detection */
-		CollisionManager.calculateMapCollisions((GameMap) entities.get("Map"),
-				entities.values(), delta);
-		CollisionManager.calculateEntityCollisions(entities.values(), delta);
-
-		for (final Entity entity : entities.values()) {
-			if (entity.isMarkedRemoved()) {
-				removeEntity(entity.getName());
-			}
-		}
-	}
-
-	public void draw(final Renderer renderer) {
-		drawOrder.draw(renderer); // draw all entities in correct order
-
-		/* Render current FPS */
-		renderer.startHUDRendering();
-		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
-
-
-		/* FIXME: move these lines */
-		renderer.centerAround((Vector2f) entities.get("Player01").getAttribute(
+		entityManager.doCollisionDetection(map, delta);
+		
+		/* Center the camera around the player */
+		renderer.centerAround((Vector2f) entityManager.get("Player01").getAttribute(
 				Attribute.POSITION));
 
+		/* Toggle full screen, current not working correctly */
 		if (Input.getInstance().keyDown(KeyEvent.VK_F1)) {
 			renderer.toggleFullScreen();
 			Input.getInstance().setKeyUp(KeyEvent.VK_F1);
 		}
 	}
+	
+	@Override
+	public void draw(final Renderer renderer) {
+		entityManager.draw(renderer); // draw all entities in correct order
+
+		/* Render current FPS */
+		renderer.startHUDRendering();
+		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
+		renderer.stopHUDRendering();
+	}
 
 	/**
 	 * Initialize game
 	 */
+	@Override
 	public void init() {
-		entities = new LinkedHashMap<String, Entity>();
-		drawOrder = new DrawOrderManager();
-
 		loadTextures();
 		createTextureParts();
 
@@ -87,28 +97,12 @@ public class Client {
 		// load all item information
 		ItemFactory.getInstance().loadFromXML("data/items.xml");
 
-		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
-
-		entities.put("Map", mMapIO.readFromFile("data/map.xml"));
-		entities.put("Background", new Background("Background"));
-		entities.put("Player01", new Player("Player01"));
-		entities.get("Player01").setAttribute(Attribute.POSITION,
-				new Vector2f(400, 300));
-
-		// add map items like healthkits to entity list
-		final List<Item> mapItems = entities.get("Map").getAttribute(
-				Attribute.ITEM_LIST);
-		for (final Item item : mapItems) {
-			entities.put(item.getName(), item);
-		}
-
-		drawOrder.add(entities.values()); // add to draw list
-	}
-
-	public Entity removeEntity(final String name) {
-		final Entity entity = entities.remove(name);
-		drawOrder.removeEntity(entity);
-		return entity;
+		final GameMapIO mMapIO = new GameMapIOXML(entityManager); // choose XML as format
+		
+		map = mMapIO.readFromFile("data/map.xml");
+		entityManager.create("Background", "Background");
+		entityManager.create("Player", "Player01"); 
+		entityManager.get("Player01").setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 	}
 
 	private void loadTextures() {
@@ -134,7 +128,7 @@ public class Client {
 				32, 96, 32));
 		manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
 		manager.createTexturePart("tile_empty", "tiles",
-				createMapTextureRectangle(0, TILES_PER_LINE, TILE_SIZE,
+				createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
 		manager.createTexturePart("tile_filled", "tiles",
 				createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,

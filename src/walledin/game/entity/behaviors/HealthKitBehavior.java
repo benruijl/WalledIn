@@ -23,6 +23,8 @@ public class HealthKitBehavior extends Behavior {
 					+ colData.getCollisionEntity().getName());
 			colData.getCollisionEntity().sendMessage(
 					MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
+			
+			getOwner().remove(); // remove after usage
 		}
 	}
 

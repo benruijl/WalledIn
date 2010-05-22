@@ -83,6 +83,7 @@ public class Renderer implements GLEventListener {
 
 		mCanvas = new GLCanvas(caps);
 		mCanvas.addGLEventListener(this);
+		
 		mCanvas.addKeyListener(Input.getInstance()); // listen to keys
 
 		win.add(mCanvas, BorderLayout.CENTER);
@@ -361,25 +362,27 @@ public class Renderer implements GLEventListener {
 	 *            New height of the window
 	 */
 	@Override
-	public void reshape(final GLAutoDrawable glDrawable, final int x,
-			final int y, final int width, final int height) {
+	public void reshape(GLAutoDrawable glDrawable, int x,
+			int y, int width, int height) {
 		mCurDrawable = glDrawable;
 		gl = glDrawable.getGL();
 
 		mWidth = width;
 		mHeight = height;
-
+		
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glOrtho(0, mWidth, mHeight, 0, -1, 1);
 
 		gl.glMatrixMode(GL.GL_MODELVIEW);
 		gl.glLoadIdentity();
+		gl.glTranslated(0.375, 0.375, 0.);
 	}
 
 	/**
 	 * This function transforms the current projection and modelview matrix to a
-	 * convenient one for the rendering of HUDs and GUIs. <br/>
+	 * convenient one for the rendering of HUDs and GUIs. It saves the state of both
+	 * matrices. They must be recovered by a call to <code>stopHudRendering</code>.<br/>
 	 * <br/>
 	 * The projection will be orthogonal and will have a fixed width and height,
 	 * defined by hudWidth and hudHeight. <br/>
@@ -387,22 +390,38 @@ public class Renderer implements GLEventListener {
 	 * The modelview matrix will be reset to its identity. <br/>
 	 * <br/>
 	 * TODO: make the fixed width and height depend on the aspect ratio
+	 * 
+	 * @see stopHudRendering
 	 */
 	public void startHUDRendering() {
 		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glPushMatrix(); // push the current projection matrix
 		gl.glLoadIdentity();
 		gl.glOrtho(0, hudWidth, hudHeight, 0, -1, 1);
 
 		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glPushMatrix(); // push the current modelview matrix
 		gl.glLoadIdentity();
+	}
+	
+	/**
+	 * This function restores the projection and modelview matrices to the point just
+	 * before the call to <code>startHUDRendering</code>. It is <u>mandatory</u> to call this
+	 * function after a call to startHudRendering.
+	 * @see startHUDRendering
+	 */
+	public void stopHUDRendering() {
+		gl.glMatrixMode(GL.GL_PROJECTION);
+		gl.glPopMatrix();
+		gl.glMatrixMode(GL.GL_MODELVIEW);
+		gl.glPopMatrix();
 	}
 
 	/**
 	 * Implementation not required. Do not call.
 	 */
 	@Override
-	public void displayChanged(final GLAutoDrawable glad, final boolean bln,
-			final boolean bln1) {
+	public void displayChanged(GLAutoDrawable glad, boolean modeChanged, boolean deviceChanged) {
 	}
 
 	/**
@@ -467,17 +486,17 @@ public class Renderer implements GLEventListener {
 	 */
 	public boolean inFrustum(final Rectangle rect) {
 		final float[] mvmat = new float[16];
-
 		gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, mvmat, 0);
 
-		final Matrix2f mMat = new Matrix2f(mvmat[0], mvmat[1], mvmat[4],
+		final Matrix2f mat = new Matrix2f(mvmat[0], mvmat[1], mvmat[4],
 				mvmat[5]);
-		final Vector2f vNew = mMat.apply(rect.getLeftTop());
+		final Vector2f leftTop = mat.apply(rect.getLeftTop());
+		final Vector2f rightBottom = mat.apply(rect.getRightBottom());
 
-		return !(mvmat[12] + vNew.getX() > mWidth
-				|| mvmat[12] + rect.getRight() < 0
-				|| mvmat[13] + vNew.getY() > mHeight || mvmat[13]
-				+ rect.getBottom() < 0);
+		return mvmat[12] + leftTop.getX() < mWidth
+				&& mvmat[12] + rightBottom.getX() > 0
+				&& mvmat[13] + leftTop.getY() < mHeight 
+				&& mvmat[13] + rightBottom.getY() > 0;
 	}
 
 	/**

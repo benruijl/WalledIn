@@ -5,9 +5,10 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import walledin.game.Item;
+import walledin.game.EntityManager;
 import walledin.game.ItemFactory;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Entity;
 import walledin.math.Vector2f;
 import walledin.util.XMLReader;
 
@@ -20,7 +21,12 @@ public class GameMapIOXML implements GameMapIO {
 	// FIXME dont use instance vars for this...
 	private int width;
 	private int height;
+	private final EntityManager entityManager;
 
+	public GameMapIOXML(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+	
 	/**
 	 * Reads tile information
 	 * 
@@ -54,8 +60,8 @@ public class GameMapIOXML implements GameMapIO {
 		return result;
 	}
 
-	private List<Item> parseItems(final Element element) {
-		final List<Item> itList = new ArrayList<Item>();
+	private List<Entity> parseItems(final Element element) {
+		final List<Entity> itList = new ArrayList<Entity>();
 		final Element itemsNode = XMLReader.getFirstElement(element, "items");
 		final List<Element> items = XMLReader.getElements(itemsNode, "item");
 
@@ -65,8 +71,8 @@ public class GameMapIOXML implements GameMapIO {
 			final int x = Integer.parseInt(el.getAttribute("x"));
 			final int y = Integer.parseInt(el.getAttribute("y"));
 
-			final Item item = ItemFactory.getInstance().create(type, name);
-			item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
+			final Entity item = ItemFactory.getInstance().create(type, name,
+					new Vector2f(x, y), new Vector2f(0, 0));
 			itList.add(item);
 		}
 
@@ -81,19 +87,25 @@ public class GameMapIOXML implements GameMapIO {
 	 * @return Returns true on success and false on failure
 	 */
 	@Override
-	public GameMap readFromFile(final String filename) {
+	public Entity readFromFile(final String filename) {
 		final XMLReader reader = new XMLReader();
 
 		if (reader.open(filename)) {
-			final Element map = reader.getRootElement();
+			final Element mapElement = reader.getRootElement();
 
-			final String name = XMLReader.getTextValue(map, "name");
-			final List<Item> items = parseItems(map);
-			final List<Tile> tiles = parseTiles(map);
+			final String name = XMLReader.getTextValue(mapElement, "name");
+			final List<Entity> items = parseItems(mapElement);
+			final List<Tile> tiles = parseTiles(mapElement);
 
-			final GameMap m = new GameMap(name, width, height, tiles, items);
+			final Entity map = entityManager.create("Map", name);
+			map.setAttribute(Attribute.WIDTH, width);
+			map.setAttribute(Attribute.HEIGHT, height);
+			map.setAttribute(Attribute.TILES, tiles);
+			map.setAttribute(Attribute.ITEM_LIST, items);
+			
+			entityManager.add(items);
 
-			return m;
+			return map;
 		} else {
 			return null;
 		}
@@ -101,7 +113,7 @@ public class GameMapIOXML implements GameMapIO {
 	}
 
 	@Override
-	public boolean writeToFile(final GameMap map, final String filename) {
+	public boolean writeToFile(final Entity map, final String filename) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 }

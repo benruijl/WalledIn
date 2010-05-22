@@ -11,8 +11,8 @@ public class Entity {
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
 	private final Map<Attribute, Object> attributes;
 	private Set<Attribute> changedAttributes;
-	private final String name;
-	private final String familyName;
+	private String name;
+	private String familyName;
 	private boolean markedRemoved;
 
 	/**
@@ -20,7 +20,7 @@ public class Entity {
 	 * @param name
 	 *            Name of the component
 	 */
-	public Entity(final String name, final String familyName) {
+	public Entity(final String familyName, final String name) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		changedAttributes = new HashSet<Attribute>();
@@ -36,6 +36,23 @@ public class Entity {
 	 */
 	public String getName() {
 		return name;
+	}
+	
+	/**
+	 * Get the family name
+	 * @return Family name
+	 */
+	public String getfFamilyName() {
+		return familyName;
+	}
+
+	/**
+	 * Set the name of the entity
+	 * 
+	 * @return Name of the entity
+	 */
+	public void setName(final String name) {
+		this.name = name;
 	}
 
 	/**
@@ -126,7 +143,7 @@ public class Entity {
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> T setAttribute(final Attribute attribute, final T newObject) {
-		if (attribute.clazz.isInstance(newObject)) {
+		if (attribute.clazz.isInstance(newObject) || newObject == null) {
 			if (newObject == null) {
 				LOG.warning("Storing null value for attribute " + attribute
 						+ " of entity " + name);

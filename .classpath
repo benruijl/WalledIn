@@ -2,11 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/jogl.jar" sourcepath="libs/jogl-src.zip">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="WalledInJava/libs/native/linux64"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="libs/jogl.jar" sourcepath="libs/jogl-src.zip"/>
 	<classpathentry kind="lib" path="libs/gluegen-rt.jar" sourcepath="libs/jogl-src.zip"/>
 	<classpathentry kind="output" path="dist"/>
 </classpath>

@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
-import walledin.game.Item;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.Tile;
@@ -55,7 +54,7 @@ public class NetworkManager {
 			writeInt((Integer) data, buffer);
 			break;
 		case ITEM_LIST:
-			writeItems((List<Item>) data, buffer);
+			writeItems((List<Entity>) data, buffer);
 			break;
 		case POSITION:
 			writeVector2f((Vector2f) data, buffer);
@@ -82,9 +81,9 @@ public class NetworkManager {
 		}
 	}
 
-	private void writeItems(final List<Item> data, final ByteBuffer buffer) {
+	private void writeItems(final List<Entity> data, final ByteBuffer buffer) {
 		buffer.putInt(data.size());
-		for (final Item item : data) {
+		for (final Entity item : data) {
 			writeString(item.getName(), buffer);
 		}
 	}

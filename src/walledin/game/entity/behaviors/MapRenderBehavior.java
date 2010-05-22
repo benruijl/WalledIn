@@ -13,17 +13,12 @@ import walledin.math.Rectangle;
 public class MapRenderBehavior extends RenderBehavior {
 	private final static float TILE_WIDTH = 32.0f;
 	private final static int STEP_SIZE = 10;
-	private final int height;
-	private final int width;
-	private final List<Tile> tiles;
+	private int height;
+	private int width;
+	private List<Tile> tiles;
 
-	public MapRenderBehavior(final Entity owner, final int width,
-			final int height, final List<Tile> tiles) {
+	public MapRenderBehavior(final Entity owner) {
 		super(owner, ZValues.MAP);
-		this.width = width;
-		this.height = height;
-		this.tiles = tiles;
-
 		setAttribute(Attribute.RENDER_TILE_SIZE, TILE_WIDTH);
 	}
 
@@ -54,8 +49,19 @@ public class MapRenderBehavior extends RenderBehavior {
 	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.RENDER) {
 			render((Renderer) data);
+		} else if (messageType == MessageType.ATTRIBUTE_SET) {
+			final Attribute attribute = (Attribute) data;
+			switch (attribute) {
+			case HEIGHT:
+				height = getAttribute(attribute);
+				break;
+			case WIDTH:
+				width = getAttribute(attribute);
+				break;
+			case TILES:
+				tiles = getAttribute(attribute);
+				break;
+			}
 		}
-
 	}
-
 }

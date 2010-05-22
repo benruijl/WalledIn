@@ -8,8 +8,14 @@ import org.w3c.dom.Element;
 
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
+import walledin.game.entity.Attribute;
+import walledin.game.entity.Entity;
+import walledin.game.entity.behaviors.BulletBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
+import walledin.game.entity.behaviors.ItemRenderBehavior;
+import walledin.game.entity.behaviors.SpatialBehavior;
 import walledin.math.Rectangle;
+import walledin.math.Vector2f;
 import walledin.util.XMLReader;
 
 /**
@@ -32,7 +38,7 @@ public class ItemFactory {
 	}
 
 	private interface ItemConstructionFunction {
-		Item create(String itemName);
+		Entity create(String familyName, String itemName, Vector2f position, Vector2f velocity);
 	}
 
 	Map<String, ItemConstructionFunction> itemContructionFunctions;
@@ -56,14 +62,19 @@ public class ItemFactory {
 	 */
 	private void addFunction(final String familyName, final String texPart,
 			final Rectangle destRect, final Element el) {
+		
 		if (familyName.equals("healthkit")) {
 			itemContructionFunctions.put(familyName,
 					new ItemConstructionFunction() {
 
 						@Override
-						public Item create(final String itemName) {
-							final Item hk = new Item(itemName, familyName,
-									texPart, destRect);
+						public Entity create(final String familyName, final String itemName,
+								final Vector2f position, final Vector2f velocity) {
+							final Entity hk = new Entity(familyName, itemName);				
+							hk.addBehavior(new SpatialBehavior(hk, position, velocity));
+							hk.addBehavior(new ItemRenderBehavior(hk, texPart, destRect));
+
+							hk.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 							// read extra data
 							final int hkStrength = XMLReader.getIntValue(el,
@@ -81,10 +92,35 @@ public class ItemFactory {
 					new ItemConstructionFunction() {
 
 						@Override
-						public Item create(final String itemName) {
-							// TODO: read custom information
-							return new Item(itemName, familyName, texPart,
-									destRect);
+						public Entity create(final String familyName, final String itemName,
+								final Vector2f position, final Vector2f velocity) {
+							final Entity ak = new Entity(familyName, itemName);				
+							ak.addBehavior(new SpatialBehavior(ak, position, velocity));
+							ak.addBehavior(new ItemRenderBehavior(ak, texPart, destRect));
+
+							ak.setAttribute(Attribute.BOUNDING_RECT, destRect);
+							return ak;
+						}
+					});
+		}
+		
+		if (familyName.equals("bullet")) {
+			itemContructionFunctions.put("bullet",
+					new ItemConstructionFunction() {
+
+						@Override
+						public Entity create(final String familyName, final String itemName,
+								final Vector2f position, final Vector2f velocity) {
+							final Entity bl = new Entity(familyName, itemName);				
+							bl.addBehavior(new SpatialBehavior(bl, position, velocity));
+							bl.addBehavior(new ItemRenderBehavior(bl, texPart, destRect));
+
+							bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
+							
+								bl
+								.addBehavior(new BulletBehavior(bl));
+							return bl;
+							
 						}
 					});
 		}
@@ -143,9 +179,10 @@ public class ItemFactory {
 	 *            Family name
 	 * @param itemName
 	 *            The name of the item to be created
+	 * @param position 
 	 * @return Returns an item or null on failure
 	 */
-	public Item create(final String familyName, final String itemName) {
+	public Entity create(final String familyName, final String itemName, final Vector2f position, final Vector2f velocity) {
 		if (!itemContructionFunctions.containsKey(familyName)) {
 			throw new IllegalArgumentException(
 					"Item "
@@ -153,6 +190,6 @@ public class ItemFactory {
 							+ " is not found in the database. Are the items loaded correctly?");
 		}
 
-		return itemContructionFunctions.get(familyName).create(itemName);
+		return itemContructionFunctions.get(familyName).create(familyName, itemName, position, velocity);
 	}
 }

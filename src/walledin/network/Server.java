@@ -13,12 +13,11 @@ import java.util.Map;
 import java.util.Set;
 
 import walledin.game.CollisionManager;
-import walledin.game.Item;
+import walledin.game.EntityFactory;
+import walledin.game.EntityManager;
 import walledin.game.ItemFactory;
-import walledin.game.Player;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.map.GameMap;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.math.Vector2f;
@@ -28,29 +27,29 @@ public class Server {
 	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int UPDATES_PER_SECOND = 60;
 	private static final int NANOSECONDS_PER_SECOND = 1000000000;
-	private Map<SocketAddress, Player> players;
-	private Map<Player, Set<Integer>> keysDown;
+	private Map<SocketAddress, Entity> players;
+	private Map<Entity, Set<Integer>> keysDown;
 	private Map<String, Entity> entities;
 	private Set<SocketAddress> newPlayers;
 	private Set<Entity> removedEntities;
 	private Set<Entity> newEntities;
 	private boolean running;
 	private ByteBuffer buffer;
-	private ServerEntityFactory entityFactory;
 	private NetworkManager networkManager;
-	private GameMap gameMap;
+	private Entity gameMap;
 	private long currentTime;
+	private final EntityManager entityManager;
 
 	public Server() {
 		entities = new LinkedHashMap<String, Entity>();
-		players = new HashMap<SocketAddress, Player>();
+		players = new HashMap<SocketAddress, Entity>();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
-		entityFactory = new ServerEntityFactory();
 		networkManager = new NetworkManager();
 		newEntities = new HashSet<Entity>();
 		removedEntities = new HashSet<Entity>();
 		newPlayers = new HashSet<SocketAddress>();
+		entityManager = new EntityManager(new EntityFactory());
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -176,7 +175,7 @@ public class Server {
 				for (int i = 0; i < numKeys; i++) {
 					keys.add((int) buffer.getShort());
 				}
-				Player player = players.get(address);
+				Entity player = players.get(address);
 				keysDown.put(player, keys);
 				break;
 			}
@@ -184,15 +183,15 @@ public class Server {
 	}
 
 	private void removePlayer(SocketAddress address) {
-		Player player = players.get(address);
+		Entity player = players.get(address);
 		newPlayers.remove(player);
 		removeEntity(player.getName());
 	}
 
 	private void createPlayer(String name, SocketAddress address) {
-		Player player = new Player(name);
+		Entity player = entityManager.create("Player", name);
 		newEntity(player);
-		newPlayers.add(player);
+		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION,
 				new Vector2f(400, 300));
 		players.put(address, player);
@@ -230,14 +229,14 @@ public class Server {
 		// load all item information
 		ItemFactory.getInstance().loadFromXML("data/items.xml");
 
-		final GameMapIO mMapIO = new GameMapIOXML(); // choose XML as format
+		final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML as format
 
 		gameMap = mapIO.readFromFile("data/map.xml");
 		newEntity(gameMap);
 
 		// add map items like healthkits to entity list
-		final List<Item> mapItems = gameMap.getAttribute(Attribute.ITEM_LIST);
-		for (final Item item : mapItems) {
+		final List<Entity> mapItems = gameMap.getAttribute(Attribute.ITEM_LIST);
+		for (final Entity item : mapItems) {
 			newEntity(item);
 		}
 	}

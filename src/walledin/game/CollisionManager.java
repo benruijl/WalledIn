@@ -6,7 +6,6 @@ import java.util.List;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
-import walledin.game.map.GameMap;
 import walledin.game.map.Tile;
 import walledin.math.Circle;
 import walledin.math.Rectangle;
@@ -59,7 +58,7 @@ public class CollisionManager {
 
 	}
 
-	static private Tile tileFromPixel(final GameMap map, final Vector2f pos) {
+	static private Tile tileFromPixel(final Entity map, final Vector2f pos) {
 		final float tileSize = map.getAttribute(Attribute.RENDER_TILE_SIZE);
 		final int width = map.getAttribute(Attribute.WIDTH);
 
@@ -123,7 +122,7 @@ public class CollisionManager {
 		}
 	}
 
-	static public void calculateMapCollisions(final GameMap map,
+	static public void calculateMapCollisions(final Entity map,
 			final Collection<Entity> entities, final double delta) {
 		final float tileSize = map.getAttribute(Attribute.RENDER_TILE_SIZE);
 
@@ -192,8 +191,10 @@ public class CollisionManager {
 
 				ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
 				ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldPos.x,
-						y - oldPos.y));
+						y - oldPos.y).scale((float) (1 / delta)));
 
+				// if there is no difference, there has been no collision
+				if (Math.abs(x - curPos.x) > 0.0001f || Math.abs(y - curPos.y) > 0.0001f)
 				ent.sendMessage(MessageType.COLLIDED, new CollisionData(
 						new Vector2f(x, y), oldPos, curPos, map));
 			}
