@@ -10,7 +10,6 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.game.EntityFactory;
 import walledin.game.EntityManager;
-import walledin.game.ItemFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.GameMapIO;
@@ -50,9 +49,9 @@ public class Client implements RenderListener {
 					20.0f));
 			Vector2f velocity = new Vector2f(or * 400.0f, 0);
 			
-			Entity bullet = ItemFactory.getInstance().create("bullet", 
-					entityManager.generateUniqueName("bullet"),
-					position, velocity);
+			Entity bullet = entityManager.create("bullet", entityManager.generateUniqueName("bullet"));
+			bullet.setAttribute(Attribute.POSITION, position);
+			bullet.setAttribute(Attribute.VELOCITY, velocity);
 			
 			entityManager.add(bullet);
 			
@@ -94,8 +93,8 @@ public class Client implements RenderListener {
 		font = new Font(); // load font
 		font.readFromFile("data/arial20.font");
 
-		// load all item information
-		ItemFactory.getInstance().loadFromXML("data/items.xml");
+		// initialize entity manager
+		entityManager.init();
 
 		final GameMapIO mMapIO = new GameMapIOXML(entityManager); // choose XML as format
 		

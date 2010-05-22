@@ -15,7 +15,6 @@ import java.util.Set;
 import walledin.game.CollisionManager;
 import walledin.game.EntityFactory;
 import walledin.game.EntityManager;
-import walledin.game.ItemFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.GameMapIO;
@@ -226,8 +225,8 @@ public class Server {
 	public void init() {
 		entities = new LinkedHashMap<String, Entity>();
 
-		// load all item information
-		ItemFactory.getInstance().loadFromXML("data/items.xml");
+		// initialize entity manager
+		entityManager.init();
 
 		final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML as format
 

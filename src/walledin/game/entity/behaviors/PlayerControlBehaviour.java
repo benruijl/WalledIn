@@ -15,9 +15,8 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 	private static final float JUMP_SPEED = 3500.0f;
 	private boolean canJump;
 
-	public PlayerControlBehaviour(final Entity owner, final Vector2f position,
-			final Vector2f velocity) {
-		super(owner, position, velocity);
+	public PlayerControlBehaviour(final Entity owner) {
+		super(owner);
 	}
 
 	@Override

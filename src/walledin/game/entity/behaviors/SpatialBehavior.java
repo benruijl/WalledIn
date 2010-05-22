@@ -14,11 +14,10 @@ public class SpatialBehavior extends Behavior {
 	private Rectangle boundingBox;
 	private Circle boundingCircle;
 
-	public SpatialBehavior(final Entity owner, final Vector2f position,
-			final Vector2f velocity) {
+	public SpatialBehavior(final Entity owner) {
 		super(owner);
-		this.position = position;
-		this.velocity = velocity;
+		this.position = new Vector2f();
+		this.velocity =  new Vector2f();
 		boundingBox = new Rectangle();
 		boundingCircle = new Circle();
 

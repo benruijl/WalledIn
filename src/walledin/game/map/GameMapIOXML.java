@@ -6,7 +6,6 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import walledin.game.EntityManager;
-import walledin.game.ItemFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.math.Vector2f;
@@ -71,8 +70,8 @@ public class GameMapIOXML implements GameMapIO {
 			final int x = Integer.parseInt(el.getAttribute("x"));
 			final int y = Integer.parseInt(el.getAttribute("y"));
 
-			final Entity item = ItemFactory.getInstance().create(type, name,
-					new Vector2f(x, y), new Vector2f(0, 0));
+			final Entity item = entityManager.create(type, name);
+			item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
 			itList.add(item);
 		}
 
@@ -102,8 +101,6 @@ public class GameMapIOXML implements GameMapIO {
 			map.setAttribute(Attribute.HEIGHT, height);
 			map.setAttribute(Attribute.TILES, tiles);
 			map.setAttribute(Attribute.ITEM_LIST, items);
-			
-			entityManager.add(items);
 
 			return map;
 		} else {
