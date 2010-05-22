@@ -11,28 +11,16 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 
 public class EntityManager {
-	private static final EntityManager INSTANCE = new EntityManager();
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
-
-	public static EntityManager getInstance() {
-		return INSTANCE;
-	}
-
-	private EntityManager() {
-		entities = new HashMap<String, Entity>();
-		factory = new EntityFactory();
-		drawOrderManager = new DrawOrderManager();
-	}
-	
-	
 	private Map<String, Entity> entities;
 	private DrawOrderManager drawOrderManager;
 	private EntityFactory factory;
 	private int uniqueNameCount = 0;
+	
+	public EntityManager(EntityFactory factory) {
+		entities = new HashMap<String, Entity>();
+		this.factory = factory;
+		drawOrderManager = new DrawOrderManager();
+	}
 	
 	/**
 	 * Creates a new Entity and adds it to the entities list.

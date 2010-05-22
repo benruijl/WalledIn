@@ -10,7 +10,6 @@ import walledin.game.EntityManager;
 import walledin.game.ItemFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.behaviors.MapRenderBehavior;
 import walledin.util.XMLReader;
 
 /**
@@ -22,7 +21,12 @@ public class GameMapIOXML implements GameMapIO {
 	// FIXME dont use instance vars for this...
 	private int width;
 	private int height;
+	private final EntityManager entityManager;
 
+	public GameMapIOXML(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+	
 	/**
 	 * Reads tile information
 	 * 
@@ -87,24 +91,21 @@ public class GameMapIOXML implements GameMapIO {
 		final XMLReader reader = new XMLReader();
 
 		if (reader.open(filename)) {
-			final Element map = reader.getRootElement();
+			final Element mapElement = reader.getRootElement();
 
-			final String name = XMLReader.getTextValue(map, "name");
-			final List<Entity> items = parseItems(map);
-			final List<Tile> tiles = parseTiles(map);
+			final String name = XMLReader.getTextValue(mapElement, "name");
+			final List<Entity> items = parseItems(mapElement);
+			final List<Tile> tiles = parseTiles(mapElement);
 
-			final Entity m = new Entity("Map", name);
-			m.setAttribute(Attribute.WIDTH, width);
-			m.setAttribute(Attribute.HEIGHT, height);
-			m.setAttribute(Attribute.TILES, tiles);
-			m.setAttribute(Attribute.ITEM_LIST, items);
+			final Entity map = entityManager.create("Map", name);
+			map.setAttribute(Attribute.WIDTH, width);
+			map.setAttribute(Attribute.HEIGHT, height);
+			map.setAttribute(Attribute.TILES, tiles);
+			map.setAttribute(Attribute.ITEM_LIST, items);
 			
-			m.addBehavior(new MapRenderBehavior(m, width, height, tiles));
-			
-			EntityManager.getInstance().add(m);
-			EntityManager.getInstance().add(items);
+			entityManager.add(items);
 
-			return m;
+			return map;
 		} else {
 			return null;
 		}

@@ -1,7 +1,6 @@
 package walledin.game;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import walledin.engine.math.Rectangle;
@@ -13,8 +12,6 @@ import walledin.game.entity.behaviors.MapRenderBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.PlayerRenderBehavior;
-import walledin.game.entity.behaviors.SpatialBehavior;
-import walledin.game.map.Tile;
 
 public class EntityFactory {
 	Map<String, EntityConstructionFunction> entityContructionFunctions;
@@ -34,7 +31,7 @@ public class EntityFactory {
 		EntityConstructionFunction func = entityContructionFunctions.get(familyName);
 		
 		if (func == null)
-			return new Entity(familyName, entityName); // return generic entity
+			return ent; // return generic entity
 		
 		return func.create(ent);
 	}
@@ -59,33 +56,9 @@ public class EntityFactory {
 		ent.addBehavior(new BackgroundRenderBehavior(ent));
 		return ent;
 	}
-
 	
-	/**
-	 * Creates a new game map
-	 * 
-	 * @param name
-	 *            Map name
-	 * @param width
-	 *            Width of map
-	 * @param height
-	 *            Height of map
-	 * @param tiles
-	 *            Tile information
-	 * @param items
-	 */
-	public Entity createGameMap(final String name, final int width,
-			final int height, final List<Tile> tiles, final List<Entity> items) {
-		final Entity map = new Entity("Map", name);
-
-		map.setAttribute(Attribute.WIDTH, width);
-		map.setAttribute(Attribute.HEIGHT, height);
-		map.setAttribute(Attribute.TILES, tiles);
-		map.setAttribute(Attribute.ITEM_LIST, items);
-		
-		map.addBehavior(new SpatialBehavior(map, null, null));
-		map.addBehavior(new MapRenderBehavior(map, width, height, tiles));
-
+	private Entity createGameMap(final Entity map) {
+		map.addBehavior(new MapRenderBehavior(map));
 		return map;
 	}
 	
@@ -105,6 +78,15 @@ public class EntityFactory {
 						@Override
 						public Entity create(Entity ent) {
 							return createBackground(ent);
+						}
+					});
+			
+			entityContructionFunctions.put("Map",
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(Entity ent) {
+							return createGameMap(ent);
 						}
 					});
 	}
