@@ -8,5 +8,5 @@
 </listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="walledin.game.Main"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="WalledInJava"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${project_loc}/libs/native/linux64"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${project_loc:WalledInJava}/libs/native/linux64"/>
 </launchConfiguration>
