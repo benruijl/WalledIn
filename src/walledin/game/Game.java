@@ -78,6 +78,7 @@ public class Game implements RenderListener {
 		/* Render current FPS */
 		renderer.startHUDRendering();
 		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
+		renderer.stopHUDRendering();
 	}
 
 	/**
