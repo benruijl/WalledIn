@@ -98,8 +98,16 @@ public class Renderer implements GLEventListener {
 
 				if (gd.getFullScreenWindow() == win) {
 					gd.setFullScreenWindow(null);
-
-					System.exit(0);
+					
+					/* Stop the animator before exiting. Use a thread
+					 * to ensure the animator stopped. */
+		            new Thread() {
+		                @Override 
+		                public void run() {
+		                   anim.stop();
+		                   System.exit(0);
+		                }
+		             }.start();				
 				}
 			}
 		});
