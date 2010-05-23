@@ -32,7 +32,7 @@ public class EntityFactory {
 
 	public EntityFactory() {
 		entityContructionFunctions = new HashMap<String, EntityConstructionFunction>();
-		addCreationFunctions();
+		addStandardEntityCreationFunctions();
 	}
 
 	public Entity create(final String familyName, final String entityName) {
@@ -123,7 +123,7 @@ public class EntityFactory {
 	 *            Element in XML file which contains item specific information,
 	 *            like health kit strength or armor penetration value
 	 */
-	private void addFunction(final String familyName, final String texPart,
+	private void addItemFunction(final String familyName, final String texPart,
 			final Rectangle destRect, final Element el) {
 
 		if (familyName.equals("healthkit")) {
@@ -161,7 +161,11 @@ public class EntityFactory {
 		}
 	}
 
-	private void addCreationFunctions() {
+	/**
+	 * Creates skeletons for all the standard entities, like
+	 * player and map.
+	 */
+	private void addStandardEntityCreationFunctions() {
 		entityContructionFunctions.put("Player",
 				new EntityConstructionFunction() {
 
@@ -226,7 +230,7 @@ public class EntityFactory {
 				TexturePartManager.getInstance().createTexturePart(texPartName,
 						texName, new Rectangle(x, y, width, height));
 
-				addFunction(familyName, texPartName, new Rectangle(0, 0,
+				addItemFunction(familyName, texPartName, new Rectangle(0, 0,
 						destWidth, destHeight), cur);
 			}
 
