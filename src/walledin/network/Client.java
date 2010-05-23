@@ -26,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.Set;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
@@ -35,6 +36,7 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.game.ClientEntityFactory;
 import walledin.game.EntityManager;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.math.Rectangle;
 import walledin.math.Vector2f;
@@ -78,7 +80,7 @@ public class Client implements RenderListener, Runnable {
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
 		host = new InetSocketAddress("localhost", PORT);
-		username = "BLAA";
+		username = "BLAA2";
 	}
 	
 	@Override
@@ -104,8 +106,18 @@ public class Client implements RenderListener, Runnable {
 		}
 	}
 
-	private void writeInput(DatagramChannel channel) {
-		// TODO write current input
+	private void writeInput(DatagramChannel channel) throws IOException {
+		buffer.limit(BUFFER_SIZE);
+		buffer.rewind();
+		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkManager.INPUT_MESSAGE);
+		Set<Integer> keysDown = Input.getInstance().getKeysDown();
+		buffer.putShort((short) keysDown.size());
+		for (int key: keysDown) {
+			buffer.putShort((short) key);
+		}
+		buffer.flip();
+		channel.write(buffer);
 	}
 
 	private void readDatagrams(DatagramChannel channel) throws IOException {
@@ -136,8 +148,7 @@ public class Client implements RenderListener, Runnable {
 		buffer.putInt(username.length());
 		buffer.put(username.getBytes());
 		buffer.flip();
-		int num = channel.write(buffer);
-		System.out.println(num);
+		channel.write(buffer);
 	}
 
 	@Override
@@ -146,12 +157,14 @@ public class Client implements RenderListener, Runnable {
 		entityManager.update(delta);
 		
 		/* Center the camera around the player */
-		// TODO get player entity back from server so we know what to center on
-		//renderer.centerAround((Vector2f) entityManager.get("Player01").getAttribute(
-		//		Attribute.POSITION));
+		Entity player = entityManager.get(username);
+		if (player != null) {
+			renderer.centerAround((Vector2f) player.getAttribute(
+					Attribute.POSITION));
+		}
 
 		/* Toggle full screen, current not working correctly */
-		if (Input.getInstance().keyDown(KeyEvent.VK_F1)) {
+		if (Input.getInstance().isKeyDown(KeyEvent.VK_F1)) {
 			renderer.toggleFullScreen();
 			Input.getInstance().setKeyUp(KeyEvent.VK_F1);
 		}

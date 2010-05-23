@@ -29,10 +29,10 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BulletBehavior;
 import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
+import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.SpatialBehavior;
 import walledin.math.Circle;
 import walledin.math.Rectangle;
-import walledin.math.Vector2f;
 import walledin.util.XMLReader;
 
 public class ServerEntityFactory extends AbstractEntityFactory {
@@ -46,10 +46,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		// the right
 
 		player.addBehavior(new HealthBehavior(player, 100, 100));
-		// player.addBehavior(new PlayerControlBehaviour(player));
-		// TODO create control simulation
-		// temp vel
-		player.setAttribute(Attribute.VELOCITY, new Vector2f());
+		player.addBehavior(new PlayerControlBehaviour(player));
+		
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,

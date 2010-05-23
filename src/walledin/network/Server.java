@@ -44,7 +44,6 @@ public class Server {
 	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int UPDATES_PER_SECOND = 60;
 	private Map<SocketAddress, Entity> players;
-	private Map<Entity, Set<Integer>> keysDown;
 	private Set<SocketAddress> newPlayers;
 	private boolean running;
 	private ByteBuffer buffer;
@@ -55,7 +54,6 @@ public class Server {
 
 	public Server() {
 		players = new HashMap<SocketAddress, Entity>();
-		keysDown = new HashMap<Entity, Set<Integer>>();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		networkManager = new NetworkManager();
@@ -201,7 +199,8 @@ public class Server {
 					keys.add((int) buffer.getShort());
 				}
 				Entity player = players.get(address);
-				keysDown.put(player, keys);
+				System.out.println("keys down: " + keys.size());
+				player.setAttribute(Attribute.KEYS_DOWN, keys);
 				break;
 			}
 		}
@@ -217,7 +216,7 @@ public class Server {
 		player.setAttribute(Attribute.POSITION,
 				new Vector2f(400, 300));
 		players.put(address, player);
-		System.out.println("new player" + name + " @ " + address);
+		System.out.println("new player " + name + " @ " + address);
 	}
 	
 	public void update(final double delta) {

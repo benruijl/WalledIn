@@ -21,6 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity;
 
 import java.util.List;
+import java.util.Set;
 
 import walledin.math.Circle;
 import walledin.math.Rectangle;
@@ -34,7 +35,8 @@ public enum Attribute {
 	TILES(List.class, true), 
 	ITEM_LIST(List.class, true),
 	HEALTH(Integer.class, true),
-
+	
+	KEYS_DOWN(Set.class),
 	ORIENTATION(Integer.class),
 	WALK_ANIM_FRAME(Float.class),
 	BOUNDING_RECT(Rectangle.class),
