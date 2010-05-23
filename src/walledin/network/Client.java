@@ -1,8 +1,11 @@
 package walledin.network;
 
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
@@ -20,8 +23,12 @@ import walledin.math.Rectangle;
 import walledin.math.Vector2f;
 
 public class Client implements RenderListener, Runnable {
+	private static final int PORT = 1234;
+	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
+	private boolean running;
+	private ByteBuffer buffer;
 	private Font font;
 	private Renderer renderer; // current renderer
 	private EntityManager entityManager;
@@ -32,12 +39,12 @@ public class Client implements RenderListener, Runnable {
 	public static void main(String[] args) {
 		Renderer renderer = new Renderer();
 		Client client = new Client(renderer);
+		renderer.initialize("WalledIn", 800, 600, false);
+		renderer.addListener(client);
 		// Start client
 		Thread thread = new Thread(client, "client");
 		thread.start();
 		// Start renderer
-		renderer.initialize("WalledIn", 800, 600, false);
-		renderer.addListener(client);
 		renderer.beginLoop();
 	}
 
@@ -48,17 +55,41 @@ public class Client implements RenderListener, Runnable {
 	public Client(Renderer renderer) {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
+		running = false;
+		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
-		host = new InetSocketAddress("localhost", 1234);
+		host = new InetSocketAddress("localhost", PORT);
 		username = "BLAA";
 	}
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		
+		try {
+			doRun();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void doRun() throws IOException {
+		DatagramChannel channel = DatagramChannel.open();
+		channel.configureBlocking(true);
+		channel.connect(host);
+		writeLogin(channel);
 	}
 	
+	private void writeLogin(DatagramChannel channel) throws IOException {
+		buffer.limit(BUFFER_SIZE);
+		buffer.rewind();
+		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkManager.LOGIN_MESSAGE);
+		buffer.putInt(username.length());
+		buffer.put(username.getBytes());
+		buffer.flip();
+		int num = channel.write(buffer);
+		System.out.println(num);
+	}
+
 	@Override
 	public void update(final double delta) {
 		/* Update all entities */
@@ -85,8 +116,8 @@ public class Client implements RenderListener, Runnable {
 		
 		/* Center the camera around the player */
 		// TODO get player entity back from server so we know what to center on
-		renderer.centerAround((Vector2f) entityManager.get("Player01").getAttribute(
-				Attribute.POSITION));
+		//renderer.centerAround((Vector2f) entityManager.get("Player01").getAttribute(
+		//		Attribute.POSITION));
 
 		/* Toggle full screen, current not working correctly */
 		if (Input.getInstance().keyDown(KeyEvent.VK_F1)) {

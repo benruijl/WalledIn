@@ -53,7 +53,7 @@ public class Server {
 	public void run() throws IOException {
 		init();
 		DatagramChannel channel = DatagramChannel.open();
-		channel.connect(new InetSocketAddress(PORT));
+		channel.socket().bind(new InetSocketAddress(PORT));
 		channel.configureBlocking(false);
 
 		running = true;
@@ -150,9 +150,11 @@ public class Server {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
 		SocketAddress address = channel.receive(buffer);
+		buffer.flip();
 		while (address != null) {
 			processDatagram(address);
 			address = channel.receive(buffer);
+			buffer.flip();
 		}
 	}
 
@@ -194,6 +196,7 @@ public class Server {
 		player.setAttribute(Attribute.POSITION,
 				new Vector2f(400, 300));
 		players.put(address, player);
+		System.out.println("new player" + name + " @ " + address);
 	}
 	
 	public void update(final double delta) {

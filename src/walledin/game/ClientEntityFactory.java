@@ -23,7 +23,6 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 	}
 
 	private Entity createPlayer(final Entity player) {
-		// TODO spatial is missing?
 		player.setAttribute(Attribute.ORIENTATION, 1); // start looking to
 		// the right
 
