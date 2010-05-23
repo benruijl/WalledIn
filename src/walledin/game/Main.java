@@ -12,7 +12,7 @@ public class Main {
 	}
 
 	public void run() {
-		renderer.initialize("WalledIn");
+		renderer.initialize("WalledIn", 800, 600, false);
 		renderer.addListener(game);
 		renderer.beginLoop();
 	}

@@ -57,41 +57,58 @@ public class Renderer implements GLEventListener {
 	 * Initializes the renderer. It creates the window and a GL render canvas.
 	 * 
 	 * @param strTitle
-	 *            Title name of the window
+	 *            Window title
+	 * @param width
+	 *            Window width
+	 * @param height
+	 *            Window height
+	 * @param fs
+	 *            Set full screen
 	 */
-	public void initialize(final String strTitle) {
+	public void initialize(final String strTitle, int width, int height,
+			boolean fs) {
 		win = new Frame(strTitle);
-		win.setSize(800, 600);
+		win.setSize(width, height);
 		win.setLocation(0, 0);
 		win.setLayout(new BorderLayout());
-
-		win.addWindowListener(new WindowAdapter() {
-
-			@Override
-			public void windowClosing(final WindowEvent e) {
-
-				if (isFullScreen) {
-					toggleFullScreen();
-				}
-
-				System.exit(0);
-			}
-		});
 
 		final GLCapabilities caps = new GLCapabilities();
 		caps.setDoubleBuffered(true);
 		caps.setHardwareAccelerated(true);
 
 		mCanvas = new GLCanvas(caps);
+		mCanvas.setIgnoreRepaint(true);
 		mCanvas.addGLEventListener(this);
+		win.add(mCanvas);
 		
-		mCanvas.addKeyListener(Input.getInstance()); // listen to keys
+		final GraphicsDevice gd = GraphicsEnvironment
+		.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
-		win.add(mCanvas, BorderLayout.CENTER);
+		if (fs) {
+			win.setUndecorated(true);
+
+			if (gd.isFullScreenSupported())
+				gd.setFullScreenWindow(win);
+		}
+		
+		win.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(final WindowEvent e) {
+
+				if (gd.getFullScreenWindow() == win) {
+					gd.setFullScreenWindow(null);
+
+					System.exit(0);
+				}
+			}
+		});
+
 		win.setVisible(true);
 
-		mCanvas.requestFocus();
+		mCanvas.requestFocusInWindow();
 
+		mCanvas.addKeyListener(Input.getInstance()); // listen to keys
 		lastUpdate = -1;
 	}
 
@@ -138,9 +155,10 @@ public class Renderer implements GLEventListener {
 		anim.start();
 
 	}
-	
+
 	/**
-	 * Get the current FPS avaraged over 10 frames. 
+	 * Get the current FPS avaraged over 10 frames.
+	 * 
 	 * @return Current FPS
 	 */
 	public float getFPS() {
@@ -165,7 +183,7 @@ public class Renderer implements GLEventListener {
 	public void display(final GLAutoDrawable glDrawable) {
 		mCurDrawable = glDrawable;
 		gl = mCurDrawable.getGL();
-		
+
 		/* Update FPS */
 		if (frameCount > 10) {
 			curFPS = (1000000000.0f * frameCount)
@@ -179,7 +197,7 @@ public class Renderer implements GLEventListener {
 		if (lastUpdate == -1) {
 			lastUpdate = System.nanoTime();
 		}
-		
+
 		final long currentTime = System.nanoTime();
 		double delta = currentTime - lastUpdate;
 		// Delta is in seconds. 10^9 nanoseconds per second
@@ -363,14 +381,14 @@ public class Renderer implements GLEventListener {
 	 *            New height of the window
 	 */
 	@Override
-	public void reshape(GLAutoDrawable glDrawable, int x,
-			int y, int width, int height) {
+	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width,
+			int height) {
 		mCurDrawable = glDrawable;
 		gl = glDrawable.getGL();
 
 		mWidth = width;
 		mHeight = height;
-		
+
 		gl.glMatrixMode(GL.GL_PROJECTION);
 		gl.glLoadIdentity();
 		gl.glOrtho(0, mWidth, mHeight, 0, -1, 1);
@@ -382,8 +400,9 @@ public class Renderer implements GLEventListener {
 
 	/**
 	 * This function transforms the current projection and modelview matrix to a
-	 * convenient one for the rendering of HUDs and GUIs. It saves the state of both
-	 * matrices. They must be recovered by a call to <code>stopHudRendering</code>.<br/>
+	 * convenient one for the rendering of HUDs and GUIs. It saves the state of
+	 * both matrices. They must be recovered by a call to
+	 * <code>stopHudRendering</code>.<br/>
 	 * <br/>
 	 * The projection will be orthogonal and will have a fixed width and height,
 	 * defined by hudWidth and hudHeight. <br/>
@@ -404,11 +423,12 @@ public class Renderer implements GLEventListener {
 		gl.glPushMatrix(); // push the current modelview matrix
 		gl.glLoadIdentity();
 	}
-	
+
 	/**
-	 * This function restores the projection and modelview matrices to the point just
-	 * before the call to <code>startHUDRendering</code>. It is <u>mandatory</u> to call this
-	 * function after a call to startHudRendering.
+	 * This function restores the projection and modelview matrices to the point
+	 * just before the call to <code>startHUDRendering</code>. It is
+	 * <u>mandatory</u> to call this function after a call to startHudRendering.
+	 * 
 	 * @see startHUDRendering
 	 */
 	public void stopHUDRendering() {
@@ -422,7 +442,8 @@ public class Renderer implements GLEventListener {
 	 * Implementation not required. Do not call.
 	 */
 	@Override
-	public void displayChanged(GLAutoDrawable glad, boolean modeChanged, boolean deviceChanged) {
+	public void displayChanged(GLAutoDrawable glad, boolean modeChanged,
+			boolean deviceChanged) {
 	}
 
 	/**
@@ -496,7 +517,7 @@ public class Renderer implements GLEventListener {
 
 		return mvmat[12] + leftTop.getX() < mWidth
 				&& mvmat[12] + rightBottom.getX() > 0
-				&& mvmat[13] + leftTop.getY() < mHeight 
+				&& mvmat[13] + leftTop.getY() < mHeight
 				&& mvmat[13] + rightBottom.getY() > 0;
 	}
 
