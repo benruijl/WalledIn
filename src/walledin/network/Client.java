@@ -76,8 +76,36 @@ public class Client implements RenderListener, Runnable {
 		channel.configureBlocking(true);
 		channel.connect(host);
 		writeLogin(channel);
+		running = true;
+		while (running) {
+			// Read gamestate
+			readDatagrams(channel);
+			// Write input
+			writeInput(channel);
+		}
 	}
-	
+
+	private void writeInput(DatagramChannel channel) {
+		// TODO write current input
+	}
+
+	private void readDatagrams(DatagramChannel channel) throws IOException {
+		int ident = -1;
+		while (ident != NetworkManager.DATAGRAM_IDENTIFICATION) {
+			buffer.limit(BUFFER_SIZE);
+			buffer.rewind();
+			channel.read(buffer);
+			buffer.flip();
+			ident = buffer.getInt();
+		}
+		processGamestate();
+	}
+
+	private void processGamestate() throws IOException {
+		int size = buffer.getInt();
+		// TODO read entitys and store them
+	}
+
 	private void writeLogin(DatagramChannel channel) throws IOException {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
@@ -150,9 +178,7 @@ public class Client implements RenderListener, Runnable {
 		// initialize entity manager
 		entityManager.init();
 
-		final GameMapIO mMapIO = new GameMapIOXML(entityManager); // choose XML as format
-		
-		map = mMapIO.readFromFile("data/map.xml");
+		// Background is not created by server (not yet anyway)
 		entityManager.create("Background", "Background");
 	}
 

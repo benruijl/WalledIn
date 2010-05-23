@@ -106,7 +106,7 @@ public class Server {
 			writeDatagramForExistingPlayers();
 			buffer.flip();
 			for (SocketAddress socketAddress : players.keySet()) {
-				if (newPlayers.contains(socketAddress)) {
+				if (!newPlayers.contains(socketAddress)) {
 					channel.send(buffer, socketAddress);
 					buffer.rewind();
 				}
@@ -173,6 +173,7 @@ public class Server {
 				break;
 			case NetworkManager.LOGOUT_MESSAGE:
 				removePlayer(address);
+				break;
 			case NetworkManager.INPUT_MESSAGE:
 				short numKeys = buffer.getShort();
 				Set<Integer> keys = new HashSet<Integer>();
