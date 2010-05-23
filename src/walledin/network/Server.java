@@ -35,6 +35,7 @@ public class Server {
 
 	public Server() {
 		players = new HashMap<SocketAddress, Entity>();
+		keysDown = new HashMap<Entity, Set<Integer>>();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		networkManager = new NetworkManager();
@@ -186,8 +187,7 @@ public class Server {
 	}
 
 	private void removePlayer(SocketAddress address) {
-		Entity player = players.get(address);
-		newPlayers.remove(player);
+		newPlayers.remove(address);
 	}
 
 	private void createPlayer(String name, SocketAddress address) {
