@@ -19,7 +19,7 @@ import walledin.game.map.GameMapIOXML;
 import walledin.math.Rectangle;
 import walledin.math.Vector2f;
 
-public class Client implements RenderListener {
+public class Client implements RenderListener, Runnable {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
 	private Font font;
@@ -27,9 +27,18 @@ public class Client implements RenderListener {
 	private EntityManager entityManager;
 	private Entity map;
 	private SocketAddress host;
+	private String username;
 	
 	public static void main(String[] args) {
-		// TODO create client and run it and is another thread start the renderer
+		Renderer renderer = new Renderer();
+		Client client = new Client(renderer);
+		// Start client
+		Thread thread = new Thread(client, "client");
+		thread.start();
+		// Start renderer
+		renderer.initialize("WalledIn");
+		renderer.addListener(client);
+		renderer.beginLoop();
 	}
 
 	/**
@@ -39,8 +48,15 @@ public class Client implements RenderListener {
 	public Client(Renderer renderer) {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
-		// Hardcode the host for now
+		// Hardcode the host and username for now
 		host = new InetSocketAddress("localhost", 1234);
+		username = "BLAA";
+	}
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	@Override
