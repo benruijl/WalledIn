@@ -46,6 +46,10 @@ public class Server {
 		new Server().run();
 	}
 
+	/**
+	 * Run the server.
+	 * @throws IOException
+	 */
 	public void run() throws IOException {
 		init();
 		DatagramChannel channel = DatagramChannel.open();
@@ -59,6 +63,7 @@ public class Server {
 			double delta = System.nanoTime() - time;
 			// convert to sec
 			delta /= 1000000000;
+			// Calculate the how many milliseconds are left
 			long left = (long) ((1d / UPDATES_PER_SECOND - delta) * 1000);
 			//System.out.println(left + " " + delta);
 			try {
@@ -73,13 +78,17 @@ public class Server {
 	}
 
 	private void doLoop(DatagramChannel channel) throws IOException {
+		// Clear the new players from the last loop
 		newPlayers.clear();
+		// Read input messages and login messages
 		readDatagrams(channel);
 		double delta = System.nanoTime() - currentTime;
 		currentTime = System.nanoTime();
 		// convert to sec
 		delta /= 1000000000;
+		// Update game state
 		update(delta);
+		// Write to all the clients
 		writeDatagrams(channel);
 	}
 
