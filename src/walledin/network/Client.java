@@ -36,7 +36,7 @@ public class Client implements RenderListener, Runnable {
 		Thread thread = new Thread(client, "client");
 		thread.start();
 		// Start renderer
-		renderer.initialize("WalledIn");
+		renderer.initialize("WalledIn", 800, 600, false);
 		renderer.addListener(client);
 		renderer.beginLoop();
 	}

@@ -16,7 +16,7 @@ import walledin.util.XMLReader;
 public class ServerEntityFactory extends AbstractEntityFactory {
 	public ServerEntityFactory() {
 		super();
-		addCreationFunctions();
+		addStandardEntityCreationFunctions();
 	}
 
 	private Entity createPlayer(final Entity player) {
@@ -86,7 +86,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	 *            Element in XML file which contains item specific information,
 	 *            like health kit strength or armor penetration value
 	 */
-	private void addFunction(final String familyName, final Rectangle destRect,
+	private void addItemFunction(final String familyName, final Rectangle destRect,
 			final Element el) {
 
 		if (familyName.equals("healthkit")) {
@@ -124,7 +124,10 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		}
 	}
 
-	private void addCreationFunctions() {
+	/**
+	 * Creates skeletons for all the standard entities, like player and map.
+	 */
+	private void addStandardEntityCreationFunctions() {
 		entityContructionFunctions.put("Player",
 				new EntityConstructionFunction() {
 
@@ -163,7 +166,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 				final int destWidth = XMLReader.getIntValue(cur, "width");
 				final int destHeight = XMLReader.getIntValue(cur, "height");
 
-				addFunction(familyName, new Rectangle(0, 0, destWidth,
+				addItemFunction(familyName, new Rectangle(0, 0, destWidth,
 						destHeight), cur);
 			}
 
