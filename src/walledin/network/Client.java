@@ -35,10 +35,7 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.game.ClientEntityFactory;
 import walledin.game.EntityManager;
-import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.map.GameMapIO;
-import walledin.game.map.GameMapIOXML;
 import walledin.math.Rectangle;
 import walledin.math.Vector2f;
 
@@ -55,6 +52,7 @@ public class Client implements RenderListener, Runnable {
 	private Entity map;
 	private SocketAddress host;
 	private String username;
+	private NetworkManager networkManager;
 	
 	public static void main(String[] args) {
 		Renderer renderer = new Renderer();
@@ -75,6 +73,7 @@ public class Client implements RenderListener, Runnable {
 	public Client(Renderer renderer) {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
+		networkManager = new NetworkManager();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
@@ -118,12 +117,15 @@ public class Client implements RenderListener, Runnable {
 			buffer.flip();
 			ident = buffer.getInt();
 		}
+		int type = buffer.get(); // just assume gamestate for now
 		processGamestate();
 	}
 
 	private void processGamestate() throws IOException {
 		int size = buffer.getInt();
-		// TODO read entitys and store them
+		for (int i = 0; i < size; i++) {
+			networkManager.readEntity(entityManager, buffer);
+		}
 	}
 
 	private void writeLogin(DatagramChannel channel) throws IOException {
@@ -142,25 +144,6 @@ public class Client implements RenderListener, Runnable {
 	public void update(final double delta) {
 		/* Update all entities */
 		entityManager.update(delta);
-		
-		/* Spawn bullets if key pressed */
-		if (Input.getInstance().keyDown(KeyEvent.VK_ENTER))
-		{
-			Entity player = entityManager.get("Player01");
-			Vector2f playerPosition = player.getAttribute(Attribute.POSITION);
-			int or = player.getAttribute(Attribute.ORIENTATION);
-			Vector2f position = playerPosition.add(new Vector2f(or * 50.0f,
-					20.0f));
-			Vector2f velocity = new Vector2f(or * 400.0f, 0);
-			
-			Entity bullet = entityManager.create("bullet", entityManager.generateUniqueName("bullet"));
-			bullet.setAttribute(Attribute.POSITION, position);
-			bullet.setAttribute(Attribute.VELOCITY, velocity);
-			
-			entityManager.add(bullet);
-			
-			Input.getInstance().setKeyUp(KeyEvent.VK_ENTER);
-		}
 		
 		/* Center the camera around the player */
 		// TODO get player entity back from server so we know what to center on
