@@ -95,8 +95,10 @@ public class EntityManager {
 	
 	public Entity remove(String name)
 	{
-		Entity entity = entities.remove(name);
+		Entity entity = entities.get(name);
 		drawOrderManager.removeEntity(entity);
+		entities.remove(name);
+		
 		removed.add(entity);
 		return entity;
 	}
