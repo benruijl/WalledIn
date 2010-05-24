@@ -84,6 +84,9 @@ public class NetworkDataManager {
 		case HEALTH:
 			buffer.putInt((Integer) data);
 			break;
+		case ORIENTATION:
+			buffer.putInt((Integer) data);
+			break;
 		case PLAYER_NAME:
 			writeString((String) data, buffer);
 			break;
@@ -100,6 +103,44 @@ public class NetworkDataManager {
 			writeVector2f((Vector2f) data, buffer);
 			break;
 		}
+	}
+	
+	private void readAttribute(Entity entity, ByteBuffer buffer) {
+		// Write attribute identification
+		short ord = buffer.getShort();
+		// FIXME dont user ordinal
+		Attribute attribute = Attribute.values()[ord];
+		Object data = null;
+		switch (attribute) {
+		case HEIGHT:
+			data = buffer.getInt();
+			break;
+		case WIDTH:
+			data = buffer.getInt();
+			break;
+		case HEALTH:
+			data = buffer.getInt();
+			break;
+		case ORIENTATION:
+			data = buffer.getInt();
+			break;
+		case PLAYER_NAME:
+			data = readString(buffer);
+			break;
+		case ITEM_LIST:
+			data = readItems(buffer);
+			break;
+		case TILES:
+			data = readTiles(buffer);
+			break;
+		case POSITION:
+			data = readVector2f(buffer);
+			break;
+		case VELOCITY:
+			data = readVector2f(buffer);
+			break;
+		}
+		entity.setAttribute(attribute, data);
 	}
 
 	private void writeTiles(final List<Tile> data, final ByteBuffer buffer) {
@@ -153,41 +194,6 @@ public class NetworkDataManager {
 		for (int i = 0; i < num; i++) {
 			readAttribute(entity, buffer);
 		}
-	}
-
-	private void readAttribute(Entity entity, ByteBuffer buffer) {
-		// Write attribute identification
-		short ord = buffer.getShort();
-		// FIXME dont user ordinal
-		Attribute attribute = Attribute.values()[ord];
-		Object data = null;
-		switch (attribute) {
-		case HEIGHT:
-			data = buffer.getInt();
-			break;
-		case WIDTH:
-			data = buffer.getInt();
-			break;
-		case HEALTH:
-			data = buffer.getInt();
-			break;
-		case PLAYER_NAME:
-			data = readString(buffer);
-			break;
-		case ITEM_LIST:
-			data = readItems(buffer);
-			break;
-		case TILES:
-			data = readTiles(buffer);
-			break;
-		case POSITION:
-			data = readVector2f(buffer);
-			break;
-		case VELOCITY:
-			data = readVector2f(buffer);
-			break;
-		}
-		entity.setAttribute(attribute, data);
 	}
 
 	private Object readVector2f(ByteBuffer buffer) {

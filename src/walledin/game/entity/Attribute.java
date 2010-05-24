@@ -36,9 +36,9 @@ public enum Attribute {
 	ITEM_LIST(List.class, true),
 	HEALTH(Integer.class, true),
 	PLAYER_NAME(String.class, true),
+	ORIENTATION(Integer.class, true),
 	
 	KEYS_DOWN(Set.class),
-	ORIENTATION(Integer.class),
 	WALK_ANIM_FRAME(Float.class),
 	BOUNDING_RECT(Rectangle.class),
 	BOUNDING_CIRCLE(Circle.class), 

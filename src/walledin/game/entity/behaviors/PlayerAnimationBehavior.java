@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 */
 package walledin.game.entity.behaviors;
 
+import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -27,21 +28,32 @@ import walledin.game.entity.MessageType;
 public class PlayerAnimationBehavior extends AnimationBehavior {
 	private float walkAnimFrame;
 	private final float animSpeed;
+	private Vector2f velocity;
 
 	public PlayerAnimationBehavior(final Entity owner) {
 		super(owner);
 		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
 		animSpeed = 0.6f;
 	}
+	
+	@Override
+	public void onMessage(MessageType messageType, Object data) {
+		if (messageType == MessageType.ATTRIBUTE_SET) {
+			final Attribute attribute = (Attribute) data;
+			switch (attribute) {
+			case POSITION:
+				velocity = getAttribute(attribute);
+				break;
+			}
+		}
+	}
 
 	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.WALKED) {
+	public void onUpdate(final double delta) {
+		if (velocity.getX() != 0) {
 			walkAnimFrame += animSpeed;
 			walkAnimFrame %= 2 * Math.PI;
 			setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
 		}
-
 	}
-
 }

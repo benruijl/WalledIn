@@ -58,7 +58,6 @@ public class SpatialBehavior extends Behavior {
 			case VELOCITY:
 				velocity = getAttribute(attribute);
 				break;
-
 			case BOUNDING_RECT:
 				boundingBox = getAttribute(attribute);
 				// recreate circle

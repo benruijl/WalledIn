@@ -71,14 +71,12 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 				|| keysDown.contains(KeyEvent.VK_D)) {
 			x += MOVE_SPEED;
 			setAttribute(Attribute.ORIENTATION, 1);
-			getOwner().sendMessage(MessageType.WALKED, null);
 
 		}
 		if (keysDown.contains(KeyEvent.VK_LEFT)
 				|| keysDown.contains(KeyEvent.VK_A)) {
 			x -= MOVE_SPEED;
 			setAttribute(Attribute.ORIENTATION, -1);
-			getOwner().sendMessage(MessageType.WALKED, null);
 		}
 		if (keysDown.contains(KeyEvent.VK_UP)
 				|| keysDown.contains(KeyEvent.VK_W)) {
