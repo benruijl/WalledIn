@@ -23,9 +23,9 @@ package walledin.game.entity;
 import java.util.List;
 import java.util.Set;
 
-import walledin.math.Circle;
-import walledin.math.Rectangle;
-import walledin.math.Vector2f;
+import walledin.engine.math.Circle;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 
 public enum Attribute {
 	POSITION(Vector2f.class, true),

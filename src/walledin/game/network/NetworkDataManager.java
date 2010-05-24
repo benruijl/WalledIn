@@ -18,21 +18,21 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.network;
+package walledin.game.network;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
-import walledin.math.Vector2f;
 
-public class NetworkManager {
+public class NetworkDataManager {
 	public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
 	public static final byte LOGIN_MESSAGE = 0;
 	public static final byte INPUT_MESSAGE = 1;

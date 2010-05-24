@@ -18,56 +18,49 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
 */
-package walledin.math;
+package walledin.engine.math;
 
 /**
+ * A class for 2d matrices.
  * 
  * @author ben
  */
-public class Vector2f {
-	public final float x;
-	public final float y;
+public class Matrix2f {
+	private final float[] m = new float[4];
 
-	public Vector2f() {
-		x = 0;
-		y = 0;
+	public Matrix2f() {
 	}
 
-	public Vector2f(final float x, final float y) {
-		this.x = x;
-		this.y = y;
+	public Matrix2f(final float a, final float b, final float c, final float d) {
+		m[0] = a;
+		m[1] = b;
+		m[2] = c;
+		m[3] = d;
 	}
 
-	public Vector2f(final Vector2f vector) {
-		x = vector.x;
-		y = vector.y;
+	/**
+	 * Create a rotation matrix
+	 * 
+	 * @param rot
+	 *            Rotation in <b>radians</b>
+	 */
+	public Matrix2f(final double rot) {
+		m[0] = m[4] = (float) Math.cos(rot);
+		m[1] = (float) Math.sin(rot);
+		m[2] = -m[1];
 	}
 
-	public float getX() {
-		return x;
+	public Vector2f apply(final Vector2f vec) {
+		return new Vector2f(vec.getX() * m[0] + vec.getY() * m[2], vec.getX()
+				* m[1] + vec.getY() * m[3]);
 	}
 
-	public float getY() {
-		return y;
+	public Matrix2f transpose() {
+		return new Matrix2f(m[0], m[2], m[1], m[3]);
 	}
 
-	public Vector2f add(final Vector2f vec) {
-		return new Vector2f(x + vec.x, y + vec.y);
+	public float determinant() {
+		return m[0] * m[3] - m[1] * m[2];
 	}
 
-	public Vector2f sub(final Vector2f vec) {
-		return new Vector2f(x - vec.x, y - vec.y);
-	}
-
-	public float dot(final Vector2f vec) {
-		return x * vec.x + y * vec.y;
-	}
-
-	public float lengthSquared() {
-		return dot(this);
-	}
-
-	public Vector2f scale(final float amount) {
-		return new Vector2f(x * amount, y * amount);
-	}
 }

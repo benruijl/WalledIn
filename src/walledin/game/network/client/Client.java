@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
 */
-package walledin.network;
+package walledin.game.network.client;
 
 import java.awt.event.KeyEvent;
 import java.io.IOException;
@@ -34,12 +34,12 @@ import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
-import walledin.game.ClientEntityFactory;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.math.Rectangle;
-import walledin.math.Vector2f;
+import walledin.game.network.NetworkDataManager;
 
 public class Client implements RenderListener, Runnable {
 	private static final int PORT = 1234;
@@ -54,7 +54,7 @@ public class Client implements RenderListener, Runnable {
 	private Entity map;
 	private SocketAddress host;
 	private String username;
-	private NetworkManager networkManager;
+	private NetworkDataManager networkManager;
 	
 	public static void main(String[] args) {
 		Renderer renderer = new Renderer();
@@ -75,7 +75,7 @@ public class Client implements RenderListener, Runnable {
 	public Client(Renderer renderer) {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
-		networkManager = new NetworkManager();
+		networkManager = new NetworkDataManager();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
@@ -109,8 +109,8 @@ public class Client implements RenderListener, Runnable {
 	private void writeInput(DatagramChannel channel) throws IOException {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
-		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkManager.INPUT_MESSAGE);
+		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkDataManager.INPUT_MESSAGE);
 		Set<Integer> keysDown = Input.getInstance().getKeysDown();
 		buffer.putShort((short) keysDown.size());
 		for (int key: keysDown) {
@@ -122,7 +122,7 @@ public class Client implements RenderListener, Runnable {
 
 	private void readDatagrams(DatagramChannel channel) throws IOException {
 		int ident = -1;
-		while (ident != NetworkManager.DATAGRAM_IDENTIFICATION) {
+		while (ident != NetworkDataManager.DATAGRAM_IDENTIFICATION) {
 			buffer.limit(BUFFER_SIZE);
 			buffer.rewind();
 			channel.read(buffer);
@@ -143,8 +143,8 @@ public class Client implements RenderListener, Runnable {
 	private void writeLogin(DatagramChannel channel) throws IOException {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
-		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkManager.LOGIN_MESSAGE);
+		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkDataManager.LOGIN_MESSAGE);
 		buffer.putInt(username.length());
 		buffer.put(username.getBytes());
 		buffer.flip();

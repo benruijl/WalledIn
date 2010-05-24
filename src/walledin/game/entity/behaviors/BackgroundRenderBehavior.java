@@ -21,10 +21,10 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity.behaviors;
 
 import walledin.engine.Renderer;
+import walledin.engine.math.Rectangle;
 import walledin.game.ZValues;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
-import walledin.math.Rectangle;
 
 public class BackgroundRenderBehavior extends RenderBehavior {
 

@@ -20,7 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 */
 package walledin.engine;
 
-import walledin.math.Rectangle;
+import walledin.engine.math.Rectangle;
 
 import com.sun.opengl.util.texture.Texture;
 

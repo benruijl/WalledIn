@@ -30,8 +30,8 @@ import java.util.Map;
 
 import javax.media.opengl.GL;
 
-import walledin.math.Rectangle;
-import walledin.math.Vector2f;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureData;

@@ -22,7 +22,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package walledin.math;
+package walledin.engine.math;
 
 /**
  * 

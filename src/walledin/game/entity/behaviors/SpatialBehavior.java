@@ -20,13 +20,13 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 */
 package walledin.game.entity.behaviors;
 
+import walledin.engine.math.Circle;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
-import walledin.math.Circle;
-import walledin.math.Rectangle;
-import walledin.math.Vector2f;
 
 public class SpatialBehavior extends Behavior {
 	private Vector2f position;

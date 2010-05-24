@@ -20,7 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 */
 package walledin.engine;
 
-import walledin.math.Vector2f;
+import walledin.engine.math.Vector2f;
 
 /**
  * 

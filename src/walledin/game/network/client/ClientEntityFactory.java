@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
 */
-package walledin.game;
+package walledin.game.network.client;
 
 import java.util.List;
 
@@ -26,6 +26,10 @@ import org.w3c.dom.Element;
 
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
+import walledin.engine.math.Rectangle;
+import walledin.game.AbstractEntityFactory;
+import walledin.game.EntityFactory;
+import walledin.game.AbstractEntityFactory.EntityConstructionFunction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BackgroundRenderBehavior;
@@ -33,7 +37,6 @@ import walledin.game.entity.behaviors.ItemRenderBehavior;
 import walledin.game.entity.behaviors.MapRenderBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerRenderBehavior;
-import walledin.math.Rectangle;
 import walledin.util.XMLReader;
 
 public class ClientEntityFactory extends AbstractEntityFactory {

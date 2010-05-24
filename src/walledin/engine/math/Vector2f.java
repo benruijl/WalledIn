@@ -18,41 +18,56 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
 */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-package walledin.math;
+package walledin.engine.math;
 
 /**
  * 
  * @author ben
  */
-public class Vector2i {
-	public final int x;
-	public final int y;
+public class Vector2f {
+	public final float x;
+	public final float y;
 
-	public Vector2i() {
+	public Vector2f() {
 		x = 0;
 		y = 0;
 	}
 
-	public Vector2i(final int x, final int y) {
+	public Vector2f(final float x, final float y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	public Vector2i add(final Vector2i vec) {
-		return new Vector2i(x + vec.x, y + vec.y);
+	public Vector2f(final Vector2f vector) {
+		x = vector.x;
+		y = vector.y;
 	}
 
-	public int dot(final Vector2i vec) {
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public Vector2f add(final Vector2f vec) {
+		return new Vector2f(x + vec.x, y + vec.y);
+	}
+
+	public Vector2f sub(final Vector2f vec) {
+		return new Vector2f(x - vec.x, y - vec.y);
+	}
+
+	public float dot(final Vector2f vec) {
 		return x * vec.x + y * vec.y;
 	}
 
-	public int lengthSquared() {
+	public float lengthSquared() {
 		return dot(this);
 	}
 
+	public Vector2f scale(final float amount) {
+		return new Vector2f(x * amount, y * amount);
+	}
 }

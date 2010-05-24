@@ -18,12 +18,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
 */
-package walledin.game;
+package walledin.game.network.server;
 
 import java.util.List;
 
 import org.w3c.dom.Element;
 
+import walledin.engine.math.Circle;
+import walledin.engine.math.Rectangle;
+import walledin.game.AbstractEntityFactory;
+import walledin.game.AbstractEntityFactory.EntityConstructionFunction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BulletBehavior;
@@ -31,8 +35,6 @@ import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.SpatialBehavior;
-import walledin.math.Circle;
-import walledin.math.Rectangle;
 import walledin.util.XMLReader;
 
 public class ServerEntityFactory extends AbstractEntityFactory {

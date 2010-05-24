@@ -25,10 +25,10 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
+import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.math.Vector2f;
 import walledin.util.XMLReader;
 
 /**

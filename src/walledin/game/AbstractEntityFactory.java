@@ -26,7 +26,7 @@ import java.util.Map;
 import walledin.game.entity.Entity;
 
 public abstract class AbstractEntityFactory implements EntityFactory {
-	protected interface EntityConstructionFunction {
+	public interface EntityConstructionFunction {
 		Entity create(final Entity ent);
 	}
 

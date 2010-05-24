@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
 */
-package walledin.network;
+package walledin.game.network.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -31,13 +31,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
-import walledin.game.ServerEntityFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
-import walledin.math.Vector2f;
+import walledin.game.network.NetworkDataManager;
 
 public class Server {
 	private static final int PORT = 1234;
@@ -47,7 +47,7 @@ public class Server {
 	private Set<SocketAddress> newPlayers;
 	private boolean running;
 	private ByteBuffer buffer;
-	private NetworkManager networkManager;
+	private NetworkDataManager networkManager;
 	private Entity map;
 	private long currentTime;
 	private final EntityManager entityManager;
@@ -56,7 +56,7 @@ public class Server {
 		players = new HashMap<SocketAddress, Entity>();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
-		networkManager = new NetworkManager();
+		networkManager = new NetworkDataManager();
 		newPlayers = new HashSet<SocketAddress>();
 		entityManager = new EntityManager(new ServerEntityFactory());
 	}
@@ -135,8 +135,8 @@ public class Server {
 	private void writeDatagramForExistingPlayers() {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
-		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkManager.GAMESTATE_MESSAGE);
+		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkDataManager.GAMESTATE_MESSAGE);
 		Set<Entity> removedEntities = entityManager.getRemoved();
 		Set<Entity> createdEntities = entityManager.getCreated();
 		Collection<Entity> entities = entityManager.getAll();
@@ -156,8 +156,8 @@ public class Server {
 	private void writeDatagramForNewPlayers() {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
-		buffer.putInt(NetworkManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkManager.GAMESTATE_MESSAGE);
+		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
+		buffer.put(NetworkDataManager.GAMESTATE_MESSAGE);
 		Collection<Entity> entities = entityManager.getAll();
 		buffer.putInt(entities.size());
 		for (Entity entity : entities) {
@@ -179,20 +179,20 @@ public class Server {
 
 	private void processDatagram(SocketAddress address) {
 		int ident = buffer.getInt();
-		if (ident == NetworkManager.DATAGRAM_IDENTIFICATION) {
+		if (ident == NetworkDataManager.DATAGRAM_IDENTIFICATION) {
 			byte type = buffer.get();
 			switch (type) {
-			case NetworkManager.LOGIN_MESSAGE:
+			case NetworkDataManager.LOGIN_MESSAGE:
 				int nameLength = buffer.getInt();
 				byte[] nameBytes = new byte[nameLength];
 				buffer.get(nameBytes);
 				String name = new String(nameBytes);
 				createPlayer(name, address);
 				break;
-			case NetworkManager.LOGOUT_MESSAGE:
+			case NetworkDataManager.LOGOUT_MESSAGE:
 				removePlayer(address);
 				break;
-			case NetworkManager.INPUT_MESSAGE:
+			case NetworkDataManager.INPUT_MESSAGE:
 				short numKeys = buffer.getShort();
 				Set<Integer> keys = new HashSet<Integer>();
 				for (int i = 0; i < numKeys; i++) {

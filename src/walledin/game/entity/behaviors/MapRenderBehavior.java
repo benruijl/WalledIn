@@ -23,12 +23,12 @@ package walledin.game.entity.behaviors;
 import java.util.List;
 
 import walledin.engine.Renderer;
+import walledin.engine.math.Rectangle;
 import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
-import walledin.math.Rectangle;
 
 public class MapRenderBehavior extends RenderBehavior {
 	private final static float TILE_WIDTH = 32.0f;
