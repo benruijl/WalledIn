@@ -111,12 +111,14 @@ public class EntityManager {
 		drawOrderManager.draw(renderer);
 	}
 	
-	public void update(double delta)
-	{
+	public void clearChanges() {
 		// Clear the removed and created entities.
 		removed = new HashSet<Entity>();
 		created = new HashSet<Entity>();
-		
+	}
+	
+	public void update(double delta)
+	{	
 		/* Clean up entities which are flagged for removal */
 		List<Entity> removeList = new ArrayList<Entity>();
 		for (final Entity entity : entities.values())

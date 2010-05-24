@@ -99,6 +99,7 @@ public class Server {
 	private void doLoop(DatagramChannel channel) throws IOException {
 		// Clear the new players from the last loop
 		newPlayers.clear();
+		entityManager.clearChanges();
 		// Read input messages and login messages
 		readDatagrams(channel);
 		double delta = System.nanoTime() - currentTime;
@@ -172,6 +173,8 @@ public class Server {
 		buffer.flip();
 		while (address != null) {
 			processDatagram(address);
+			buffer.limit(BUFFER_SIZE);
+			buffer.rewind();
 			address = channel.receive(buffer);
 			buffer.flip();
 		}
