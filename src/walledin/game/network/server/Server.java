@@ -212,10 +212,12 @@ public class Server {
 	}
 
 	private void createPlayer(String name, SocketAddress address) {
-		Entity player = entityManager.create("Player", name);
+		String entityName = networkManager.getAddressRepresentation(address);
+		Entity player = entityManager.create("Player", entityName);
 		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION,
 				new Vector2f(400, 300));
+		player.setAttribute(Attribute.PLAYER_NAME, name);
 		players.put(address, player);
 		System.out.println("new player " + name + " @ " + address);
 	}

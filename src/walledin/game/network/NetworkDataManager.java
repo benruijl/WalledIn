@@ -20,6 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +83,9 @@ public class NetworkDataManager {
 			break;
 		case HEALTH:
 			buffer.putInt((Integer) data);
+			break;
+		case PLAYER_NAME:
+			writeString((String) data, buffer);
 			break;
 		case ITEM_LIST:
 			writeItems((List<Entity>) data, buffer);
@@ -166,6 +171,9 @@ public class NetworkDataManager {
 		case HEALTH:
 			data = buffer.getInt();
 			break;
+		case PLAYER_NAME:
+			data = readString(buffer);
+			break;
 		case ITEM_LIST:
 			data = readItems(buffer);
 			break;
@@ -219,5 +227,10 @@ public class NetworkDataManager {
 		byte[] bytes = new byte[size];
 		buffer.get(bytes);
 		return new String(bytes);
+	}
+
+	public String getAddressRepresentation(SocketAddress address) {
+		InetSocketAddress inetAddr = (InetSocketAddress) address;
+		return inetAddr.getAddress().getHostAddress() + "@" + inetAddr.getPort();
 	}
 }

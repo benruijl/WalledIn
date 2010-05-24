@@ -35,6 +35,7 @@ public enum Attribute {
 	TILES(List.class, true), 
 	ITEM_LIST(List.class, true),
 	HEALTH(Integer.class, true),
+	PLAYER_NAME(String.class, true),
 	
 	KEYS_DOWN(Set.class),
 	ORIENTATION(Integer.class),

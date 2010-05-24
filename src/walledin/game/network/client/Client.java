@@ -51,10 +51,10 @@ public class Client implements RenderListener, Runnable {
 	private Font font;
 	private Renderer renderer; // current renderer
 	private EntityManager entityManager;
-	private Entity map;
 	private SocketAddress host;
 	private String username;
 	private NetworkDataManager networkManager;
+	private String playerEntityName;
 	
 	public static void main(String[] args) {
 		Renderer renderer = new Renderer();
@@ -80,7 +80,7 @@ public class Client implements RenderListener, Runnable {
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
 		host = new InetSocketAddress("localhost", PORT);
-		username = "BLAA2";
+		username = "BLAA";
 	}
 	
 	@Override
@@ -96,6 +96,8 @@ public class Client implements RenderListener, Runnable {
 		DatagramChannel channel = DatagramChannel.open();
 		channel.configureBlocking(true);
 		channel.connect(host);
+		playerEntityName = networkManager.getAddressRepresentation(channel
+				.socket().getLocalSocketAddress());
 		writeLogin(channel);
 		running = true;
 		while (running) {
@@ -157,7 +159,7 @@ public class Client implements RenderListener, Runnable {
 		entityManager.update(delta);
 		
 		/* Center the camera around the player */
-		Entity player = entityManager.get(username);
+		Entity player = entityManager.get(playerEntityName);
 		if (player != null) {
 			renderer.centerAround((Vector2f) player.getAttribute(
 					Attribute.POSITION));
