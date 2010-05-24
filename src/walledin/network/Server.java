@@ -199,8 +199,9 @@ public class Server {
 					keys.add((int) buffer.getShort());
 				}
 				Entity player = players.get(address);
-				System.out.println("keys down: " + keys.size());
-				player.setAttribute(Attribute.KEYS_DOWN, keys);
+				if (player != null) {
+					player.setAttribute(Attribute.KEYS_DOWN, keys);
+				}
 				break;
 			}
 		}
