@@ -48,21 +48,27 @@ public class MapRenderBehavior extends RenderBehavior {
 		/* Partition the map */
 		for (int sw = 0; sw < width; sw += STEP_SIZE) {
 			for (int sh = 0; sh < height; sh += STEP_SIZE) {
-				if (renderer.inFrustum(new Rectangle(sw * TILE_WIDTH, sh
-						* TILE_WIDTH, TILE_WIDTH * STEP_SIZE, TILE_WIDTH
-						* STEP_SIZE))) {
-					for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
-						for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
-							final Tile tile = tiles.get((sh + i) * width + sw
-									+ j);
-							renderer.drawTexturePart(tile.getType()
-									.getTexturePartID(), new Rectangle((sw + j)
-									* TILE_WIDTH, (sh + i) * TILE_WIDTH,
-									TILE_WIDTH, TILE_WIDTH));
-						}
+				renderPart(renderer, sw, sh);
+
+			}
+		}
+	}
+
+	private void renderPart(final Renderer renderer, int sw, int sh) {
+		Rectangle part = new Rectangle(sw * TILE_WIDTH, sh * TILE_WIDTH,
+				TILE_WIDTH * STEP_SIZE, TILE_WIDTH * STEP_SIZE);
+		if (renderer.inFrustum(part)) {
+			for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
+				for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
+					int index = (sh + i) * width + sw + j;
+					if (index > 0 && index < tiles.size()) {
+						final Tile tile = tiles.get(index);
+						renderer.drawTexturePart(tile.getType()
+								.getTexturePartID(), new Rectangle((sw + j)
+								* TILE_WIDTH, (sh + i) * TILE_WIDTH,
+								TILE_WIDTH, TILE_WIDTH));
 					}
 				}
-
 			}
 		}
 	}

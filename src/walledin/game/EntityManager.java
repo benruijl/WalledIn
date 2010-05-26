@@ -22,11 +22,11 @@ package walledin.game;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
@@ -41,7 +41,7 @@ public class EntityManager {
 	private Set<Entity> created;
 	
 	public EntityManager(EntityFactory factory) {
-		entities = new HashMap<String, Entity>();
+		entities = new ConcurrentHashMap<String, Entity>();
 		removed = new HashSet<Entity>();
 		created = new HashSet<Entity>();
 		this.factory = factory;
@@ -56,7 +56,7 @@ public class EntityManager {
 	 */
 	public Entity create(String familyName, String entityName)
 	{
-		Entity entity = factory.create(familyName, entityName);
+		Entity entity = factory.create(this, familyName, entityName);
 		add(entity);
 		created.add(entity);
 		return entity;
@@ -84,8 +84,9 @@ public class EntityManager {
 	{
 		entities.put(entity.getName(), entity);
 		
-		if (entity.hasAttribute(Attribute.Z_INDEX))
+		if (entity.hasAttribute(Attribute.Z_INDEX)) {
 			drawOrderManager.add(entity);
+		}
 	}
 	
 	public void add(final Collection<Entity> entitiesList) {
@@ -123,13 +124,15 @@ public class EntityManager {
 	{	
 		/* Clean up entities which are flagged for removal */
 		List<Entity> removeList = new ArrayList<Entity>();
-		for (final Entity entity : entities.values())
-			if (entity.isMarkedRemoved())
+		for (final Entity entity : entities.values()) {
+			if (entity.isMarkedRemoved()) {
 				removeList.add(entity);
+			}
+		}
 		
-		for (int i = 0; i < removeList.size(); i++)
+		for (int i = 0; i < removeList.size(); i++) {
 			remove(removeList.get(i).getName());
-		
+		}
 		
 		for (final Entity entity : entities.values()) {
 			entity.sendUpdate(delta);

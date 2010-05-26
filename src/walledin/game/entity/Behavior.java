@@ -20,6 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 */
 package walledin.game.entity;
 
+import walledin.game.EntityManager;
+
 /**
  * Base behavior class. Subclasses define specific behavior of its owner.
  * 
@@ -93,4 +95,12 @@ public abstract class Behavior {
 	 *            Amount of time elapsed since last update
 	 */
 	public abstract void onUpdate(double delta);
+
+	/**
+	 * Retrives the current entity manager from this owner
+	 * @return the entity manager
+	 */
+	protected EntityManager getEntityManager() {
+		return owner.getEntityManager();
+	}
 }

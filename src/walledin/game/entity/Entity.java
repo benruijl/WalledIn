@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import walledin.game.EntityManager;
+
 public class Entity {
 	private final static Logger LOG = Logger.getLogger(Entity.class.getName());
 	private final Map<Class<? extends Behavior>, Behavior> behaviors;
@@ -34,19 +36,21 @@ public class Entity {
 	private String name;
 	private String familyName;
 	private boolean markedRemoved;
+	private final EntityManager entityManager;
 
 	/**
 	 * 
 	 * @param name
 	 *            Name of the component
 	 */
-	public Entity(final String familyName, final String name) {
+	public Entity(final EntityManager entityManager, final String familyName, final String name) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		changedAttributes = new HashSet<Attribute>();
 		this.name = name;
 		this.familyName = familyName;
 		markedRemoved = false;
+		this.entityManager = entityManager;
 	}
 
 	/**
@@ -253,5 +257,9 @@ public class Entity {
 
 	public boolean isMarkedRemoved() {
 		return markedRemoved;
+	}
+
+	public EntityManager getEntityManager() {
+		return entityManager;
 	}
 }

@@ -156,10 +156,12 @@ public class Client implements RenderListener, Runnable {
 		entityManager.update(delta);
 		
 		/* Center the camera around the player */
-		Entity player = entityManager.get(playerEntityName);
-		if (player != null) {
-			renderer.centerAround((Vector2f) player.getAttribute(
-					Attribute.POSITION));
+		if (playerEntityName != null) {
+			Entity player = entityManager.get(playerEntityName);
+			if (player != null) {
+				renderer.centerAround((Vector2f) player
+						.getAttribute(Attribute.POSITION));
+			}
 		}
 
 		/* Toggle full screen, current not working correctly */

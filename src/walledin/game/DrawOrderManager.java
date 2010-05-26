@@ -22,6 +22,8 @@ package walledin.game;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -45,11 +47,15 @@ public class DrawOrderManager {
 		}
 	}
 
-	SortedSet<Entity> entities;
+	private SortedSet<Entity> entities;
+	private Set<Entity> addLater;
+	private Set<Entity> removeLater;
 
 	public DrawOrderManager() {
 		super();
 		entities = new TreeSet<Entity>(new ZOrderComperator());
+		addLater = new HashSet<Entity>();
+		removeLater = new HashSet<Entity>();
 	}
 
 	/**
@@ -77,7 +83,11 @@ public class DrawOrderManager {
 		if (!e.hasAttribute(Attribute.Z_INDEX)) {
 			return false;
 		}
-		return entities.add(e);
+		return addLater.add(e);
+	}
+	
+	public void removeEntity(final Entity entity) {
+		removeLater.add(entity);
 	}
 
 	public SortedSet<Entity> getList() {
@@ -85,13 +95,13 @@ public class DrawOrderManager {
 	}
 
 	public void draw(final Renderer renderer) {
+		entities.addAll(addLater);
+		entities.removeAll(removeLater);
+		addLater.clear();
+		removeLater.clear();
 		/* Draw all entities in the correct order */
 		for (final Entity ent : entities) {
 			ent.sendMessage(MessageType.RENDER, renderer);
 		}
-	}
-
-	public void removeEntity(final Entity entity) {
-		entities.remove(entity);
 	}
 }

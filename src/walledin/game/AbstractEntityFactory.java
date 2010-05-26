@@ -40,11 +40,10 @@ public abstract class AbstractEntityFactory implements EntityFactory {
 	 * @see walledin.game.EntityFactory#create(java.lang.String,
 	 *      java.lang.String)
 	 */
-	public Entity create(final String familyName, final String entityName) {
-		final Entity ent = new Entity(familyName, entityName);
+	public Entity create(final EntityManager entityManager, final String familyName, final String entityName) {
+		final Entity ent = new Entity(entityManager, familyName, entityName);
 		final EntityConstructionFunction func = entityContructionFunctions
 				.get(familyName);
-
 		if (func == null) {
 			return ent; // return generic entity
 		}

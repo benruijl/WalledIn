@@ -29,10 +29,10 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class SpatialBehavior extends Behavior {
-	private Vector2f position;
-	private Vector2f velocity;
-	private Rectangle boundingBox;
-	private Circle boundingCircle;
+	protected Vector2f position;
+	protected Vector2f velocity;
+	protected Rectangle boundingBox;
+	protected Circle boundingCircle;
 
 	public SpatialBehavior(final Entity owner) {
 		super(owner);

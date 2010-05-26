@@ -28,8 +28,6 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
-import walledin.game.EntityFactory;
-import walledin.game.AbstractEntityFactory.EntityConstructionFunction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BackgroundRenderBehavior;

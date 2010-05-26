@@ -24,7 +24,7 @@ import walledin.game.entity.Entity;
 
 public interface EntityFactory {
 
-	public abstract Entity create(final String familyName,
+	public abstract Entity create(final EntityManager entityManager, final String familyName,
 			final String entityName);
 
 	/**
