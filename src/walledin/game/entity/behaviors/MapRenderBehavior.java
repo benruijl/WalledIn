@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 */
 package walledin.game.entity.behaviors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Renderer;
@@ -40,6 +41,7 @@ public class MapRenderBehavior extends RenderBehavior {
 	public MapRenderBehavior(final Entity owner) {
 		super(owner, ZValues.MAP);
 		setAttribute(Attribute.RENDER_TILE_SIZE, TILE_WIDTH);
+		tiles = new ArrayList<Tile>();
 	}
 
 	private void render(final Renderer renderer) {

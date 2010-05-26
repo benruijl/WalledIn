@@ -61,9 +61,6 @@ public class Client implements RenderListener, Runnable {
 		Client client = new Client(renderer);
 		renderer.initialize("WalledIn", 800, 600, false);
 		renderer.addListener(client);
-		// Start client
-		Thread thread = new Thread(client, "client");
-		thread.start();
 		// Start renderer
 		renderer.beginLoop();
 	}
@@ -198,6 +195,10 @@ public class Client implements RenderListener, Runnable {
 
 		// Background is not created by server (not yet anyway)
 		entityManager.create("Background", "Background");
+		
+		// start network thread
+		Thread thread = new Thread(this, "network");
+		thread.start();
 	}
 
 	private void loadTextures() {
