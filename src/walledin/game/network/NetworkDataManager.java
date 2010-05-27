@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
@@ -35,6 +37,8 @@ import walledin.game.map.Tile;
 import walledin.game.map.TileType;
 
 public class NetworkDataManager {
+	private final static Logger LOG = Logger
+			.getLogger(NetworkDataManager.class);
 	public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
 	public static final byte LOGIN_MESSAGE = 0;
 	public static final byte INPUT_MESSAGE = 1;

@@ -61,7 +61,7 @@ public class MapRenderBehavior extends RenderBehavior {
 			for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
 				for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
 					final int index = (sh + i) * width + sw + j;
-					if (index > 0 && index < tiles.size()) {
+					if (index >= 0 && index < tiles.size()) {
 						final Tile tile = tiles.get(index);
 						renderer.drawTexturePart(tile.getType()
 								.getTexturePartID(), new Rectangle((sw + j)
