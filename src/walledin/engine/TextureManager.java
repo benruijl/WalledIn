@@ -20,9 +20,12 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.media.opengl.GLException;
 
 import org.apache.log4j.Logger;
@@ -75,9 +78,13 @@ public class TextureManager extends ResourceManager<String, Texture> {
 	 * Loads a texture from a file and links it with the given ID
 	 */
 	public boolean loadFromFile(final String filename, final String textureID) {
+
 		try {
-			final Texture texture = TextureIO.newTexture(new File(filename),
-					true);
+			BufferedImage img = ImageIO.read(new File(filename));
+			BufferedImage argbImg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+			Graphics g = argbImg.createGraphics();
+			g.drawImage(img, 0, 0, null);
+			Texture texture = TextureIO.newTexture(img, false);
 			return put(textureID, texture);
 
 		} catch (final IOException e) {
