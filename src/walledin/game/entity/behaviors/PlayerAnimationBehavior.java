@@ -20,12 +20,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerAnimationBehavior extends AnimationBehavior {
+	private final static Logger LOG = Logger.getLogger(PlayerAnimationBehavior.class);
+	
 	private float walkAnimFrame;
 	private final float animSpeed;
 	private Vector2f velocity;
@@ -41,7 +45,7 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 		if (messageType == MessageType.ATTRIBUTE_SET) {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
-			case POSITION:
+			case VELOCITY:
 				velocity = getAttribute(attribute);
 				break;
 			}
