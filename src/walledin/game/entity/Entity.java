@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.entity;
 
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class Entity {
 	private final Map<Attribute, Object> attributes;
 	private Set<Attribute> changedAttributes;
 	private String name;
-	private String familyName;
+	private final String familyName;
 	private boolean markedRemoved;
 	private final EntityManager entityManager;
 
@@ -43,7 +43,8 @@ public class Entity {
 	 * @param name
 	 *            Name of the component
 	 */
-	public Entity(final EntityManager entityManager, final String familyName, final String name) {
+	public Entity(final EntityManager entityManager, final String familyName,
+			final String name) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		changedAttributes = new HashSet<Attribute>();
@@ -61,9 +62,10 @@ public class Entity {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Get the family name
+	 * 
 	 * @return Family name
 	 */
 	public String getfFamilyName() {
@@ -191,8 +193,8 @@ public class Entity {
 	 * @return The changed attributes
 	 */
 	public Map<Attribute, Object> getChangedAttributes() {
-		Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
-		for (Attribute attribute : changedAttributes) {
+		final Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
+		for (final Attribute attribute : changedAttributes) {
 			temp.put(attribute, attributes.get(attribute));
 		}
 		changedAttributes = new HashSet<Attribute>();
@@ -205,8 +207,8 @@ public class Entity {
 	 * @return
 	 */
 	public Map<Attribute, Object> getNetworkAttributes() {
-		Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
-		for (Attribute attribute : attributes.keySet()) {
+		final Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
+		for (final Attribute attribute : attributes.keySet()) {
 			if (attribute.sendOverNetwork) {
 				temp.put(attribute, attributes.get(attribute));
 			}

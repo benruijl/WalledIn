@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game;
 
 import java.util.Collection;
@@ -214,9 +214,11 @@ public class CollisionManager {
 						y - oldPos.y).scale((float) (1 / delta)));
 
 				// if there is no difference, there has been no collision
-				if (Math.abs(x - curPos.x) > 0.0001f || Math.abs(y - curPos.y) > 0.0001f)
-				ent.sendMessage(MessageType.COLLIDED, new CollisionData(
-						new Vector2f(x, y), oldPos, curPos, map));
+				if (Math.abs(x - curPos.x) > 0.0001f
+						|| Math.abs(y - curPos.y) > 0.0001f) {
+					ent.sendMessage(MessageType.COLLIDED, new CollisionData(
+							new Vector2f(x, y), oldPos, curPos, map));
+				}
 			}
 		}
 

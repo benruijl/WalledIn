@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.entity.behaviors;
 
 import org.apache.log4j.Logger;
@@ -46,7 +46,7 @@ public class HealthKitBehavior extends Behavior {
 					+ colData.getCollisionEntity().getName());
 			colData.getCollisionEntity().sendMessage(
 					MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
-			
+
 			getOwner().remove(); // remove after usage
 		}
 	}

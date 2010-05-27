@@ -93,20 +93,20 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 			y -= JUMP_SPEED;
 			canJump = false;
 		}
-		
-		if (keysDown.contains(KeyEvent.VK_ENTER))
-		{
-			int or = getAttribute(Attribute.ORIENTATION);
-			Vector2f bulletPosition = position.add(new Vector2f(or * 50.0f,
-					20.0f));
-			Vector2f bulletVelocity = new Vector2f(or * 400.0f, 0);
 
-			EntityManager manager = getEntityManager();
-			Entity bullet = manager.create("bullet", manager.generateUniqueName("bullet"));
+		if (keysDown.contains(KeyEvent.VK_ENTER)) {
+			final int or = getAttribute(Attribute.ORIENTATION);
+			final Vector2f bulletPosition = position.add(new Vector2f(
+					or * 50.0f, 20.0f));
+			final Vector2f bulletVelocity = new Vector2f(or * 400.0f, 0);
+
+			final EntityManager manager = getEntityManager();
+			final Entity bullet = manager.create("bullet", manager
+					.generateUniqueName("bullet"));
 			bullet.setAttribute(Attribute.POSITION, bulletPosition);
 			bullet.setAttribute(Attribute.VELOCITY, bulletVelocity);
 
-			//Input.getInstance().setKeyUp(KeyEvent.VK_ENTER);
+			// Input.getInstance().setKeyUp(KeyEvent.VK_ENTER);
 		}
 
 		velocity = velocity.add(new Vector2f(x, y));

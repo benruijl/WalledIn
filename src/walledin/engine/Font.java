@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.engine;
 
 import java.io.BufferedInputStream;
@@ -82,7 +82,7 @@ public class Font {
 	 *            little endian int
 	 * @return big endian int
 	 */
-	private int toBigEndian(int i) {
+	private int toBigEndian(final int i) {
 
 		return ((i & 0xff) << 24) + ((i & 0xff00) << 8) + ((i & 0xff0000) >> 8)
 				+ (i >> 24 & 0xff);
@@ -100,7 +100,7 @@ public class Font {
 		try {
 			in = new DataInputStream(new BufferedInputStream(
 					new FileInputStream(filename)));
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			LOG.error("File not found: " + filename, e);
 			return false;
 		}
@@ -155,7 +155,7 @@ public class Font {
 		} finally {
 			try {
 				in.close();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				LOG.error("Could not close" + filename, e);
 			}
 		}
@@ -184,10 +184,10 @@ public class Font {
 
 		// FIXME: calculate true texture positions somewhere else
 		renderer.drawRect(name, new Rectangle((glyph.startX + 0.500f)
-				/ (float) tex.getWidth(), (glyph.startY + 0.500f)
-				/ (float) tex.getHeight(), (glyph.width - 1.000f)
-				/ (float) tex.getWidth(), (glyph.height - 1.000f)
-				/ (float) tex.getHeight()), new Rectangle(pos.getX()
+				/ tex.getWidth(), (glyph.startY + 0.500f) / tex.getHeight(),
+				(glyph.width - 1.000f) / tex.getWidth(),
+				(glyph.height - 1.000f) / tex.getHeight()), new Rectangle(pos
+				.getX()
 
 				+ glyph.bearingX, pos.getY() - glyph.bearingY, glyph.width,
 				glyph.height));
@@ -197,11 +197,16 @@ public class Font {
 
 	/**
 	 * Renders text to the screen.
-	 * @param renderer Current renderer
-	 * @param text Unicode text to render
-	 * @param pos Position to render to
+	 * 
+	 * @param renderer
+	 *            Current renderer
+	 * @param text
+	 *            Unicode text to render
+	 * @param pos
+	 *            Position to render to
 	 */
-	public void renderText(final Renderer renderer, final String text, final Vector2f pos) {
+	public void renderText(final Renderer renderer, final String text,
+			final Vector2f pos) {
 		renderer.pushMatrix();
 
 		for (int i = 0; i < text.length(); i++) {

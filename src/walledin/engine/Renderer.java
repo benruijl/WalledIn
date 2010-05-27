@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.engine;
 
 import java.awt.BorderLayout;
@@ -84,8 +84,8 @@ public class Renderer implements GLEventListener {
 	 * @param fs
 	 *            Set full screen
 	 */
-	public void initialize(final String strTitle, int width, int height,
-			boolean fs) {
+	public void initialize(final String strTitle, final int width,
+			final int height, final boolean fs) {
 		win = new Frame(strTitle);
 		win.setSize(width, height);
 		win.setLocation(0, 0);
@@ -99,17 +99,18 @@ public class Renderer implements GLEventListener {
 		mCanvas.setIgnoreRepaint(true);
 		mCanvas.addGLEventListener(this);
 		win.add(mCanvas);
-		
+
 		final GraphicsDevice gd = GraphicsEnvironment
-		.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
 		if (fs) {
 			win.setUndecorated(true);
 
-			if (gd.isFullScreenSupported())
+			if (gd.isFullScreenSupported()) {
 				gd.setFullScreenWindow(win);
+			}
 		}
-		
+
 		win.addWindowListener(new WindowAdapter() {
 
 			@Override
@@ -117,16 +118,18 @@ public class Renderer implements GLEventListener {
 
 				if (gd.getFullScreenWindow() == win) {
 					gd.setFullScreenWindow(null);
-					
-					/* Stop the animator before exiting. Use a thread
-					 * to ensure the animator stopped. */
-		            new Thread() {
-		                @Override 
-		                public void run() {
-		                   anim.stop();
-		                   System.exit(0);
-		                }
-		             }.start();				
+
+					/*
+					 * Stop the animator before exiting. Use a thread to ensure
+					 * the animator stopped.
+					 */
+					new Thread() {
+						@Override
+						public void run() {
+							anim.stop();
+							System.exit(0);
+						}
+					}.start();
 				}
 			}
 		});
@@ -192,7 +195,7 @@ public class Renderer implements GLEventListener {
 		return curFPS;
 	}
 
-	public void setCurFPS(float curFPS) {
+	public void setCurFPS(final float curFPS) {
 		this.curFPS = curFPS;
 	}
 
@@ -213,7 +216,7 @@ public class Renderer implements GLEventListener {
 
 		/* Update FPS */
 		if (frameCount > 10) {
-			curFPS = (1000000000.0f * frameCount)
+			curFPS = 1000000000.0f * frameCount
 					/ (System.nanoTime() - prevTime);
 			prevTime = System.nanoTime();
 			frameCount = 0;
@@ -408,8 +411,8 @@ public class Renderer implements GLEventListener {
 	 *            New height of the window
 	 */
 	@Override
-	public void reshape(GLAutoDrawable glDrawable, int x, int y, int width,
-			int height) {
+	public void reshape(final GLAutoDrawable glDrawable, final int x,
+			final int y, final int width, final int height) {
 		mCurDrawable = glDrawable;
 		gl = glDrawable.getGL();
 
@@ -469,8 +472,8 @@ public class Renderer implements GLEventListener {
 	 * Implementation not required. Do not call.
 	 */
 	@Override
-	public void displayChanged(GLAutoDrawable glad, boolean modeChanged,
-			boolean deviceChanged) {
+	public void displayChanged(final GLAutoDrawable glad,
+			final boolean modeChanged, final boolean deviceChanged) {
 	}
 
 	/**

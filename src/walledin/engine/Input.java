@@ -80,7 +80,7 @@ public class Input implements KeyListener {
 	 * 
 	 * @param key
 	 */
-	public void setKeyUp(int key) {
+	public void setKeyUp(final int key) {
 		keysDown.remove(key);
 	}
 

@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.entity.behaviors;
 
 import walledin.engine.math.Vector2f;
@@ -35,9 +35,9 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
 		animSpeed = 0.6f;
 	}
-	
+
 	@Override
-	public void onMessage(MessageType messageType, Object data) {
+	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.ATTRIBUTE_SET) {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {

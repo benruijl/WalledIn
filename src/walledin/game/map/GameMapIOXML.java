@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.map;
 
 import java.util.ArrayList;
@@ -42,10 +42,10 @@ public class GameMapIOXML implements GameMapIO {
 	private int height;
 	private final EntityManager entityManager;
 
-	public GameMapIOXML(EntityManager entityManager) {
+	public GameMapIOXML(final EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
-	
+
 	/**
 	 * Reads tile information
 	 * 

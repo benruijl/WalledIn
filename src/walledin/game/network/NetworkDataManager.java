@@ -44,28 +44,28 @@ public class NetworkDataManager {
 	public static final byte REMOVE_ENTITY = 2;
 	public static final byte UPDATE_ENTITY = 3;
 
-	public void writeRemoveEntity(Entity entity, final ByteBuffer buffer) {
+	public void writeRemoveEntity(final Entity entity, final ByteBuffer buffer) {
 		buffer.put(REMOVE_ENTITY);
 		writeString(entity.getName(), buffer);
 	}
 
-	public void writeEntity(Entity entity, final ByteBuffer buffer) {
+	public void writeEntity(final Entity entity, final ByteBuffer buffer) {
 		buffer.put(UPDATE_ENTITY);
 		writeString(entity.getName(), buffer);
-		Map<Attribute, Object> attributes = entity.getChangedAttributes();
+		final Map<Attribute, Object> attributes = entity.getChangedAttributes();
 		buffer.putInt(attributes.size());
-		for (Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
+		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
 			writeAttribute(entry.getKey(), entry.getValue(), buffer);
 		}
 	}
 
-	public void writeCreateEntity(Entity entity, final ByteBuffer buffer) {
+	public void writeCreateEntity(final Entity entity, final ByteBuffer buffer) {
 		buffer.put(CREATE_ENTITY);
 		writeString(entity.getName(), buffer);
 		writeString(entity.getFamilyName(), buffer);
-		Map<Attribute, Object> attributes = entity.getNetworkAttributes();
+		final Map<Attribute, Object> attributes = entity.getNetworkAttributes();
 		buffer.putInt(attributes.size());
-		for (Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
+		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
 			writeAttribute(entry.getKey(), entry.getValue(), buffer);
 		}
 	}
@@ -104,12 +104,12 @@ public class NetworkDataManager {
 			break;
 		}
 	}
-	
-	private void readAttribute(Entity entity, ByteBuffer buffer) {
+
+	private void readAttribute(final Entity entity, final ByteBuffer buffer) {
 		// Write attribute identification
-		short ord = buffer.getShort();
+		final short ord = buffer.getShort();
 		// FIXME dont user ordinal
-		Attribute attribute = Attribute.values()[ord];
+		final Attribute attribute = Attribute.values()[ord];
 		Object data = null;
 		switch (attribute) {
 		case HEIGHT:
@@ -169,13 +169,14 @@ public class NetworkDataManager {
 		buffer.putFloat(data.y);
 	}
 
-	public void readEntity(EntityManager entityManager, ByteBuffer buffer) {
-		int type = buffer.get();
-		String name = readString(buffer);
+	public void readEntity(final EntityManager entityManager,
+			final ByteBuffer buffer) {
+		final int type = buffer.get();
+		final String name = readString(buffer);
 		Entity entity = null;
-		switch(type) {
+		switch (type) {
 		case CREATE_ENTITY:
-			String familyName = readString(buffer);
+			final String familyName = readString(buffer);
 			entity = entityManager.create(familyName, name);
 			readAttributes(entity, buffer);
 			break;
@@ -189,54 +190,55 @@ public class NetworkDataManager {
 		}
 	}
 
-	private void readAttributes(Entity entity, ByteBuffer buffer) {
-		int num = buffer.getInt();
+	private void readAttributes(final Entity entity, final ByteBuffer buffer) {
+		final int num = buffer.getInt();
 		for (int i = 0; i < num; i++) {
 			readAttribute(entity, buffer);
 		}
 	}
 
-	private Object readVector2f(ByteBuffer buffer) {
-		float x = buffer.getFloat();
-		float y = buffer.getFloat();
-		return new Vector2f(x,y);
+	private Object readVector2f(final ByteBuffer buffer) {
+		final float x = buffer.getFloat();
+		final float y = buffer.getFloat();
+		return new Vector2f(x, y);
 	}
 
-	private Object readTiles(ByteBuffer buffer) {
-		int size = buffer.getInt();
-		List<Tile> tiles = new ArrayList<Tile>();
+	private Object readTiles(final ByteBuffer buffer) {
+		final int size = buffer.getInt();
+		final List<Tile> tiles = new ArrayList<Tile>();
 		for (int i = 0; i < size; i++) {
-			int x = buffer.getInt();
-			int y = buffer.getInt();
-			int ord = buffer.getInt();
-			TileType type = TileType.values()[ord];
-			Tile tile = new Tile(type, x, y);
+			final int x = buffer.getInt();
+			final int y = buffer.getInt();
+			final int ord = buffer.getInt();
+			final TileType type = TileType.values()[ord];
+			final Tile tile = new Tile(type, x, y);
 			tiles.add(tile);
 		}
 		return tiles;
 	}
 
-	private Object readItems(ByteBuffer buffer) {
-		int size = buffer.getInt();
-		List<Entity> entities = new ArrayList<Entity>();
+	private Object readItems(final ByteBuffer buffer) {
+		final int size = buffer.getInt();
+		final List<Entity> entities = new ArrayList<Entity>();
 		for (int i = 0; i < size; i++) {
-			String name = readString(buffer);
+			final String name = readString(buffer);
 			// how?
-			//Entity entity = entityManager.get(name);
-			//entities.add(entity);
+			// Entity entity = entityManager.get(name);
+			// entities.add(entity);
 		}
 		return entities;
 	}
 
-	private String readString(ByteBuffer buffer) {
-		int size = buffer.getInt();
-		byte[] bytes = new byte[size];
+	private String readString(final ByteBuffer buffer) {
+		final int size = buffer.getInt();
+		final byte[] bytes = new byte[size];
 		buffer.get(bytes);
 		return new String(bytes);
 	}
 
-	public String getAddressRepresentation(SocketAddress address) {
-		InetSocketAddress inetAddr = (InetSocketAddress) address;
-		return inetAddr.getAddress().getHostAddress() + "@" + inetAddr.getPort();
+	public String getAddressRepresentation(final SocketAddress address) {
+		final InetSocketAddress inetAddr = (InetSocketAddress) address;
+		return inetAddr.getAddress().getHostAddress() + "@"
+				+ inetAddr.getPort();
 	}
 }

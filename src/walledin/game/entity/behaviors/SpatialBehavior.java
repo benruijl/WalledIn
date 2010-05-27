@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.entity.behaviors;
 
 import walledin.engine.math.Circle;
@@ -36,8 +36,8 @@ public class SpatialBehavior extends Behavior {
 
 	public SpatialBehavior(final Entity owner) {
 		super(owner);
-		this.position = new Vector2f();
-		this.velocity =  new Vector2f();
+		position = new Vector2f();
+		velocity = new Vector2f();
 		boundingBox = new Rectangle();
 		boundingCircle = new Circle();
 

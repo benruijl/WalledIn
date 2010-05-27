@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.network.server;
 
 import java.util.List;
@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
 import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
-import walledin.game.AbstractEntityFactory.EntityConstructionFunction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BulletBehavior;
@@ -49,19 +48,17 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 
 		player.addBehavior(new HealthBehavior(player, 100, 100));
 		player.addBehavior(new PlayerControlBehaviour(player));
-		
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
 				new Rectangle(0, 0, 44, 43));
-		player.setAttribute(Attribute.BOUNDING_CIRCLE,
-				new Circle());
+		player.setAttribute(Attribute.BOUNDING_CIRCLE, new Circle());
 
 		return player;
 	}
 
 	private Entity createGameMap(final Entity map) {
-		map.setAttribute(Attribute.RENDER_TILE_SIZE,32f);
+		map.setAttribute(Attribute.RENDER_TILE_SIZE, 32f);
 		return map;
 	}
 
@@ -111,8 +108,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	 *            Element in XML file which contains item specific information,
 	 *            like health kit strength or armor penetration value
 	 */
-	private void addItemFunction(final String familyName, final Rectangle destRect,
-			final Element el) {
+	private void addItemFunction(final String familyName,
+			final Rectangle destRect, final Element el) {
 
 		if (familyName.equals("healthkit")) {
 			entityContructionFunctions.put(familyName,

@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.entity.behaviors;
 
 import java.util.ArrayList;
@@ -54,13 +54,13 @@ public class MapRenderBehavior extends RenderBehavior {
 		}
 	}
 
-	private void renderPart(final Renderer renderer, int sw, int sh) {
-		Rectangle part = new Rectangle(sw * TILE_WIDTH, sh * TILE_WIDTH,
+	private void renderPart(final Renderer renderer, final int sw, final int sh) {
+		final Rectangle part = new Rectangle(sw * TILE_WIDTH, sh * TILE_WIDTH,
 				TILE_WIDTH * STEP_SIZE, TILE_WIDTH * STEP_SIZE);
 		if (renderer.inFrustum(part)) {
 			for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
 				for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
-					int index = (sh + i) * width + sw + j;
+					final int index = (sh + i) * width + sw + j;
 					if (index > 0 && index < tiles.size()) {
 						final Tile tile = tiles.get(index);
 						renderer.drawTexturePart(tile.getType()

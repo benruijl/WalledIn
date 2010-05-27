@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.entity.behaviors;
 
 import walledin.game.CollisionManager.CollisionData;
@@ -28,25 +28,26 @@ import walledin.game.entity.MessageType;
 
 public class BulletBehavior extends Behavior {
 
-	public BulletBehavior(Entity owner) {
+	public BulletBehavior(final Entity owner) {
 		super(owner);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public void onMessage(MessageType messageType, Object data) {
+	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.COLLIDED) {
 			final CollisionData colData = (CollisionData) data;
-			
+
 			// if collided with map, destroy
-			if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)) 
+			if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)) {
 				getOwner().remove();
+			}
 		}
 
 	}
 
 	@Override
-	public void onUpdate(double delta) {
+	public void onUpdate(final double delta) {
 		// TODO Auto-generated method stub
 
 	}

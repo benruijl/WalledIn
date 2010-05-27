@@ -17,15 +17,15 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game;
 
 import walledin.game.entity.Entity;
 
 public interface EntityFactory {
 
-	public abstract Entity create(final EntityManager entityManager, final String familyName,
-			final String entityName);
+	public abstract Entity create(final EntityManager entityManager,
+			final String familyName, final String entityName);
 
 	/**
 	 * Loads all information for the prototypes from an XML file.

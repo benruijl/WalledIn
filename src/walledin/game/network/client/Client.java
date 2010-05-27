@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.network.client;
 
 import java.awt.event.KeyEvent;
@@ -50,18 +50,18 @@ public class Client implements RenderListener, Runnable {
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
 	private boolean running;
-	private ByteBuffer buffer;
+	private final ByteBuffer buffer;
 	private Font font;
-	private Renderer renderer; // current renderer
-	private EntityManager entityManager;
-	private SocketAddress host;
-	private String username;
-	private NetworkDataManager networkManager;
+	private final Renderer renderer; // current renderer
+	private final EntityManager entityManager;
+	private final SocketAddress host;
+	private final String username;
+	private final NetworkDataManager networkManager;
 	private String playerEntityName;
-	
-	public static void main(String[] args) {
-		Renderer renderer = new Renderer();
-		Client client = new Client(renderer);
+
+	public static void main(final String[] args) {
+		final Renderer renderer = new Renderer();
+		final Client client = new Client(renderer);
 		LOG.info("initializing renderer");
 		renderer.initialize("WalledIn", 800, 600, false);
 		renderer.addListener(client);
@@ -72,9 +72,11 @@ public class Client implements RenderListener, Runnable {
 
 	/**
 	 * Create the client
-	 * @param renderer Current renderer
+	 * 
+	 * @param renderer
+	 *            Current renderer
 	 */
-	public Client(Renderer renderer) {
+	public Client(final Renderer renderer) {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
 		networkManager = new NetworkDataManager();
@@ -84,18 +86,18 @@ public class Client implements RenderListener, Runnable {
 		host = new InetSocketAddress("localhost", PORT);
 		username = "BLAA";
 	}
-	
+
 	@Override
 	public void run() {
 		try {
 			doRun();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void doRun() throws IOException {
-		DatagramChannel channel = DatagramChannel.open();
+		final DatagramChannel channel = DatagramChannel.open();
 		channel.configureBlocking(true);
 		channel.connect(host);
 		playerEntityName = networkManager.getAddressRepresentation(channel
@@ -111,21 +113,22 @@ public class Client implements RenderListener, Runnable {
 		}
 	}
 
-	private void writeInput(DatagramChannel channel) throws IOException {
+	private void writeInput(final DatagramChannel channel) throws IOException {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
 		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkDataManager.INPUT_MESSAGE);
-		Set<Integer> keysDown = Input.getInstance().getKeysDown();
+		final Set<Integer> keysDown = Input.getInstance().getKeysDown();
 		buffer.putShort((short) keysDown.size());
-		for (int key: keysDown) {
+		for (final int key : keysDown) {
 			buffer.putShort((short) key);
 		}
 		buffer.flip();
 		channel.write(buffer);
 	}
 
-	private void readDatagrams(DatagramChannel channel) throws IOException {
+	private void readDatagrams(final DatagramChannel channel)
+			throws IOException {
 		int ident = -1;
 		while (ident != NetworkDataManager.DATAGRAM_IDENTIFICATION) {
 			buffer.limit(BUFFER_SIZE);
@@ -134,18 +137,18 @@ public class Client implements RenderListener, Runnable {
 			buffer.flip();
 			ident = buffer.getInt();
 		}
-		int type = buffer.get(); // just assume gamestate for now
+		final int type = buffer.get(); // just assume gamestate for now
 		processGamestate();
 	}
 
 	private void processGamestate() throws IOException {
-		int size = buffer.getInt();
+		final int size = buffer.getInt();
 		for (int i = 0; i < size; i++) {
 			networkManager.readEntity(entityManager, buffer);
 		}
 	}
 
-	private void writeLogin(DatagramChannel channel) throws IOException {
+	private void writeLogin(final DatagramChannel channel) throws IOException {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
 		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
@@ -160,10 +163,10 @@ public class Client implements RenderListener, Runnable {
 	public void update(final double delta) {
 		/* Update all entities */
 		entityManager.update(delta);
-		
+
 		/* Center the camera around the player */
 		if (playerEntityName != null) {
-			Entity player = entityManager.get(playerEntityName);
+			final Entity player = entityManager.get(playerEntityName);
 			if (player != null) {
 				renderer.centerAround((Vector2f) player
 						.getAttribute(Attribute.POSITION));
@@ -176,14 +179,15 @@ public class Client implements RenderListener, Runnable {
 			Input.getInstance().setKeyUp(KeyEvent.VK_F1);
 		}
 	}
-	
+
 	@Override
 	public void draw(final Renderer renderer) {
 		entityManager.draw(renderer); // draw all entities in correct order
 
 		/* Render current FPS */
 		renderer.startHUDRendering();
-		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
+		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()),
+				new Vector2f(600, 20));
 		renderer.stopHUDRendering();
 	}
 
@@ -204,10 +208,10 @@ public class Client implements RenderListener, Runnable {
 
 		// Background is not created by server (not yet anyway)
 		entityManager.create("Background", "Background");
-		
+
 		LOG.info("starting network thread");
 		// start network thread
-		Thread thread = new Thread(this, "network");
+		final Thread thread = new Thread(this, "network");
 		thread.start();
 	}
 

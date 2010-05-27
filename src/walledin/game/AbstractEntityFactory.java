@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game;
 
 import java.util.HashMap;
@@ -40,7 +40,8 @@ public abstract class AbstractEntityFactory implements EntityFactory {
 	 * @see walledin.game.EntityFactory#create(java.lang.String,
 	 *      java.lang.String)
 	 */
-	public Entity create(final EntityManager entityManager, final String familyName, final String entityName) {
+	public Entity create(final EntityManager entityManager,
+			final String familyName, final String entityName) {
 		final Entity ent = new Entity(entityManager, familyName, entityName);
 		final EntityConstructionFunction func = entityContructionFunctions
 				.get(familyName);

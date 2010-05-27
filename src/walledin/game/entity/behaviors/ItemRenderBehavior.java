@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game.entity.behaviors;
 
 import walledin.engine.Renderer;
@@ -34,19 +34,24 @@ public class ItemRenderBehavior extends RenderBehavior {
 
 	/**
 	 * Creates a new item rendering behavior.
-	 * @param owner Owner of behavior, an Item
+	 * 
+	 * @param owner
+	 *            Owner of behavior, an Item
 	 * @param texPart
 	 * @param destRect
 	 */
-	public ItemRenderBehavior(final Entity owner, final String texPart, final Rectangle destRect) {
+	public ItemRenderBehavior(final Entity owner, final String texPart,
+			final Rectangle destRect) {
 		super(owner, ZValues.ITEM);
 
 		this.texPart = texPart;
 		ITEM_RECT = destRect;
 	}
-	
+
 	/**
-	 * Generic item renderer. It draws the texture part to the screen at the item's position.
+	 * Generic item renderer. It draws the texture part to the screen at the
+	 * item's position.
+	 * 
 	 * @param renderer
 	 */
 	private void render(final Renderer renderer) {

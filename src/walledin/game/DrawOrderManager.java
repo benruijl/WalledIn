@@ -17,7 +17,7 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.game;
 
 import java.util.Collection;
@@ -47,9 +47,9 @@ public class DrawOrderManager {
 		}
 	}
 
-	private SortedSet<Entity> entities;
-	private Set<Entity> addLater;
-	private Set<Entity> removeLater;
+	private final SortedSet<Entity> entities;
+	private final Set<Entity> addLater;
+	private final Set<Entity> removeLater;
 
 	public DrawOrderManager() {
 		super();
@@ -85,7 +85,7 @@ public class DrawOrderManager {
 		}
 		return addLater.add(e);
 	}
-	
+
 	public void removeEntity(final Entity entity) {
 		removeLater.add(entity);
 	}

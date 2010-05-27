@@ -17,9 +17,8 @@ along with Walled In; see the file LICENSE.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
-*/
+ */
 package walledin.engine;
-
 
 import org.apache.log4j.Logger;
 
@@ -33,7 +32,8 @@ import com.sun.opengl.util.texture.Texture;
  * @author ben
  */
 public class TexturePartManager extends ResourceManager<String, TexturePart> {
-	private final static Logger LOG = Logger.getLogger(TexturePartManager.class);
+	private final static Logger LOG = Logger
+			.getLogger(TexturePartManager.class);
 	private static final TexturePartManager INSTANCE = new TexturePartManager();
 
 	@Override
