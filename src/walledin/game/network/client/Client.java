@@ -144,7 +144,7 @@ public class Client implements RenderListener, Runnable {
 		// server asks if client is still alive. We reply with the same message
 		// to confirm
 		case NetworkDataManager.ALIVE_MESSAGE:
-			ByteBuffer buf = ByteBuffer.allocate(100000);
+			ByteBuffer buf = ByteBuffer.allocate(6);
 			buf.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
 			buf.put(NetworkDataManager.ALIVE_MESSAGE);
 			buf.flip();

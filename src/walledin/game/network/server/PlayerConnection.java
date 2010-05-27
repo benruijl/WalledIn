@@ -49,7 +49,7 @@ public class PlayerConnection {
 			return;
 
 		if (waitingForAck && (curTime - prevTime > WAIT_TIME)) {
-			LOG.info("Connection lost to " + address.toString());
+			LOG.info("Connection lost to client " + address.toString());
 			alive = false;
 			return;
 		}
@@ -57,13 +57,12 @@ public class PlayerConnection {
 		if (curTime - prevTime > CHECK_TIME) {
 			prevTime = curTime;
 			waitingForAck = true;
-			
-			LOG.info("Sending alive message to " + address.toString());
 
 			try {
-				ByteBuffer buffer = ByteBuffer.allocate(50); // FIXME
+				ByteBuffer buffer = ByteBuffer.allocate(6); // FIXME
 				buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
 				buffer.put(NetworkDataManager.ALIVE_MESSAGE);
+				buffer.flip();
 				channel.send(buffer, address);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
