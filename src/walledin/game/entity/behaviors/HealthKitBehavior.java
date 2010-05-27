@@ -20,12 +20,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 */
 package walledin.game.entity.behaviors;
 
+import org.apache.log4j.Logger;
+
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class HealthKitBehavior extends Behavior {
+	private static final Logger LOG = Logger.getLogger(HealthKitBehavior.class);
 	private final int strength;
 
 	public HealthKitBehavior(final Entity owner, final int strength) {
@@ -39,7 +42,7 @@ public class HealthKitBehavior extends Behavior {
 		if (messageType == MessageType.COLLIDED) {
 			// assumes colliding entity has a health component
 			final CollisionData colData = (CollisionData) data;
-			System.out.println(getOwner().getName() + " collided with "
+			LOG.info(getOwner().getName() + " collided with "
 					+ colData.getCollisionEntity().getName());
 			colData.getCollisionEntity().sendMessage(
 					MessageType.RESTORE_HEALTH, Integer.valueOf(strength));

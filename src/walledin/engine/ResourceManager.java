@@ -26,7 +26,8 @@ package walledin.engine;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 /**
  * A generic resource manager.
@@ -34,8 +35,7 @@ import java.util.logging.Logger;
  * @author ben
  */
 public class ResourceManager<U, T> {
-	private final static Logger LOG = Logger.getLogger(ResourceManager.class
-			.getName());
+	private final static Logger LOG = Logger.getLogger(ResourceManager.class);
 	private final Map<U, T> resources;
 
 	public ResourceManager() {
@@ -44,7 +44,7 @@ public class ResourceManager<U, T> {
 
 	protected boolean put(final U key, final T value) {
 		if (resources.containsKey(key)) {
-			LOG.warning("Key " + key.toString() + "already exists");
+			LOG.warn("Key " + key.toString() + "already exists");
 			return false;
 		}
 

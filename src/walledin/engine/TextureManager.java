@@ -22,10 +22,10 @@ package walledin.engine;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.media.opengl.GLException;
+
+import org.apache.log4j.Logger;
 
 import com.sun.opengl.util.texture.Texture;
 import com.sun.opengl.util.texture.TextureData;
@@ -36,8 +36,7 @@ import com.sun.opengl.util.texture.TextureIO;
  * @author ben
  */
 public class TextureManager extends ResourceManager<String, Texture> {
-	private final static Logger LOG = Logger.getLogger(TextureManager.class
-			.getName());
+	private final static Logger LOG = Logger.getLogger(TextureManager.class);
 	private static final TextureManager INSTANCE = new TextureManager();
 
 	@Override
@@ -81,10 +80,10 @@ public class TextureManager extends ResourceManager<String, Texture> {
 					true);
 			return put(textureID, texture);
 
-		} catch (final IOException ex) {
-			LOG.log(Level.SEVERE, null, ex);
-		} catch (final GLException ex) {
-			LOG.log(Level.SEVERE, null, ex);
+		} catch (final IOException e) {
+			LOG.error("IO exception durng loading of " + filename, e);
+		} catch (final GLException e) {
+			LOG.error("GL exception durng loading of " + filename, e);
 		}
 
 		return false;

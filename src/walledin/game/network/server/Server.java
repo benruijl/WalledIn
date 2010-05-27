@@ -31,6 +31,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
@@ -40,6 +42,7 @@ import walledin.game.map.GameMapIOXML;
 import walledin.game.network.NetworkDataManager;
 
 public class Server {
+	private static final Logger LOG = Logger.getLogger(Server.class);
 	private static final int PORT = 1234;
 	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int UPDATES_PER_SECOND = 60;
@@ -70,12 +73,14 @@ public class Server {
 	 * @throws IOException
 	 */
 	public void run() throws IOException {
+		LOG.info("initializing");
 		init();
 		DatagramChannel channel = DatagramChannel.open();
 		channel.socket().bind(new InetSocketAddress(PORT));
 		channel.configureBlocking(false);
 
 		running = true;
+		LOG.info("starting main loop");
 		while (running) {
 			long time = System.nanoTime();
 			doLoop(channel);
@@ -84,7 +89,6 @@ public class Server {
 			delta /= 1000000000;
 			// Calculate the how many milliseconds are left
 			long left = (long) ((1d / UPDATES_PER_SECOND - delta) * 1000);
-			//System.out.println(left + " " + delta);
 			try {
 				if (left > 0) {
 					Thread.sleep(left);
@@ -222,7 +226,7 @@ public class Server {
 				new Vector2f(400, 300));
 		player.setAttribute(Attribute.PLAYER_NAME, name);
 		players.put(address, player);
-		System.out.println("new player " + name + " @ " + address);
+		LOG.info("new player " + name + " @ " + address);
 	}
 	
 	public void update(final double delta) {

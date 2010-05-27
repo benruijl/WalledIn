@@ -28,6 +28,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.RenderListener;
@@ -42,6 +44,7 @@ import walledin.game.entity.Entity;
 import walledin.game.network.NetworkDataManager;
 
 public class Client implements RenderListener, Runnable {
+	private final static Logger LOG = Logger.getLogger(Client.class);
 	private static final int PORT = 1234;
 	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int TILE_SIZE = 64;
@@ -59,9 +62,11 @@ public class Client implements RenderListener, Runnable {
 	public static void main(String[] args) {
 		Renderer renderer = new Renderer();
 		Client client = new Client(renderer);
+		LOG.info("initializing renderer");
 		renderer.initialize("WalledIn", 800, 600, false);
 		renderer.addListener(client);
 		// Start renderer
+		LOG.info("starting renderer");
 		renderer.beginLoop();
 	}
 
@@ -97,6 +102,7 @@ public class Client implements RenderListener, Runnable {
 				.socket().getLocalSocketAddress());
 		writeLogin(channel);
 		running = true;
+		LOG.info("starting network loop");
 		while (running) {
 			// Read gamestate
 			readDatagrams(channel);
@@ -186,6 +192,7 @@ public class Client implements RenderListener, Runnable {
 	 */
 	@Override
 	public void init() {
+		LOG.info("initializing client");
 		loadTextures();
 		createTextureParts();
 
@@ -198,6 +205,7 @@ public class Client implements RenderListener, Runnable {
 		// Background is not created by server (not yet anyway)
 		entityManager.create("Background", "Background");
 		
+		LOG.info("starting network thread");
 		// start network thread
 		Thread thread = new Thread(this, "network");
 		thread.start();

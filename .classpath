@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/jogl.jar" sourcepath="libs/jogl-src.zip"/>
 	<classpathentry kind="lib" path="libs/gluegen-rt.jar" sourcepath="libs/jogl-src.zip"/>
+	<classpathentry kind="lib" path="libs/log4j-1.2.16.jar" sourcepath="libs/log4j-1.2.16-sources.jar"/>
 	<classpathentry kind="output" path="dist"/>
 </classpath>
