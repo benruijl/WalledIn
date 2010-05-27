@@ -4,8 +4,9 @@ foam weapon
 weapon items
 item pickup logic
 class javadoc comments
-multiplayer delta acks		Wouter
-client logout				Ben
-comment multiplayer code	Wouter
-protocol description		Wouter
-gradle build				Wouter
+better physics and walking controls
+multiplayer delta acks				Wouter
+client logout						Ben
+comment multiplayer code			Wouter
+protocol description				Wouter
+gradle build						Wouter
