@@ -84,7 +84,7 @@ public class Client implements RenderListener, Runnable {
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
 		host = new InetSocketAddress("localhost", PORT);
-		username = "BLAA";
+		username = System.getProperty("user.name");;
 	}
 
 	@Override

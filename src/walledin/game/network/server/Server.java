@@ -25,9 +25,11 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -210,7 +212,8 @@ public class Server {
 				players.get(address).isAliveReceived();
 				break;
 			case NetworkDataManager.LOGOUT_MESSAGE:
-				removePlayer(address);
+				//removePlayer(address); required?
+				players.get(address).remove();
 				break;
 			case NetworkDataManager.INPUT_MESSAGE:
 				final short numKeys = buffer.getShort();
@@ -246,6 +249,18 @@ public class Server {
 	}
 
 	public void update(final double delta) {
+		/* Check if players left the game, and if so remove them */
+		List<SocketAddress> remList = new ArrayList<SocketAddress>();
+		for (PlayerConnection con : players.values())
+			if (con.getAlive() == false)
+			{
+				entityManager.remove(con.getPlayer().getName());
+				remList.add(con.getAddress());
+			}
+		
+		for (SocketAddress sok : remList)
+			players.remove(sok);
+		
 		/* Update all entities */
 		entityManager.update(delta);
 

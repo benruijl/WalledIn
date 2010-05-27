@@ -15,8 +15,8 @@ public class PlayerConnection {
 	private Entity player;
 	private final SocketAddress address;
 
-	private final long CHECK_TIME = 10000;
-	private final long WAIT_TIME = 10000;
+	private final long CHECK_TIME = 1000;
+	private final long WAIT_TIME = 1000;
 	private long prevTime;
 	private boolean waitingForAck;
 	private boolean alive;
@@ -33,13 +33,26 @@ public class PlayerConnection {
 	public Entity getPlayer() {
 		return player;
 	}
+	
+	public SocketAddress getAddress() {
+		return address;
+	}
 
 	public void isAliveReceived() {
 		waitingForAck = false;
 	}
 
-	public boolean isAlive() {
+	public boolean getAlive() {
 		return alive;
+	}
+	
+	public void setAlive(boolean alive) {
+		this.alive = alive;
+	} 
+	
+	public void remove()
+	{
+		alive = false;
 	}
 
 	public void update(final DatagramChannel channel) {
