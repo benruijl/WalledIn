@@ -35,6 +35,7 @@ import walledin.game.entity.behaviors.ItemRenderBehavior;
 import walledin.game.entity.behaviors.MapRenderBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerRenderBehavior;
+import walledin.game.entity.behaviors.SpatialBehavior;
 import walledin.util.XMLReader;
 
 public class ClientEntityFactory extends AbstractEntityFactory {
@@ -49,6 +50,8 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 
 		player.addBehavior(new PlayerAnimationBehavior(player));
 		player.addBehavior(new PlayerRenderBehavior(player));
+		// spatial behavior does the interpolation in between server messages
+		player.addBehavior(new SpatialBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
@@ -70,6 +73,8 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 	private Entity createBullet(final String texPart, final Rectangle destRect,
 			final Element el, final Entity bl) {
 		bl.addBehavior(new ItemRenderBehavior(bl, texPart, destRect));
+		// spatial behavior does the interpolation in between server messages
+		bl.addBehavior(new SpatialBehavior(bl));
 		return bl;
 	}
 

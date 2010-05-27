@@ -45,7 +45,7 @@ public class Server {
 	private static final Logger LOG = Logger.getLogger(Server.class);
 	private static final int PORT = 1234;
 	private static final int BUFFER_SIZE = 1024 * 1024;
-	private static final int UPDATES_PER_SECOND = 60;
+	private static final int UPDATES_PER_SECOND = 30;
 	private final Map<SocketAddress, Entity> players;
 	private final Set<SocketAddress> newPlayers;
 	private boolean running;
