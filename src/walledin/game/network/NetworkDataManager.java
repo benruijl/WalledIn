@@ -43,7 +43,8 @@ public class NetworkDataManager {
 	public static final byte LOGIN_MESSAGE = 0;
 	public static final byte INPUT_MESSAGE = 1;
 	public static final byte LOGOUT_MESSAGE = 2;
-	public static final byte GAMESTATE_MESSAGE = 3;
+	public static final byte ALIVE_MESSAGE = 3;
+	public static final byte GAMESTATE_MESSAGE = 4;
 	public static final byte CREATE_ENTITY = 1;
 	public static final byte REMOVE_ENTITY = 2;
 	public static final byte UPDATE_ENTITY = 3;

@@ -46,7 +46,7 @@ public class Server {
 	private static final int PORT = 1234;
 	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int UPDATES_PER_SECOND = 30;
-	private final Map<SocketAddress, Entity> players;
+	private final Map<SocketAddress, PlayerConnection> players;
 	private final Set<SocketAddress> newPlayers;
 	private boolean running;
 	private final ByteBuffer buffer;
@@ -56,7 +56,7 @@ public class Server {
 	private final EntityManager entityManager;
 
 	public Server() {
-		players = new HashMap<SocketAddress, Entity>();
+		players = new HashMap<SocketAddress, PlayerConnection>();
 		running = false;
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		networkManager = new NetworkDataManager();
@@ -111,6 +111,13 @@ public class Server {
 		currentTime = System.nanoTime();
 		// convert to sec
 		delta /= 1000000000;
+		
+		// Update each player, do connection checks
+		for (PlayerConnection p : players.values())
+		{
+			p.update(channel);
+		}
+		
 		// Update game state
 		update(delta);
 		// Write to all the clients
@@ -199,6 +206,9 @@ public class Server {
 				final String name = new String(nameBytes);
 				createPlayer(name, address);
 				break;
+			case NetworkDataManager.ALIVE_MESSAGE:
+				players.get(address).isAliveReceived();
+				break;
 			case NetworkDataManager.LOGOUT_MESSAGE:
 				removePlayer(address);
 				break;
@@ -208,7 +218,7 @@ public class Server {
 				for (int i = 0; i < numKeys; i++) {
 					keys.add((int) buffer.getShort());
 				}
-				final Entity player = players.get(address);
+				final Entity player = players.get(address).getPlayer();
 				if (player != null) {
 					player.setAttribute(Attribute.KEYS_DOWN, keys);
 				}
@@ -228,7 +238,10 @@ public class Server {
 		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 		player.setAttribute(Attribute.PLAYER_NAME, name);
-		players.put(address, player);
+		
+		final PlayerConnection con = new PlayerConnection(address, player);
+		players.put(address, con);
+		
 		LOG.info("new player " + name + " @ " + address);
 	}
 

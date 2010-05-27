@@ -137,8 +137,27 @@ public class Client implements RenderListener, Runnable {
 			buffer.flip();
 			ident = buffer.getInt();
 		}
-		final int type = buffer.get(); // just assume gamestate for now
-		processGamestate();
+		
+		final byte type = buffer.get();
+
+		switch (type) {
+		// server asks if client is still alive. We reply with the same message
+		// to confirm
+		case NetworkDataManager.ALIVE_MESSAGE:
+			ByteBuffer buf = ByteBuffer.allocate(100000);
+			buf.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
+			buf.put(NetworkDataManager.ALIVE_MESSAGE);
+			buf.flip();
+			channel.write(buf);
+			break;
+		case NetworkDataManager.GAMESTATE_MESSAGE:
+			processGamestate();
+			break;
+		default:
+			LOG.warn("Received unhandled message");
+			break;
+		}
+
 	}
 
 	private void processGamestate() throws IOException {
