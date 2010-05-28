@@ -124,11 +124,7 @@ public class Client implements RenderListener, Runnable {
 			buf.put(NetworkDataManager.LOGOUT_MESSAGE);
 			buf.flip();
 			channel.write(buf);
-			
-			// quit application
-			renderer.dispose();
 		}
-
 	}
 
 	private void writeInput(final DatagramChannel channel) throws IOException {
@@ -211,7 +207,8 @@ public class Client implements RenderListener, Runnable {
 		}
 
 		if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
-			quitting = true;
+			dispose();
+			return;
 		}
 
 		/* Toggle full screen, current not working correctly */
@@ -323,5 +320,14 @@ public class Client implements RenderListener, Runnable {
 			final int tileNumPerLine, final int tileWidth, final int tileHeight) {
 		return new Rectangle((tileNumber % 16 * tileWidth + 1), (tileNumber
 				/ 16 * tileHeight + 1), (tileWidth - 2), (tileHeight - 2));
+	}
+
+	@Override
+	public void dispose() {
+		if (!quitting)
+		{
+			quitting = true;
+			renderer.dispose();
+		}
 	}
 }

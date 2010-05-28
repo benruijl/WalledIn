@@ -54,6 +54,7 @@ public class Renderer implements GLEventListener {
 	private final static Logger LOG = Logger.getLogger(Renderer.class);
 
 	private Frame win;
+	private boolean quitting;
 	private GLCanvas mCanvas;
 	private GL gl;
 	private RenderListener mEvListener;
@@ -93,6 +94,7 @@ public class Renderer implements GLEventListener {
 		win.setSize(width, height);
 		win.setLocation(0, 0);
 		win.setLayout(new BorderLayout());
+		quitting = false;
 
 		final GLCapabilities caps = new GLCapabilities();
 		caps.setDoubleBuffered(true);
@@ -115,14 +117,12 @@ public class Renderer implements GLEventListener {
 		}
 
 		win.addWindowListener(new WindowAdapter() {
-
-			/* FIXME: this function is never called */
 			@Override
 			public void windowClosing(final WindowEvent e) {
 				if (gd.getFullScreenWindow() == win)
 					gd.setFullScreenWindow(null);
-				
-				dispose();
+
+				mEvListener.dispose();
 			}
 		});
 
@@ -133,12 +133,12 @@ public class Renderer implements GLEventListener {
 		mCanvas.addKeyListener(Input.getInstance()); // listen to keys
 		lastUpdate = -1;
 	}
-	
-	public void dispose()
-	{
+
+	public void dispose() {
 		LOG.info("Disposing window...");
-		win.dispose();
 		anim.stop();
+		win.dispose();
+		quitting = true; // prevent function calls to GL after this
 	}
 
 	/**
@@ -236,8 +236,10 @@ public class Renderer implements GLEventListener {
 		if (mEvListener != null) {
 			mEvListener.update(delta); // TODO: verify if delta is correct
 
-			beginDraw();
-			mEvListener.draw(this); // draw the frame
+			if (!quitting) {
+				beginDraw();
+				mEvListener.draw(this); // draw the frame
+			}
 		}
 
 	}
