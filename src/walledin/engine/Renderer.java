@@ -119,7 +119,7 @@ public class Renderer implements GLEventListener {
 			/* FIXME: this function is never called */
 			@Override
 			public void windowClosing(final WindowEvent e) {
-
+				LOG.info("window closing");
 				if (gd.getFullScreenWindow() == win) {
 					gd.setFullScreenWindow(null);
 					/*
@@ -131,8 +131,6 @@ public class Renderer implements GLEventListener {
 						public void run() {
 							anim.stop();
 							LOG.info("Animator stopped");
-							//e.getWindow().dispose();
-							System.exit(0);
 						}
 					}.start();
 				}
@@ -151,7 +149,7 @@ public class Renderer implements GLEventListener {
 	{
 		LOG.info("Disposing window...");
 		win.dispose();
-		System.exit(0);
+		anim.stop();
 	}
 
 	/**

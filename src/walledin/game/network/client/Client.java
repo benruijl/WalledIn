@@ -49,7 +49,6 @@ public class Client implements RenderListener, Runnable {
 	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
-	private boolean running;
 	private final ByteBuffer buffer;
 	private Font font;
 	private final Renderer renderer; // current renderer
@@ -81,7 +80,6 @@ public class Client implements RenderListener, Runnable {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
 		networkManager = new NetworkDataManager();
-		running = false;
 		quitting = false;
 		
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -106,9 +104,8 @@ public class Client implements RenderListener, Runnable {
 		playerEntityName = networkManager.getAddressRepresentation(channel
 				.socket().getLocalSocketAddress());
 		writeLogin(channel);
-		running = true;
 		LOG.info("starting network loop");
-		while (running) {
+		while (!quitting) {
 			// Read gamestate
 			readDatagrams(channel);
 			// Write input
