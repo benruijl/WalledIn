@@ -58,6 +58,7 @@ public class Client implements RenderListener, Runnable {
 	private final String username;
 	private final NetworkDataManager networkManager;
 	private String playerEntityName;
+	private boolean quitting = false;
 
 	public static void main(final String[] args) {
 		final Renderer renderer = new Renderer();
@@ -81,10 +82,12 @@ public class Client implements RenderListener, Runnable {
 		entityManager = new EntityManager(new ClientEntityFactory());
 		networkManager = new NetworkDataManager();
 		running = false;
+		quitting = false;
+		
 		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
 		host = new InetSocketAddress("localhost", PORT);
-		username = System.getProperty("user.name");;
+		username = System.getProperty("user.name");
 	}
 
 	@Override
@@ -110,7 +113,25 @@ public class Client implements RenderListener, Runnable {
 			readDatagrams(channel);
 			// Write input
 			writeInput(channel);
+
+			// check if the client is quitting
+			checkQuit(channel);
 		}
+	}
+
+	private void checkQuit(final DatagramChannel channel) throws IOException {
+		if (quitting) {
+			// send the logout message
+			ByteBuffer buf = ByteBuffer.allocate(6);
+			buf.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
+			buf.put(NetworkDataManager.LOGOUT_MESSAGE);
+			buf.flip();
+			channel.write(buf);
+			
+			// quit application
+			renderer.dispose();
+		}
+
 	}
 
 	private void writeInput(final DatagramChannel channel) throws IOException {
@@ -137,7 +158,7 @@ public class Client implements RenderListener, Runnable {
 			buffer.flip();
 			ident = buffer.getInt();
 		}
-		
+
 		final byte type = buffer.get();
 
 		switch (type) {
@@ -190,6 +211,10 @@ public class Client implements RenderListener, Runnable {
 				renderer.centerAround((Vector2f) player
 						.getAttribute(Attribute.POSITION));
 			}
+		}
+
+		if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
+			quitting = true;
 		}
 
 		/* Toggle full screen, current not working correctly */

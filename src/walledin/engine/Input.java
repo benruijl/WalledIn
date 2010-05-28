@@ -60,13 +60,6 @@ public class Input implements KeyListener {
 
 	@Override
 	public void keyPressed(final KeyEvent e) {
-
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // quick way out
-			// FIXME ... very ugly .. no way to do some kind of cleanup ..
-			// exit should be avoided in general
-			System.exit(0);
-		}
-
 		keysDown.add(e.getKeyCode());
 	}
 

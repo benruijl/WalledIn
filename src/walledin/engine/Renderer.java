@@ -33,6 +33,8 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Matrix2f;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -49,6 +51,7 @@ import com.sun.opengl.util.texture.Texture;
  * @author Ben Ruijl
  */
 public class Renderer implements GLEventListener {
+	private final static Logger LOG = Logger.getLogger(Renderer.class);
 
 	private Frame win;
 	private GLCanvas mCanvas;
@@ -113,12 +116,12 @@ public class Renderer implements GLEventListener {
 
 		win.addWindowListener(new WindowAdapter() {
 
+			/* FIXME: this function is never called */
 			@Override
 			public void windowClosing(final WindowEvent e) {
 
 				if (gd.getFullScreenWindow() == win) {
 					gd.setFullScreenWindow(null);
-
 					/*
 					 * Stop the animator before exiting. Use a thread to ensure
 					 * the animator stopped.
@@ -127,6 +130,8 @@ public class Renderer implements GLEventListener {
 						@Override
 						public void run() {
 							anim.stop();
+							LOG.info("Animator stopped");
+							//e.getWindow().dispose();
 							System.exit(0);
 						}
 					}.start();
@@ -140,6 +145,13 @@ public class Renderer implements GLEventListener {
 
 		mCanvas.addKeyListener(Input.getInstance()); // listen to keys
 		lastUpdate = -1;
+	}
+	
+	public void dispose()
+	{
+		LOG.info("Disposing window...");
+		win.dispose();
+		System.exit(0);
 	}
 
 	/**

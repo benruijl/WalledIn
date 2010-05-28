@@ -213,6 +213,7 @@ public class Server {
 				break;
 			case NetworkDataManager.LOGOUT_MESSAGE:
 				//removePlayer(address); required?
+				LOG.info("Player " + address.toString() + " left the game.");
 				players.get(address).remove();
 				break;
 			case NetworkDataManager.INPUT_MESSAGE:
