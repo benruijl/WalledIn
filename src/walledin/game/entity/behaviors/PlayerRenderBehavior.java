@@ -50,7 +50,7 @@ public class PlayerRenderBehavior extends RenderBehavior {
 	private void render(final Renderer renderer) {
 		renderer.pushMatrix();
 
-		pos = getOwner().getAttribute(Attribute.POSITION);
+		pos = (Vector2f) getAttribute(Attribute.POSITION);
 		renderer.translate(pos);
 
 		renderer.scale(scale);
@@ -60,7 +60,7 @@ public class PlayerRenderBehavior extends RenderBehavior {
 			renderer.scale(new Vector2f(-1, 1));
 		}
 
-		final float footPos = getAttribute(Attribute.WALK_ANIM_FRAME);
+		final float footPos = (Float) getAttribute(Attribute.WALK_ANIM_FRAME);
 
 		renderer.drawTexturePart(PLAYER_BACKGROUND, BODY_RECT);
 		renderer.drawTexturePart(PLAYER_BODY, BODY_RECT);

@@ -53,13 +53,13 @@ public class SpatialBehavior extends Behavior {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
 			case POSITION:
-				position = getAttribute(attribute);
+				position = (Vector2f) getAttribute(attribute);
 				break;
 			case VELOCITY:
-				velocity = getAttribute(attribute);
+				velocity = (Vector2f) getAttribute(attribute);
 				break;
 			case BOUNDING_RECT:
-				boundingBox = getAttribute(attribute);
+				boundingBox = (Rectangle) getAttribute(attribute);
 				// recreate circle
 				boundingCircle = Circle.fromRect(boundingBox);
 				setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);

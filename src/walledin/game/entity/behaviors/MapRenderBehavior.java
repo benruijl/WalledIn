@@ -81,13 +81,13 @@ public class MapRenderBehavior extends RenderBehavior {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
 			case HEIGHT:
-				height = getAttribute(attribute);
+				height = (Integer) getAttribute(attribute);
 				break;
 			case WIDTH:
-				width = getAttribute(attribute);
+				width = (Integer) getAttribute(attribute);
 				break;
 			case TILES:
-				tiles = getAttribute(attribute);
+				tiles = (List<Tile>) getAttribute(attribute);
 				break;
 			}
 		}

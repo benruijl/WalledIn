@@ -45,18 +45,14 @@ public abstract class Behavior {
 	}
 
 	/**
-	 * Gets the object bound to the attribute. Performs an automatic cast, so
-	 * the user doesn't have to cast every time. The attribute is owned by the
+	 * Gets the object bound to the attribute. The attribute is owned by the
 	 * owner of this behavior.
 	 * 
 	 * @param attribute
 	 *            The attribute to get
 	 * @return Returns the object bound to this attribute
-	 * @throws ClassCastException
-	 *             if the class you asked for is not the class specified in
-	 *             attribute
 	 */
-	protected <T> T getAttribute(final Attribute attribute) {
+	protected Object getAttribute(final Attribute attribute) {
 		return getOwner().getAttribute(attribute);
 	}
 

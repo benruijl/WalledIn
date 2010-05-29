@@ -53,7 +53,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
 			case KEYS_DOWN:
-				keysDown = getAttribute(attribute);
+				keysDown = (Set<Integer>) getAttribute(attribute);
 				break;
 			}
 		}
@@ -95,7 +95,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 		}
 
 		if (keysDown.contains(KeyEvent.VK_ENTER)) {
-			final int or = getAttribute(Attribute.ORIENTATION);
+			final int or = (Integer) getAttribute(Attribute.ORIENTATION);
 			final Vector2f bulletPosition = position.add(new Vector2f(
 					or * 50.0f, 20.0f));
 			final Vector2f bulletVelocity = new Vector2f(or * 400.0f, 0);

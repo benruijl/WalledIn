@@ -134,25 +134,20 @@ public class Entity {
 	}
 
 	/**
-	 * Gets the object bound to the attribute. Performs an automatic cast, so
-	 * the user doesn't have to cast every time
+	 * Gets the object bound to the attribute.
 	 * 
 	 * @param attribute
 	 *            The attribute to get
 	 * @return Returns the object bound to this attribute
-	 * @throws ClassCastException
-	 *             if the class you asked for is not the class specified in
-	 *             attribute
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T getAttribute(final Attribute attribute) {
+	public Object getAttribute(final Attribute attribute) {
 		if (!attributes.containsKey(attribute)) {
 			throw new IllegalArgumentException("Object " + name
 					+ " does not have attribute " + attribute.name());
 		}
 
-		final T att = (T) attributes.get(attribute);
-		return att;
+		return attributes.get(attribute);
 	}
 
 	/**

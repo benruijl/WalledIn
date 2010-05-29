@@ -46,7 +46,7 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
 			case VELOCITY:
-				velocity = getAttribute(attribute);
+				velocity = (Vector2f) getAttribute(attribute);
 				break;
 			}
 		}

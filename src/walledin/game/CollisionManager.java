@@ -79,10 +79,10 @@ public class CollisionManager {
 	}
 
 	static private Tile tileFromPixel(final Entity map, final Vector2f pos) {
-		final float tileSize = map.getAttribute(Attribute.RENDER_TILE_SIZE);
-		final int width = map.getAttribute(Attribute.WIDTH);
+		final float tileSize = (Float) map.getAttribute(Attribute.RENDER_TILE_SIZE);
+		final int width = (Integer) map.getAttribute(Attribute.WIDTH);
 
-		final List<Tile> tiles = map.getAttribute(Attribute.TILES);
+		final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
 		return tiles.get((int) (pos.x / tileSize) + width
 				* (int) (pos.y / tileSize));
@@ -100,9 +100,9 @@ public class CollisionManager {
 					continue;
 				}
 
-				Circle circA = entArray[i]
+				Circle circA = (Circle) entArray[i]
 						.getAttribute(Attribute.BOUNDING_CIRCLE);
-				Circle circB = entArray[j]
+				Circle circB = (Circle) entArray[j]
 						.getAttribute(Attribute.BOUNDING_CIRCLE);
 
 				circA = circA.addPos((Vector2f) entArray[i]
@@ -114,9 +114,9 @@ public class CollisionManager {
 					continue;
 				}
 
-				Rectangle rectA = entArray[i]
+				Rectangle rectA = (Rectangle) entArray[i]
 						.getAttribute(Attribute.BOUNDING_RECT);
-				Rectangle rectB = entArray[j]
+				Rectangle rectB = (Rectangle) entArray[j]
 						.getAttribute(Attribute.BOUNDING_RECT);
 
 				rectA = rectA.translate((Vector2f) entArray[i]
@@ -128,9 +128,9 @@ public class CollisionManager {
 					continue;
 				}
 
-				final Vector2f posA = entArray[i]
+				final Vector2f posA = (Vector2f) entArray[i]
 						.getAttribute(Attribute.POSITION);
-				final Vector2f posB = entArray[j]
+				final Vector2f posB = (Vector2f) entArray[j]
 						.getAttribute(Attribute.POSITION);
 
 				// no response yet, so give the same data
@@ -144,20 +144,20 @@ public class CollisionManager {
 
 	static public void calculateMapCollisions(final Entity map,
 			final Collection<Entity> entities, final double delta) {
-		final float tileSize = map.getAttribute(Attribute.RENDER_TILE_SIZE);
+		final float tileSize = (Float) map.getAttribute(Attribute.RENDER_TILE_SIZE);
 
 		for (final Entity ent : entities) {
 			if (ent.hasAttribute(Attribute.BOUNDING_RECT) && !ent.equals(map)) {
 
-				Vector2f vel = ent.getAttribute(Attribute.VELOCITY);
+				Vector2f vel = (Vector2f) ent.getAttribute(Attribute.VELOCITY);
 
 				if (vel.x == 0 && vel.y == 0) {
 					continue;
 				}
 
 				vel = vel.scale((float) delta); // velocity per frame
-				Rectangle rect = ent.getAttribute(Attribute.BOUNDING_RECT);
-				final Vector2f curPos = ent.getAttribute(Attribute.POSITION);
+				Rectangle rect = (Rectangle) ent.getAttribute(Attribute.BOUNDING_RECT);
+				final Vector2f curPos = (Vector2f) ent.getAttribute(Attribute.POSITION);
 				final Vector2f oldPos = curPos.sub(vel);
 
 				float x = curPos.x; // new x position after collision
