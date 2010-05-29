@@ -42,6 +42,7 @@ import walledin.game.entity.Entity;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.network.NetworkDataManager;
+import walledin.util.Utils;
 
 public class Server {
 	private static final Logger LOG = Logger.getLogger(Server.class);
@@ -278,6 +279,6 @@ public class Server {
 
 		final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML
 																	// as format
-		map = mapIO.readFromFile("data/map.xml");
+		map = mapIO.readFromFile(Utils.getClasspathFilename("map.xml"));
 	}
 }

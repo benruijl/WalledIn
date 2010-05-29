@@ -1,4 +1,4 @@
-<items texture="data/game.png" texname="TEX_ITEMS">
+<items texture="game.png" texname="TEX_ITEMS">
     <item>
         <name>healthkit</name>
         <width>32</width>

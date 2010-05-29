@@ -36,6 +36,7 @@ import walledin.game.entity.behaviors.MapRenderBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.PlayerRenderBehavior;
 import walledin.game.entity.behaviors.SpatialBehavior;
+import walledin.util.Utils;
 import walledin.util.XMLReader;
 
 public class ClientEntityFactory extends AbstractEntityFactory {
@@ -191,7 +192,8 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					"texture");
 			final String texName = reader.getRootElement().getAttribute(
 					"texname");
-			TextureManager.getInstance().loadFromFile(texture, texName);
+			String texturePath = Utils.getClasspathFilename(texture);
+			TextureManager.getInstance().loadFromFile(texturePath, texName);
 
 			for (final Element cur : elList) {
 				final String familyName = XMLReader.getTextValue(cur, "name");

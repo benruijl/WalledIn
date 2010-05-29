@@ -98,8 +98,7 @@ public class Font {
 	public boolean readFromFile(final String filename) {
 		DataInputStream in;
 		try {
-			in = new DataInputStream(new BufferedInputStream(
-					new FileInputStream(filename)));
+			in = new DataInputStream(new FileInputStream(filename));
 		} catch (final FileNotFoundException e) {
 			LOG.error("File not found: " + filename, e);
 			return false;

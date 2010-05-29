@@ -5,7 +5,7 @@
   <classpathentry kind="src" path="src/main/resources"/>
   <classpathentry kind="output" path="build/classes/main"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/libs/gluegen-rt-1.1.1a.jar"/>
-  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/libs/jogl-1.1.1a.jar"/>
-  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/libs/log4j-1.2.16.jar"/>
+  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/lib/gluegen-rt-1.1.1a.jar"/>
+  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/lib/jogl-1.1.1a.jar"/>
+  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/lib/log4j-1.2.16.jar"/>
 </classpath>

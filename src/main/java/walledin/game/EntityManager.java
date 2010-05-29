@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.util.Utils;
 
 public class EntityManager {
 	private final Map<String, Entity> entities;
@@ -145,7 +146,7 @@ public class EntityManager {
 	}
 
 	public void init() {
-		factory.loadItemsFromXML("data/items.xml");
+		factory.loadItemsFromXML(Utils.getClasspathFilename("items.xml"));
 	}
 
 	public Set<Entity> getRemoved() {

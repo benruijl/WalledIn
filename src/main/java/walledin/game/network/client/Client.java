@@ -42,6 +42,7 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.network.NetworkDataManager;
+import walledin.util.Utils;
 
 public class Client implements RenderListener, Runnable {
 	private final static Logger LOG = Logger.getLogger(Client.class);
@@ -239,7 +240,8 @@ public class Client implements RenderListener, Runnable {
 		createTextureParts();
 
 		font = new Font(); // load font
-		font.readFromFile("data/arial20.font");
+		
+		font.readFromFile(Utils.getClasspathFilename("arial20.font"));
 
 		// initialize entity manager
 		entityManager.init();
@@ -255,11 +257,11 @@ public class Client implements RenderListener, Runnable {
 
 	private void loadTextures() {
 		final TextureManager manager = TextureManager.getInstance();
-		manager.loadFromFile("data/tiles.png", "tiles");
-		manager.loadFromFile("data/zon.png", "sun");
-		manager.loadFromFile("data/player.png", "player");
-		manager.loadFromFile("data/wall.png", "wall");
-		manager.loadFromFile("data/game.png", "game");
+		manager.loadFromFile(Utils.getClasspathFilename("tiles.png"), "tiles");
+		manager.loadFromFile(Utils.getClasspathFilename("zon.png"), "sun");
+		manager.loadFromFile(Utils.getClasspathFilename("player.png"), "player");
+		manager.loadFromFile(Utils.getClasspathFilename("wall.png"), "wall");
+		manager.loadFromFile(Utils.getClasspathFilename("game.png"), "game");
 	}
 
 	private void createTextureParts() {
