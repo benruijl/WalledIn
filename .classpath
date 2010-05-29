@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <classpath>
-  <classpathentry kind="src" path="src/main/java"/>
-  <classpathentry kind="src" path="src/main/resources"/>
-  <classpathentry kind="output" path="build/classes/main"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/lib/gluegen-rt-1.1.1a.jar"/>
-  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/lib/jogl-1.1.1a.jar"/>
-  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/gluegen-rt-1.1.1a.jar"/>
+	<classpathentry kind="lib" path="lib/jogl-1.1.1a.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="WalledIn/lib/native/linux64"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="output" path="build/classes/main"/>
 </classpath>
