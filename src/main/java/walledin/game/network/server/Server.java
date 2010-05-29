@@ -44,6 +44,11 @@ import walledin.game.map.GameMapIOXML;
 import walledin.game.network.NetworkDataManager;
 import walledin.util.Utils;
 
+/**
+ * This class provides the server for the game. All gamestate updates happen here.
+ * Clients can register to this class to be added to the game.
+ *
+ */
 public class Server {
 	private static final Logger LOG = Logger.getLogger(Server.class);
 	private static final int PORT = 1234;
@@ -58,6 +63,9 @@ public class Server {
 	private long currentTime;
 	private final EntityManager entityManager;
 
+	/**
+	 * Creates a new server. Initializes variables to their default values.
+	 */
 	public Server() {
 		players = new HashMap<SocketAddress, PlayerConnection>();
 		running = false;
@@ -67,12 +75,19 @@ public class Server {
 		entityManager = new EntityManager(new ServerEntityFactory());
 	}
 
+	/**
+	 * Start of application. It runs the server.
+	 * 
+	 * @param args
+	 *            Command line arguments
+	 * @throws IOException
+	 */
 	public static void main(final String[] args) throws IOException {
 		new Server().run();
 	}
 
 	/**
-	 * Run the server.
+	 * Runs the server. It starts a server channel and enters the main loop.
 	 * 
 	 * @throws IOException
 	 */
@@ -104,6 +119,14 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Main loop of the server. Takes care of reading messages, updating
+	 * gamestate, and sending messages.
+	 * 
+	 * @param channel
+	 *            The channel to read from / send to
+	 * @throws IOException
+	 */
 	private void doLoop(final DatagramChannel channel) throws IOException {
 		// Clear the new players from the last loop
 		newPlayers.clear();
@@ -114,19 +137,26 @@ public class Server {
 		currentTime = System.nanoTime();
 		// convert to sec
 		delta /= 1000000000;
-		
+
 		// Update each player, do connection checks
-		for (PlayerConnection p : players.values())
-		{
+		for (PlayerConnection p : players.values()) {
 			p.update(channel);
 		}
-		
+
 		// Update game state
 		update(delta);
 		// Write to all the clients
 		writeDatagrams(channel);
 	}
 
+	/**
+	 * Writes updated game information to both new and current players. The new
+	 * players receive extra data.
+	 * 
+	 * @param channel
+	 *            The channel to send to
+	 * @throws IOException
+	 */
 	private void writeDatagrams(final DatagramChannel channel)
 			throws IOException {
 		if (!newPlayers.isEmpty()) {
@@ -149,6 +179,12 @@ public class Server {
 		}
 	}
 
+	/**
+	 * This function calculates the changes of the current gamestate to the
+	 * previous gamestate and puts this delta gamestate in a buffer.
+	 * 
+	 * @see Server#writeDatagramForNewPlayers()
+	 */
 	private void writeDatagramForExistingPlayers() {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
@@ -170,6 +206,14 @@ public class Server {
 		}
 	}
 
+	/**
+	 * This function writes the entire current gamestate to a buffer. Used for
+	 * new players only. Current players use the
+	 * <code>writeDatagramForExistingPlayers</code> function.
+	 * 
+	 * @see Server#writeDatagramForExistingPlayers()
+	 * 
+	 */
 	private void writeDatagramForNewPlayers() {
 		buffer.limit(BUFFER_SIZE);
 		buffer.rewind();
@@ -182,6 +226,13 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Read datagrams from a channel.
+	 * 
+	 * @param channel
+	 *            Channel to read from
+	 * @throws IOException
+	 */
 	private void readDatagrams(final DatagramChannel channel)
 			throws IOException {
 		buffer.limit(BUFFER_SIZE);
@@ -197,6 +248,13 @@ public class Server {
 		}
 	}
 
+	/**
+	 * Processes datagrams received from the client. Parses login, alive, logout
+	 * and input messages.
+	 * 
+	 * @param address
+	 *            Address the message is from
+	 */
 	private void processDatagram(final SocketAddress address) {
 		final int ident = buffer.getInt();
 		if (ident == NetworkDataManager.DATAGRAM_IDENTIFICATION) {
@@ -213,8 +271,8 @@ public class Server {
 				players.get(address).isAliveReceived();
 				break;
 			case NetworkDataManager.LOGOUT_MESSAGE:
-				//removePlayer(address); required?
 				LOG.info("Player " + address.toString() + " left the game.");
+				newPlayers.remove(address);
 				players.get(address).remove();
 				break;
 			case NetworkDataManager.INPUT_MESSAGE:
@@ -232,10 +290,14 @@ public class Server {
 		}
 	}
 
-	private void removePlayer(final SocketAddress address) {
-		newPlayers.remove(address);
-	}
-
+	/**
+	 * Creates a connection to a new client.
+	 * 
+	 * @param name
+	 *            Player name
+	 * @param address
+	 *            Player socket address
+	 */
 	private void createPlayer(final String name, final SocketAddress address) {
 		final String entityName = networkManager
 				.getAddressRepresentation(address);
@@ -243,26 +305,32 @@ public class Server {
 		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 		player.setAttribute(Attribute.PLAYER_NAME, name);
-		
+
 		final PlayerConnection con = new PlayerConnection(address, player);
 		players.put(address, con);
-		
+
 		LOG.info("new player " + name + " @ " + address);
 	}
 
+	/**
+	 * Update the gamestate, removes disconnected players and does collision
+	 * detection.
+	 * 
+	 * @param delta
+	 *            Time elapsed since last update
+	 */
 	public void update(final double delta) {
 		/* Check if players left the game, and if so remove them */
 		List<SocketAddress> remList = new ArrayList<SocketAddress>();
 		for (PlayerConnection con : players.values())
-			if (con.getAlive() == false)
-			{
+			if (con.getAlive() == false) {
 				entityManager.remove(con.getPlayer().getName());
 				remList.add(con.getAddress());
 			}
-		
+
 		for (SocketAddress sok : remList)
 			players.remove(sok);
-		
+
 		/* Update all entities */
 		entityManager.update(delta);
 
@@ -271,14 +339,14 @@ public class Server {
 	}
 
 	/**
-	 * Initialize game
+	 * Initializes the game. It reads the default map and initializes the entity manager.
 	 */
 	public void init() {
 		// initialize entity manager
 		entityManager.init();
 
 		final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML
-																	// as format
+		// as format
 		map = mapIO.readFromURL(Utils.getClasspathURL("map.xml"));
 	}
 }
