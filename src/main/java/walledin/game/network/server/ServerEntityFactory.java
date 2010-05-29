@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network.server;
 
+import java.net.URL;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -171,15 +172,15 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	/**
 	 * Loads all information for the prototypes from an XML file.
 	 * 
-	 * @param filename
+	 * @param file
 	 *            XML file
 	 * @return True on success, false on failure
 	 */
 	@Override
-	public boolean loadItemsFromXML(final String filename) {
+	public boolean loadItemsFromXML(final URL file) {
 		final XMLReader reader = new XMLReader();
 
-		if (reader.open(filename)) {
+		if (reader.open(file)) {
 			final List<Element> elList = XMLReader.getElements(reader
 					.getRootElement(), "item");
 

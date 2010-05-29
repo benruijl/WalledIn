@@ -22,8 +22,8 @@ package walledin.engine;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.media.opengl.GLException;
@@ -64,10 +64,10 @@ public class TextureManager extends ResourceManager<String, Texture> {
 	 * 
 	 * @Returns: string ID on succes, null on failure
 	 */
-	public String loadFromFile(final String filename) {
+	public String loadFromFile(final URL file) {
 		final String id = generateUniqueID();
 
-		if (loadFromFile(filename, id)) {
+		if (loadFromURL(file, id)) {
 			return id;
 		}
 
@@ -77,10 +77,10 @@ public class TextureManager extends ResourceManager<String, Texture> {
 	/*
 	 * Loads a texture from a file and links it with the given ID
 	 */
-	public boolean loadFromFile(final String filename, final String textureID) {
+	public boolean loadFromURL(final URL file, final String textureID) {
 
 		try {
-			BufferedImage img = ImageIO.read(new File(filename));
+			BufferedImage img = ImageIO.read(file);
 			BufferedImage argbImg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
 			Graphics g = argbImg.createGraphics();
 			g.drawImage(img, 0, 0, null);
@@ -88,9 +88,9 @@ public class TextureManager extends ResourceManager<String, Texture> {
 			return put(textureID, texture);
 
 		} catch (final IOException e) {
-			LOG.error("IO exception durng loading of " + filename, e);
+			LOG.error("IO exception durng loading of " + file, e);
 		} catch (final GLException e) {
-			LOG.error("GL exception durng loading of " + filename, e);
+			LOG.error("GL exception durng loading of " + file, e);
 		}
 
 		return false;

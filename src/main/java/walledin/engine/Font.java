@@ -20,11 +20,11 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine;
 
-import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -91,16 +91,16 @@ public class Font {
 	/**
 	 * Reads a font from a custom format
 	 * 
-	 * @param filename
+	 * @param file
 	 *            Font file. Custom .font format
 	 * @return True on success, false on failure
 	 */
-	public boolean readFromFile(final String filename) {
+	public boolean readFromStream(final URL file) {
 		DataInputStream in;
 		try {
-			in = new DataInputStream(new FileInputStream(filename));
-		} catch (final FileNotFoundException e) {
-			LOG.error("File not found: " + filename, e);
+			in = new DataInputStream(file.openStream());
+		} catch (IOException e) {
+			LOG.error("Could not open file: " + file, e);
 			return false;
 		}
 
@@ -149,13 +149,13 @@ public class Font {
 		}
 
 		catch (final IOException e) {
-			LOG.error("Problems reading " + filename, e);
+			LOG.error("Problems reading " + file, e);
 			return false;
 		} finally {
 			try {
 				in.close();
 			} catch (final IOException e) {
-				LOG.error("Could not close" + filename, e);
+				LOG.error("Could not close" + file, e);
 			}
 		}
 		return true;

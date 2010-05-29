@@ -20,6 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import java.net.URL;
+
 import walledin.game.entity.Entity;
 
 public interface EntityFactory {
@@ -30,10 +32,10 @@ public interface EntityFactory {
 	/**
 	 * Loads all information for the prototypes from an XML file.
 	 * 
-	 * @param filename
+	 * @param file
 	 *            XML file
 	 * @return True on success, false on failure
 	 */
-	public abstract boolean loadItemsFromXML(final String filename);
+	public abstract boolean loadItemsFromXML(final URL file);
 
 }

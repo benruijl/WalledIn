@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,6 @@ public abstract class AbstractEntityFactory implements EntityFactory {
 	}
 
 	@Override
-	public abstract boolean loadItemsFromXML(String filename);
+	public abstract boolean loadItemsFromXML(URL filename);
 
 }

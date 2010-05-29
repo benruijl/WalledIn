@@ -21,6 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.util;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,13 +38,13 @@ public class XMLReader {
 	Document dom;
 	Element root;
 
-	public boolean open(final String filename) {
+	public boolean open(final URL file) {
 		// get the factory
 		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
 		try {
 			final DocumentBuilder db = dbf.newDocumentBuilder();
-			dom = db.parse(filename);
+			dom = db.parse(file.openStream());
 			root = dom.getDocumentElement();
 			return true;
 

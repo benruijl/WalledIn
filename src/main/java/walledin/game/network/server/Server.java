@@ -279,6 +279,6 @@ public class Server {
 
 		final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML
 																	// as format
-		map = mapIO.readFromFile(Utils.getClasspathFilename("map.xml"));
+		map = mapIO.readFromURL(Utils.getClasspathURL("map.xml"));
 	}
 }

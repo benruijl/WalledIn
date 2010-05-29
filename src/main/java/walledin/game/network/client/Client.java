@@ -61,6 +61,7 @@ public class Client implements RenderListener, Runnable {
 	private boolean quitting = false;
 
 	public static void main(final String[] args) {
+		LOG.info(System.getProperty("java.library.path"));
 		final Renderer renderer = new Renderer();
 		final Client client = new Client(renderer);
 		LOG.info("initializing renderer");
@@ -241,7 +242,7 @@ public class Client implements RenderListener, Runnable {
 
 		font = new Font(); // load font
 		
-		font.readFromFile(Utils.getClasspathFilename("arial20.font"));
+		font.readFromStream(Utils.getClasspathURL("arial20.font"));
 
 		// initialize entity manager
 		entityManager.init();
@@ -257,11 +258,11 @@ public class Client implements RenderListener, Runnable {
 
 	private void loadTextures() {
 		final TextureManager manager = TextureManager.getInstance();
-		manager.loadFromFile(Utils.getClasspathFilename("tiles.png"), "tiles");
-		manager.loadFromFile(Utils.getClasspathFilename("zon.png"), "sun");
-		manager.loadFromFile(Utils.getClasspathFilename("player.png"), "player");
-		manager.loadFromFile(Utils.getClasspathFilename("wall.png"), "wall");
-		manager.loadFromFile(Utils.getClasspathFilename("game.png"), "game");
+		manager.loadFromURL(Utils.getClasspathURL("tiles.png"), "tiles");
+		manager.loadFromURL(Utils.getClasspathURL("zon.png"), "sun");
+		manager.loadFromURL(Utils.getClasspathURL("player.png"), "player");
+		manager.loadFromURL(Utils.getClasspathURL("wall.png"), "wall");
+		manager.loadFromURL(Utils.getClasspathURL("game.png"), "game");
 	}
 
 	private void createTextureParts() {

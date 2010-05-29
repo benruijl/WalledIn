@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.map;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,10 +107,10 @@ public class GameMapIOXML implements GameMapIO {
 	 * @return Returns true on success and false on failure
 	 */
 	@Override
-	public Entity readFromFile(final String filename) {
+	public Entity readFromURL(final URL file) {
 		final XMLReader reader = new XMLReader();
 
-		if (reader.open(filename)) {
+		if (reader.open(file)) {
 			final Element mapElement = reader.getRootElement();
 
 			final String name = XMLReader.getTextValue(mapElement, "name");

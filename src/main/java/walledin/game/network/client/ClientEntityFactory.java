@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network.client;
 
+import java.net.URL;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -181,7 +182,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 	 * @see walledin.game.EntityFactory#loadItemsFromXML(java.lang.String)
 	 */
 	@Override
-	public boolean loadItemsFromXML(final String filename) {
+	public boolean loadItemsFromXML(final URL filename) {
 		final XMLReader reader = new XMLReader();
 
 		if (reader.open(filename)) {
@@ -192,8 +193,8 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					"texture");
 			final String texName = reader.getRootElement().getAttribute(
 					"texname");
-			String texturePath = Utils.getClasspathFilename(texture);
-			TextureManager.getInstance().loadFromFile(texturePath, texName);
+			URL textureURL = Utils.getClasspathURL(texture);
+			TextureManager.getInstance().loadFromURL(textureURL, texName);
 
 			for (final Element cur : elList) {
 				final String familyName = XMLReader.getTextValue(cur, "name");

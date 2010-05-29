@@ -19,3 +19,10 @@ repositories {
     addArtifactPattern(file('lib').absolutePath + '/[name]-[revision].[ext]')
   }
 }
+
+//doesn't seem to work :(
+task buildDist(type:Zip, dependsOn: jar) {
+  include "lib/*"
+  include "dist/*"
+  include "build/lib/*"
+}
