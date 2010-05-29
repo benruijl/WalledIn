@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/jogl.jar" sourcepath="libs/jogl-src.zip"/>
-	<classpathentry kind="lib" path="libs/gluegen-rt.jar" sourcepath="libs/jogl-src.zip"/>
-	<classpathentry kind="lib" path="libs/log4j-1.2.16.jar" sourcepath="libs/log4j-1.2.16-sources.jar"/>
-	<classpathentry kind="output" path="dist"/>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources"/>
+  <classpathentry kind="output" path="build/classes/main"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/libs/gluegen-rt-1.1.1a.jar"/>
+  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/libs/jogl-1.1.1a.jar"/>
+  <classpathentry kind="lib" path="/home/wouter/workspace/WalledInJava/libs/log4j-1.2.16.jar"/>
 </classpath>

@@ -1,0 +1,21 @@
+#!/bin/groovy
+
+JOGL = ['jogl:jogl:1.1.1a','jogl:gluegen-rt:1.1.1a']
+LOG4J = 'log4j:log4j:1.2.16'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+version='0.1'
+group='walledin'
+
+dependencies {
+  compile JOGL, LOG4J
+}
+
+repositories {
+  flatDir name: 'localRepository', dirs: 'lib'
+  localRepository {
+    addArtifactPattern(file('lib').absolutePath + '/[name]-[revision].[ext]')
+  }
+}
