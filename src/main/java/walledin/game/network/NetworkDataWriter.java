@@ -71,20 +71,17 @@ public class NetworkDataWriter {
 		buffer.clear();
 		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
-		final Set<Entity> removedEntities = entityManager.getRemoved();
-		final Set<Entity> createdEntities = entityManager.getCreated();
-		final Collection<Entity> entities = entityManager.getAll();
-		buffer.putInt(entities.size() + removedEntities.size());
-		for (final Entity entity : entities) {
-			if (createdEntities.contains(entity)) {
-				writeCreateEntityData(entity, buffer);
-			} else {
-				writeEntityData(entity, buffer);
-			}
-		}
-		for (final Entity entity : removedEntities) {
+		for (final Entity entity : entityManager.getRemoved()) {
 			writeRemoveEntityData(entity, buffer);
 		}
+		for (final Entity entity : entityManager.getCreated()) {
+			writeCreateEntityData(entity, buffer);
+		}
+		for (final Entity entity : entityManager.getAll()) {
+			writeAttributesData(entity, buffer, false);
+		}
+		// write end
+		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
 		buffer.flip();
 	}
 
@@ -99,10 +96,15 @@ public class NetworkDataWriter {
 		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
 		final Collection<Entity> entities = entityManager.getAll();
-		buffer.putInt(entities.size());
+		// create all entities
 		for (final Entity entity : entities) {
 			writeCreateEntityData(entity, buffer);
 		}
+		for (final Entity entity : entities) {
+			writeAttributesData(entity, buffer, true);
+		}
+		// write end
+		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
 		buffer.flip();
 	}
 
@@ -194,20 +196,20 @@ public class NetworkDataWriter {
 
 	private void writeCreateEntityData(final Entity entity,
 			final ByteBuffer buffer) {
-		buffer.put(NetworkConstants.CREATE_ENTITY);
+		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
 		writeStringData(entity.getName(), buffer);
 		writeStringData(entity.getFamilyName(), buffer);
-		final Map<Attribute, Object> attributes = entity.getNetworkAttributes();
-		buffer.putInt(attributes.size());
-		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
-			writeAttributeData(entry.getKey(), entry.getValue(), buffer);
-		}
 	}
 
-	private void writeEntityData(final Entity entity, final ByteBuffer buffer) {
-		buffer.put(NetworkConstants.UPDATE_ENTITY);
+	private void writeAttributesData(final Entity entity, final ByteBuffer buffer, boolean allAttributes) {
+		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES);
 		writeStringData(entity.getName(), buffer);
-		final Map<Attribute, Object> attributes = entity.getChangedAttributes();
+		final Map<Attribute, Object> attributes ;
+		if (allAttributes) {
+			attributes = entity.getNetworkAttributes();
+		} else {
+			attributes = entity.getChangedAttributes();
+		}
 		buffer.putInt(attributes.size());
 		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
 			writeAttributeData(entry.getKey(), entry.getValue(), buffer);
@@ -227,7 +229,7 @@ public class NetworkDataWriter {
 
 	private void writeRemoveEntityData(final Entity entity,
 			final ByteBuffer buffer) {
-		buffer.put(NetworkConstants.REMOVE_ENTITY);
+		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
 		writeStringData(entity.getName(), buffer);
 	}
 

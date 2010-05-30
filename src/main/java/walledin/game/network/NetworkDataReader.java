@@ -65,9 +65,11 @@ public class NetworkDataReader {
 
 	private void processGamestateMessage(final EntityManager entityManager,
 			final SocketAddress address) throws IOException {
-		final int size = buffer.getInt();
-		for (int i = 0; i < size; i++) {
-			readEntityData(entityManager, buffer);
+		boolean hasMore = true;
+		synchronized (entityManager) {
+			while (hasMore) {
+				hasMore = readEntityData(entityManager, buffer);
+			}
 		}
 		listener.receivedGamestateMessage(address);
 	}
@@ -138,25 +140,35 @@ public class NetworkDataReader {
 		}
 	}
 
-	private void readEntityData(final EntityManager entityManager,
+	/**
+	 * Read data for a entity.
+	 * 
+	 * @param entityManager
+	 * @param buffer
+	 * @return true if there is more in the list
+	 */
+	private boolean readEntityData(final EntityManager entityManager,
 			final ByteBuffer buffer) {
 		final int type = buffer.get();
+		if (type == NetworkConstants.GAMESTATE_MESSAGE_END) {
+			return false;
+		}
 		final String name = readStringData(buffer);
 		Entity entity = null;
 		switch (type) {
-		case NetworkConstants.CREATE_ENTITY:
+		case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
 			final String familyName = readStringData(buffer);
 			entity = entityManager.create(familyName, name);
-			readAttributesData(entity, buffer);
 			break;
-		case NetworkConstants.REMOVE_ENTITY:
+		case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
 			entityManager.remove(name);
 			break;
-		case NetworkConstants.UPDATE_ENTITY:
+		case NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES:
 			entity = entityManager.get(name);
 			readAttributesData(entity, buffer);
 			break;
 		}
+		return true;
 	}
 
 	private Object readItemsData(final ByteBuffer buffer) {
