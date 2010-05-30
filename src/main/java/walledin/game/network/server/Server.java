@@ -307,7 +307,7 @@ public class Server {
 		player.setAttribute(Attribute.PLAYER_NAME, name);
 		
 		/* Let the player start with a handgun */
-		Entity weapon = entityManager.create("Handgun", "hg01");
+		Entity weapon = entityManager.create("Handgun", entityManager.generateUniqueName("Handgun"));
 		player.setAttribute(Attribute.WEAPON, weapon);
 
 		final PlayerConnection con = new PlayerConnection(address, player);
