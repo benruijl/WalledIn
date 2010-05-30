@@ -35,8 +35,10 @@ import walledin.game.entity.behaviors.BackgroundRenderBehavior;
 import walledin.game.entity.behaviors.ItemRenderBehavior;
 import walledin.game.entity.behaviors.MapRenderBehavior;
 import walledin.game.entity.behaviors.PlayerAnimationBehavior;
+import walledin.game.entity.behaviors.PlayerParentBehavior;
 import walledin.game.entity.behaviors.PlayerRenderBehavior;
 import walledin.game.entity.behaviors.SpatialBehavior;
+import walledin.game.entity.behaviors.WeaponRenderBehavior;
 import walledin.util.Utils;
 import walledin.util.XMLReader;
 
@@ -54,6 +56,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 		player.addBehavior(new PlayerRenderBehavior(player));
 		// spatial behavior does the interpolation in between server messages
 		player.addBehavior(new SpatialBehavior(player));
+		player.addBehavior(new PlayerParentBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
@@ -174,6 +177,20 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 			@Override
 			public Entity create(final Entity ent) {
 				return createGameMap(ent);
+			}
+		});
+		
+		entityContructionFunctions.put("Handgun", new EntityConstructionFunction() {
+
+			@Override
+			public Entity create(final Entity ent) {
+				TexturePartManager.getInstance().createTexturePart("handgun", "game", 
+						new Rectangle(64, 132, 120, 62));
+				
+				ent.addBehavior(new SpatialBehavior(ent));
+				ent.addBehavior(new WeaponRenderBehavior(ent, "handgun", 
+						new Rectangle(0, 0, 40, 21)));
+				return ent;
 			}
 		});
 	}

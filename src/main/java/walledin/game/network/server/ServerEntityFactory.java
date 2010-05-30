@@ -34,6 +34,7 @@ import walledin.game.entity.behaviors.BulletBehavior;
 import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
+import walledin.game.entity.behaviors.PlayerParentBehavior;
 import walledin.game.entity.behaviors.SpatialBehavior;
 import walledin.game.entity.behaviors.WeaponBehavior;
 import walledin.util.XMLReader;
@@ -48,8 +49,9 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		player.setAttribute(Attribute.ORIENTATION, 1); // start looking to
 		// the right
 
-		player.addBehavior(new HealthBehavior(player, 100, 100));
+		player.addBehavior(new HealthBehavior(player, 100, 100));	
 		player.addBehavior(new PlayerControlBehaviour(player));
+		player.addBehavior(new PlayerParentBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
