@@ -127,10 +127,12 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 		networkDataManager.sendLogoutMessage(channel);
 	}
 
+	/**
+	 * server asks if client is still alive. We reply with the same message to
+	 * confirm
+	 */
 	@Override
 	public void receivedAliveMessage(final SocketAddress address) {
-		// server asks if client is still alive. We reply with the same
-		// message to confirm
 		try {
 			networkDataManager.sendAliveMessage(channel);
 		} catch (final IOException e) {
@@ -138,9 +140,11 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 		}
 	}
 
+	/**
+	 * Called when the gamestate has been updated. We only send a new input when we receive the net game state
+	 */
 	@Override
 	public void receivedGamestateMessage(final SocketAddress address) {
-		// Write input
 		try {
 			networkDataManager.sendInputMessage(channel, Input.getInstance()
 					.getKeysDown());

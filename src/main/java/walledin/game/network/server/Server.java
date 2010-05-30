@@ -183,6 +183,9 @@ public class Server implements NetworkEventListener {
 		}
 	}
 
+	/**
+	 * Process alive message for player
+	 */
 	@Override
 	public void receivedAliveMessage(final SocketAddress address) {
 		players.get(address).processAliveReceived();
@@ -221,6 +224,9 @@ public class Server implements NetworkEventListener {
 		LOG.info("new player " + name + " @ " + address);
 	}
 
+	/**
+	 * Log the player out
+	 */
 	@Override
 	public void receivedLogoutMessage(final SocketAddress address) {
 		LOG.info("Player " + address.toString() + " left the game.");
@@ -228,6 +234,9 @@ public class Server implements NetworkEventListener {
 		players.get(address).remove();
 	}
 
+	/**
+	 * Set the new input state
+	 */
 	@Override
 	public void receivedInputMessage(final SocketAddress address,
 			final Set<Integer> keys) {

@@ -41,19 +41,32 @@ import walledin.game.entity.Entity;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
 
+/**
+ * Manages all the network messages.
+ * 
+ * All the methods with send prefix write a complete message and reset the
+ * buffer. Methods with write prefix write part of a message and assume there is
+ * enough room in the buffer. The receiveMessage method reads the current
+ * datagram in the channel and processes it. The methods with process prefix
+ * process each type of message. The methods with read prefix read the data into
+ * a object or into the entity.
+ * 
+ * @author wouter
+ * 
+ */
 public class NetworkDataManager {
-	public static final byte ALIVE_MESSAGE = 3;
-	private static final int BUFFER_SIZE = 1024 * 1024;
-	public static final byte CREATE_ENTITY = 1;
-	public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
-	public static final byte GAMESTATE_MESSAGE = 4;
-	public static final byte INPUT_MESSAGE = 1;
 	private final static Logger LOG = Logger
 			.getLogger(NetworkDataManager.class);
-	public static final byte LOGIN_MESSAGE = 0;
-	public static final byte LOGOUT_MESSAGE = 2;
-	public static final byte REMOVE_ENTITY = 2;
-	public static final byte UPDATE_ENTITY = 3;
+	private static final int BUFFER_SIZE = 1024 * 1024;
+	private static final int DATAGRAM_IDENTIFICATION = 0x47583454;
+	private static final byte LOGIN_MESSAGE = 0;
+	private static final byte INPUT_MESSAGE = 1;
+	private static final byte LOGOUT_MESSAGE = 2;
+	private static final byte ALIVE_MESSAGE = 3;
+	private static final byte GAMESTATE_MESSAGE = 4;
+	private static final byte CREATE_ENTITY = 0;
+	private static final byte REMOVE_ENTITY = 1;
+	private static final byte UPDATE_ENTITY = 2;
 	private final ByteBuffer buffer;
 	private final NetworkEventListener listener;
 
@@ -199,7 +212,7 @@ public class NetworkDataManager {
 		}
 	}
 
-	public void readEntityData(final EntityManager entityManager,
+	private void readEntityData(final EntityManager entityManager,
 			final ByteBuffer buffer) {
 		final int type = buffer.get();
 		final String name = readStringData(buffer);
@@ -360,8 +373,8 @@ public class NetworkDataManager {
 		channel.write(buffer);
 	}
 
-	private void writeAttribute(final Attribute attribute, final Object data,
-			final ByteBuffer buffer) {
+	private void writeAttributeData(final Attribute attribute,
+			final Object data, final ByteBuffer buffer) {
 		// Write attribute identification
 		buffer.putShort((short) attribute.ordinal());
 		switch (attribute) {
@@ -395,7 +408,7 @@ public class NetworkDataManager {
 		}
 	}
 
-	public void writeCreateEntityData(final Entity entity,
+	private void writeCreateEntityData(final Entity entity,
 			final ByteBuffer buffer) {
 		buffer.put(CREATE_ENTITY);
 		writeStringData(entity.getName(), buffer);
@@ -403,17 +416,17 @@ public class NetworkDataManager {
 		final Map<Attribute, Object> attributes = entity.getNetworkAttributes();
 		buffer.putInt(attributes.size());
 		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
-			writeAttribute(entry.getKey(), entry.getValue(), buffer);
+			writeAttributeData(entry.getKey(), entry.getValue(), buffer);
 		}
 	}
 
-	public void writeEntityData(final Entity entity, final ByteBuffer buffer) {
+	private void writeEntityData(final Entity entity, final ByteBuffer buffer) {
 		buffer.put(UPDATE_ENTITY);
 		writeStringData(entity.getName(), buffer);
 		final Map<Attribute, Object> attributes = entity.getChangedAttributes();
 		buffer.putInt(attributes.size());
 		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
-			writeAttribute(entry.getKey(), entry.getValue(), buffer);
+			writeAttributeData(entry.getKey(), entry.getValue(), buffer);
 		}
 	}
 
@@ -428,7 +441,7 @@ public class NetworkDataManager {
 		}
 	}
 
-	public void writeRemoveEntityData(final Entity entity,
+	private void writeRemoveEntityData(final Entity entity,
 			final ByteBuffer buffer) {
 		buffer.put(REMOVE_ENTITY);
 		writeStringData(entity.getName(), buffer);
