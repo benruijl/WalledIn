@@ -6,8 +6,6 @@ item pickup logic
 class javadoc comments
 better physics and walking controls
 multiplayer delta acks				Wouter
-change the order entitys are 
-  read in network code				Wouter
 read/write attributes based on 
   class								Wouter
 comment multiplayer code			Wouter

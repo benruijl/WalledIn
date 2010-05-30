@@ -62,6 +62,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	private final DatagramChannel channel;
 	private String playerEntityName;
 	private boolean quitting = false;
+	private final Object networkRecieveLock = new Object();
 
 	public static void main(final String[] args) {
 		final Renderer renderer = new Renderer();
@@ -124,7 +125,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 		networkDataWriter.sendLoginMessage(channel, username);
 		LOG.info("starting network loop");
 		while (!quitting) {
-			// Read messages
+			// Read messages. Locks on the entitymanager to prevent renderer or update from being preformed half way
 			networkDataReader.recieveMessage(channel, entityManager);
 		}
 		// write logout message
@@ -183,15 +184,18 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	 */
 	@Override
 	public void update(final double delta) {
-		/* Update all entities */
-		entityManager.update(delta);
+		// prevent network from coming in between
+		synchronized (entityManager) {
+			/* Update all entities */
+			entityManager.update(delta);
 
-		/* Center the camera around the player */
-		if (playerEntityName != null) {
-			final Entity player = entityManager.get(playerEntityName);
-			if (player != null) {
-				renderer.centerAround((Vector2f) player
-						.getAttribute(Attribute.POSITION));
+			/* Center the camera around the player */
+			if (playerEntityName != null) {
+				final Entity player = entityManager.get(playerEntityName);
+				if (player != null) {
+					renderer.centerAround((Vector2f) player
+							.getAttribute(Attribute.POSITION));
+				}
 			}
 		}
 
@@ -212,13 +216,17 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	 */
 	@Override
 	public void draw(final Renderer renderer) {
-		entityManager.draw(renderer); // draw all entities in correct order
+		// prevent network from coming in between
+		synchronized (entityManager) {
+			entityManager.draw(renderer); // draw all entities in correct order
 
-		/* Render current FPS */
-		renderer.startHUDRendering();
-		font.renderText(renderer, "FPS: " + Float.toString(renderer.getFPS()),
-				new Vector2f(600, 20));
-		renderer.stopHUDRendering();
+			/* Render current FPS */
+			renderer.startHUDRendering();
+			font.renderText(renderer,
+					"FPS: " + Float.toString(renderer.getFPS()), new Vector2f(
+							600, 20));
+			renderer.stopHUDRendering();
+		}
 	}
 
 	/**
