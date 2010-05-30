@@ -68,7 +68,7 @@ public class Entity {
 	 * 
 	 * @return Family name
 	 */
-	public String getfFamilyName() {
+	public String getFamilyName() {
 		return familyName;
 	}
 
@@ -239,10 +239,6 @@ public class Entity {
 		for (final Behavior behavior : behaviors.values()) {
 			behavior.onUpdate(delta);
 		}
-	}
-
-	public String getFamilyName() {
-		return familyName;
 	}
 
 	/**

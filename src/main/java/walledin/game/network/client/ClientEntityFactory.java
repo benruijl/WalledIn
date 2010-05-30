@@ -148,6 +148,20 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 						}
 					});
 		}
+		
+		if (familyName.equals("handgun")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(final Entity hg) {
+							hg.addBehavior(new SpatialBehavior(hg));
+							hg.addBehavior(new WeaponRenderBehavior(hg, texPart, destRect));
+							return hg;
+
+						}
+					});
+		}
 	}
 
 	/**
@@ -177,20 +191,6 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 			@Override
 			public Entity create(final Entity ent) {
 				return createGameMap(ent);
-			}
-		});
-		
-		entityContructionFunctions.put("Handgun", new EntityConstructionFunction() {
-
-			@Override
-			public Entity create(final Entity ent) {
-				TexturePartManager.getInstance().createTexturePart("handgun", "game", 
-						new Rectangle(64, 132, 120, 62));
-				
-				ent.addBehavior(new SpatialBehavior(ent));
-				ent.addBehavior(new WeaponRenderBehavior(ent, "handgun", 
-						new Rectangle(0, 0, 40, 21)));
-				return ent;
 			}
 		});
 	}
