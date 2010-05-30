@@ -24,9 +24,14 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import walledin.game.entity.Entity;
+import walledin.game.network.client.Client;
 
 public abstract class AbstractEntityFactory implements EntityFactory {
+	private final static Logger LOG = Logger.getLogger(AbstractEntityFactory.class);
+	
 	public interface EntityConstructionFunction {
 		Entity create(final Entity ent);
 	}
@@ -46,7 +51,9 @@ public abstract class AbstractEntityFactory implements EntityFactory {
 		final Entity ent = new Entity(entityManager, familyName, entityName);
 		final EntityConstructionFunction func = entityContructionFunctions
 				.get(familyName);
+		
 		if (func == null) {
+			LOG.warn("Failed to find family name '" + familyName + "'. Returning generic entity.");
 			return ent; // return generic entity
 		}
 

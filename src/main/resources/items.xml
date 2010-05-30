@@ -37,4 +37,16 @@
         </texpart>
         <strength>10</strength>
     </item>
+    <item>
+        <name>handgun</name>
+        <width>40</width>
+        <height>21</height>
+        <texpart>
+            <name>handgun0</name>
+            <x>64</x>
+            <y>132</y>
+            <width>120</width>
+            <height>62</height>
+        </texpart>
+    </item>
 </items>

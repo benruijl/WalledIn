@@ -2,6 +2,7 @@ package walledin.game.entity.behaviors;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -17,12 +18,27 @@ public class WeaponBehavior extends Behavior {
 		this.fireLag = fireLag;
 		this.lastShot = fireLag;
 		this.canShoot = true;
-		
+
+		// can be picked up, is not owned by any player
+		setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
 		setAttribute(Attribute.ORIENTATION, Integer.valueOf(1));
 	}
 
 	@Override
 	public void onMessage(MessageType messageType, Object data) {
+		if ((Boolean) getAttribute(Attribute.COLLECTABLE)
+				&& messageType == MessageType.COLLIDED) {
+			final CollisionData colData = (CollisionData) data;
+
+			if (!colData.getCollisionEntity().getFamilyName().equals("Player"))
+				return;
+
+			// generate new weapon or use the current one?
+			colData.getCollisionEntity().setAttribute(Attribute.WEAPON,
+					getOwner());
+			setAttribute(Attribute.COLLECTABLE, Boolean.FALSE);
+		}
+
 		if (messageType == MessageType.SHOOT)
 			if (canShoot) {
 				Entity player = (Entity) data;
@@ -31,7 +47,7 @@ public class WeaponBehavior extends Behavior {
 						.getAttribute(Attribute.ORIENTATION);
 				final Vector2f playerPos = (Vector2f) player
 						.getAttribute(Attribute.POSITION);
-				
+
 				final Vector2f bulletPosition;
 
 				// slightly more complicated, since the player pos is defined as

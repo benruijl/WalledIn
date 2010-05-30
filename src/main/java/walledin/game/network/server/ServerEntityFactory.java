@@ -49,14 +49,14 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		player.setAttribute(Attribute.ORIENTATION, 1); // start looking to
 		// the right
 
-		player.addBehavior(new HealthBehavior(player, 100, 100));	
+		player.addBehavior(new HealthBehavior(player, 100, 100));
 		player.addBehavior(new PlayerControlBehaviour(player));
 		player.addBehavior(new PlayerParentBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
 				new Rectangle(0, 0, 44, 43));
-		player.setAttribute(Attribute.BOUNDING_CIRCLE, new Circle());
+		// player.setAttribute(Attribute.BOUNDING_CIRCLE, new Circle());
 
 		return player;
 	}
@@ -148,6 +148,20 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 						}
 					});
 		}
+
+		if (familyName.equals("handgun")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(final Entity hg) {
+							hg.addBehavior(new SpatialBehavior(hg));
+							hg.setAttribute(Attribute.BOUNDING_RECT, destRect);
+							hg.addBehavior(new WeaponBehavior(hg, 10));
+							return hg;
+						}
+					});
+		}
 	}
 
 	/**
@@ -170,15 +184,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 				return createGameMap(ent);
 			}
 		});
-		
-		entityContructionFunctions.put("Handgun", new EntityConstructionFunction() {
 
-			@Override
-			public Entity create(final Entity ent) {
-				ent.addBehavior(new WeaponBehavior(ent, 10));
-				return ent;
-			}
-		});
 	}
 
 	/**

@@ -218,9 +218,9 @@ public class Server implements NetworkEventListener {
 		player.setAttribute(Attribute.PLAYER_NAME, name);
 
 		/* Let the player start with a handgun */
-		final Entity weapon = entityManager.create("Handgun",
-				entityManager.generateUniqueName("Handgun"));
-		player.setAttribute(Attribute.WEAPON, weapon);
+		/*final Entity weapon = entityManager.create("handgun",
+				entityManager.generateUniqueName("handgun"));
+		player.setAttribute(Attribute.WEAPON, weapon);*/
 
 		final PlayerConnection con = new PlayerConnection(address, player);
 		players.put(address, con);

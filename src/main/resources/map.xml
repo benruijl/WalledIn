@@ -3,7 +3,8 @@
 	<name>Default</name>
 	<items>
 		<item name="hk01" type="healthkit" x="300" y="420" />
-		<item name="ak01" type="armourkit" x="360" y="420" />
+                <item name="ak01" type="armourkit" x="360" y="420" />
+                <item name="hg01" type="handgun" x ="420" y="420" respawn="yes" />
 	</items>
 	<tiles>
 		################################################################
