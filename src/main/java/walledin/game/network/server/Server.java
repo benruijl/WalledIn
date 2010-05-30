@@ -305,6 +305,10 @@ public class Server {
 		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 		player.setAttribute(Attribute.PLAYER_NAME, name);
+		
+		/* Let the player start with a handgun */
+		Entity weapon = entityManager.create("Handgun", "hg01");
+		player.setAttribute(Attribute.WEAPON, weapon);
 
 		final PlayerConnection con = new PlayerConnection(address, player);
 		players.put(address, con);

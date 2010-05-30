@@ -35,6 +35,7 @@ import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.SpatialBehavior;
+import walledin.game.entity.behaviors.WeaponBehavior;
 import walledin.util.XMLReader;
 
 public class ServerEntityFactory extends AbstractEntityFactory {
@@ -165,6 +166,15 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 			@Override
 			public Entity create(final Entity ent) {
 				return createGameMap(ent);
+			}
+		});
+		
+		entityContructionFunctions.put("Handgun", new EntityConstructionFunction() {
+
+			@Override
+			public Entity create(final Entity ent) {
+				ent.addBehavior(new WeaponBehavior(ent, 10));
+				return ent;
 			}
 		});
 	}
