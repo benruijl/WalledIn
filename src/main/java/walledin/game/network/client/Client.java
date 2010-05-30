@@ -40,7 +40,9 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.network.NetworkDataManager;
+import walledin.game.network.NetworkConstants;
+import walledin.game.network.NetworkDataReader;
+import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.util.Utils;
 
@@ -55,7 +57,8 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	private final EntityManager entityManager;
 	private final SocketAddress host;
 	private final String username;
-	private final NetworkDataManager networkDataManager;
+	private final NetworkDataWriter networkDataWriter;
+	private final NetworkDataReader networkDataReader;
 	private final DatagramChannel channel;
 	private String playerEntityName;
 	private boolean quitting = false;
@@ -87,7 +90,8 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	public Client(final Renderer renderer) throws IOException {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
-		networkDataManager = new NetworkDataManager(this);
+		networkDataWriter = new NetworkDataWriter();
+		networkDataReader = new NetworkDataReader(this);
 		quitting = false;
 		// Hardcode the host and username for now
 		host = new InetSocketAddress("localhost", PORT);
@@ -115,16 +119,16 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	private void doRun() throws IOException {
 		channel.configureBlocking(true);
 		channel.connect(host);
-		playerEntityName = networkDataManager.getAddressRepresentation(channel
+		playerEntityName = NetworkConstants.getAddressRepresentation(channel
 				.socket().getLocalSocketAddress());
-		networkDataManager.sendLoginMessage(channel, username);
+		networkDataWriter.sendLoginMessage(channel, username);
 		LOG.info("starting network loop");
 		while (!quitting) {
 			// Read messages
-			networkDataManager.recieveMessage(channel, entityManager);
+			networkDataReader.recieveMessage(channel, entityManager);
 		}
 		// write logout message
-		networkDataManager.sendLogoutMessage(channel);
+		networkDataWriter.sendLogoutMessage(channel);
 	}
 
 	/**
@@ -134,19 +138,20 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	@Override
 	public void receivedAliveMessage(final SocketAddress address) {
 		try {
-			networkDataManager.sendAliveMessage(channel);
+			networkDataWriter.sendAliveMessage(channel);
 		} catch (final IOException e) {
 			LOG.error("IO exception during network event", e);
 		}
 	}
 
 	/**
-	 * Called when the gamestate has been updated. We only send a new input when we receive the net game state
+	 * Called when the gamestate has been updated. We only send a new input when
+	 * we receive the net game state
 	 */
 	@Override
 	public void receivedGamestateMessage(final SocketAddress address) {
 		try {
-			networkDataManager.sendInputMessage(channel, Input.getInstance()
+			networkDataWriter.sendInputMessage(channel, Input.getInstance()
 					.getKeysDown());
 		} catch (final IOException e) {
 			LOG.error("IO exception during network event", e);

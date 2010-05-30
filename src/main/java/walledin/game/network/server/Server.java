@@ -39,7 +39,9 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
-import walledin.game.network.NetworkDataManager;
+import walledin.game.network.NetworkConstants;
+import walledin.game.network.NetworkDataReader;
+import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.util.Utils;
 
@@ -55,7 +57,8 @@ public class Server implements NetworkEventListener {
 	private final Map<SocketAddress, PlayerConnection> players;
 	private final Set<SocketAddress> newPlayers;
 	private boolean running;
-	private final NetworkDataManager networkManager;
+	private final NetworkDataWriter networkWriter;
+	private final NetworkDataReader networkReader;
 	private Entity map;
 	private long currentTime;
 	private final EntityManager entityManager;
@@ -66,7 +69,8 @@ public class Server implements NetworkEventListener {
 	public Server() {
 		players = new HashMap<SocketAddress, PlayerConnection>();
 		running = false;
-		networkManager = new NetworkDataManager(this);
+		networkWriter = new NetworkDataWriter();
+		networkReader = new NetworkDataReader(this);
 		newPlayers = new HashSet<SocketAddress>();
 		entityManager = new EntityManager(new ServerEntityFactory());
 	}
@@ -132,9 +136,9 @@ public class Server implements NetworkEventListener {
 		newPlayers.clear();
 		entityManager.clearChanges();
 		// Read input messages and login messages
-		boolean hasMore = networkManager.recieveMessage(channel, entityManager);
+		boolean hasMore = networkReader.recieveMessage(channel, entityManager);
 		while (hasMore) {
-			hasMore = networkManager.recieveMessage(channel, entityManager);
+			hasMore = networkReader.recieveMessage(channel, entityManager);
 		}
 
 		double delta = System.nanoTime() - currentTime;
@@ -145,7 +149,7 @@ public class Server implements NetworkEventListener {
 		// Update each player, do connection checks
 		for (final PlayerConnection p : players.values()) {
 			if (p.update()) {
-				networkManager.sendAliveMessage(channel, p.getAddress());
+				networkWriter.sendAliveMessage(channel, p.getAddress());
 			}
 
 		}
@@ -167,17 +171,16 @@ public class Server implements NetworkEventListener {
 	private void sendGamestate(final DatagramChannel channel)
 			throws IOException {
 		if (!newPlayers.isEmpty()) {
-			networkManager.prepareGamestateMessageNewPlayers(entityManager);
+			networkWriter.prepareGamestateMessageNewPlayers(entityManager);
 			for (final SocketAddress socketAddress : newPlayers) {
-				networkManager.sendCurrentMessage(channel, socketAddress);
+				networkWriter.sendCurrentMessage(channel, socketAddress);
 			}
 		}
 		if (!players.isEmpty()) {
-			networkManager
-					.prepareGamestateMessageExistingPlayers(entityManager);
+			networkWriter.prepareGamestateMessageExistingPlayers(entityManager);
 			for (final SocketAddress socketAddress : players.keySet()) {
 				if (!newPlayers.contains(socketAddress)) {
-					networkManager.sendCurrentMessage(channel, socketAddress);
+					networkWriter.sendCurrentMessage(channel, socketAddress);
 				}
 			}
 		}
@@ -207,7 +210,7 @@ public class Server implements NetworkEventListener {
 	@Override
 	public void receivedLoginMessage(final SocketAddress address,
 			final String name) {
-		final String entityName = networkManager
+		final String entityName = NetworkConstants
 				.getAddressRepresentation(address);
 		final Entity player = entityManager.create("Player", entityName);
 		newPlayers.add(address);
@@ -215,7 +218,8 @@ public class Server implements NetworkEventListener {
 		player.setAttribute(Attribute.PLAYER_NAME, name);
 
 		/* Let the player start with a handgun */
-		final Entity weapon = entityManager.create("Handgun", entityManager.generateUniqueName("Handgun"));
+		final Entity weapon = entityManager.create("Handgun",
+				entityManager.generateUniqueName("Handgun"));
 		player.setAttribute(Attribute.WEAPON, weapon);
 
 		final PlayerConnection con = new PlayerConnection(address, player);
