@@ -194,17 +194,11 @@ public class NetworkDataWriter {
 		}
 	}
 
-	private void writeCreateEntityData(final Entity entity,
-			final ByteBuffer buffer) {
-		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
-		writeStringData(entity.getName(), buffer);
-		writeStringData(entity.getFamilyName(), buffer);
-	}
-
-	private void writeAttributesData(final Entity entity, final ByteBuffer buffer, boolean allAttributes) {
+	private void writeAttributesData(final Entity entity,
+			final ByteBuffer buffer, final boolean allAttributes) {
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES);
 		writeStringData(entity.getName(), buffer);
-		final Map<Attribute, Object> attributes ;
+		final Map<Attribute, Object> attributes;
 		if (allAttributes) {
 			attributes = entity.getNetworkAttributes();
 		} else {
@@ -214,6 +208,13 @@ public class NetworkDataWriter {
 		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
 			writeAttributeData(entry.getKey(), entry.getValue(), buffer);
 		}
+	}
+
+	private void writeCreateEntityData(final Entity entity,
+			final ByteBuffer buffer) {
+		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
+		writeStringData(entity.getName(), buffer);
+		writeStringData(entity.getFamilyName(), buffer);
 	}
 
 	private void writeIntegerData(final int data, final ByteBuffer buffer) {

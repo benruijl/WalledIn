@@ -95,7 +95,8 @@ public class NetworkDataReader {
 		listener.receivedLogoutMessage(address);
 	}
 
-	private void readAttributeData(final Entity entity, final ByteBuffer buffer) {
+	private void readAttributeData(final Entity entity,
+			final ByteBuffer buffer, final EntityManager entityManager) {
 		// Write attribute identification
 		final short ord = buffer.getShort();
 		// FIXME dont user ordinal
@@ -118,10 +119,10 @@ public class NetworkDataReader {
 			data = readStringData(buffer);
 			break;
 		case ITEM_LIST:
-			data = readItemsData(buffer);
+			data = readEntityListData(buffer, entityManager);
 			break;
 		case TILES:
-			data = readTilesData(buffer);
+			data = readTileListData(buffer);
 			break;
 		case POSITION:
 			data = readVector2fData(buffer);
@@ -133,10 +134,11 @@ public class NetworkDataReader {
 		entity.setAttribute(attribute, data);
 	}
 
-	private void readAttributesData(final Entity entity, final ByteBuffer buffer) {
+	private void readAttributesData(final Entity entity,
+			final ByteBuffer buffer, final EntityManager entityManager) {
 		final int num = buffer.getInt();
 		for (int i = 0; i < num; i++) {
-			readAttributeData(entity, buffer);
+			readAttributeData(entity, buffer, entityManager);
 		}
 	}
 
@@ -165,20 +167,20 @@ public class NetworkDataReader {
 			break;
 		case NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES:
 			entity = entityManager.get(name);
-			readAttributesData(entity, buffer);
+			readAttributesData(entity, buffer, entityManager);
 			break;
 		}
 		return true;
 	}
 
-	private Object readItemsData(final ByteBuffer buffer) {
+	private Object readEntityListData(final ByteBuffer buffer,
+			final EntityManager entityManager) {
 		final int size = buffer.getInt();
 		final List<Entity> entities = new ArrayList<Entity>();
 		for (int i = 0; i < size; i++) {
 			final String name = readStringData(buffer);
-			// how?
-			// Entity entity = entityManager.get(name);
-			// entities.add(entity);
+			final Entity entity = entityManager.get(name);
+			entities.add(entity);
 		}
 		return entities;
 	}
@@ -190,7 +192,7 @@ public class NetworkDataReader {
 		return new String(bytes);
 	}
 
-	private Object readTilesData(final ByteBuffer buffer) {
+	private Object readTileListData(final ByteBuffer buffer) {
 		final int size = buffer.getInt();
 		final List<Tile> tiles = new ArrayList<Tile>();
 		for (int i = 0; i < size; i++) {

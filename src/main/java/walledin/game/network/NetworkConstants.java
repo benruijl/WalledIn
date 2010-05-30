@@ -15,7 +15,7 @@ public class NetworkConstants {
 	public static final byte GAMESTATE_MESSAGE_REMOVE_ENTITY = 1;
 	public static final byte GAMESTATE_MESSAGE_ATTRIBUTES = 2;
 	public static final byte GAMESTATE_MESSAGE_END = 3;
-	
+
 	public static String getAddressRepresentation(final SocketAddress address) {
 		final InetSocketAddress inetAddr = (InetSocketAddress) address;
 		return inetAddr.getAddress().getHostAddress() + "@"
