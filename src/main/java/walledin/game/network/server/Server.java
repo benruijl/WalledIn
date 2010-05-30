@@ -23,10 +23,8 @@ package walledin.game.network.server;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,22 +40,21 @@ import walledin.game.entity.Entity;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.network.NetworkDataManager;
+import walledin.game.network.NetworkEventListener;
 import walledin.util.Utils;
 
 /**
- * This class provides the server for the game. All gamestate updates happen here.
- * Clients can register to this class to be added to the game.
- *
+ * This class provides the server for the game. All gamestate updates happen
+ * here. Clients can register to this class to be added to the game.
+ * 
  */
-public class Server {
+public class Server implements NetworkEventListener {
 	private static final Logger LOG = Logger.getLogger(Server.class);
 	private static final int PORT = 1234;
-	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int UPDATES_PER_SECOND = 30;
 	private final Map<SocketAddress, PlayerConnection> players;
 	private final Set<SocketAddress> newPlayers;
 	private boolean running;
-	private final ByteBuffer buffer;
 	private final NetworkDataManager networkManager;
 	private Entity map;
 	private long currentTime;
@@ -69,8 +66,7 @@ public class Server {
 	public Server() {
 		players = new HashMap<SocketAddress, PlayerConnection>();
 		running = false;
-		buffer = ByteBuffer.allocate(BUFFER_SIZE);
-		networkManager = new NetworkDataManager();
+		networkManager = new NetworkDataManager(this);
 		newPlayers = new HashSet<SocketAddress>();
 		entityManager = new EntityManager(new ServerEntityFactory());
 	}
@@ -82,8 +78,12 @@ public class Server {
 	 *            Command line arguments
 	 * @throws IOException
 	 */
-	public static void main(final String[] args) throws IOException {
-		new Server().run();
+	public static void main(final String[] args) {
+		try {
+			new Server().run();
+		} catch (final IOException e) {
+			LOG.fatal("IOException during network loop", e);
+		}
 	}
 
 	/**
@@ -132,21 +132,28 @@ public class Server {
 		newPlayers.clear();
 		entityManager.clearChanges();
 		// Read input messages and login messages
-		readDatagrams(channel);
+		boolean hasMore = networkManager.recieveMessage(channel, entityManager);
+		while (hasMore) {
+			hasMore = networkManager.recieveMessage(channel, entityManager);
+		}
+
 		double delta = System.nanoTime() - currentTime;
 		currentTime = System.nanoTime();
 		// convert to sec
 		delta /= 1000000000;
 
 		// Update each player, do connection checks
-		for (PlayerConnection p : players.values()) {
-			p.update(channel);
+		for (final PlayerConnection p : players.values()) {
+			if (p.update()) {
+				networkManager.sendAliveMessage(channel, p.getAddress());
+			}
+
 		}
 
 		// Update game state
 		update(delta);
 		// Write to all the clients
-		writeDatagrams(channel);
+		sendGamestate(channel);
 	}
 
 	/**
@@ -157,137 +164,33 @@ public class Server {
 	 *            The channel to send to
 	 * @throws IOException
 	 */
-	private void writeDatagrams(final DatagramChannel channel)
+	private void sendGamestate(final DatagramChannel channel)
 			throws IOException {
 		if (!newPlayers.isEmpty()) {
-			writeDatagramForNewPlayers();
-			buffer.flip();
+			networkManager.prepareGamestateMessageNewPlayers(entityManager);
 			for (final SocketAddress socketAddress : newPlayers) {
-				channel.send(buffer, socketAddress);
-				buffer.rewind();
+				networkManager.sendCurrentMessage(channel, socketAddress);
 			}
 		}
 		if (!players.isEmpty()) {
-			writeDatagramForExistingPlayers();
-			buffer.flip();
+			networkManager
+					.prepareGamestateMessageExistingPlayers(entityManager);
 			for (final SocketAddress socketAddress : players.keySet()) {
 				if (!newPlayers.contains(socketAddress)) {
-					channel.send(buffer, socketAddress);
-					buffer.rewind();
+					networkManager.sendCurrentMessage(channel, socketAddress);
 				}
 			}
 		}
 	}
 
-	/**
-	 * This function calculates the changes of the current gamestate to the
-	 * previous gamestate and puts this delta gamestate in a buffer.
-	 * 
-	 * @see Server#writeDatagramForNewPlayers()
-	 */
-	private void writeDatagramForExistingPlayers() {
-		buffer.limit(BUFFER_SIZE);
-		buffer.rewind();
-		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkDataManager.GAMESTATE_MESSAGE);
-		final Set<Entity> removedEntities = entityManager.getRemoved();
-		final Set<Entity> createdEntities = entityManager.getCreated();
-		final Collection<Entity> entities = entityManager.getAll();
-		buffer.putInt(entities.size() + removedEntities.size());
-		for (final Entity entity : entities) {
-			if (createdEntities.contains(entity)) {
-				networkManager.writeCreateEntity(entity, buffer);
-			} else {
-				networkManager.writeEntity(entity, buffer);
-			}
-		}
-		for (final Entity entity : removedEntities) {
-			networkManager.writeRemoveEntity(entity, buffer);
-		}
+	@Override
+	public void receivedAliveMessage(final SocketAddress address) {
+		players.get(address).processAliveReceived();
 	}
 
-	/**
-	 * This function writes the entire current gamestate to a buffer. Used for
-	 * new players only. Current players use the
-	 * <code>writeDatagramForExistingPlayers</code> function.
-	 * 
-	 * @see Server#writeDatagramForExistingPlayers()
-	 * 
-	 */
-	private void writeDatagramForNewPlayers() {
-		buffer.limit(BUFFER_SIZE);
-		buffer.rewind();
-		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkDataManager.GAMESTATE_MESSAGE);
-		final Collection<Entity> entities = entityManager.getAll();
-		buffer.putInt(entities.size());
-		for (final Entity entity : entities) {
-			networkManager.writeCreateEntity(entity, buffer);
-		}
-	}
-
-	/**
-	 * Read datagrams from a channel.
-	 * 
-	 * @param channel
-	 *            Channel to read from
-	 * @throws IOException
-	 */
-	private void readDatagrams(final DatagramChannel channel)
-			throws IOException {
-		buffer.limit(BUFFER_SIZE);
-		buffer.rewind();
-		SocketAddress address = channel.receive(buffer);
-		buffer.flip();
-		while (address != null) {
-			processDatagram(address);
-			buffer.limit(BUFFER_SIZE);
-			buffer.rewind();
-			address = channel.receive(buffer);
-			buffer.flip();
-		}
-	}
-
-	/**
-	 * Processes datagrams received from the client. Parses login, alive, logout
-	 * and input messages.
-	 * 
-	 * @param address
-	 *            Address the message is from
-	 */
-	private void processDatagram(final SocketAddress address) {
-		final int ident = buffer.getInt();
-		if (ident == NetworkDataManager.DATAGRAM_IDENTIFICATION) {
-			final byte type = buffer.get();
-			switch (type) {
-			case NetworkDataManager.LOGIN_MESSAGE:
-				final int nameLength = buffer.getInt();
-				final byte[] nameBytes = new byte[nameLength];
-				buffer.get(nameBytes);
-				final String name = new String(nameBytes);
-				createPlayer(name, address);
-				break;
-			case NetworkDataManager.ALIVE_MESSAGE:
-				players.get(address).isAliveReceived();
-				break;
-			case NetworkDataManager.LOGOUT_MESSAGE:
-				LOG.info("Player " + address.toString() + " left the game.");
-				newPlayers.remove(address);
-				players.get(address).remove();
-				break;
-			case NetworkDataManager.INPUT_MESSAGE:
-				final short numKeys = buffer.getShort();
-				final Set<Integer> keys = new HashSet<Integer>();
-				for (int i = 0; i < numKeys; i++) {
-					keys.add((int) buffer.getShort());
-				}
-				final Entity player = players.get(address).getPlayer();
-				if (player != null) {
-					player.setAttribute(Attribute.KEYS_DOWN, keys);
-				}
-				break;
-			}
-		}
+	@Override
+	public void receivedGamestateMessage(final SocketAddress address) {
+		// ignore .. should not happen
 	}
 
 	/**
@@ -298,22 +201,40 @@ public class Server {
 	 * @param address
 	 *            Player socket address
 	 */
-	private void createPlayer(final String name, final SocketAddress address) {
+	@Override
+	public void receivedLoginMessage(final SocketAddress address,
+			final String name) {
 		final String entityName = networkManager
 				.getAddressRepresentation(address);
 		final Entity player = entityManager.create("Player", entityName);
 		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 		player.setAttribute(Attribute.PLAYER_NAME, name);
-		
+
 		/* Let the player start with a handgun */
-		Entity weapon = entityManager.create("Handgun", "hg01");
+		final Entity weapon = entityManager.create("Handgun", "hg01");
 		player.setAttribute(Attribute.WEAPON, weapon);
 
 		final PlayerConnection con = new PlayerConnection(address, player);
 		players.put(address, con);
 
 		LOG.info("new player " + name + " @ " + address);
+	}
+
+	@Override
+	public void receivedLogoutMessage(final SocketAddress address) {
+		LOG.info("Player " + address.toString() + " left the game.");
+		newPlayers.remove(address);
+		players.get(address).remove();
+	}
+
+	@Override
+	public void receivedInputMessage(final SocketAddress address,
+			final Set<Integer> keys) {
+		final Entity player = players.get(address).getPlayer();
+		if (player != null) {
+			player.setAttribute(Attribute.KEYS_DOWN, keys);
+		}
 	}
 
 	/**
@@ -325,15 +246,17 @@ public class Server {
 	 */
 	public void update(final double delta) {
 		/* Check if players left the game, and if so remove them */
-		List<SocketAddress> remList = new ArrayList<SocketAddress>();
-		for (PlayerConnection con : players.values())
+		final List<SocketAddress> remList = new ArrayList<SocketAddress>();
+		for (final PlayerConnection con : players.values()) {
 			if (con.getAlive() == false) {
 				entityManager.remove(con.getPlayer().getName());
 				remList.add(con.getAddress());
 			}
+		}
 
-		for (SocketAddress sok : remList)
+		for (final SocketAddress sok : remList) {
 			players.remove(sok);
+		}
 
 		/* Update all entities */
 		entityManager.update(delta);
@@ -343,7 +266,8 @@ public class Server {
 	}
 
 	/**
-	 * Initializes the game. It reads the default map and initializes the entity manager.
+	 * Initializes the game. It reads the default map and initializes the entity
+	 * manager.
 	 */
 	public void init() {
 		// initialize entity manager

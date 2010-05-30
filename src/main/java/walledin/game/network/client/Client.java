@@ -24,7 +24,6 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Set;
 
@@ -42,28 +41,34 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.network.NetworkDataManager;
+import walledin.game.network.NetworkEventListener;
 import walledin.util.Utils;
 
-public class Client implements RenderListener, Runnable {
+public class Client implements RenderListener, NetworkEventListener, Runnable {
 	private final static Logger LOG = Logger.getLogger(Client.class);
 	private static final int PORT = 1234;
-	private static final int BUFFER_SIZE = 1024 * 1024;
 	private static final int TILE_SIZE = 64;
 	private static final int TILES_PER_LINE = 16;
-	private final ByteBuffer buffer;
+
 	private Font font;
 	private final Renderer renderer; // current renderer
 	private final EntityManager entityManager;
 	private final SocketAddress host;
 	private final String username;
-	private final NetworkDataManager networkManager;
+	private final NetworkDataManager networkDataManager;
+	private final DatagramChannel channel;
 	private String playerEntityName;
 	private boolean quitting = false;
 
 	public static void main(final String[] args) {
-		LOG.info(System.getProperty("java.library.path"));
 		final Renderer renderer = new Renderer();
-		final Client client = new Client(renderer);
+		Client client;
+		try {
+			client = new Client(renderer);
+		} catch (final IOException e) {
+			LOG.fatal("IO exception while creation of client", e);
+			return;
+		}
 		LOG.info("initializing renderer");
 		renderer.initialize("WalledIn", 800, 600, false);
 		renderer.addListener(client);
@@ -77,123 +82,96 @@ public class Client implements RenderListener, Runnable {
 	 * 
 	 * @param renderer
 	 *            Current renderer
+	 * @throws IOException
 	 */
-	public Client(final Renderer renderer) {
+	public Client(final Renderer renderer) throws IOException {
 		this.renderer = renderer;
 		entityManager = new EntityManager(new ClientEntityFactory());
-		networkManager = new NetworkDataManager();
+		networkDataManager = new NetworkDataManager(this);
 		quitting = false;
-		
-		buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		// Hardcode the host and username for now
 		host = new InetSocketAddress("localhost", PORT);
 		username = System.getProperty("user.name");
+		channel = DatagramChannel.open();
 	}
 
+	/**
+	 * Run network code
+	 */
 	@Override
 	public void run() {
 		try {
 			doRun();
 		} catch (final IOException e) {
-			e.printStackTrace();
+			LOG.fatal("IOException during network loop", e);
 		}
 	}
 
+	/**
+	 * Do the actual network loop.
+	 * 
+	 * @throws IOException
+	 */
 	private void doRun() throws IOException {
-		final DatagramChannel channel = DatagramChannel.open();
 		channel.configureBlocking(true);
 		channel.connect(host);
-		playerEntityName = networkManager.getAddressRepresentation(channel
+		playerEntityName = networkDataManager.getAddressRepresentation(channel
 				.socket().getLocalSocketAddress());
-		writeLogin(channel);
+		networkDataManager.sendLoginMessage(channel, username);
 		LOG.info("starting network loop");
 		while (!quitting) {
-			// Read gamestate
-			readDatagrams(channel);
-			// Write input
-			writeInput(channel);
+			// Read messages
+			networkDataManager.recieveMessage(channel, entityManager);
+		}
+		// write logout message
+		networkDataManager.sendLogoutMessage(channel);
+	}
 
-			// check if the client is quitting
-			checkQuit(channel);
+	@Override
+	public void receivedAliveMessage(final SocketAddress address) {
+		// server asks if client is still alive. We reply with the same
+		// message to confirm
+		try {
+			networkDataManager.sendAliveMessage(channel);
+		} catch (final IOException e) {
+			LOG.error("IO exception during network event", e);
 		}
 	}
 
-	private void checkQuit(final DatagramChannel channel) throws IOException {
-		if (quitting) {
-			// send the logout message
-			ByteBuffer buf = ByteBuffer.allocate(6);
-			buf.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
-			buf.put(NetworkDataManager.LOGOUT_MESSAGE);
-			buf.flip();
-			channel.write(buf);
+	@Override
+	public void receivedGamestateMessage(final SocketAddress address) {
+		// Write input
+		try {
+			networkDataManager.sendInputMessage(channel, Input.getInstance()
+					.getKeysDown());
+		} catch (final IOException e) {
+			LOG.error("IO exception during network event", e);
 		}
 	}
 
-	private void writeInput(final DatagramChannel channel) throws IOException {
-		buffer.limit(BUFFER_SIZE);
-		buffer.rewind();
-		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkDataManager.INPUT_MESSAGE);
-		final Set<Integer> keysDown = Input.getInstance().getKeysDown();
-		buffer.putShort((short) keysDown.size());
-		for (final int key : keysDown) {
-			buffer.putShort((short) key);
-		}
-		buffer.flip();
-		channel.write(buffer);
+	@Override
+	public void receivedLoginMessage(final SocketAddress address,
+			final String name) {
+		// ignore
 	}
 
-	private void readDatagrams(final DatagramChannel channel)
-			throws IOException {
-		int ident = -1;
-		while (ident != NetworkDataManager.DATAGRAM_IDENTIFICATION) {
-			buffer.limit(BUFFER_SIZE);
-			buffer.rewind();
-			channel.read(buffer);
-			buffer.flip();
-			ident = buffer.getInt();
-		}
-
-		final byte type = buffer.get();
-
-		switch (type) {
-		// server asks if client is still alive. We reply with the same message
-		// to confirm
-		case NetworkDataManager.ALIVE_MESSAGE:
-			ByteBuffer buf = ByteBuffer.allocate(6);
-			buf.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
-			buf.put(NetworkDataManager.ALIVE_MESSAGE);
-			buf.flip();
-			channel.write(buf);
-			break;
-		case NetworkDataManager.GAMESTATE_MESSAGE:
-			processGamestate();
-			break;
-		default:
-			LOG.warn("Received unhandled message");
-			break;
-		}
-
+	@Override
+	public void receivedLogoutMessage(final SocketAddress address) {
+		// ignore
 	}
 
-	private void processGamestate() throws IOException {
-		final int size = buffer.getInt();
-		for (int i = 0; i < size; i++) {
-			networkManager.readEntity(entityManager, buffer);
-		}
+	@Override
+	public void receivedInputMessage(final SocketAddress address,
+			final Set<Integer> keys) {
+		// ignore
 	}
 
-	private void writeLogin(final DatagramChannel channel) throws IOException {
-		buffer.limit(BUFFER_SIZE);
-		buffer.rewind();
-		buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkDataManager.LOGIN_MESSAGE);
-		buffer.putInt(username.length());
-		buffer.put(username.getBytes());
-		buffer.flip();
-		channel.write(buffer);
-	}
-
+	/**
+	 * Update the current game state
+	 * 
+	 * @param delta
+	 *            time since last update in seconds
+	 */
 	@Override
 	public void update(final double delta) {
 		/* Update all entities */
@@ -220,6 +198,9 @@ public class Client implements RenderListener, Runnable {
 		}
 	}
 
+	/**
+	 * Render the current game state
+	 */
 	@Override
 	public void draw(final Renderer renderer) {
 		entityManager.draw(renderer); // draw all entities in correct order
@@ -241,7 +222,7 @@ public class Client implements RenderListener, Runnable {
 		createTextureParts();
 
 		font = new Font(); // load font
-		
+
 		font.readFromStream(Utils.getClasspathURL("arial20.font"));
 
 		// initialize entity manager
@@ -278,43 +259,69 @@ public class Client implements RenderListener, Runnable {
 		manager.createTexturePart("player_foot", "player", new Rectangle(192,
 				32, 96, 32));
 		manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
-		manager.createTexturePart("tile_empty", "tiles",
+		manager.createTexturePart(
+				"tile_empty",
+				"tiles",
 				createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_filled", "tiles",
+		manager.createTexturePart(
+				"tile_filled",
+				"tiles",
 				createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_top_grass_end_left", "tiles",
+		manager.createTexturePart(
+				"tile_top_grass_end_left",
+				"tiles",
 				createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_top_grass_end_right", "tiles",
+		manager.createTexturePart(
+				"tile_top_grass_end_right",
+				"tiles",
 				createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_top_grass", "tiles",
+		manager.createTexturePart(
+				"tile_top_grass",
+				"tiles",
 				createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_left_grass", "tiles",
+		manager.createTexturePart(
+				"tile_left_grass",
+				"tiles",
 				createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_left_mud", "tiles",
+		manager.createTexturePart(
+				"tile_left_mud",
+				"tiles",
 				createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_right_mud", "tiles",
+		manager.createTexturePart(
+				"tile_right_mud",
+				"tiles",
 				createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_top_left_grass", "tiles",
+		manager.createTexturePart(
+				"tile_top_left_grass",
+				"tiles",
 				createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_bottom_left_mud", "tiles",
+		manager.createTexturePart(
+				"tile_bottom_left_mud",
+				"tiles",
 				createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_bottom_right_mud", "tiles",
+		manager.createTexturePart(
+				"tile_bottom_right_mud",
+				"tiles",
 				createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_top_left_grass_end", "tiles",
+		manager.createTexturePart(
+				"tile_top_left_grass_end",
+				"tiles",
 				createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
-		manager.createTexturePart("tile_bottom_mud", "tiles",
+		manager.createTexturePart(
+				"tile_bottom_mud",
+				"tiles",
 				createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
 						TILE_SIZE));
 	}
@@ -327,8 +334,7 @@ public class Client implements RenderListener, Runnable {
 
 	@Override
 	public void dispose() {
-		if (!quitting)
-		{
+		if (!quitting) {
 			quitting = true;
 			renderer.dispose();
 		}

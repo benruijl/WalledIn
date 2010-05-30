@@ -1,18 +1,34 @@
+/*  Copyright 2010 Ben Ruijl, Wouter Smeenk
+
+This file is part of Walled In.
+
+Walled In is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3, or (at your option)
+any later version.
+
+Walled In is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Walled In; see the file LICENSE.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+ */
 package walledin.game.network.server;
 
-import java.io.IOException;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 
 import org.apache.log4j.Logger;
 
 import walledin.game.entity.Entity;
-import walledin.game.network.NetworkDataManager;
 
 public class PlayerConnection {
 	private static final Logger LOG = Logger.getLogger(PlayerConnection.class);
-	private Entity player;
+	private final Entity player;
 	private final SocketAddress address;
 
 	private final long CHECK_TIME = 1000;
@@ -21,11 +37,11 @@ public class PlayerConnection {
 	private boolean waitingForAck;
 	private boolean alive;
 
-	public PlayerConnection(SocketAddress address, Entity player) {
+	public PlayerConnection(final SocketAddress address, final Entity player) {
 		super();
 		this.player = player;
 		this.address = address;
-		
+
 		alive = true;
 		prevTime = System.currentTimeMillis();
 	}
@@ -33,56 +49,47 @@ public class PlayerConnection {
 	public Entity getPlayer() {
 		return player;
 	}
-	
+
 	public SocketAddress getAddress() {
 		return address;
 	}
 
-	public void isAliveReceived() {
+	public void processAliveReceived() {
 		waitingForAck = false;
 	}
 
 	public boolean getAlive() {
 		return alive;
 	}
-	
-	public void setAlive(boolean alive) {
+
+	public void setAlive(final boolean alive) {
 		this.alive = alive;
-	} 
-	
-	public void remove()
-	{
+	}
+
+	public void remove() {
 		alive = false;
 	}
 
-	public void update(final DatagramChannel channel) {
+	public boolean update() {
 		final long curTime = System.currentTimeMillis();
 
-		if (!alive)
-			return;
+		if (!alive) {
+			return false;
+		}
 
-		if (waitingForAck && (curTime - prevTime > WAIT_TIME)) {
+		if (waitingForAck && curTime - prevTime > WAIT_TIME) {
 			LOG.info("Connection lost to client " + address.toString());
 			alive = false;
-			return;
+			return false;
 		}
 
 		if (curTime - prevTime > CHECK_TIME) {
 			prevTime = curTime;
 			waitingForAck = true;
+			return true;
 
-			try {
-				ByteBuffer buffer = ByteBuffer.allocate(6); // FIXME
-				buffer.putInt(NetworkDataManager.DATAGRAM_IDENTIFICATION);
-				buffer.put(NetworkDataManager.ALIVE_MESSAGE);
-				buffer.flip();
-				channel.send(buffer, address);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
-
+		return false;
 	}
 
 }
