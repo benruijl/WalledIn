@@ -17,6 +17,8 @@ public class WeaponBehavior extends Behavior {
 		this.fireLag = fireLag;
 		this.lastShot = fireLag;
 		this.canShoot = true;
+		
+		setAttribute(Attribute.ORIENTATION, Integer.valueOf(1));
 	}
 
 	@Override
