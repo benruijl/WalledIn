@@ -32,7 +32,8 @@ import walledin.game.entity.Entity;
 /**
  * Change set of the game state. A change set contains all the changes between
  * its version and the version of the current game state. The server is
- * responsible for keeping change sets up to date.
+ * responsible for keeping change sets up to date. Entrys in created should never be in removed.
+ * Entrys in removed should not be in created or updated.
  * 
  * @author Wouter Smeenk
  * 
@@ -82,21 +83,33 @@ public class ChangeSet {
 	 * @param changeSet
 	 */
 	public void merge(ChangeSet changeSet) {
+		// Add created to our created
 		created.putAll(changeSet.created);
+		// Add removed to our remved
 		removed.addAll(changeSet.removed);
 		
+		// Add updates to our updates
 		for (Entry<String, Set<Attribute>> entry: changeSet.updated.entrySet()) {
 			String name = entry.getKey();
 			Set<Attribute> ourChanges = updated.get(name);
 			if (ourChanges == null) {
+				// Create new changes if we done have it yet
 				ourChanges = new HashSet<Attribute>();
 			}
+			// Add changes to our changes
 			ourChanges.addAll(entry.getValue());
 			updated.put(name, ourChanges);
 		}
 		
+		// Remove removed entities from our created entities and updated entities
 		for (String name: changeSet.removed) {
-			
+			created.remove(name);
+			updated.remove(name);
+		}
+		
+		// Remove created entities from our removed entities
+		for (String name: changeSet.created.keySet()) {
+			removed.remove(name);
 		}
 	}
 
