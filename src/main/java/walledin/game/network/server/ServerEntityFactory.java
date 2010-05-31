@@ -72,6 +72,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createBullet(final Rectangle destRect, final Element el,
 			final Entity bl) {
 		bl.addBehavior(new SpatialBehavior(bl));
+		bl.addBehavior(new PhysicsBehavior(bl));
 		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		bl.addBehavior(new BulletBehavior(bl));
@@ -90,7 +91,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createHealthKit(final Rectangle destRect, final Element el,
 			final Entity hk) {
 		hk.addBehavior(new SpatialBehavior(hk));
-
+		hk.addBehavior(new PhysicsBehavior(hk));
 		hk.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		// read extra data
@@ -160,6 +161,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 						@Override
 						public Entity create(final Entity hg) {
 							hg.addBehavior(new SpatialBehavior(hg));
+							//hg.addBehavior(new PhysicsBehavior(hg));
 							hg.setAttribute(Attribute.BOUNDING_RECT, destRect);
 							hg.addBehavior(new WeaponBehavior(hg, 10));
 							return hg;

@@ -77,14 +77,14 @@ public class WeaponBehavior extends Behavior {
 				else
 					bulletPosition = playerPos.add(new Vector2f(0.0f, 20.0f));
 
-				final Vector2f bulletVelocity = new Vector2f(or * 400.0f, 0);
+				final Vector2f bulletAcceleration = new Vector2f(or * 30000.0f, 0);
 
 				final EntityManager manager = getEntityManager();
 				final Entity bullet = manager.create("bullet", manager
 						.generateUniqueName("bullet"));
 
 				bullet.setAttribute(Attribute.POSITION, bulletPosition);
-				bullet.setAttribute(Attribute.VELOCITY, bulletVelocity);
+				bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
 
 				canShoot = false;
 				lastShot = fireLag;
