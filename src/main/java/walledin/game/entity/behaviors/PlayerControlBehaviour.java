@@ -32,8 +32,8 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
-	private static final float MOVE_SPEED = 0.0012f;
-	private static final float JUMP_SPEED = 0.0032f;
+	private static final float MOVE_SPEED = 25.0f;
+	private static final float JUMP_SPEED = 0.32f;
 	private boolean canJump;
 	private Set<Integer> keysDown;
 
@@ -102,7 +102,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 		//velocity = velocity.add(new Vector2f(x, y));
 	
 
-		getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, 0.0f));
+		getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
 		
 		//setAttribute(Attribute.VELOCITY, velocity);
 		super.onUpdate(delta);
