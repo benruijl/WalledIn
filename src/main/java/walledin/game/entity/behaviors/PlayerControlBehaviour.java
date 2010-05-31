@@ -32,8 +32,8 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
-	private static final float MOVE_SPEED = 25.0f;
-	private static final float JUMP_SPEED = 0.32f;
+	private static final float MOVE_SPEED = 240.0f;
+	private static final float JUMP_SPEED = 8000.0f;
 	private boolean canJump;
 	private Set<Integer> keysDown;
 

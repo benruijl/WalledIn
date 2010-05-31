@@ -37,7 +37,7 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 	public PlayerAnimationBehavior(final Entity owner) {
 		super(owner);
 		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
-		animSpeed = 0.6f;
+		animSpeed = 0.002f;
 	}
 
 	@Override
@@ -54,8 +54,8 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 
 	@Override
 	public void onUpdate(final double delta) {
-		if (velocity.getX() != 0) {
-			walkAnimFrame += animSpeed;
+		if (Math.abs(velocity.getX()) > 0.5f) {
+			walkAnimFrame += animSpeed * velocity.getX();
 			walkAnimFrame %= 2 * Math.PI;
 			setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
 		}

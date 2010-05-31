@@ -102,6 +102,7 @@ public class Server implements NetworkEventListener {
 		channel.socket().bind(new InetSocketAddress(PORT));
 		channel.configureBlocking(false);
 
+		currentTime = System.nanoTime(); // initialize
 		running = true;
 		LOG.info("starting main loop");
 		while (running) {

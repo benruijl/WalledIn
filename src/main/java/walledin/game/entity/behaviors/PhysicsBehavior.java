@@ -11,10 +11,10 @@ import walledin.game.network.server.Server;
 
 public class PhysicsBehavior extends Behavior {
 	private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-	private final Vector2f gravity = new Vector2f(0, 50.0f); // acceleration of
+	private final Vector2f gravity = new Vector2f(0, 300.0f); // acceleration of
 																// gravity
 	private Vector2f acceleration = new Vector2f(0, 0);
-	private float frictionCoefficient = 0.05f; // part of the velocity that is
+	private float frictionCoefficient = 0.02f; // part of the velocity that is
 												// kept
 
 	public PhysicsBehavior(Entity owner) {
@@ -37,10 +37,7 @@ public class PhysicsBehavior extends Behavior {
 
 		acceleration = acceleration.add(gravity);
 
-		if (delta > 1.0f) // FIXME: hack
-			delta = 1.0f;
-
-		// add friction
+    	// add friction
 		acceleration = acceleration.add(new Vector2f(-Math.signum(velCur.x)
 				* velCur.x * velCur.x * frictionCoefficient, -Math.signum(velCur.y)
 				* velCur.y * velCur.y * frictionCoefficient));
