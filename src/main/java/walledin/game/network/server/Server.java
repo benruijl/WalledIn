@@ -53,8 +53,8 @@ import walledin.util.Utils;
 public class Server implements NetworkEventListener {
 	private static final Logger LOG = Logger.getLogger(Server.class);
 	private static final int PORT = 1234;
-	private static final int UPDATES_PER_SECOND = 30;
-	private static final int STORED_CHANGESETS = UPDATES_PER_SECOND*2;
+	private static final int UPDATES_PER_SECOND = 60;
+	private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
 	private final Map<SocketAddress, PlayerConnection> players;
 	private boolean running;
 	private final NetworkDataWriter networkWriter;
@@ -172,13 +172,13 @@ public class Server implements NetworkEventListener {
 		changeSets.add(currentChangeSet);
 		changeSetLookup.put(currentChangeSet.getVersion(), currentChangeSet);
 		Set<SocketAddress> removedPlayers = new HashSet<SocketAddress>();
-		for (PlayerConnection connection: players.values()) {
+		for (PlayerConnection connection : players.values()) {
 			if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
 				removedPlayers.add(connection.getAddress());
 				LOG.info("Connection lost to client " + connection.getAddress());
 			}
 		}
-		for (SocketAddress address: removedPlayers) {
+		for (SocketAddress address : removedPlayers) {
 			players.remove(address);
 		}
 	}
@@ -199,9 +199,14 @@ public class Server implements NetworkEventListener {
 			if (connection.isNew()) {
 				// Set to first version
 				sendVersion = 0;
-				connection.setNew();
 			}
 			ChangeSet changeSet = changeSetLookup.get(sendVersion);
+			if (LOG.isTraceEnabled()) {
+				LOG.trace("currentVersion: " + currentVersion + " changeset: "
+						+ changeSet.getVersion() + " " + changeSet.getCreated()
+						+ " " + changeSet.getRemoved() + " "
+						+ changeSet.getUpdated());
+			}
 			networkWriter.sendGamestateMessage(channel,
 					connection.getAddress(), entityManager, changeSet,
 					currentVersion);
@@ -213,8 +218,10 @@ public class Server implements NetworkEventListener {
 	}
 
 	@Override
-	public void receivedGamestateMessage(final SocketAddress address, int version) {
+	public boolean receivedGamestateMessage(final SocketAddress address,
+			int version) {
 		// ignore .. should not happen
+		return false;
 	}
 
 	/**
@@ -241,7 +248,8 @@ public class Server implements NetworkEventListener {
 		 * player.setAttribute(Attribute.WEAPON, weapon);
 		 */
 
-		final PlayerConnection con = new PlayerConnection(address, player, entityManager.getCurrentVersion());
+		final PlayerConnection con = new PlayerConnection(address, player,
+				entityManager.getCurrentVersion());
 		players.put(address, con);
 
 		LOG.info("new player " + name + " @ " + address);
@@ -263,7 +271,8 @@ public class Server implements NetworkEventListener {
 	public void receivedInputMessage(final SocketAddress address, int version,
 			final Set<Integer> keys) {
 		final PlayerConnection connection = players.get(address);
-		if (connection != null) {
+		if (connection != null && version > connection.getReceivedVersion()) {
+			connection.setNew();
 			connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
 			connection.setReceivedVersion(version);
 		}
@@ -295,7 +304,7 @@ public class Server implements NetworkEventListener {
 			changeSets.add(changeSet);
 			changeSetLookup.put(changeSet.getVersion(), changeSet);
 		}
-		
+
 		// initialize entity manager
 		entityManager.init();
 

@@ -24,7 +24,7 @@ import java.net.SocketAddress;
 import java.util.Set;
 
 public interface NetworkEventListener {
-	void receivedGamestateMessage(SocketAddress address, int version);
+	boolean receivedGamestateMessage(SocketAddress address, int version);
 	void receivedLoginMessage(SocketAddress address, String name);
 	void receivedLogoutMessage(SocketAddress address);
 	void receivedInputMessage(SocketAddress address, int version, Set<Integer> keys);

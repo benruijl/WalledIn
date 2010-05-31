@@ -62,7 +62,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	private final DatagramChannel channel;
 	private String playerEntityName;
 	private boolean quitting = false;
-	private final Object networkRecieveLock = new Object();
+	private int receivedVersion = 0;
 
 	public static void main(final String[] args) {
 		final Renderer renderer = new Renderer();
@@ -122,6 +122,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 		channel.connect(host);
 		playerEntityName = NetworkConstants.getAddressRepresentation(channel
 				.socket().getLocalSocketAddress());
+		LOG.debug(playerEntityName);
 		networkDataWriter.sendLoginMessage(channel, username);
 		LOG.info("starting network loop");
 		while (!quitting) {
@@ -138,13 +139,23 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	 * we receive the net game state
 	 */
 	@Override
-	public void receivedGamestateMessage(final SocketAddress address, int version) {
+	public boolean receivedGamestateMessage(final SocketAddress address,
+			int version) {
+		boolean result = false;
+		if (LOG.isTraceEnabled()) {
+			LOG.debug("version:" + version + " receivedVersion:" + receivedVersion);
+		}
+		if (version > receivedVersion) {
+			receivedVersion = version;
+			result = true;
+		}
 		try {
-			networkDataWriter.sendInputMessage(channel, version, Input.getInstance()
-					.getKeysDown());
+			networkDataWriter.sendInputMessage(channel, receivedVersion, Input
+					.getInstance().getKeysDown());
 		} catch (final IOException e) {
 			LOG.error("IO exception during network event", e);
 		}
+		return result;
 	}
 
 	@Override

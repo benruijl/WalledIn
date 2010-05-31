@@ -56,7 +56,6 @@ public abstract class AbstractEntityFactory implements EntityFactory {
 			LOG.warn("Failed to find family name '" + familyName + "'. Returning generic entity.");
 			return ent; // return generic entity
 		}
-
 		return func.create(ent);
 	}
 

@@ -33,7 +33,8 @@ public class PlayerConnection {
 	private int receivedVersion;
 	private boolean isNew;
 
-	public PlayerConnection(final SocketAddress address, final Entity player, int currentVersion) {
+	public PlayerConnection(final SocketAddress address, final Entity player,
+			int currentVersion) {
 		super();
 		this.player = player;
 		this.address = address;

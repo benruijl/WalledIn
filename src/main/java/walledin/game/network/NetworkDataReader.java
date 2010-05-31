@@ -61,13 +61,16 @@ public class NetworkDataReader {
 	private void processGamestateMessage(final EntityManager entityManager,
 			final SocketAddress address) throws IOException {
 		final int version = buffer.getInt();
+		// Ask the client if the we should process this gamestate
+		boolean process = listener.receivedGamestateMessage(address, version);
 		boolean hasMore = true;
-		synchronized (entityManager) {
-			while (hasMore) {
-				hasMore = readEntityData(entityManager, buffer);
+		if (process) {
+			synchronized (entityManager) {
+				while (hasMore) {
+					hasMore = readEntityData(entityManager, buffer);
+				}
 			}
 		}
-		listener.receivedGamestateMessage(address, version);
 	}
 
 	private void processInputMessage(final SocketAddress address) {
