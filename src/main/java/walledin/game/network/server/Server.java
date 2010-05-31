@@ -24,11 +24,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -54,14 +54,16 @@ public class Server implements NetworkEventListener {
 	private static final Logger LOG = Logger.getLogger(Server.class);
 	private static final int PORT = 1234;
 	private static final int UPDATES_PER_SECOND = 30;
+	private static final int STORED_CHANGESETS = UPDATES_PER_SECOND*2;
 	private final Map<SocketAddress, PlayerConnection> players;
-	private final Set<SocketAddress> newPlayers;
 	private boolean running;
 	private final NetworkDataWriter networkWriter;
 	private final NetworkDataReader networkReader;
 	private Entity map;
 	private long currentTime;
 	private final EntityManager entityManager;
+	private final Queue<ChangeSet> changeSets;
+	private final Map<Integer, ChangeSet> changeSetLookup;
 
 	/**
 	 * Creates a new server. Initializes variables to their default values.
@@ -71,8 +73,12 @@ public class Server implements NetworkEventListener {
 		running = false;
 		networkWriter = new NetworkDataWriter();
 		networkReader = new NetworkDataReader(this);
-		newPlayers = new HashSet<SocketAddress>();
 		entityManager = new EntityManager(new ServerEntityFactory());
+		changeSetLookup = new HashMap<Integer, ChangeSet>();
+		changeSets = new LinkedList<ChangeSet>();
+		// Store the first version so we can give it new players
+		ChangeSet firstChangeSet = entityManager.getChangeSet();
+		changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
 	}
 
 	/**
@@ -117,8 +123,8 @@ public class Server implements NetworkEventListener {
 					Thread.sleep(left);
 				}
 			} catch (final InterruptedException e) {
-				// TODO do something
-				e.printStackTrace();
+				LOG.fatal("Interrupted in network loop!", e);
+				return;
 			}
 		}
 	}
@@ -132,9 +138,6 @@ public class Server implements NetworkEventListener {
 	 * @throws IOException
 	 */
 	private void doLoop(final DatagramChannel channel) throws IOException {
-		// Clear the new players from the last loop
-		newPlayers.clear();
-		entityManager.clearChanges();
 		// Read input messages and login messages
 		boolean hasMore = networkReader.recieveMessage(channel, entityManager);
 		while (hasMore) {
@@ -146,18 +149,38 @@ public class Server implements NetworkEventListener {
 		// convert to sec
 		delta /= 1000000000;
 
-		// Update each player, do connection checks
-		for (final PlayerConnection p : players.values()) {
-			if (p.update()) {
-				networkWriter.sendAliveMessage(channel, p.getAddress());
-			}
-
-		}
-
 		// Update game state
 		update(delta);
+		// Process the changes
+		processChanges();
 		// Write to all the clients
 		sendGamestate(channel);
+	}
+
+	private void processChanges() {
+		// Get the oldest changeset (we dont support this version anymore from
+		// now)
+		ChangeSet oldChangeSet = changeSets.remove();
+		changeSetLookup.remove(oldChangeSet.getVersion());
+		// Get current change set from entity manager and merge it with all the
+		// save versions
+		ChangeSet currentChangeSet = entityManager.getChangeSet();
+		for (ChangeSet changeSet : changeSetLookup.values()) {
+			changeSet.merge(currentChangeSet);
+		}
+		// Add the current change set
+		changeSets.add(currentChangeSet);
+		changeSetLookup.put(currentChangeSet.getVersion(), currentChangeSet);
+		Set<SocketAddress> removedPlayers = new HashSet<SocketAddress>();
+		for (PlayerConnection connection: players.values()) {
+			if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
+				removedPlayers.add(connection.getAddress());
+				LOG.info("Connection lost to client " + connection.getAddress());
+			}
+		}
+		for (SocketAddress address: removedPlayers) {
+			players.remove(address);
+		}
 	}
 
 	/**
@@ -170,32 +193,22 @@ public class Server implements NetworkEventListener {
 	 */
 	private void sendGamestate(final DatagramChannel channel)
 			throws IOException {
-		if (!newPlayers.isEmpty()) {
-			networkWriter.prepareGamestateMessageNewPlayers(entityManager);
-			for (final SocketAddress socketAddress : newPlayers) {
-				networkWriter.sendCurrentMessage(channel, socketAddress);
-			}
-		}
-		if (!players.isEmpty()) {
-			networkWriter.prepareGamestateMessageExistingPlayers(entityManager);
-			for (final SocketAddress socketAddress : players.keySet()) {
-				if (!newPlayers.contains(socketAddress)) {
-					networkWriter.sendCurrentMessage(channel, socketAddress);
-				}
-			}
+		int currentVersion = entityManager.getCurrentVersion();
+		for (PlayerConnection connection : players.values()) {
+			ChangeSet changeSet = changeSetLookup.get(connection
+					.getReceivedVersion());
+			networkWriter.sendGamestateMessage(channel,
+					connection.getAddress(), entityManager, changeSet,
+					currentVersion);
 		}
 	}
 
-	/**
-	 * Process alive message for player
-	 */
-	@Override
-	public void receivedAliveMessage(final SocketAddress address) {
-		players.get(address).processAliveReceived();
+	private void removePlayer(SocketAddress address) {
+		players.remove(address);
 	}
 
 	@Override
-	public void receivedGamestateMessage(final SocketAddress address) {
+	public void receivedGamestateMessage(final SocketAddress address, int version) {
 		// ignore .. should not happen
 	}
 
@@ -213,14 +226,15 @@ public class Server implements NetworkEventListener {
 		final String entityName = NetworkConstants
 				.getAddressRepresentation(address);
 		final Entity player = entityManager.create("Player", entityName);
-		newPlayers.add(address);
 		player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 		player.setAttribute(Attribute.PLAYER_NAME, name);
 
 		/* Let the player start with a handgun */
-		/*final Entity weapon = entityManager.create("handgun",
-				entityManager.generateUniqueName("handgun"));
-		player.setAttribute(Attribute.WEAPON, weapon);*/
+		/*
+		 * final Entity weapon = entityManager.create("handgun",
+		 * entityManager.generateUniqueName("handgun"));
+		 * player.setAttribute(Attribute.WEAPON, weapon);
+		 */
 
 		final PlayerConnection con = new PlayerConnection(address, player);
 		players.put(address, con);
@@ -234,19 +248,19 @@ public class Server implements NetworkEventListener {
 	@Override
 	public void receivedLogoutMessage(final SocketAddress address) {
 		LOG.info("Player " + address.toString() + " left the game.");
-		newPlayers.remove(address);
-		players.get(address).remove();
+		removePlayer(address);
 	}
 
 	/**
 	 * Set the new input state
 	 */
 	@Override
-	public void receivedInputMessage(final SocketAddress address,
+	public void receivedInputMessage(final SocketAddress address, int version,
 			final Set<Integer> keys) {
-		final Entity player = players.get(address).getPlayer();
-		if (player != null) {
-			player.setAttribute(Attribute.KEYS_DOWN, keys);
+		final PlayerConnection connection = players.get(address);
+		if (connection != null) {
+			connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
+			connection.setReceivedVersion(version);
 		}
 	}
 
@@ -258,19 +272,6 @@ public class Server implements NetworkEventListener {
 	 *            Time elapsed since last update
 	 */
 	public void update(final double delta) {
-		/* Check if players left the game, and if so remove them */
-		final List<SocketAddress> remList = new ArrayList<SocketAddress>();
-		for (final PlayerConnection con : players.values()) {
-			if (con.getAlive() == false) {
-				entityManager.remove(con.getPlayer().getName());
-				remList.add(con.getAddress());
-			}
-		}
-
-		for (final SocketAddress sok : remList) {
-			players.remove(sok);
-		}
-
 		/* Update all entities */
 		entityManager.update(delta);
 
@@ -283,6 +284,13 @@ public class Server implements NetworkEventListener {
 	 * manager.
 	 */
 	public void init() {
+		// Fill the change set queue
+		for (int i = 0; i < STORED_CHANGESETS; i ++) {
+			ChangeSet changeSet = entityManager.getChangeSet();
+			changeSets.add(changeSet);
+			changeSetLookup.put(changeSet.getVersion(), changeSet);
+		}
+		
 		// initialize entity manager
 		entityManager.init();
 

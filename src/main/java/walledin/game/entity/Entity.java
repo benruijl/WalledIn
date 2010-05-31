@@ -187,26 +187,17 @@ public class Entity {
 	 * 
 	 * @return The changed attributes
 	 */
-	public Map<Attribute, Object> getChangedAttributes() {
-		final Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
-		for (final Attribute attribute : changedAttributes) {
-			temp.put(attribute, attributes.get(attribute));
-		}
+	public Set<Attribute> getChangedAttributes() {
+		Set<Attribute> temp = changedAttributes;
 		changedAttributes = new HashSet<Attribute>();
 		return temp;
 	}
 
-	/**
-	 * Gets the contents of all the network attributes
-	 * 
-	 * @return
-	 */
-	public Map<Attribute, Object> getNetworkAttributes() {
+	public Map<Attribute, Object> getAttributes(
+			Set<Attribute> requestedAttributes) {
 		final Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
-		for (final Attribute attribute : attributes.keySet()) {
-			if (attribute.sendOverNetwork) {
-				temp.put(attribute, attributes.get(attribute));
-			}
+		for (final Attribute attribute : requestedAttributes) {
+			temp.put(attribute, attributes.get(attribute));
 		}
 		return temp;
 	}

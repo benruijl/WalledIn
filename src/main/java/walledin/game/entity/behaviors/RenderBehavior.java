@@ -36,14 +36,9 @@ public class RenderBehavior extends Behavior {
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onUpdate(final double delta) {
-		// TODO Auto-generated method stub
-
 	}
-
 }

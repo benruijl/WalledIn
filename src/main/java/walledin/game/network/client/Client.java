@@ -125,7 +125,8 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 		networkDataWriter.sendLoginMessage(channel, username);
 		LOG.info("starting network loop");
 		while (!quitting) {
-			// Read messages. Locks on the entitymanager to prevent renderer or update from being preformed half way
+			// Read messages. Locks on the entitymanager to prevent renderer or
+			// update from being preformed half way
 			networkDataReader.recieveMessage(channel, entityManager);
 		}
 		// write logout message
@@ -133,26 +134,13 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	}
 
 	/**
-	 * server asks if client is still alive. We reply with the same message to
-	 * confirm
-	 */
-	@Override
-	public void receivedAliveMessage(final SocketAddress address) {
-		try {
-			networkDataWriter.sendAliveMessage(channel);
-		} catch (final IOException e) {
-			LOG.error("IO exception during network event", e);
-		}
-	}
-
-	/**
 	 * Called when the gamestate has been updated. We only send a new input when
 	 * we receive the net game state
 	 */
 	@Override
-	public void receivedGamestateMessage(final SocketAddress address) {
+	public void receivedGamestateMessage(final SocketAddress address, int version) {
 		try {
-			networkDataWriter.sendInputMessage(channel, Input.getInstance()
+			networkDataWriter.sendInputMessage(channel, version, Input.getInstance()
 					.getKeysDown());
 		} catch (final IOException e) {
 			LOG.error("IO exception during network event", e);
@@ -171,7 +159,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	}
 
 	@Override
-	public void receivedInputMessage(final SocketAddress address,
+	public void receivedInputMessage(final SocketAddress address, int version,
 			final Set<Integer> keys) {
 		// ignore
 	}

@@ -1,7 +1,5 @@
 package walledin.game.entity.behaviors;
 
-import walledin.engine.math.Circle;
-import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
@@ -12,7 +10,6 @@ public class PlayerParentBehavior extends Behavior {
 	
 	public PlayerParentBehavior(Entity owner) {
 		super(owner);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -49,8 +46,5 @@ public class PlayerParentBehavior extends Behavior {
 
 	@Override
 	public void onUpdate(double delta) {
-		// TODO Auto-generated method stub
-
 	}
-
 }

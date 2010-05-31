@@ -56,8 +56,5 @@ public class HealthBehavior extends Behavior {
 
 	@Override
 	public void onUpdate(final double delta) {
-		// TODO Auto-generated method stub
-
 	}
-
 }

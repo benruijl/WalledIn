@@ -27,6 +27,7 @@ import java.nio.channels.DatagramChannel;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -36,6 +37,7 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.map.Tile;
+import walledin.game.network.server.ChangeSet;
 
 /**
  * Writes network messages
@@ -54,70 +56,31 @@ public class NetworkDataWriter {
 	public NetworkDataWriter() {
 		buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
 	}
-
-	private void prepareAliveMessage() {
-		buffer.clear();
-		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkConstants.ALIVE_MESSAGE);
-		buffer.flip();
-	}
-
-	/**
-	 * This function calculates the changes of the current gamestate to the
-	 * previous gamestate and puts this delta gamestate in a buffer.
-	 */
-	public void prepareGamestateMessageExistingPlayers(
-			final EntityManager entityManager) {
+	
+	public void sendGamestateMessage(DatagramChannel channel,
+			SocketAddress address, EntityManager entityManager,
+			ChangeSet changeSet, int currentVersion) {
 		buffer.clear();
 		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
-		for (final Entity entity : entityManager.getRemoved()) {
-			writeRemoveEntityData(entity, buffer);
+		for (final String name : changeSet.getRemoved()) {
+			buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
+			writeStringData(name, buffer);
 		}
-		for (final Entity entity : entityManager.getCreated()) {
-			writeCreateEntityData(entity, buffer);
+		for (final Entry<String, String> entry : changeSet.getCreated().entrySet()) {
+			buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
+			// write name of entity
+			writeStringData(entry.getKey(), buffer);
+			// write family of entity
+			writeStringData(entry.getValue(), buffer);
 		}
-		for (final Entity entity : entityManager.getAll()) {
-			writeAttributesData(entity, buffer, false);
+		for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated().entrySet()) {
+			Entity entity = entityManager.get(entry.getKey());
+			writeAttributesData(entity, entry.getValue(), buffer);
 		}
 		// write end
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
 		buffer.flip();
-	}
-
-	/**
-	 * This function writes the entire current gamestate to a buffer. Used for
-	 * new players only. Current players use the
-	 * <code>prepareGamestateMessageExistingPlayers</code> function.
-	 */
-	public void prepareGamestateMessageNewPlayers(
-			final EntityManager entityManager) {
-		buffer.clear();
-		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
-		buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
-		final Collection<Entity> entities = entityManager.getAll();
-		// create all entities
-		for (final Entity entity : entities) {
-			writeCreateEntityData(entity, buffer);
-		}
-		for (final Entity entity : entities) {
-			writeAttributesData(entity, buffer, true);
-		}
-		// write end
-		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
-		buffer.flip();
-	}
-
-	public void sendAliveMessage(final DatagramChannel channel)
-			throws IOException {
-		prepareAliveMessage();
-		channel.write(buffer);
-	}
-
-	public void sendAliveMessage(final DatagramChannel channel,
-			final SocketAddress address) throws IOException {
-		prepareAliveMessage();
-		sendCurrentMessage(channel, address);
 	}
 
 	public void sendCurrentMessage(final DatagramChannel channel,
@@ -127,10 +90,11 @@ public class NetworkDataWriter {
 	}
 
 	public void sendInputMessage(final DatagramChannel channel,
-			final Set<Integer> keysDown) throws IOException {
+			int version, final Set<Integer> keysDown) throws IOException {
 		buffer.clear();
 		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkConstants.INPUT_MESSAGE);
+		buffer.putInt(version);
 		buffer.putShort((short) keysDown.size());
 		for (final int key : keysDown) {
 			buffer.putShort((short) key);
@@ -194,29 +158,17 @@ public class NetworkDataWriter {
 		}
 	}
 
-	private void writeAttributesData(final Entity entity,
-			final ByteBuffer buffer, final boolean allAttributes) {
+	private void writeAttributesData(final Entity entity, final Set<Attribute> attributes,
+			final ByteBuffer buffer) {
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES);
 		writeStringData(entity.getName(), buffer);
-		final Map<Attribute, Object> attributes;
-		if (allAttributes) {
-			attributes = entity.getNetworkAttributes();
-		} else {
-			attributes = entity.getChangedAttributes();
-		}
+		final Map<Attribute, Object> values = entity.getAttributes(attributes);
 		buffer.putInt(attributes.size());
-		for (final Map.Entry<Attribute, Object> entry : attributes.entrySet()) {
+		for (final Map.Entry<Attribute, Object> entry : values.entrySet()) {
 			writeAttributeData(entry.getKey(), entry.getValue(), buffer);
 		}
 	}
-
-	private void writeCreateEntityData(final Entity entity,
-			final ByteBuffer buffer) {
-		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
-		writeStringData(entity.getName(), buffer);
-		writeStringData(entity.getFamilyName(), buffer);
-	}
-
+	
 	private void writeIntegerData(final int data, final ByteBuffer buffer) {
 		buffer.putInt(data);
 	}
@@ -226,12 +178,6 @@ public class NetworkDataWriter {
 		for (final Entity item : data) {
 			writeStringData(item.getName(), buffer);
 		}
-	}
-
-	private void writeRemoveEntityData(final Entity entity,
-			final ByteBuffer buffer) {
-		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
-		writeStringData(entity.getName(), buffer);
 	}
 
 	private void writeStringData(final String data, final ByteBuffer buffer) {

@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.network.server.ChangeSet;
 import walledin.util.Utils;
 
 public class EntityManager {
@@ -40,6 +41,7 @@ public class EntityManager {
 	private int uniqueNameCount = 0;
 	private Set<Entity> removed;
 	private Set<Entity> created;
+	private int currentVersion;
 
 	public EntityManager(final EntityFactory factory) {
 		entities = new ConcurrentHashMap<String, Entity>();
@@ -47,6 +49,7 @@ public class EntityManager {
 		created = new HashSet<Entity>();
 		this.factory = factory;
 		drawOrderManager = new DrawOrderManager();
+		currentVersion = 0;
 	}
 
 	/**
@@ -115,12 +118,6 @@ public class EntityManager {
 		drawOrderManager.draw(renderer);
 	}
 
-	public void clearChanges() {
-		// Clear the removed and created entities.
-		removed = new HashSet<Entity>();
-		created = new HashSet<Entity>();
-	}
-
 	public void update(final double delta) {
 		/* Clean up entities which are flagged for removal */
 		final List<Entity> removeList = new ArrayList<Entity>();
@@ -149,16 +146,16 @@ public class EntityManager {
 		factory.loadItemsFromXML(Utils.getClasspathURL("items.xml"));
 	}
 
-	public Set<Entity> getRemoved() {
-		return removed;
+	public ChangeSet getChangeSet() {
+		ChangeSet result = new ChangeSet(currentVersion, created, removed,
+				entities);
+		created.clear();
+		removed.clear();
+		currentVersion++;
+		return result;
 	}
 
-	public Set<Entity> getCreated() {
-		return created;
-	}
-
-	public Collection<Entity> getAll() {
-		// TODO maybe only do readonly view...
-		return entities.values();
+	public int getCurrentVersion() {
+		return currentVersion;
 	}
 }

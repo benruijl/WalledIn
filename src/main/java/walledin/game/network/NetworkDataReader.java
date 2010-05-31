@@ -58,29 +58,26 @@ public class NetworkDataReader {
 		buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
 	}
 
-	private void processAliveMessage(final SocketAddress address)
-			throws IOException {
-		listener.receivedAliveMessage(address);
-	}
-
 	private void processGamestateMessage(final EntityManager entityManager,
 			final SocketAddress address) throws IOException {
+		final int version = buffer.getInt();
 		boolean hasMore = true;
 		synchronized (entityManager) {
 			while (hasMore) {
 				hasMore = readEntityData(entityManager, buffer);
 			}
 		}
-		listener.receivedGamestateMessage(address);
+		listener.receivedGamestateMessage(address, version);
 	}
 
 	private void processInputMessage(final SocketAddress address) {
+		final int version = buffer.getInt();
 		final short numKeys = buffer.getShort();
 		final Set<Integer> keys = new HashSet<Integer>();
 		for (int i = 0; i < numKeys; i++) {
 			keys.add((int) buffer.getShort());
 		}
-		listener.receivedInputMessage(address, keys);
+		listener.receivedInputMessage(address, version, keys);
 	}
 
 	private void processLoginMessage(final SocketAddress address) {
@@ -238,9 +235,6 @@ public class NetworkDataReader {
 		}
 		final byte type = buffer.get();
 		switch (type) {
-		case NetworkConstants.ALIVE_MESSAGE:
-			processAliveMessage(address);
-			break;
 		case NetworkConstants.GAMESTATE_MESSAGE:
 			processGamestateMessage(entityManager, address);
 			break;

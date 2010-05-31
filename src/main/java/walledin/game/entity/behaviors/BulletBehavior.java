@@ -30,7 +30,6 @@ public class BulletBehavior extends Behavior {
 
 	public BulletBehavior(final Entity owner) {
 		super(owner);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -48,8 +47,5 @@ public class BulletBehavior extends Behavior {
 
 	@Override
 	public void onUpdate(final double delta) {
-		// TODO Auto-generated method stub
-
 	}
-
 }

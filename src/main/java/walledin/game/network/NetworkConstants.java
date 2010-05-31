@@ -9,7 +9,6 @@ public class NetworkConstants {
 	public static final byte LOGIN_MESSAGE = 0;
 	public static final byte INPUT_MESSAGE = 1;
 	public static final byte LOGOUT_MESSAGE = 2;
-	public static final byte ALIVE_MESSAGE = 3;
 	public static final byte GAMESTATE_MESSAGE = 4;
 	public static final byte GAMESTATE_MESSAGE_CREATE_ENTITY = 0;
 	public static final byte GAMESTATE_MESSAGE_REMOVE_ENTITY = 1;

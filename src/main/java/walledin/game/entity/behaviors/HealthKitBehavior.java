@@ -33,7 +33,6 @@ public class HealthKitBehavior extends Behavior {
 
 	public HealthKitBehavior(final Entity owner, final int strength) {
 		super(owner);
-
 		this.strength = strength;
 	}
 
@@ -53,8 +52,5 @@ public class HealthKitBehavior extends Behavior {
 
 	@Override
 	public void onUpdate(final double delta) {
-		// TODO Auto-generated method stub
-
 	}
-
 }

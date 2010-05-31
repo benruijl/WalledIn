@@ -28,19 +28,14 @@ public class AnimationBehavior extends Behavior {
 
 	public AnimationBehavior(final Entity owner) {
 		super(owner);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void onUpdate(final double delta) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
