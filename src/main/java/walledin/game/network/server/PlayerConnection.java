@@ -31,12 +31,14 @@ public class PlayerConnection {
 	private final Entity player;
 	private final SocketAddress address;
 	private int receivedVersion;
+	private boolean isNew;
 
-	public PlayerConnection(final SocketAddress address, final Entity player) {
+	public PlayerConnection(final SocketAddress address, final Entity player, int currentVersion) {
 		super();
 		this.player = player;
 		this.address = address;
-		setReceivedVersion(0);
+		receivedVersion = currentVersion;
+		isNew = true;
 	}
 
 	public Entity getPlayer() {
@@ -53,5 +55,13 @@ public class PlayerConnection {
 
 	public int getReceivedVersion() {
 		return receivedVersion;
+	}
+
+	public void setNew() {
+		this.isNew = false;
+	}
+
+	public boolean isNew() {
+		return isNew;
 	}
 }

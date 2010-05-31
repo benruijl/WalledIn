@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -59,10 +58,11 @@ public class NetworkDataWriter {
 	
 	public void sendGamestateMessage(DatagramChannel channel,
 			SocketAddress address, EntityManager entityManager,
-			ChangeSet changeSet, int currentVersion) {
+			ChangeSet changeSet, int currentVersion) throws IOException {
 		buffer.clear();
 		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
+		buffer.putInt(currentVersion);
 		for (final String name : changeSet.getRemoved()) {
 			buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
 			writeStringData(name, buffer);
@@ -81,10 +81,6 @@ public class NetworkDataWriter {
 		// write end
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
 		buffer.flip();
-	}
-
-	public void sendCurrentMessage(final DatagramChannel channel,
-			final SocketAddress address) throws IOException {
 		buffer.rewind();
 		channel.send(buffer, address);
 	}

@@ -195,8 +195,13 @@ public class Server implements NetworkEventListener {
 			throws IOException {
 		int currentVersion = entityManager.getCurrentVersion();
 		for (PlayerConnection connection : players.values()) {
-			ChangeSet changeSet = changeSetLookup.get(connection
-					.getReceivedVersion());
+			int sendVersion = connection.getReceivedVersion();
+			if (connection.isNew()) {
+				// Set to first version
+				sendVersion = 0;
+				connection.setNew();
+			}
+			ChangeSet changeSet = changeSetLookup.get(sendVersion);
 			networkWriter.sendGamestateMessage(channel,
 					connection.getAddress(), entityManager, changeSet,
 					currentVersion);
@@ -236,7 +241,7 @@ public class Server implements NetworkEventListener {
 		 * player.setAttribute(Attribute.WEAPON, weapon);
 		 */
 
-		final PlayerConnection con = new PlayerConnection(address, player);
+		final PlayerConnection con = new PlayerConnection(address, player, entityManager.getCurrentVersion());
 		players.put(address, con);
 
 		LOG.info("new player " + name + " @ " + address);
@@ -285,7 +290,7 @@ public class Server implements NetworkEventListener {
 	 */
 	public void init() {
 		// Fill the change set queue
-		for (int i = 0; i < STORED_CHANGESETS; i ++) {
+		for (int i = 0; i < STORED_CHANGESETS; i++) {
 			ChangeSet changeSet = entityManager.getChangeSet();
 			changeSets.add(changeSet);
 			changeSetLookup.put(changeSet.getVersion(), changeSet);
