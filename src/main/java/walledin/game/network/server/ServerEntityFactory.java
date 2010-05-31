@@ -29,10 +29,12 @@ import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.BulletBehavior;
 import walledin.game.entity.behaviors.HealthBehavior;
 import walledin.game.entity.behaviors.HealthKitBehavior;
+import walledin.game.entity.behaviors.PhysicsBehavior;
 import walledin.game.entity.behaviors.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.PlayerParentBehavior;
 import walledin.game.entity.behaviors.SpatialBehavior;
@@ -52,6 +54,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		player.addBehavior(new HealthBehavior(player, 100, 100));
 		player.addBehavior(new PlayerControlBehaviour(player));
 		player.addBehavior(new PlayerParentBehavior(player));
+		player.addBehavior(new PhysicsBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
@@ -78,7 +81,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createArmorKit(final Rectangle destRect, final Element el,
 			final Entity ak) {
 		ak.addBehavior(new SpatialBehavior(ak));
-
+		ak.addBehavior(new PhysicsBehavior(ak));
+		
 		ak.setAttribute(Attribute.BOUNDING_RECT, destRect);
 		return ak;
 	}
