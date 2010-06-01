@@ -47,7 +47,9 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.COLLIDED) {
 			final CollisionData colData = (CollisionData) data;
-			canJump = colData.getNewPos().getY() < colData.getTheorPos().getY();
+
+			if (colData.getNewPos().getY() < colData.getTheorPos().getY())
+				canJump = true;
 		} else if (messageType == MessageType.ATTRIBUTE_SET) {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
@@ -88,7 +90,6 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 
 		if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
 			y -= JUMP_SPEED;
-			canJump = false;
 		}
 
 		if (keysDown.contains(KeyEvent.VK_ENTER)) {
@@ -99,12 +100,9 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 			}
 		}
 
-		//velocity = velocity.add(new Vector2f(x, y));
-	
-
 		getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
+		canJump = false;
 		
-		//setAttribute(Attribute.VELOCITY, velocity);
 		super.onUpdate(delta);
 	}
 }

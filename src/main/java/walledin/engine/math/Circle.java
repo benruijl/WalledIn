@@ -60,15 +60,14 @@ public class Circle {
 
 	public boolean intersects(final Circle circ) {
 		return (getRadius() + circ.getRadius())
-				* (getRadius() + circ.getRadius()) > getPos()
+				* (getRadius() + circ.getRadius()) >= getPos()
 				.sub(circ.getPos()).lengthSquared();
 	}
 
 	public static Circle fromRect(final Rectangle rect) {
-		final Vector2f center = rect.getLeftTop().add(rect.getRightBottom())
-				.scale(0.5f).add(rect.getLeftTop());
-		final float radius = (float) (0.5 * Math.sqrt(rect.getWidth()
-				+ rect.getHeight()));
+		final Vector2f dir = rect.getRightBottom().sub(rect.getLeftTop()).scale(0.5f);
+		final Vector2f center = dir.add(rect.getLeftTop());
+		final float radius = (float)Math.sqrt(dir.lengthSquared());
 		return new Circle(center, radius);
 	}
 
