@@ -25,20 +25,18 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
-import walledin.game.entity.behaviors.BulletBehavior;
-import walledin.game.entity.behaviors.HealthBehavior;
-import walledin.game.entity.behaviors.HealthKitBehavior;
 import walledin.game.entity.behaviors.PhysicsBehavior;
-import walledin.game.entity.behaviors.PlayerControlBehaviour;
-import walledin.game.entity.behaviors.PlayerParentBehavior;
-import walledin.game.entity.behaviors.SpatialBehavior;
-import walledin.game.entity.behaviors.WeaponBehavior;
+import walledin.game.entity.behaviors.logic.BulletBehavior;
+import walledin.game.entity.behaviors.logic.HealthBehavior;
+import walledin.game.entity.behaviors.logic.HealthKitBehavior;
+import walledin.game.entity.behaviors.logic.PlayerParentBehavior;
+import walledin.game.entity.behaviors.logic.WeaponBehavior;
+import walledin.game.entity.behaviors.physics.PlayerControlBehaviour;
+import walledin.game.entity.behaviors.physics.SpatialBehavior;
 import walledin.util.XMLReader;
 
 public class ServerEntityFactory extends AbstractEntityFactory {

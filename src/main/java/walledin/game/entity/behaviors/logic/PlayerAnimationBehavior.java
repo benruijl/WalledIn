@@ -18,55 +18,46 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.logic;
 
-import walledin.engine.Renderer;
-import walledin.engine.math.Rectangle;
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Vector2f;
-import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class ItemRenderBehavior extends RenderBehavior {
-	private final String texPart;
-	private final Rectangle ITEM_RECT;
+public class PlayerAnimationBehavior extends AnimationBehavior {
+	private final static Logger LOG = Logger.getLogger(PlayerAnimationBehavior.class);
+	
+	private float walkAnimFrame;
+	private final float animSpeed;
+	private Vector2f velocity;
 
-	/**
-	 * Creates a new item rendering behavior.
-	 * 
-	 * @param owner
-	 *            Owner of behavior, an Item
-	 * @param texPart
-	 * @param destRect
-	 */
-	public ItemRenderBehavior(final Entity owner, final String texPart,
-			final Rectangle destRect) {
-		super(owner, ZValues.ITEM);
-
-		this.texPart = texPart;
-		ITEM_RECT = destRect;
-	}
-
-	/**
-	 * Generic item renderer. It draws the texture part to the screen at the
-	 * item's position.
-	 * 
-	 * @param renderer
-	 */
-	private void render(final Renderer renderer) {
-		renderer.drawTexturePart(texPart, ITEM_RECT
-				.translate((Vector2f) getAttribute(Attribute.POSITION)));
+	public PlayerAnimationBehavior(final Entity owner) {
+		super(owner);
+		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
+		animSpeed = 0.002f;
 	}
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
-
-		if (messageType == MessageType.RENDER) {
-			render((Renderer) data);
+		if (messageType == MessageType.ATTRIBUTE_SET) {
+			final Attribute attribute = (Attribute) data;
+			switch (attribute) {
+			case VELOCITY:
+				velocity = (Vector2f) getAttribute(attribute);
+				break;
+			}
 		}
-
-		super.onMessage(messageType, data);
 	}
 
+	@Override
+	public void onUpdate(final double delta) {
+		if (Math.abs(velocity.getX()) > 0.5f) {
+			walkAnimFrame += animSpeed * velocity.getX();
+			walkAnimFrame %= 2 * Math.PI;
+			setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
+		}
+	}
 }

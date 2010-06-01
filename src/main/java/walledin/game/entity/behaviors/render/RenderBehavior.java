@@ -18,17 +18,20 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.render;
 
+import walledin.game.ZValues;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class AnimationBehavior extends Behavior {
+public class RenderBehavior extends Behavior {
 
-	public AnimationBehavior(final Entity owner) {
+	public RenderBehavior(final Entity owner, final ZValues z) {
 		super(owner);
-		// TODO Auto-generated constructor stub
+
+		setAttribute(Attribute.Z_INDEX, z.z);
 	}
 
 	@Override

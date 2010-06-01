@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.render;
 
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
@@ -28,47 +28,35 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class WeaponRenderBehavior extends RenderBehavior {
+public class ItemRenderBehavior extends RenderBehavior {
 	private final String texPart;
-	private final Rectangle WEAPON_RECT;
+	private final Rectangle ITEM_RECT;
 
 	/**
 	 * Creates a new item rendering behavior.
 	 * 
 	 * @param owner
-	 *            Owner of behavior, a Weapon
+	 *            Owner of behavior, an Item
 	 * @param texPart
 	 * @param destRect
 	 */
-	public WeaponRenderBehavior(final Entity owner, final String texPart,
+	public ItemRenderBehavior(final Entity owner, final String texPart,
 			final Rectangle destRect) {
-		super(owner, ZValues.WEAPON);
+		super(owner, ZValues.ITEM);
 
 		this.texPart = texPart;
-		WEAPON_RECT = destRect;
+		ITEM_RECT = destRect;
 	}
 
 	/**
-	 * Generic weapon renderer. It draws the texture part to the screen at the
-	 * weapon's position.
+	 * Generic item renderer. It draws the texture part to the screen at the
+	 * item's position.
 	 * 
 	 * @param renderer
 	 */
 	private void render(final Renderer renderer) {
-		renderer.pushMatrix();
-		
-		Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
-		renderer.translate(pos);
-		
-		if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
-			renderer.translate(new Vector2f(-23, 0));
-			renderer.scale(new Vector2f(-1, 1));
-	
-		}
-		
-		renderer.drawTexturePart(texPart, WEAPON_RECT);
-		
-		renderer.popMatrix();
+		renderer.drawTexturePart(texPart, ITEM_RECT
+				.translate((Vector2f) getAttribute(Attribute.POSITION)));
 	}
 
 	@Override

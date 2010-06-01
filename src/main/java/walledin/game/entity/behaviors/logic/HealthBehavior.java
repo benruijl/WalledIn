@@ -18,46 +18,46 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.logic;
 
-import org.apache.log4j.Logger;
-
-import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class PlayerAnimationBehavior extends AnimationBehavior {
-	private final static Logger LOG = Logger.getLogger(PlayerAnimationBehavior.class);
-	
-	private float walkAnimFrame;
-	private final float animSpeed;
-	private Vector2f velocity;
+public class HealthBehavior extends Behavior {
+	private int health;
+	private final int maxHealth;
 
-	public PlayerAnimationBehavior(final Entity owner) {
+	public HealthBehavior(final Entity owner, final int maxHealth,
+			final int curHealth) {
 		super(owner);
-		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
-		animSpeed = 0.002f;
+
+		health = curHealth;
+		this.maxHealth = maxHealth;
+
+		setAttribute(Attribute.HEALTH, health);
 	}
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.ATTRIBUTE_SET) {
-			final Attribute attribute = (Attribute) data;
-			switch (attribute) {
-			case VELOCITY:
-				velocity = (Vector2f) getAttribute(attribute);
-				break;
+		if (messageType == MessageType.RESTORE_HEALTH) {
+			final int hp = (Integer) data;
+			if (health + hp > maxHealth) {
+				health = maxHealth;
+			} else {
+				health += hp;
 			}
+
+			setAttribute(Attribute.HEALTH, health);
 		}
+
 	}
 
 	@Override
 	public void onUpdate(final double delta) {
-		if (Math.abs(velocity.getX()) > 0.5f) {
-			walkAnimFrame += animSpeed * velocity.getX();
-			walkAnimFrame %= 2 * Math.PI;
-			setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
-		}
+		// TODO Auto-generated method stub
+
 	}
+
 }

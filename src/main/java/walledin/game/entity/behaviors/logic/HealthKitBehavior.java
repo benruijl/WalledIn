@@ -18,26 +18,41 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.logic;
 
-import walledin.game.ZValues;
-import walledin.game.entity.Attribute;
+import org.apache.log4j.Logger;
+
+import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class RenderBehavior extends Behavior {
+public class HealthKitBehavior extends Behavior {
+	private static final Logger LOG = Logger.getLogger(HealthKitBehavior.class);
+	private final int strength;
 
-	public RenderBehavior(final Entity owner, final ZValues z) {
+	public HealthKitBehavior(final Entity owner, final int strength) {
 		super(owner);
 
-		setAttribute(Attribute.Z_INDEX, z.z);
+		this.strength = strength;
 	}
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
-		// TODO Auto-generated method stub
+		if (messageType == MessageType.COLLIDED) {
+			
+			final CollisionData colData = (CollisionData) data;
+			
+			if (!colData.getCollisionEntity().getFamilyName().equals("Player"))
+				return;
+			
+			LOG.info(getOwner().getName() + " collided with "
+					+ colData.getCollisionEntity().getName());
+			colData.getCollisionEntity().sendMessage(
+					MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
 
+			getOwner().remove(); // remove after usage
+		}
 	}
 
 	@Override
