@@ -143,7 +143,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 			int version) {
 		boolean result = false;
 		if (LOG.isTraceEnabled()) {
-			LOG.debug("version:" + version + " receivedVersion:" + receivedVersion);
+			LOG.trace("version:" + version + " receivedVersion:" + receivedVersion);
 		}
 		if (version > receivedVersion) {
 			receivedVersion = version;

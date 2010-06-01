@@ -20,6 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
+import walledin.util.Utils;
+
 /**
  * 
  * @author ben
@@ -69,5 +71,31 @@ public class Vector2f {
 
 	public Vector2f scale(final float amount) {
 		return new Vector2f(x * amount, y * amount);
+	}
+
+	// FIXME .. breaks the general contract of hashcode
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Float.floatToIntBits(x);
+		result = prime * result + Float.floatToIntBits(y);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vector2f other = (Vector2f) obj;
+		if (!Utils.equals(x, other.x))
+			return false;
+		if (!Utils.equals(y, other.y))
+			return false;
+		return true;
 	}
 }

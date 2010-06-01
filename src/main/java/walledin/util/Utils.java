@@ -24,7 +24,13 @@ import java.net.URL;
 
 
 public class Utils {
+	private final static float EPSILON = 0.00001f;
+	
 	public static URL getClasspathURL(String filename) {
 		return ClassLoader.getSystemResource(filename);
+	}
+	
+	public static boolean equals(float a, float b){
+	        return a == b ? true : Math.abs(a - b) < EPSILON;
 	}
 }

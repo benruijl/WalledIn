@@ -170,7 +170,8 @@ public class Entity {
 						+ " of entity " + name);
 			}
 			final T result = (T) attributes.put(attribute, newObject);
-			if (attribute.sendOverNetwork) {
+			// Only add it if it is actually changed
+			if (attribute.sendOverNetwork && !newObject.equals(result)) {
 				changedAttributes.add(attribute);
 			}
 			sendMessage(MessageType.ATTRIBUTE_SET, attribute);
