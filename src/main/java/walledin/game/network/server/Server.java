@@ -179,7 +179,7 @@ public class Server implements NetworkEventListener {
 			}
 		}
 		for (SocketAddress address : removedPlayers) {
-			players.remove(address);
+			removePlayer(address);
 		}
 	}
 
@@ -214,7 +214,8 @@ public class Server implements NetworkEventListener {
 	}
 
 	private void removePlayer(SocketAddress address) {
-		players.remove(address);
+		PlayerConnection connection = players.remove(address);
+		entityManager.remove(connection.getPlayer().getName());
 	}
 
 	@Override
