@@ -18,24 +18,43 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.logic;
 
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class AnimationBehavior extends Behavior {
+public class HealthBehavior extends Behavior {
+	private int health;
+	private final int maxHealth;
 
-	public AnimationBehavior(final Entity owner) {
+	public HealthBehavior(final Entity owner, final int maxHealth,
+			final int curHealth) {
 		super(owner);
+
+		health = curHealth;
+		this.maxHealth = maxHealth;
+
+		setAttribute(Attribute.HEALTH, health);
 	}
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
+		if (messageType == MessageType.RESTORE_HEALTH) {
+			final int hp = (Integer) data;
+			if (health + hp > maxHealth) {
+				health = maxHealth;
+			} else {
+				health += hp;
+			}
+
+			setAttribute(Attribute.HEALTH, health);
+		}
+
 	}
 
 	@Override
 	public void onUpdate(final double delta) {
 	}
-
 }

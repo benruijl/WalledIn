@@ -18,26 +18,33 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.physics;
 
-import org.apache.log4j.Logger;
-
+import walledin.engine.math.Circle;
+import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class PlayerAnimationBehavior extends AnimationBehavior {
-	private final static Logger LOG = Logger.getLogger(PlayerAnimationBehavior.class);
-	
-	private float walkAnimFrame;
-	private final float animSpeed;
-	private Vector2f velocity;
+public class SpatialBehavior extends Behavior {
+	protected Vector2f position;
+	protected Vector2f velocity;
+	protected Rectangle boundingBox;
+	protected Circle boundingCircle;
 
-	public PlayerAnimationBehavior(final Entity owner) {
+	public SpatialBehavior(final Entity owner) {
 		super(owner);
-		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
-		animSpeed = 0.6f;
+		position = new Vector2f();
+		velocity = new Vector2f();
+		boundingBox = new Rectangle();
+		boundingCircle = new Circle();
+
+		setAttribute(Attribute.POSITION, position); // create attribute
+		setAttribute(Attribute.VELOCITY, velocity);
+		setAttribute(Attribute.BOUNDING_RECT, boundingBox);
+		setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
 	}
 
 	@Override
@@ -45,8 +52,17 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 		if (messageType == MessageType.ATTRIBUTE_SET) {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
+			case POSITION:
+				position = (Vector2f) getAttribute(attribute);
+				break;
 			case VELOCITY:
 				velocity = (Vector2f) getAttribute(attribute);
+				break;
+			case BOUNDING_RECT:
+				boundingBox = (Rectangle) getAttribute(attribute);
+				// recreate circle
+				boundingCircle = Circle.fromRect(boundingBox);
+				setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
 				break;
 			}
 		}
@@ -54,10 +70,14 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
 
 	@Override
 	public void onUpdate(final double delta) {
-		if (velocity.getX() != 0) {
-			walkAnimFrame += animSpeed;
-			walkAnimFrame %= 2 * Math.PI;
-			setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
-		}
+		Vector2f scaledVelocity = new Vector2f(velocity);
+		scaledVelocity = scaledVelocity.scale((float) delta);
+		position = position.add(scaledVelocity);
+		setAttribute(Attribute.POSITION, position);
 	}
+
+	public Vector2f getPosition() {
+		return position;
+	}
+
 }

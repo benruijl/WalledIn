@@ -18,38 +18,29 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.logic;
 
+import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class HealthBehavior extends Behavior {
-	private int health;
-	private final int maxHealth;
+public class BulletBehavior extends Behavior {
 
-	public HealthBehavior(final Entity owner, final int maxHealth,
-			final int curHealth) {
+	public BulletBehavior(final Entity owner) {
 		super(owner);
-
-		health = curHealth;
-		this.maxHealth = maxHealth;
-
-		setAttribute(Attribute.HEALTH, health);
 	}
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.RESTORE_HEALTH) {
-			final int hp = (Integer) data;
-			if (health + hp > maxHealth) {
-				health = maxHealth;
-			} else {
-				health += hp;
-			}
+		if (messageType == MessageType.COLLIDED) {
+			final CollisionData colData = (CollisionData) data;
 
-			setAttribute(Attribute.HEALTH, health);
+			// if collided with map, destroy
+			if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)) {
+				getOwner().remove();
+			}
 		}
 
 	}

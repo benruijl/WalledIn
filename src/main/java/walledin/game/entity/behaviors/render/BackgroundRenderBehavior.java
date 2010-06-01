@@ -18,27 +18,28 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.render;
 
+import walledin.engine.Renderer;
+import walledin.engine.math.Rectangle;
 import walledin.game.ZValues;
-import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class RenderBehavior extends Behavior {
+public class BackgroundRenderBehavior extends RenderBehavior {
 
-	public RenderBehavior(final Entity owner, final ZValues z) {
-		super(owner);
-
-		setAttribute(Attribute.Z_INDEX, z.z);
+	public BackgroundRenderBehavior(final Entity owner) {
+		super(owner, ZValues.BACKGROUND);
 	}
 
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
+		if (messageType == MessageType.RENDER) {
+			render((Renderer) data);
+		}
 	}
 
-	@Override
-	public void onUpdate(final double delta) {
+	private void render(final Renderer renderer) {
+		renderer.drawTexturePart("sun", new Rectangle(60, 60, 64, 64));
 	}
 }
