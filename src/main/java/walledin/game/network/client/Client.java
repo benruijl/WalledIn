@@ -23,6 +23,7 @@ package walledin.game.network.client;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.util.Set;
@@ -120,6 +121,9 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	private void doRun() throws IOException {
 		channel.configureBlocking(true);
 		channel.connect(host);
+		NetworkInterface networkInterface = NetworkInterface
+				.getByInetAddress(channel.socket().getLocalAddress());
+		LOG.debug("Connection MTU: " + networkInterface.getMTU());
 		playerEntityName = NetworkConstants.getAddressRepresentation(channel
 				.socket().getLocalSocketAddress());
 		LOG.debug(playerEntityName);
