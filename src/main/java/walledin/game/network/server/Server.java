@@ -208,7 +208,7 @@ public class Server implements NetworkEventListener {
 						+ changeSet.getUpdated());
 			}
 			networkWriter.sendGamestateMessage(channel,
-					connection.getAddress(), entityManager, changeSet,
+					connection.getAddress(), entityManager, changeSet, changeSet.getVersion(),
 					currentVersion);
 		}
 	}
@@ -220,7 +220,7 @@ public class Server implements NetworkEventListener {
 
 	@Override
 	public boolean receivedGamestateMessage(final SocketAddress address,
-			int version) {
+		int oldVersion, int newVersion) {
 		// ignore .. should not happen
 		return false;
 	}
@@ -269,13 +269,13 @@ public class Server implements NetworkEventListener {
 	 * Set the new input state
 	 */
 	@Override
-	public void receivedInputMessage(final SocketAddress address, int version,
+	public void receivedInputMessage(final SocketAddress address, int newVersion,
 			final Set<Integer> keys) {
 		final PlayerConnection connection = players.get(address);
-		if (connection != null && version > connection.getReceivedVersion()) {
+		if (connection != null && newVersion > connection.getReceivedVersion()) {
 			connection.setNew();
 			connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
-			connection.setReceivedVersion(version);
+			connection.setReceivedVersion(newVersion);
 		}
 	}
 

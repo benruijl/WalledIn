@@ -55,26 +55,30 @@ public class NetworkDataWriter {
 	public NetworkDataWriter() {
 		buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
 	}
-	
+
 	public void sendGamestateMessage(DatagramChannel channel,
 			SocketAddress address, EntityManager entityManager,
-			ChangeSet changeSet, int currentVersion) throws IOException {
+			ChangeSet changeSet, int knownClientVersion, int currentVersion)
+			throws IOException {
 		buffer.clear();
 		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
+		buffer.putInt(knownClientVersion);
 		buffer.putInt(currentVersion);
 		for (final String name : changeSet.getRemoved()) {
 			buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
 			writeStringData(name, buffer);
 		}
-		for (final Entry<String, String> entry : changeSet.getCreated().entrySet()) {
+		for (final Entry<String, String> entry : changeSet.getCreated()
+				.entrySet()) {
 			buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
 			// write name of entity
 			writeStringData(entry.getKey(), buffer);
 			// write family of entity
 			writeStringData(entry.getValue(), buffer);
 		}
-		for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated().entrySet()) {
+		for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
+				.entrySet()) {
 			Entity entity = entityManager.get(entry.getKey());
 			writeAttributesData(entity, entry.getValue(), buffer);
 		}
@@ -85,8 +89,8 @@ public class NetworkDataWriter {
 		channel.send(buffer, address);
 	}
 
-	public void sendInputMessage(final DatagramChannel channel,
-			int version, final Set<Integer> keysDown) throws IOException {
+	public void sendInputMessage(final DatagramChannel channel, int version,
+			final Set<Integer> keysDown) throws IOException {
 		buffer.clear();
 		buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
 		buffer.put(NetworkConstants.INPUT_MESSAGE);
@@ -154,8 +158,8 @@ public class NetworkDataWriter {
 		}
 	}
 
-	private void writeAttributesData(final Entity entity, final Set<Attribute> attributes,
-			final ByteBuffer buffer) {
+	private void writeAttributesData(final Entity entity,
+			final Set<Attribute> attributes, final ByteBuffer buffer) {
 		buffer.put(NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES);
 		writeStringData(entity.getName(), buffer);
 		final Map<Attribute, Object> values = entity.getAttributes(attributes);
@@ -164,7 +168,7 @@ public class NetworkDataWriter {
 			writeAttributeData(entry.getKey(), entry.getValue(), buffer);
 		}
 	}
-	
+
 	private void writeIntegerData(final int data, final ByteBuffer buffer) {
 		buffer.putInt(data);
 	}

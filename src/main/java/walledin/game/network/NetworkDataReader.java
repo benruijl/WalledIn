@@ -60,9 +60,10 @@ public class NetworkDataReader {
 
 	private void processGamestateMessage(final EntityManager entityManager,
 			final SocketAddress address) throws IOException {
-		final int version = buffer.getInt();
+		final int oldVersion = buffer.getInt();
+		final int newVersion = buffer.getInt();
 		// Ask the client if the we should process this gamestate
-		boolean process = listener.receivedGamestateMessage(address, version);
+		boolean process = listener.receivedGamestateMessage(address, oldVersion, newVersion);
 		boolean hasMore = true;
 		if (process) {
 			synchronized (entityManager) {
@@ -74,13 +75,13 @@ public class NetworkDataReader {
 	}
 
 	private void processInputMessage(final SocketAddress address) {
-		final int version = buffer.getInt();
+		final int newVersion = buffer.getInt();
 		final short numKeys = buffer.getShort();
 		final Set<Integer> keys = new HashSet<Integer>();
 		for (int i = 0; i < numKeys; i++) {
 			keys.add((int) buffer.getShort());
 		}
-		listener.receivedInputMessage(address, version, keys);
+		listener.receivedInputMessage(address, newVersion, keys);
 	}
 
 	private void processLoginMessage(final SocketAddress address) {

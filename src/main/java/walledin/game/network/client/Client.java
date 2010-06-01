@@ -140,13 +140,13 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	 */
 	@Override
 	public boolean receivedGamestateMessage(final SocketAddress address,
-			int version) {
+			int oldVersion, int newVersion) {
 		boolean result = false;
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("version:" + version + " receivedVersion:" + receivedVersion);
+			LOG.trace("version:" + newVersion + " receivedVersion:" + receivedVersion);
 		}
-		if (version > receivedVersion) {
-			receivedVersion = version;
+		if (receivedVersion == oldVersion && newVersion > receivedVersion) {
+			receivedVersion = newVersion;
 			result = true;
 		}
 		try {
@@ -170,7 +170,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 	}
 
 	@Override
-	public void receivedInputMessage(final SocketAddress address, int version,
+	public void receivedInputMessage(final SocketAddress address, int newVersion,
 			final Set<Integer> keys) {
 		// ignore
 	}
