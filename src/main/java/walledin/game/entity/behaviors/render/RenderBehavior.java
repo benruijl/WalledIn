@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors;
+package walledin.game.entity.behaviors.render;
 
 import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
