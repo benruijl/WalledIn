@@ -29,6 +29,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class WeaponBehavior extends Behavior {
+	private Entity owner; // entity that carries the gun
 	private final int fireLag;
 	private boolean canShoot;
 	private int lastShot; // frame of last shot
@@ -53,7 +54,7 @@ public class WeaponBehavior extends Behavior {
 			if (!colData.getCollisionEntity().getFamilyName().equals("Player"))
 				return;
 
-			// generate new weapon or use the current one?
+			owner = colData.getCollisionEntity();
 			colData.getCollisionEntity().setAttribute(Attribute.WEAPON,
 					getOwner());
 			setAttribute(Attribute.COLLECTABLE, Boolean.FALSE);
@@ -77,14 +78,15 @@ public class WeaponBehavior extends Behavior {
 				else
 					bulletPosition = playerPos.add(new Vector2f(0.0f, 20.0f));
 
-				final Vector2f bulletVelocity = new Vector2f(or * 400.0f, 0);
+				final Vector2f bulletAcceleration = new Vector2f(or * 30000.0f,
+						0);
 
 				final EntityManager manager = getEntityManager();
 				final Entity bullet = manager.create("bullet", manager
 						.generateUniqueName("bullet"));
 
 				bullet.setAttribute(Attribute.POSITION, bulletPosition);
-				bullet.setAttribute(Attribute.VELOCITY, bulletVelocity);
+				bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
 
 				canShoot = false;
 				lastShot = fireLag;

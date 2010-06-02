@@ -37,6 +37,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.MessageType;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.network.NetworkConstants;
@@ -108,6 +109,7 @@ public class Server implements NetworkEventListener {
 		channel.socket().bind(new InetSocketAddress(PORT));
 		channel.configureBlocking(false);
 
+		currentTime = System.nanoTime(); // initialize
 		running = true;
 		LOG.info("starting main loop");
 		while (running) {
@@ -216,6 +218,7 @@ public class Server implements NetworkEventListener {
 
 	private void removePlayer(SocketAddress address) {
 		PlayerConnection connection = players.remove(address);
+		connection.getPlayer().sendMessage(MessageType.DROP, null);
 		entityManager.remove(connection.getPlayer().getName());
 	}
 

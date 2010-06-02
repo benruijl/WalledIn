@@ -39,8 +39,12 @@ public class HealthKitBehavior extends Behavior {
 	@Override
 	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.COLLIDED) {
-			// assumes colliding entity has a health component
+			
 			final CollisionData colData = (CollisionData) data;
+			
+			if (!colData.getCollisionEntity().getFamilyName().equals("Player"))
+				return;
+			
 			LOG.info(getOwner().getName() + " collided with "
 					+ colData.getCollisionEntity().getName());
 			colData.getCollisionEntity().sendMessage(

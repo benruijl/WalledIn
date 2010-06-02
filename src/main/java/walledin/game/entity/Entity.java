@@ -127,10 +127,10 @@ public class Entity {
 	 * 
 	 * @param attribute
 	 *            The attribute to check
-	 * @return True if entity has attribute, else false
+	 * @return True if entity has a non-null attribute, else false
 	 */
 	public boolean hasAttribute(final Attribute attribute) {
-		return attributes.containsKey(attribute);
+		return attributes.containsKey(attribute) &&  attributes.get(attribute) != null;
 	}
 
 	/**
@@ -165,10 +165,6 @@ public class Entity {
 	@SuppressWarnings("unchecked")
 	public <T> T setAttribute(final Attribute attribute, final T newObject) {
 		if (attribute.clazz.isInstance(newObject) || newObject == null) {
-			if (newObject == null) {
-				LOG.warning("Storing null value for attribute " + attribute
-						+ " of entity " + name);
-			}
 			final T result = (T) attributes.put(attribute, newObject);
 			// Only add it if it is actually changed
 			if (attribute.sendOverNetwork && !newObject.equals(result)) {

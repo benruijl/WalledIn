@@ -25,11 +25,11 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
-import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.behaviors.PhysicsBehavior;
 import walledin.game.entity.behaviors.logic.BulletBehavior;
 import walledin.game.entity.behaviors.logic.HealthBehavior;
 import walledin.game.entity.behaviors.logic.HealthKitBehavior;
@@ -52,6 +52,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		player.addBehavior(new HealthBehavior(player, 100, 100));
 		player.addBehavior(new PlayerControlBehaviour(player));
 		player.addBehavior(new PlayerParentBehavior(player));
+		player.addBehavior(new PhysicsBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
@@ -69,6 +70,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createBullet(final Rectangle destRect, final Element el,
 			final Entity bl) {
 		bl.addBehavior(new SpatialBehavior(bl));
+		bl.addBehavior(new PhysicsBehavior(bl));
 		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		bl.addBehavior(new BulletBehavior(bl));
@@ -78,7 +80,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createArmorKit(final Rectangle destRect, final Element el,
 			final Entity ak) {
 		ak.addBehavior(new SpatialBehavior(ak));
-
+		ak.addBehavior(new PhysicsBehavior(ak));
+		
 		ak.setAttribute(Attribute.BOUNDING_RECT, destRect);
 		return ak;
 	}
@@ -86,7 +89,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createHealthKit(final Rectangle destRect, final Element el,
 			final Entity hk) {
 		hk.addBehavior(new SpatialBehavior(hk));
-
+		hk.addBehavior(new PhysicsBehavior(hk));
 		hk.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		// read extra data
@@ -156,6 +159,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 						@Override
 						public Entity create(final Entity hg) {
 							hg.addBehavior(new SpatialBehavior(hg));
+							//hg.addBehavior(new PhysicsBehavior(hg));
 							hg.setAttribute(Attribute.BOUNDING_RECT, destRect);
 							hg.addBehavior(new WeaponBehavior(hg, 10));
 							return hg;

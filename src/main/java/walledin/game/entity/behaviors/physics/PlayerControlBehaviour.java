@@ -32,9 +32,8 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
-	private static final Vector2f GRAVITY = new Vector2f(0, 100.0f);
-	private static final float MOVE_SPEED = 140.0f;
-	private static final float JUMP_SPEED = 3500.0f;
+	private static final float MOVE_SPEED = 240.0f;
+	private static final float JUMP_SPEED = 8000.0f;
 	private boolean canJump;
 	private Set<Integer> keysDown;
 
@@ -48,7 +47,9 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 	public void onMessage(final MessageType messageType, final Object data) {
 		if (messageType == MessageType.COLLIDED) {
 			final CollisionData colData = (CollisionData) data;
-			canJump = colData.getNewPos().getY() < colData.getTheorPos().getY();
+
+			if (colData.getNewPos().getY() < colData.getTheorPos().getY())
+				canJump = true;
 		} else if (messageType == MessageType.ATTRIBUTE_SET) {
 			final Attribute attribute = (Attribute) data;
 			switch (attribute) {
@@ -57,14 +58,20 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 				break;
 			}
 		}
+		else if (messageType == MessageType.DROP) { // drop all items
+				if (getOwner().hasAttribute(Attribute.WEAPON))
+				{
+					Entity weapon = (Entity) getOwner().getAttribute(Attribute.WEAPON);
+					weapon.setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
+					setAttribute(Attribute.WEAPON, null); // disown weapon
+				}
+			}
 
 		super.onMessage(messageType, data);
 	}
 
 	@Override
 	public void onUpdate(final double delta) {
-		Vector2f velocity = new Vector2f(GRAVITY); // do gravity
-
 		float x = 0;
 		float y = 0;
 
@@ -91,7 +98,6 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 
 		if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
 			y -= JUMP_SPEED;
-			canJump = false;
 		}
 
 		if (keysDown.contains(KeyEvent.VK_ENTER)) {
@@ -102,9 +108,9 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 			}
 		}
 
-		velocity = velocity.add(new Vector2f(x, y));
-
-		setAttribute(Attribute.VELOCITY, velocity);
+		getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
+		canJump = false;
+		
 		super.onUpdate(delta);
 	}
 }

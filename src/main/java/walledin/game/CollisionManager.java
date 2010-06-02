@@ -100,7 +100,8 @@ public class CollisionManager {
 					continue;
 				}
 
-				Circle circA = (Circle) entArray[i]
+				// TODO: test if faster
+				/*Circle circA = (Circle) entArray[i]
 						.getAttribute(Attribute.BOUNDING_CIRCLE);
 				Circle circB = (Circle) entArray[j]
 						.getAttribute(Attribute.BOUNDING_CIRCLE);
@@ -112,7 +113,7 @@ public class CollisionManager {
 
 				if (!circA.intersects(circB)) {
 					continue;
-				}
+				}*/
 
 				Rectangle rectA = (Rectangle) entArray[i]
 						.getAttribute(Attribute.BOUNDING_RECT);
