@@ -2,6 +2,7 @@
 
 JOGL = ['jogl:jogl:1.1.1a','jogl:gluegen-rt:1.1.1a']
 LOG4J = 'log4j:log4j:1.2.16'
+JUNIT = 'junit:junit:4.8.1'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -11,6 +12,7 @@ group='walledin'
 
 dependencies {
   compile JOGL, LOG4J
+  testCompile JUNIT
 }
 
 repositories {
