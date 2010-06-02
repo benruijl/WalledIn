@@ -37,6 +37,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.MessageType;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.network.NetworkConstants;
@@ -269,7 +270,9 @@ public class Server implements NetworkEventListener {
 		}
 
 		for (final SocketAddress sok : remList) {
-			players.remove(sok);
+			PlayerConnection con = players.remove(sok);
+			con.getPlayer().sendMessage(MessageType.DROP, null); // drop all
+			
 		}
 
 		/* Update all entities */

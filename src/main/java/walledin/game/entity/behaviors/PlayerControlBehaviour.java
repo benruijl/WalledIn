@@ -58,6 +58,14 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 				break;
 			}
 		}
+		else if (messageType == MessageType.DROP) { // drop all items
+				if (getOwner().hasAttribute(Attribute.WEAPON))
+				{
+					Entity weapon = (Entity) getOwner().getAttribute(Attribute.WEAPON);
+					weapon.setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
+					setAttribute(Attribute.WEAPON, null); // disown weapon
+				}
+			}
 
 		super.onMessage(messageType, data);
 	}
