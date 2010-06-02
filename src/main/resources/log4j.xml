@@ -17,7 +17,7 @@
 		</layout>
 	</appender>
 	<root>
-		<priority value="trace" />
+		<priority value="debug" />
 		<appender-ref ref="stdout" />
 		<appender-ref ref="rolling" />
 	</root>
