@@ -162,15 +162,7 @@ public class Server implements NetworkEventListener {
 		// now)
 		ChangeSet oldChangeSet = changeSets.remove();
 		changeSetLookup.remove(oldChangeSet.getVersion());
-		// Get current change set from entity manager and merge it with all the
-		// save versions
-		ChangeSet currentChangeSet = entityManager.getChangeSet();
-		for (ChangeSet changeSet : changeSetLookup.values()) {
-			changeSet.merge(currentChangeSet);
-		}
-		// Add the current change set
-		changeSets.add(currentChangeSet);
-		changeSetLookup.put(currentChangeSet.getVersion(), currentChangeSet);
+		// Remove the player that are still on this version or older
 		Set<SocketAddress> removedPlayers = new HashSet<SocketAddress>();
 		for (PlayerConnection connection : players.values()) {
 			if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
@@ -181,6 +173,15 @@ public class Server implements NetworkEventListener {
 		for (SocketAddress address : removedPlayers) {
 			removePlayer(address);
 		}
+		// Get current change set from entity manager and merge it with all the
+		// save versions
+		ChangeSet currentChangeSet = entityManager.getChangeSet();
+		for (ChangeSet changeSet : changeSetLookup.values()) {
+			changeSet.merge(currentChangeSet);
+		}
+		// Add the current change set
+		changeSets.add(currentChangeSet);
+		changeSetLookup.put(currentChangeSet.getVersion(), currentChangeSet);
 	}
 
 	/**
