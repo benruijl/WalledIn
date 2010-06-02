@@ -27,12 +27,16 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
+import walledin.game.network.server.Server;
 
 public class DrawOrderManager {
+	private static final Logger LOG = Logger.getLogger(Server.class);
 	private static class ZOrderComperator implements Comparator<Entity> {
 		@Override
 		public int compare(final Entity o1, final Entity o2) {
@@ -66,9 +70,7 @@ public class DrawOrderManager {
 	 */
 	public void add(final Collection<Entity> entitiesList) {
 		for (final Entity en : entitiesList) {
-			if (en.hasAttribute(Attribute.Z_INDEX)) {
-				entities.add(en);
-			}
+			add(en);
 		}
 	}
 
@@ -87,6 +89,9 @@ public class DrawOrderManager {
 	}
 
 	public void removeEntity(final Entity entity) {
+		if (entity == null) {
+			LOG.debug("removing null!");
+		}
 		removeLater.add(entity);
 	}
 

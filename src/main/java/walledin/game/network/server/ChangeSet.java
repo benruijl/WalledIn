@@ -32,8 +32,8 @@ import walledin.game.entity.Entity;
 /**
  * Change set of the game state. A change set contains all the changes between
  * its version and the version of the current game state. The server is
- * responsible for keeping change sets up to date. Entrys in created should never be in removed.
- * Entrys in removed should not be in created or updated.
+ * responsible for keeping change sets up to date. Entrys in created should
+ * never be in removed. Entrys in removed should not be in created or updated.
  * 
  * @author Wouter Smeenk
  * 
@@ -87,9 +87,9 @@ public class ChangeSet {
 		created.putAll(changeSet.created);
 		// Add removed to our remved
 		removed.addAll(changeSet.removed);
-		
+
 		// Add updates to our updates
-		for (Entry<String, Set<Attribute>> entry: changeSet.updated.entrySet()) {
+		for (Entry<String, Set<Attribute>> entry : changeSet.updated.entrySet()) {
 			String name = entry.getKey();
 			Set<Attribute> ourChanges = updated.get(name);
 			if (ourChanges == null) {
@@ -100,16 +100,31 @@ public class ChangeSet {
 			ourChanges.addAll(entry.getValue());
 			updated.put(name, ourChanges);
 		}
-		
-		// Remove removed entities from our created entities and updated entities
-		for (String name: changeSet.removed) {
-			created.remove(name);
+
+		// Remove removed entities from our created entities and updated
+		// entities
+		for (String name : changeSet.removed) {
+			String removedName = created.remove(name);
+			if (removedName != null) {
+				// If there was something to be removed from the created set
+				// then also remove it from the removed set because it has been
+				// created and then removed between this version and the current
+				// version, so there is no change.
+				removed.remove(name);
+			}
 			updated.remove(name);
 		}
-		
+
 		// Remove created entities from our removed entities
-		for (String name: changeSet.created.keySet()) {
-			removed.remove(name);
+		for (String name : changeSet.created.keySet()) {
+			boolean removedSomething = removed.remove(name);
+			if (removedSomething) {
+				// If there was something to be removed from the removed set
+				// then also remove it from the created set because it has been
+				// removed and then created again between this version and the
+				// current version, so there is no change.
+				removed.remove(name);
+			}
 		}
 	}
 
