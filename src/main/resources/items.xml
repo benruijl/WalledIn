@@ -25,11 +25,24 @@
         </texpart>
     </item>
     <item>
-        <name>bullet</name>
+        <name>handgunbullet</name>
+        <width>22</width>
+        <height>11</height>
+        <texpart>
+            <name>handgunbullet</name>
+            <x>205</x>
+            <y>152</y>
+            <width>44</width>
+            <height>22</height>
+        </texpart>
+        <strength>10</strength>
+    </item>
+        <item>
+        <name>foambullet</name>
         <width>16</width>
         <height>16</height>
         <texpart>
-            <name>bullet0</name>
+            <name>foambullet</name>
             <x>334</x>
             <y>213</y>
             <width>32</width>
@@ -46,7 +59,19 @@
             <x>64</x>
             <y>132</y>
             <width>120</width>
-            <height>62</height>
+            <height>63</height>
+        </texpart>
+    </item>
+    <item>
+        <name>foamweapon</name>
+        <width>80</width>
+        <height>21</height>
+        <texpart>
+            <name>foamweapon</name>
+            <x>64</x>
+            <y>194</y>
+            <width>240</width>
+            <height>63</height>
         </texpart>
     </item>
 </items>

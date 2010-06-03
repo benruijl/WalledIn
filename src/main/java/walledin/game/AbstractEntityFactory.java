@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import walledin.game.entity.Entity;
-import walledin.game.network.client.Client;
 
 public abstract class AbstractEntityFactory implements EntityFactory {
 	private final static Logger LOG = Logger.getLogger(AbstractEntityFactory.class);

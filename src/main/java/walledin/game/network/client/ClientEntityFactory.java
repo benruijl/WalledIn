@@ -33,6 +33,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.logic.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.logic.PlayerParentBehavior;
+import walledin.game.entity.behaviors.logic.WeaponBehavior;
 import walledin.game.entity.behaviors.physics.SpatialBehavior;
 import walledin.game.entity.behaviors.render.BackgroundRenderBehavior;
 import walledin.game.entity.behaviors.render.ItemRenderBehavior;
@@ -94,6 +95,13 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 		hk.addBehavior(new ItemRenderBehavior(hk, texPart, destRect));
 		return hk;
 	}
+	
+	private Entity createWeapon(final String texPart,
+			final Rectangle destRect, final Element el, final Entity hg) {
+		hg.addBehavior(new SpatialBehavior(hg));
+		hg.addBehavior(new WeaponRenderBehavior(hg, texPart, destRect));
+		return hg;
+	}
 
 	/**
 	 * Creates a function that can create items of a particular family. It takes
@@ -137,7 +145,19 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					});
 		}
 
-		if (familyName.equals("bullet")) {
+		if (familyName.equals("handgunbullet")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(final Entity bl) {
+							return createBullet(texPart, destRect, el, bl);
+
+						}
+					});
+		}
+		
+		if (familyName.equals("foambullet")) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -155,10 +175,18 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 
 						@Override
 						public Entity create(final Entity hg) {
-							hg.addBehavior(new SpatialBehavior(hg));
-							hg.addBehavior(new WeaponRenderBehavior(hg, texPart, destRect));
-							return hg;
+							return createWeapon(texPart, destRect, el, hg);
+						}
+					});
+		}
+		
+		if (familyName.equals("foamweapon")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
 
+						@Override
+						public Entity create(final Entity hg) {
+							return createWeapon(texPart, destRect, el, hg);
 						}
 					});
 		}

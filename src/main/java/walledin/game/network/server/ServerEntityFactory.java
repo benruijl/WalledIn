@@ -31,6 +31,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.PhysicsBehavior;
 import walledin.game.entity.behaviors.logic.BulletBehavior;
+import walledin.game.entity.behaviors.logic.FoamBulletBehavior;
 import walledin.game.entity.behaviors.logic.HealthBehavior;
 import walledin.game.entity.behaviors.logic.HealthKitBehavior;
 import walledin.game.entity.behaviors.logic.PlayerParentBehavior;
@@ -67,13 +68,23 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		return map;
 	}
 
-	private Entity createBullet(final Rectangle destRect, final Element el,
+	private Entity createHandgunBullet(final Rectangle destRect, final Element el,
 			final Entity bl) {
 		bl.addBehavior(new SpatialBehavior(bl));
 		bl.addBehavior(new PhysicsBehavior(bl));
 		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		bl.addBehavior(new BulletBehavior(bl));
+		return bl;
+	}
+	
+	private Entity createFoamBullet(final Rectangle destRect, final Element el,
+			final Entity bl) {
+		bl.addBehavior(new SpatialBehavior(bl));
+		bl.addBehavior(new PhysicsBehavior(bl));
+		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
+
+		bl.addBehavior(new FoamBulletBehavior(bl));
 		return bl;
 	}
 
@@ -96,6 +107,14 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		final int hkStrength = XMLReader.getIntValue(el, "strength");
 		hk.addBehavior(new HealthKitBehavior(hk, hkStrength));
 		return hk;
+	}
+	
+	private Entity createWeapon(final Rectangle destRect, final Entity hg, final String bulletFamily) {
+		hg.addBehavior(new SpatialBehavior(hg));
+		// hg.addBehavior(new PhysicsBehavior(hg));
+		hg.setAttribute(Attribute.BOUNDING_RECT, destRect);
+		hg.addBehavior(new WeaponBehavior(hg, 10, bulletFamily));
+		return hg;
 	}
 
 	/**
@@ -140,13 +159,25 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 					});
 		}
 
-		if (familyName.equals("bullet")) {
+		if (familyName.equals("handgunbullet")) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
 						@Override
 						public Entity create(final Entity bl) {
-							return createBullet(destRect, el, bl);
+							return createHandgunBullet(destRect, el, bl);
+
+						}
+					});
+		}
+		
+		if (familyName.equals("foambullet")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(final Entity bl) {
+							return createFoamBullet(destRect, el, bl);
 
 						}
 					});
@@ -158,11 +189,18 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 
 						@Override
 						public Entity create(final Entity hg) {
-							hg.addBehavior(new SpatialBehavior(hg));
-							//hg.addBehavior(new PhysicsBehavior(hg));
-							hg.setAttribute(Attribute.BOUNDING_RECT, destRect);
-							hg.addBehavior(new WeaponBehavior(hg, 10));
-							return hg;
+							return createWeapon(destRect, hg, "handgunbullet");
+						}
+					});
+		}
+		
+		if (familyName.equals("foamweapon")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(final Entity hg) {
+							return createWeapon(destRect, hg, "foambullet");
 						}
 					});
 		}
