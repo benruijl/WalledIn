@@ -83,6 +83,12 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 		bl.addBehavior(new SpatialBehavior(bl));
 		return bl;
 	}
+	
+	private Entity createFoamPartical(final String texPart, final Rectangle destRect,
+			final Element el, final Entity bl) {
+		bl.addBehavior(new ItemRenderBehavior(bl, texPart, destRect));
+		return bl;
+	}
 
 	private Entity createArmorKit(final String texPart,
 			final Rectangle destRect, final Element el, final Entity ak) {
@@ -164,6 +170,18 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 						@Override
 						public Entity create(final Entity bl) {
 							return createBullet(texPart, destRect, el, bl);
+
+						}
+					});
+		}
+		
+		if (familyName.equals("foampartical")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(final Entity bl) {
+							return createFoamPartical(texPart, destRect, el, bl);
 
 						}
 					});

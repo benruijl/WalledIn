@@ -87,6 +87,13 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		bl.addBehavior(new FoamBulletBehavior(bl));
 		return bl;
 	}
+	
+	private Entity createFoamPartical(final Rectangle destRect, final Element el,
+			final Entity bl) {
+		bl.addBehavior(new SpatialBehavior(bl));
+		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
+		return bl;
+	}
 
 	private Entity createArmorKit(final Rectangle destRect, final Element el,
 			final Entity ak) {
@@ -182,6 +189,19 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 						}
 					});
 		}
+		
+		if (familyName.equals("foampartical")) {
+			entityContructionFunctions.put(familyName,
+					new EntityConstructionFunction() {
+
+						@Override
+						public Entity create(final Entity bl) {
+							return createFoamPartical(destRect, el, bl);
+
+						}
+					});
+		}
+
 
 		if (familyName.equals("handgun")) {
 			entityContructionFunctions.put(familyName,
