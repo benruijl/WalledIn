@@ -27,19 +27,31 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
-import walledin.game.network.server.Server;
 
 public class PhysicsBehavior extends Behavior {
 	private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-	private final Vector2f gravity = new Vector2f(0, 300.0f); // acceleration of
-																// gravity
+	private final Vector2f gravity; // acceleration of gravity
+	private final float frictionCoefficient; // part of the velocity that is
+	// kept
 	private Vector2f acceleration = new Vector2f(0, 0);
-	private float frictionCoefficient = 0.02f; // part of the velocity that is
-												// kept
+
 
 	public PhysicsBehavior(Entity owner) {
+		this(owner, true, true);
+	}
+
+	public PhysicsBehavior(Entity owner, boolean doGravity, boolean doFriction) {
 		super(owner);
-		// TODO Auto-generated constructor stub
+		if (doGravity) {
+			gravity = new Vector2f(0, 300.0f);
+		} else {
+			gravity = new Vector2f(0, 0);
+		}
+		if (doFriction) {
+			frictionCoefficient = 0.02f;
+		} else {
+			frictionCoefficient = 0;
+		}
 	}
 
 	@Override

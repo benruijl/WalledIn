@@ -71,7 +71,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createHandgunBullet(final Rectangle destRect, final Element el,
 			final Entity bl) {
 		bl.addBehavior(new SpatialBehavior(bl));
-		bl.addBehavior(new PhysicsBehavior(bl));
+		bl.addBehavior(new PhysicsBehavior(bl, false , false));
 		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		bl.addBehavior(new BulletBehavior(bl));
@@ -81,7 +81,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	private Entity createFoamBullet(final Rectangle destRect, final Element el,
 			final Entity bl) {
 		bl.addBehavior(new SpatialBehavior(bl));
-		bl.addBehavior(new PhysicsBehavior(bl));
+		bl.addBehavior(new PhysicsBehavior(bl, false , false));
 		bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
 		bl.addBehavior(new FoamBulletBehavior(bl));
