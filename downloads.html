@@ -6,10 +6,13 @@ body{
 background: #888888;
 }
 
+.description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+	pre { background: #000; color: #fff; padding: 15px;}
+	
 h1{
-letter-spacing: -1px;
+letter-spacing: -2px;
 text-transform: uppercase;
-font-size: 18px;
+font-size: 25px;
 font-family: arial;
 font-weight: bold;
 color: #5B66E2;
@@ -94,35 +97,34 @@ A:hover.none{text-decoration: none; color: #000000; border-bottom: none;}
 		<td background="images/index_04.jpg" width=74>
 		</td>
 		<td bgcolor=#FFFFFF width=647 valign=top>
-			<h1>Development journal #1</h1>
-			<h2>3th June 2010</h2>
-			<p>
-			This is the first development journal of a cool new 2d cross-platform online multiplayer action shooter called WalledIn. WalledIn is being developed in Java, using JOGL for OpenGL rendering. The game is spread under the GPL v3 license, thus it is <b>open-source</b>.
-			</p>
+		<h1>Downloads</h1>
 		
-			<p>
-			The goal of the game is to hunt, outsmart and kill your enemies. Apart from regular guns, you have a foam gun, so you can shoot walls to block your enemies from shooting you. You can also use it to create bridges, stairs, etc.
-			</p>
-			
-			<p>
-			Up until now we have built our networking protocol, basic physics and basic gameplay. This game will use component-oriented programming, for clarity and ease in the long run. We aim to make our code as clear and readable as possible, by preferring abstraction over hacks and by commenting every function. 
-			</p>
-			
-			<p>
-			If a new experimental feature is developed, it is put in another branch. The main rule is that the master branch is always compilable and semi-stable.
-			</p>
-			<p>
-			As of yet, we don't have our own sprites. We borrow them (with permission) from Teeworlds. If you are interested in creating sprites, please let us know. <b>We really need an artist!</b>
-			
-			If you are a programmer and like the idea of creating a game, you can always aks to join the team.
-			</p>
-			~ Team WalledIn
-			</p>
+		There are different ways to acquire WalledIn. You can download the latest version (unstable), or stable version. The unstable version includes the source.
+ 
+		<p>
+		<h2>Stable versions:</h2>
+		<a href="http://github.com/benruijl/WalledIn/downloads">Download here</a>
+		<br />
+		</p>
 		
-			<h1>New website WalledIn</h1>
-			<h2>3th June 2010</h2>
-			<p>Our project WalledIn, which has started about a month ago, has a website now! This website makes it easier for new visitors to get acquainted with our cool game. We will try to keep you guys up to date by announcing new releases and by posting development journals.</p>
-			~ Team WalledIn
+		<p>
+		<h2>Unstable versions:</h2>		
+		<b>Click on one of the pictures to download the latest source:</b>
+		<div id="container" style="margin-top: 30px;" style="margin-bottom: 30px;">
+		    <div class="download" style="text-align=center">
+      <a href="http://github.com/benruijl/WalledIn/zipball/master">
+        <img border="0" width="60" src="http://github.com/images/modules/download/zip.png"></a>
+      <a href="http://github.com/benruijl/WalledIn/tarball/master">
+        <img border="0" width="60" src="http://github.com/images/modules/download/tar.png"></a>
+    </div>
+	</div>
+
+	    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+      by running:
+      <pre>$ git clone git://github.com/benruijl/WalledIn</pre>
+
+    </p>
+	</p>
 		</td>
 		<td background="images/index_06.jpg" width=79>
 		</td>
@@ -141,6 +143,6 @@ A:hover.none{text-decoration: none; color: #000000; border-bottom: none;}
 	</tr>
 </table>
 </center>
-	<h3>Website design by Edo van Veen</h3>
+			<h3>Website design by Edo van Veen</h3>
 </body>
 </html>
