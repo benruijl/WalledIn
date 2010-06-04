@@ -23,7 +23,6 @@ package walledin.game;
 import java.util.Collection;
 import java.util.List;
 
-import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;

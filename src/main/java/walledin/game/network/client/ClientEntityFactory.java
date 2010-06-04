@@ -33,7 +33,6 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.behaviors.logic.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.logic.PlayerParentBehavior;
-import walledin.game.entity.behaviors.logic.WeaponBehavior;
 import walledin.game.entity.behaviors.physics.SpatialBehavior;
 import walledin.game.entity.behaviors.render.BackgroundRenderBehavior;
 import walledin.game.entity.behaviors.render.ItemRenderBehavior;

@@ -24,14 +24,16 @@ import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
+	private static final Logger LOG = Logger.getLogger(PlayerControlBehaviour.class);
 	private static final float MOVE_SPEED = 240.0f;
 	private static final float JUMP_SPEED = 8000.0f;
 	private boolean canJump;
@@ -58,13 +60,24 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 				break;
 			}
 		}
-		else if (messageType == MessageType.DROP) { // drop all items
-				if (getOwner().hasAttribute(Attribute.WEAPON))
+		else if (messageType == MessageType.DROP) {
+				if (data == null) // drop all
 				{
-					Entity weapon = (Entity) getOwner().getAttribute(Attribute.WEAPON);
-					weapon.setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
-					setAttribute(Attribute.WEAPON, null); // disown weapon
+					// FIXME: find better way to drop all entities
+					onMessage(MessageType.DROP, Attribute.WEAPON);
+					return;
 				}
+				
+				Attribute at = (Attribute) data;
+				
+				if (getOwner().hasAttribute(at))
+				{
+					Entity ent = (Entity) getAttribute(at);
+					ent.sendMessage(MessageType.DROP, null);
+					setAttribute(at, null);
+				}
+				else
+					LOG.warn("Trying to remove attribute " + at.toString() + ", but entity " + getOwner().getName() + " does not have this attribute.");
 			}
 
 		super.onMessage(messageType, data);
