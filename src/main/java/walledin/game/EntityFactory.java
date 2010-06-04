@@ -23,11 +23,12 @@ package walledin.game;
 import java.net.URL;
 
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 
 public interface EntityFactory {
 
 	public abstract Entity create(final EntityManager entityManager,
-			final String familyName, final String entityName);
+			final Family familyName, final String entityName);
 
 	/**
 	 * Loads all information for the prototypes from an XML file.

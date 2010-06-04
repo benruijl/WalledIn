@@ -27,14 +27,17 @@ import org.w3c.dom.Element;
 
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
+import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.behaviors.PhysicsBehavior;
 import walledin.game.entity.behaviors.logic.BulletBehavior;
 import walledin.game.entity.behaviors.logic.FoamBulletBehavior;
 import walledin.game.entity.behaviors.logic.HealthBehavior;
 import walledin.game.entity.behaviors.logic.HealthKitBehavior;
 import walledin.game.entity.behaviors.logic.PlayerParentBehavior;
+import walledin.game.entity.behaviors.logic.PlayerWeaponInventoryBehavior;
 import walledin.game.entity.behaviors.logic.WeaponBehavior;
 import walledin.game.entity.behaviors.physics.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.physics.SpatialBehavior;
@@ -54,6 +57,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		player.addBehavior(new PlayerControlBehaviour(player));
 		player.addBehavior(new PlayerParentBehavior(player));
 		player.addBehavior(new PhysicsBehavior(player));
+		player.addBehavior(new PlayerWeaponInventoryBehavior(player));
 
 		// FIXME correct the drawing instead of the hack the bounding box
 		player.setAttribute(Attribute.BOUNDING_RECT,
@@ -116,7 +120,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		return hk;
 	}
 	
-	private Entity createWeapon(final Rectangle destRect, final Entity hg, final String bulletFamily) {
+	private Entity createWeapon(final Rectangle destRect, final Entity hg, final Family bulletFamily) {
 		hg.addBehavior(new SpatialBehavior(hg));
 		// hg.addBehavior(new PhysicsBehavior(hg));
 		hg.setAttribute(Attribute.BOUNDING_RECT, destRect);
@@ -141,10 +145,10 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	 *            Element in XML file which contains item specific information,
 	 *            like health kit strength or armor penetration value
 	 */
-	private void addItemFunction(final String familyName,
+	private void addItemFunction(final Family familyName,
 			final Rectangle destRect, final Element el) {
 
-		if (familyName.equals("healthkit")) {
+		if (familyName.equals(Family.HEALTHKIT)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -155,7 +159,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 					});
 		}
 
-		if (familyName.equals("armourkit")) {
+		if (familyName.equals(Family.ARMOURKIT)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -166,7 +170,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 					});
 		}
 
-		if (familyName.equals("handgunbullet")) {
+		if (familyName.equals(Family.HANDGUN_BULLET)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -178,7 +182,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 					});
 		}
 		
-		if (familyName.equals("foambullet")) {
+		if (familyName.equals(Family.FOAMGUN_BULLET)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -190,7 +194,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 					});
 		}
 		
-		if (familyName.equals("foampartical")) {
+		if (familyName.equals(Family.FOAM_PARTICLE)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -203,24 +207,24 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 		}
 
 
-		if (familyName.equals("handgun")) {
+		if (familyName.equals(Family.HANDGUN)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
 						@Override
 						public Entity create(final Entity hg) {
-							return createWeapon(destRect, hg, "handgunbullet");
+							return createWeapon(destRect, hg, Family.HANDGUN_BULLET);
 						}
 					});
 		}
 		
-		if (familyName.equals("foamweapon")) {
+		if (familyName.equals(Family.FOAMGUN)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
 						@Override
 						public Entity create(final Entity hg) {
-							return createWeapon(destRect, hg, "foambullet");
+							return createWeapon(destRect, hg, Family.FOAMGUN_BULLET);
 						}
 					});
 		}
@@ -230,7 +234,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 	 * Creates skeletons for all the standard entities, like player and map.
 	 */
 	private void addStandardEntityCreationFunctions() {
-		entityContructionFunctions.put("Player",
+		entityContructionFunctions.put(Family.PLAYER,
 				new EntityConstructionFunction() {
 
 					@Override
@@ -239,7 +243,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 					}
 				});
 
-		entityContructionFunctions.put("Map", new EntityConstructionFunction() {
+		entityContructionFunctions.put(Family.MAP, new EntityConstructionFunction() {
 
 			@Override
 			public Entity create(final Entity ent) {
@@ -269,7 +273,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
 				final int destWidth = XMLReader.getIntValue(cur, "width");
 				final int destHeight = XMLReader.getIntValue(cur, "height");
 
-				addItemFunction(familyName, new Rectangle(0, 0, destWidth,
+				addItemFunction(Enum.valueOf(Family.class, familyName), new Rectangle(0, 0, destWidth,
 						destHeight), cur);
 			}
 

@@ -27,6 +27,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 
 public abstract class AbstractEntityFactory implements EntityFactory {
 	private final static Logger LOG = Logger.getLogger(AbstractEntityFactory.class);
@@ -35,24 +36,25 @@ public abstract class AbstractEntityFactory implements EntityFactory {
 		Entity create(final Entity ent);
 	}
 
-	protected final Map<String, EntityConstructionFunction> entityContructionFunctions;
+	protected final Map<Family, EntityConstructionFunction> entityContructionFunctions;
 
 	public AbstractEntityFactory() {
-		entityContructionFunctions = new HashMap<String, EntityConstructionFunction>();
+		entityContructionFunctions = new HashMap<Family, EntityConstructionFunction>();
 	}
 
 	/**
 	 * @see walledin.game.EntityFactory#create(java.lang.String,
 	 *      java.lang.String)
 	 */
+	@Override
 	public Entity create(final EntityManager entityManager,
-			final String familyName, final String entityName) {
-		final Entity ent = new Entity(entityManager, familyName, entityName);
+			final Family family, final String entityName) {
+		final Entity ent = new Entity(entityManager, family, entityName);
 		final EntityConstructionFunction func = entityContructionFunctions
-				.get(familyName);
+				.get(family);
 		
 		if (func == null) {
-			LOG.warn("Failed to find family name '" + familyName + "'. Returning generic entity.");
+			LOG.warn("Failed to find family name '" + family + "'. Returning generic entity.");
 			return ent; // return generic entity
 		}
 		return func.create(ent);

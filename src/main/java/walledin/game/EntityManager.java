@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.network.server.ChangeSet;
 import walledin.util.Utils;
 
@@ -59,7 +60,7 @@ public class EntityManager {
 	 * @param name
 	 * @return The created entity or null on failure
 	 */
-	public Entity create(final String familyName, final String entityName) {
+	public Entity create(final Family familyName, final String entityName) {
 		final Entity entity = factory.create(this, familyName, entityName);
 		add(entity);
 		created.add(entity);
@@ -72,13 +73,13 @@ public class EntityManager {
 	 * ENT_<i>familyname</i>_<i>num</i>, where <i>familyname</i> is the family
 	 * name and <i>num</i> is the number of already generated unique names.
 	 * 
-	 * @param familyName
+	 * @param family
 	 *            Name of the item's family
 	 * @return Unique entity name
 	 */
-	public String generateUniqueName(final String familyName) {
+	public String generateUniqueName(final Family family) {
 		uniqueNameCount++;
-		return "ENT_" + familyName + "_" + Integer.toString(uniqueNameCount);
+		return "ENT_" + family.toString() + "_" + Integer.toString(uniqueNameCount);
 	}
 
 	/**

@@ -37,6 +37,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
@@ -242,7 +243,7 @@ public class Server implements NetworkEventListener {
 			final String name) {
 		final String entityName = NetworkConstants
 				.getAddressRepresentation(address);
-		final Entity player = entityManager.create("Player", entityName);
+		final Entity player = entityManager.create(Family.PLAYER, entityName);
 		player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
 		player.setAttribute(Attribute.PLAYER_NAME, name);
 

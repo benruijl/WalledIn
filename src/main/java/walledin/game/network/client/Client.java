@@ -41,6 +41,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
@@ -249,7 +250,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 		entityManager.init();
 
 		// Background is not created by server (not yet anyway)
-		entityManager.create("Background", "Background");
+		entityManager.create(Family.BACKGROUND, "Background");
 
 		LOG.info("starting network thread");
 		// start network thread

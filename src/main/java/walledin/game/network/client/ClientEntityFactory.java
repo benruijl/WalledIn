@@ -31,6 +31,7 @@ import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.behaviors.logic.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.logic.PlayerParentBehavior;
 import walledin.game.entity.behaviors.physics.SpatialBehavior;
@@ -83,7 +84,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 		return bl;
 	}
 	
-	private Entity createFoamPartical(final String texPart, final Rectangle destRect,
+	private Entity createFoamParticle(final String texPart, final Rectangle destRect,
 			final Element el, final Entity bl) {
 		bl.addBehavior(new ItemRenderBehavior(bl, texPart, destRect));
 		return bl;
@@ -125,10 +126,10 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 	 *            Element in XML file which contains item specific information,
 	 *            like health kit strength or armor penetration value
 	 */
-	private void addItemFunction(final String familyName, final String texPart,
+	private void addItemFunction(final Family familyName, final String texPart,
 			final Rectangle destRect, final Element el) {
 
-		if (familyName.equals("healthkit")) {
+		if (familyName.equals(Family.HEALTHKIT)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -139,7 +140,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					});
 		}
 
-		if (familyName.equals("armourkit")) {
+		if (familyName.equals(Family.ARMOURKIT)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -150,7 +151,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					});
 		}
 
-		if (familyName.equals("handgunbullet")) {
+		if (familyName.equals(Family.HANDGUN_BULLET)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -162,7 +163,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					});
 		}
 		
-		if (familyName.equals("foambullet")) {
+		if (familyName.equals(Family.FOAMGUN_BULLET)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -174,19 +175,19 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					});
 		}
 		
-		if (familyName.equals("foampartical")) {
+		if (familyName.equals(Family.FOAM_PARTICLE)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
 						@Override
 						public Entity create(final Entity bl) {
-							return createFoamPartical(texPart, destRect, el, bl);
+							return createFoamParticle(texPart, destRect, el, bl);
 
 						}
 					});
 		}
 		
-		if (familyName.equals("handgun")) {
+		if (familyName.equals(Family.HANDGUN)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -197,7 +198,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					});
 		}
 		
-		if (familyName.equals("foamweapon")) {
+		if (familyName.equals(Family.FOAMGUN)) {
 			entityContructionFunctions.put(familyName,
 					new EntityConstructionFunction() {
 
@@ -213,7 +214,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 	 * Creates skeletons for all the standard entities, like player and map.
 	 */
 	private void addStandardEntityCreationFunctions() {
-		entityContructionFunctions.put("Player",
+		entityContructionFunctions.put(Family.PLAYER,
 				new EntityConstructionFunction() {
 
 					@Override
@@ -222,7 +223,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					}
 				});
 
-		entityContructionFunctions.put("Background",
+		entityContructionFunctions.put(Family.BACKGROUND,
 				new EntityConstructionFunction() {
 
 					@Override
@@ -231,7 +232,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 					}
 				});
 
-		entityContructionFunctions.put("Map", new EntityConstructionFunction() {
+		entityContructionFunctions.put(Family.MAP, new EntityConstructionFunction() {
 
 			@Override
 			public Entity create(final Entity ent) {
@@ -275,7 +276,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
 				TexturePartManager.getInstance().createTexturePart(texPartName,
 						texName, new Rectangle(x, y, width, height));
 
-				addItemFunction(familyName, texPartName, new Rectangle(0, 0,
+				addItemFunction(Enum.valueOf(Family.class, familyName), texPartName, new Rectangle(0, 0,
 						destWidth, destHeight), cur);
 			}
 

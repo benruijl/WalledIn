@@ -28,26 +28,27 @@ import java.util.Set;
 
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 
 /**
  * Change set of the game state. A change set contains all the changes between
  * its version and the version of the current game state. The server is
- * responsible for keeping change sets up to date. Entrys in created should
- * never be in removed. Entrys in removed should not be in created or updated.
+ * responsible for keeping change sets up to date. Entries in created should
+ * never be in removed. Entries in removed should not be in created or updated.
  * 
  * @author Wouter Smeenk
  * 
  */
 public class ChangeSet {
 	private final int version;
-	private final Map<String, String> created;
+	private final Map<String, Family> created;
 	private final Set<String> removed;
 	private final Map<String, Set<Attribute>> updated;
 
 	public ChangeSet(int version, Set<Entity> created, Set<Entity> removed,
 			Map<String, Entity> entities) {
 		this.version = version;
-		this.created = new HashMap<String, String>();
+		this.created = new HashMap<String, Family>();
 		this.removed = new HashSet<String>();
 		this.updated = new HashMap<String, Set<Attribute>>();
 		initialize(created, removed, entities);
@@ -63,7 +64,7 @@ public class ChangeSet {
 	private void initialize(Set<Entity> created, Set<Entity> removed,
 			Map<String, Entity> entities) {
 		for (Entity entity : created) {
-			this.created.put(entity.getName(), entity.getFamilyName());
+			this.created.put(entity.getName(), entity.getFamily());
 		}
 		for (Entity entity : removed) {
 			this.removed.add(entity.getName());
@@ -104,8 +105,8 @@ public class ChangeSet {
 		// Remove removed entities from our created entities and updated
 		// entities
 		for (String name : changeSet.removed) {
-			String removedName = created.remove(name);
-			if (removedName != null) {
+			Family removedFamily = created.remove(name);
+			if (removedFamily != null) {
 				// If there was something to be removed from the created set
 				// then also remove it from the removed set because it has been
 				// created and then removed between this version and the current
@@ -132,7 +133,7 @@ public class ChangeSet {
 		return version;
 	}
 
-	public Map<String, String> getCreated() {
+	public Map<String, Family> getCreated() {
 		return created;
 	}
 

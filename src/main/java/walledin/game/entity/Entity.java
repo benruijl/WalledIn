@@ -34,7 +34,7 @@ public class Entity {
 	private final Map<Attribute, Object> attributes;
 	private Set<Attribute> changedAttributes;
 	private String name;
-	private final String familyName;
+	private final Family family;
 	private boolean markedRemoved;
 	private final EntityManager entityManager;
 
@@ -43,13 +43,13 @@ public class Entity {
 	 * @param name
 	 *            Name of the component
 	 */
-	public Entity(final EntityManager entityManager, final String familyName,
+	public Entity(final EntityManager entityManager, final Family family,
 			final String name) {
 		behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
 		attributes = new HashMap<Attribute, Object>();
 		changedAttributes = new HashSet<Attribute>();
 		this.name = name;
-		this.familyName = familyName;
+		this.family = family;
 		markedRemoved = false;
 		this.entityManager = entityManager;
 	}
@@ -64,12 +64,12 @@ public class Entity {
 	}
 
 	/**
-	 * Get the family name
+	 * Get the family
 	 * 
-	 * @return Family name
+	 * @return Family
 	 */
-	public String getFamilyName() {
-		return familyName;
+	public Family getFamily() {
+		return family;
 	}
 
 	/**
@@ -129,6 +129,7 @@ public class Entity {
 	 *            The attribute to check
 	 * @return True if entity has a non-null attribute, else false
 	 */
+	// TODO: remove
 	public boolean hasAttribute(final Attribute attribute) {
 		return attributes.containsKey(attribute) &&  attributes.get(attribute) != null;
 	}
@@ -140,10 +141,9 @@ public class Entity {
 	 *            The attribute to get
 	 * @return Returns the object bound to this attribute
 	 */
-	@SuppressWarnings("unchecked")
 	public Object getAttribute(final Attribute attribute) {
 		if (!attributes.containsKey(attribute)) {
-			throw new IllegalArgumentException("Object " + name
+			LOG.warning("Object " + name
 					+ " does not have attribute " + attribute.name());
 		}
 

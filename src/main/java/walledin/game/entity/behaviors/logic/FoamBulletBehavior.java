@@ -4,6 +4,7 @@ import walledin.game.EntityManager;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class FoamBulletBehavior extends BulletBehavior {
@@ -21,14 +22,14 @@ public class FoamBulletBehavior extends BulletBehavior {
 			final CollisionData colData = (CollisionData) data;
 			if (!blownUp) {
 				
-				// if collided with map or other foampartical create a
-				// foampartical
+				// if collided with map or other foam particle create a
+				// foam particle
 				if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)
-						|| colData.getCollisionEntity().getFamilyName()
-								.equals("foampartical")) {
+						|| colData.getCollisionEntity().getFamily()
+								.equals(Family.FOAM_PARTICLE)) {
 					final EntityManager manager = getEntityManager();
-					final Entity partical = manager.create("foampartical",
-							manager.generateUniqueName("foampartical"));
+					final Entity partical = manager.create(Family.FOAM_PARTICLE,
+							manager.generateUniqueName(Family.FOAM_PARTICLE));
 					partical.setAttribute(Attribute.POSITION,
 							getAttribute(Attribute.POSITION));
 					blownUp = true;

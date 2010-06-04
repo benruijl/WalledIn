@@ -35,6 +35,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
 
@@ -161,7 +162,7 @@ public class NetworkDataReader {
 		switch (type) {
 		case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
 			final String familyName = readStringData(buffer);
-			entity = entityManager.create(familyName, name);
+			entity = entityManager.create(Enum.valueOf(Family.class, familyName), name);
 			break;
 		case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
 			entityManager.remove(name);

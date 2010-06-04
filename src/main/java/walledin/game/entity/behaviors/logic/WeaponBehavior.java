@@ -26,21 +26,22 @@ import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class WeaponBehavior extends Behavior {
 	private Entity owner; // entity that carries the gun
 	private final int fireLag;
-	private final String bulletFamily;
+	private final Family bulletFamily;
 	private boolean canShoot;
 	private int lastShot; // frame of last shot
 
-	public WeaponBehavior(Entity owner, int fireLag, String bulletFamily) {
+	public WeaponBehavior(Entity owner, int fireLag, Family bulletFamily2) {
 		super(owner);
 		this.fireLag = fireLag;
 		this.lastShot = fireLag;
 		this.canShoot = true;
-		this.bulletFamily = bulletFamily;
+		this.bulletFamily = bulletFamily2;
 
 		// can be picked up, is not owned by any player
 		setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
@@ -54,7 +55,7 @@ public class WeaponBehavior extends Behavior {
 			final CollisionData colData = (CollisionData) data;
 			owner = colData.getCollisionEntity();
 			
-			if (!owner.getFamilyName().equals("Player"))
+			if (!owner.getFamily().equals(Family.PLAYER))
 				return;
 
 			

@@ -30,6 +30,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.util.XMLReader;
 
 /**
@@ -91,7 +92,7 @@ public class GameMapIOXML implements GameMapIO {
 			final int x = Integer.parseInt(el.getAttribute("x"));
 			final int y = Integer.parseInt(el.getAttribute("y"));
 
-			final Entity item = entityManager.create(type, name);
+			final Entity item = entityManager.create(Enum.valueOf(Family.class, type), name);
 			item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
 			itList.add(item);
 		}
@@ -117,7 +118,7 @@ public class GameMapIOXML implements GameMapIO {
 			final List<Entity> items = parseItems(mapElement);
 			final List<Tile> tiles = parseTiles(mapElement);
 
-			final Entity map = entityManager.create("Map", name);
+			final Entity map = entityManager.create(Family.MAP, name);
 			map.setAttribute(Attribute.WIDTH, width);
 			map.setAttribute(Attribute.HEIGHT, height);
 			map.setAttribute(Attribute.TILES, tiles);

@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class HealthKitBehavior extends Behavior {
@@ -42,7 +43,7 @@ public class HealthKitBehavior extends Behavior {
 			
 			final CollisionData colData = (CollisionData) data;
 			
-			if (!colData.getCollisionEntity().getFamilyName().equals("Player"))
+			if (!colData.getCollisionEntity().getFamily().equals(Family.PLAYER))
 				return;
 			
 			LOG.info(getOwner().getName() + " collided with "

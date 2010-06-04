@@ -35,6 +35,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.map.Tile;
 import walledin.game.network.server.ChangeSet;
 
@@ -69,13 +70,13 @@ public class NetworkDataWriter {
 			buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
 			writeStringData(name, buffer);
 		}
-		for (final Entry<String, String> entry : changeSet.getCreated()
+		for (final Entry<String, Family> entry : changeSet.getCreated()
 				.entrySet()) {
 			buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
 			// write name of entity
 			writeStringData(entry.getKey(), buffer);
 			// write family of entity
-			writeStringData(entry.getValue(), buffer);
+			writeStringData(entry.getValue().toString(), buffer);
 		}
 		for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
 				.entrySet()) {
