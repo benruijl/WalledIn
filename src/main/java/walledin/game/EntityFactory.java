@@ -27,8 +27,8 @@ import walledin.game.entity.Family;
 
 public interface EntityFactory {
 
-    Entity create(final EntityManager entityManager,
-            final Family familyName, final String entityName);
+    Entity create(final EntityManager entityManager, final Family familyName,
+            final String entityName);
 
     /**
      * Loads all information for the prototypes from an XML file.

@@ -206,7 +206,7 @@ public class Server implements NetworkEventListener {
             }
 
             final ChangeSet changeSet = changeSetLookup.get(sendVersion);
-            
+
             if (LOG.isTraceEnabled()) {
                 LOG.trace("currentVersion: " + currentVersion + " changeset: "
                         + changeSet.getVersion() + " " + changeSet.getCreated()

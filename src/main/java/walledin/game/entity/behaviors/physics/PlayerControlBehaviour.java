@@ -54,7 +54,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
             if (colData.getNewPos().getY() < colData.getTheorPos().getY()) {
                 canJump = true;
             }
-            
+
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attribute = (Attribute) data;
             switch (attribute) {
@@ -69,10 +69,10 @@ public class PlayerControlBehaviour extends SpatialBehavior {
                 return;
             }
 
-            Attribute at = (Attribute) data;
+            final Attribute at = (Attribute) data;
 
             if (getOwner().hasAttribute(at)) {
-                Entity ent = (Entity) getAttribute(at);
+                final Entity ent = (Entity) getAttribute(at);
                 ent.sendMessage(MessageType.DROP, null);
                 setAttribute(at, null);
             } else {
@@ -82,7 +82,6 @@ public class PlayerControlBehaviour extends SpatialBehavior {
             }
         }
 
-            
         super.onMessage(messageType, data);
     }
 
@@ -128,8 +127,8 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 
         if (keysDown.contains(KeyEvent.VK_ENTER)) {
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
-                Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
-                
+                final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
+
                 weapon.sendMessage(MessageType.SHOOT, getOwner());
             }
         }

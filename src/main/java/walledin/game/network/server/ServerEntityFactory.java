@@ -27,7 +27,6 @@ import org.w3c.dom.Element;
 
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
-import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -269,8 +268,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(file)) {
-            final List<Element> elList = XMLReader.getElements(reader
-                    .getRootElement(), "item");
+            final List<Element> elList = XMLReader.getElements(
+                    reader.getRootElement(), "item");
 
             for (final Element cur : elList) {
                 final String familyName = XMLReader.getTextValue(cur, "name");

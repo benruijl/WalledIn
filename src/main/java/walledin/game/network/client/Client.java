@@ -230,7 +230,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
             font.renderText(renderer,
                     "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(
                             600, 20));
-            
+
             renderer.stopHUDRendering();
         }
     }

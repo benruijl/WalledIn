@@ -49,7 +49,7 @@ public class BulletBehavior extends Behavior {
             if (colData.getCollisionEntity().getFamily().equals(Family.PLAYER)) {
                 colData.getCollisionEntity().sendMessage(
                         MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
-                
+
                 getOwner().remove();
             }
         }

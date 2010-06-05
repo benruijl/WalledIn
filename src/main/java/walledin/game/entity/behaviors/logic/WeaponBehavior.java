@@ -36,11 +36,12 @@ public class WeaponBehavior extends Behavior {
     private boolean canShoot;
     private int lastShot; // frame of last shot
 
-    public WeaponBehavior(final Entity owner, int fireLag, final Family bulletFamily) {
+    public WeaponBehavior(final Entity owner, final int fireLag,
+            final Family bulletFamily) {
         super(owner);
         this.fireLag = fireLag;
-        this.lastShot = fireLag;
-        this.canShoot = true;
+        lastShot = fireLag;
+        canShoot = true;
         this.bulletFamily = bulletFamily;
 
         // can be picked up, is not owned by any player
@@ -49,14 +50,15 @@ public class WeaponBehavior extends Behavior {
     }
 
     @Override
-    public final void onMessage(MessageType messageType, Object data) {
+    public final void onMessage(final MessageType messageType, final Object data) {
         if ((Boolean) getAttribute(Attribute.COLLECTABLE)
                 && messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
             final Entity ent = colData.getCollisionEntity();
 
-            if (!ent.getFamily().equals(Family.PLAYER))
+            if (!ent.getFamily().equals(Family.PLAYER)) {
                 return;
+            }
 
             owner = ent;
 
@@ -76,9 +78,9 @@ public class WeaponBehavior extends Behavior {
             owner = null;
         }
 
-        if (messageType == MessageType.SHOOT) // TODO: use owner
+        if (messageType == MessageType.SHOOT) {
             if (canShoot) {
-                Entity player = (Entity) data;
+                final Entity player = (Entity) data;
 
                 final int or = (Integer) player
                         .getAttribute(Attribute.ORIENTATION);
@@ -109,6 +111,7 @@ public class WeaponBehavior extends Behavior {
                 lastShot = fireLag;
             }
         }
+    }
 
     @Override
     public final void onUpdate(final double delta) {

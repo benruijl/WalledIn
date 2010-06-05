@@ -29,7 +29,7 @@ import walledin.game.entity.MessageType;
 
 public class FoamBulletBehavior extends BulletBehavior {
     private boolean blownUp;
-    
+
     public FoamBulletBehavior(final Entity owner) {
         super(owner, 0);
         blownUp = false;
@@ -45,12 +45,12 @@ public class FoamBulletBehavior extends BulletBehavior {
                 // if collided with map or other foam particle create a
                 // foam particle
                 if (colData.getCollisionEntity().getFamily() == Family.MAP
-                        || colData.getCollisionEntity().getFamily().equals(
-                                Family.FOAM_PARTICLE)) {
+                        || colData.getCollisionEntity().getFamily()
+                                .equals(Family.FOAM_PARTICLE)) {
                     final EntityManager manager = getEntityManager();
                     final Entity partical = manager.create(
-                            Family.FOAM_PARTICLE, manager
-                                    .generateUniqueName(Family.FOAM_PARTICLE));
+                            Family.FOAM_PARTICLE,
+                            manager.generateUniqueName(Family.FOAM_PARTICLE));
 
                     partical.setAttribute(Attribute.POSITION,
                             getAttribute(Attribute.POSITION));

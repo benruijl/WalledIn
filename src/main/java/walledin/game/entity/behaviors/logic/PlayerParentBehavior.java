@@ -27,7 +27,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerParentBehavior extends Behavior {
-    
+
     public PlayerParentBehavior(final Entity owner) {
         super(owner);
     }

@@ -105,7 +105,7 @@ public class ChangeSet {
 
         // Remove removed entities from our created entities and updated
         // entities
-        for (String name : changeSet.removed) {
+        for (final String name : changeSet.removed) {
             final Family removedFamily = created.remove(name);
             if (removedFamily != null) {
                 // If there was something to be removed from the created set

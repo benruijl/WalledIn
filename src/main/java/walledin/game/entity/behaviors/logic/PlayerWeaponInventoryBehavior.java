@@ -1,7 +1,6 @@
 package walledin.game.entity.behaviors.logic;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -16,10 +15,10 @@ import walledin.game.entity.MessageType;
 public class PlayerWeaponInventoryBehavior extends Behavior {
     private final static Logger LOG = Logger
             .getLogger(PlayerWeaponInventoryBehavior.class);
-    private Map<Family, Entity> weapons;
-    private Map<Integer, Family> weaponKeyMap;
+    private final Map<Family, Entity> weapons;
+    private final Map<Integer, Family> weaponKeyMap;
 
-    public PlayerWeaponInventoryBehavior(Entity owner) {
+    public PlayerWeaponInventoryBehavior(final Entity owner) {
         super(owner);
 
         weapons = new HashMap<Family, Entity>();
@@ -31,38 +30,41 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
     }
 
     @Override
-    public void onMessage(MessageType messageType, Object data) {
+    public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
-            CollisionData colData = (CollisionData) data;
-            Entity weapon = colData.getCollisionEntity();
+            final CollisionData colData = (CollisionData) data;
+            final Entity weapon = colData.getCollisionEntity();
 
             if (weapon.getFamily().getParent() == Family.WEAPON) {
                 if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)
                         || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
-                    if (weapons.containsKey(weapon.getFamily()))
+                    if (weapons.containsKey(weapon.getFamily())) {
                         return;
+                    }
 
                     weapons.put(weapon.getFamily(), weapon);
                     LOG.info("Adding weapon of family "
                             + weapon.getFamily().toString());
 
-                    if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON))
+                    if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                         getOwner()
                                 .setAttribute(Attribute.ACTIVE_WEAPON, weapon);
+                    }
                 }
             }
         }
 
         if (messageType == MessageType.SELECT_WEAPON) {
-            Entity weapon = weapons.get(weaponKeyMap.get((Integer) data));
+            final Entity weapon = weapons.get(weaponKeyMap.get(data));
 
-            if (weapon != null)
+            if (weapon != null) {
                 setAttribute(Attribute.ACTIVE_WEAPON, weapon);
+            }
         }
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
         // TODO Auto-generated method stub
 
     }

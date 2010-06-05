@@ -6,19 +6,19 @@ import walledin.game.entity.MessageType;
 
 public class InventoryBehavior extends Behavior {
 
-    public InventoryBehavior(Entity owner) {
+    public InventoryBehavior(final Entity owner) {
         super(owner);
         // TODO Auto-generated constructor stub
     }
 
     @Override
-    public void onMessage(MessageType messageType, Object data) {
+    public void onMessage(final MessageType messageType, final Object data) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
         // TODO Auto-generated method stub
 
     }

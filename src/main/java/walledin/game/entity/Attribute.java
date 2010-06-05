@@ -33,7 +33,7 @@ public enum Attribute {
             List.class, true), ITEM_LIST(List.class, true), HEALTH(
             Integer.class, true), PLAYER_NAME(String.class, true), ORIENTATION(
 
-            Integer.class, true), ACTIVE_WEAPON(Entity.class), COLLECTABLE(
+    Integer.class, true), ACTIVE_WEAPON(Entity.class), COLLECTABLE(
             Boolean.class),
 
     KEYS_DOWN(Set.class), WALK_ANIM_FRAME(Float.class), BOUNDING_RECT(

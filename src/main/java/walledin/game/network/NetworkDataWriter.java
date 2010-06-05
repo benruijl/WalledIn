@@ -70,7 +70,7 @@ public class NetworkDataWriter {
             buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
             writeStringData(name, buffer);
         }
-        
+
         for (final Entry<String, Family> entry : changeSet.getCreated()
                 .entrySet()) {
             buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);

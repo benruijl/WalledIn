@@ -86,7 +86,7 @@ public final class TextureManager extends ResourceManager<String, Texture> {
             final Graphics g = argbImg.createGraphics();
             g.drawImage(img, 0, 0, null);
             final Texture texture = TextureIO.newTexture(img, false);
-            
+
             return put(textureID, texture);
 
         } catch (final IOException e) {
