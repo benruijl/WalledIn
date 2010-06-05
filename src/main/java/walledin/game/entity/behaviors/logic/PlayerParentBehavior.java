@@ -41,10 +41,10 @@ public class PlayerParentBehavior extends Behavior {
 		if (messageType != MessageType.ATTRIBUTE_SET)
 			return;
 		
-		if (getOwner().hasAttribute(Attribute.WEAPON) == false)
+		if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON) == false)
 			return;
 		
-		final Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
+		final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
 		final Attribute attrib = (Attribute) data;
 		final int or = (Integer) getAttribute(Attribute.ORIENTATION);
 		final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);

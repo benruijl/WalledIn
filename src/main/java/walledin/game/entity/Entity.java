@@ -130,6 +130,7 @@ public class Entity {
 	 * @return True if entity has a non-null attribute, else false
 	 */
 	// TODO: remove
+	@Deprecated
 	public boolean hasAttribute(final Attribute attribute) {
 		return attributes.containsKey(attribute) &&  attributes.get(attribute) != null;
 	}

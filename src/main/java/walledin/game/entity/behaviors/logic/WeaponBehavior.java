@@ -53,20 +53,20 @@ public class WeaponBehavior extends Behavior {
 		if ((Boolean) getAttribute(Attribute.COLLECTABLE)
 				&& messageType == MessageType.COLLIDED) {
 			final CollisionData colData = (CollisionData) data;
-			owner = colData.getCollisionEntity();
+			final Entity ent = colData.getCollisionEntity();
 			
-			if (!owner.getFamily().equals(Family.PLAYER))
+			if (!ent.getFamily().equals(Family.PLAYER))
 				return;
-
 			
+			owner = ent;			
 			
 			/* Check if player had a previous weapon, if so drop it */
-			if (owner.hasAttribute(Attribute.WEAPON))
+		/*	if (owner.hasAttribute(Attribute.ACTIVE_WEAPON))
 			{
-				owner.sendMessage(MessageType.DROP, Attribute.WEAPON);
+				owner.sendMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
 			}		
 			
-			owner.setAttribute(Attribute.WEAPON, getOwner());
+			owner.setAttribute(Attribute.ACTIVE_WEAPON, getOwner()); */
 			setAttribute(Attribute.COLLECTABLE, Boolean.FALSE);
 		}
 		
@@ -76,7 +76,7 @@ public class WeaponBehavior extends Behavior {
 			owner = null;
 		}
 
-		if (messageType == MessageType.SHOOT)
+		if (messageType == MessageType.SHOOT) // TODO: use owner
 			if (canShoot) {
 				Entity player = (Entity) data;
 

@@ -64,7 +64,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 				if (data == null) // drop all
 				{
 					// FIXME: find better way to drop all entities
-					onMessage(MessageType.DROP, Attribute.WEAPON);
+					onMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
 					return;
 				}
 				
@@ -112,11 +112,19 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 		if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
 			y -= JUMP_SPEED;
 		}
+		
+		if (keysDown.contains(KeyEvent.VK_1)) {
+			getOwner().sendMessage(MessageType.SELECT_WEAPON, Integer.valueOf(1));
+		}
+		
+		if (keysDown.contains(KeyEvent.VK_2)) {
+			getOwner().sendMessage(MessageType.SELECT_WEAPON, Integer.valueOf(2));
+		}
 
 		if (keysDown.contains(KeyEvent.VK_ENTER)) {
-			if (getOwner().hasAttribute(Attribute.WEAPON))
+			if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON))
 			{
-				Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
+				Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
 				weapon.sendMessage(MessageType.SHOOT, getOwner());
 			}
 		}
