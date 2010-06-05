@@ -118,7 +118,7 @@ Checkstyle configuration that checks the sun coding conventions.
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>
   <module name="Header">
-    <property name="headerFile" value="/home/wouter/workspace/WalledIn/scripts/licenseheader.txt"/>
+    <property name="headerFile" value="${workspace_loc}/WalledIn/scripts/licenseheader.txt"/>
     <property name="fileExtensions" value="java"/>
   </module>
 </module>
