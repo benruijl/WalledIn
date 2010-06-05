@@ -45,9 +45,10 @@ public class Matrix2f {
      *            Rotation in <b>radians</b>
      */
     public Matrix2f(final double rot) {
-        m[0] = m[4] = (float) Math.cos(rot);
+        m[0] = (float) Math.cos(rot);
         m[1] = (float) Math.sin(rot);
         m[2] = -m[1];
+        m[3] = m[0];
     }
 
     public Vector2f apply(final Vector2f vec) {

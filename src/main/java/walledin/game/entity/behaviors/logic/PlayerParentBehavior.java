@@ -42,7 +42,7 @@ public class PlayerParentBehavior extends Behavior {
             return;
         }
 
-        if (getOwner().hasAttribute(Attribute.WEAPON) == false) {
+        if (!getOwner().hasAttribute(Attribute.WEAPON)) {
             return;
         }
 
