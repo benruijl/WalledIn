@@ -31,22 +31,23 @@ import com.sun.opengl.util.texture.Texture;
  * 
  * @author ben
  */
-public class TexturePartManager extends ResourceManager<String, TexturePart> {
-    private final static Logger LOG = Logger
+public final class TexturePartManager extends
+        ResourceManager<String, TexturePart> {
+    private static final Logger LOG = Logger
             .getLogger(TexturePartManager.class);
     private static final TexturePartManager INSTANCE = new TexturePartManager();
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
+    private TexturePartManager() {
+
     }
 
     public static TexturePartManager getInstance() {
         return INSTANCE;
     }
 
-    private TexturePartManager() {
-
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
     }
 
     public boolean createTexturePart(final String texturePartID,

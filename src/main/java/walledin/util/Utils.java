@@ -23,7 +23,7 @@ package walledin.util;
 import java.net.URL;
 
 public class Utils {
-    private final static float EPSILON = 0.00001f;
+    private static final float EPSILON = 0.00001f;
 
     public static URL getClasspathURL(final String filename) {
         return ClassLoader.getSystemResource(filename);

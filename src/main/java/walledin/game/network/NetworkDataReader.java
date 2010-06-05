@@ -50,7 +50,7 @@ import walledin.game.map.TileType;
  * 
  */
 public class NetworkDataReader {
-    private final static Logger LOG = Logger.getLogger(NetworkDataReader.class);
+    private static final Logger LOG = Logger.getLogger(NetworkDataReader.class);
     private final ByteBuffer buffer;
     private final NetworkEventListener listener;
 

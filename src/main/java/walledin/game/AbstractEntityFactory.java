@@ -30,7 +30,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 
 public abstract class AbstractEntityFactory implements EntityFactory {
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(AbstractEntityFactory.class);
 
     public interface EntityConstructionFunction {

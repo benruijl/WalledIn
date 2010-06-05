@@ -50,7 +50,7 @@ import walledin.game.network.server.ChangeSet;
  * 
  */
 public class NetworkDataWriter {
-    private final static Logger LOG = Logger.getLogger(NetworkDataWriter.class);
+    private static final Logger LOG = Logger.getLogger(NetworkDataWriter.class);
     private final ByteBuffer buffer;
 
     public NetworkDataWriter() {

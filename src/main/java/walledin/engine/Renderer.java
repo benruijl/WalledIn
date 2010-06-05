@@ -51,7 +51,7 @@ import com.sun.opengl.util.texture.Texture;
  * @author Ben Ruijl
  */
 public class Renderer implements GLEventListener {
-    private final static Logger LOG = Logger.getLogger(Renderer.class);
+    private static final Logger LOG = Logger.getLogger(Renderer.class);
 
     private Frame win;
     private boolean quitting;
