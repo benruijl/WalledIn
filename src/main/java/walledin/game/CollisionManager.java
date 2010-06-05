@@ -23,7 +23,6 @@ package walledin.game;
 import java.util.Collection;
 import java.util.List;
 
-import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
@@ -33,196 +32,200 @@ import walledin.game.map.Tile;
 
 public class CollisionManager {
 
-	static public class CollisionData {
-		private final Vector2f newPos;
-		private final Vector2f oldPos;
-		private final Vector2f theorPos;
-		private final Entity collisionEntity;
+    static public class CollisionData {
+        private final Vector2f newPos;
+        private final Vector2f oldPos;
+        private final Vector2f theorPos;
+        private final Entity collisionEntity;
 
-		public final Vector2f getNewPos() {
-			return newPos;
-		}
+        public final Vector2f getNewPos() {
+            return newPos;
+        }
 
-		public final Vector2f getOldPos() {
-			return oldPos;
-		}
+        public final Vector2f getOldPos() {
+            return oldPos;
+        }
 
-		public final Vector2f getTheorPos() {
-			return theorPos;
-		}
+        public final Vector2f getTheorPos() {
+            return theorPos;
+        }
 
-		public final Entity getCollisionEntity() {
-			return collisionEntity;
-		}
+        public final Entity getCollisionEntity() {
+            return collisionEntity;
+        }
 
-		/**
-		 * @param newPos
-		 *            The position after the collision detection
-		 * @param oldPos
-		 *            The position before the velocity update
-		 * @param theorPos
-		 *            The theoretical position after the velocity update but
-		 *            before the collision check
-		 * @param collisionEntity
-		 *            The entity the entity that receives the message collided
-		 *            with
-		 */
-		public CollisionData(final Vector2f newPos, final Vector2f oldPos,
-				final Vector2f theorPos, final Entity collisionEntity) {
-			super();
-			this.newPos = newPos;
-			this.oldPos = oldPos;
-			this.theorPos = theorPos;
-			this.collisionEntity = collisionEntity;
-		}
+        /**
+         * @param newPos
+         *            The position after the collision detection
+         * @param oldPos
+         *            The position before the velocity update
+         * @param theorPos
+         *            The theoretical position after the velocity update but
+         *            before the collision check
+         * @param collisionEntity
+         *            The entity the entity that receives the message collided
+         *            with
+         */
+        public CollisionData(final Vector2f newPos, final Vector2f oldPos,
+                final Vector2f theorPos, final Entity collisionEntity) {
+            super();
+            this.newPos = newPos;
+            this.oldPos = oldPos;
+            this.theorPos = theorPos;
+            this.collisionEntity = collisionEntity;
+        }
 
-	}
+    }
 
-	static private Tile tileFromPixel(final Entity map, final Vector2f pos) {
-		final float tileSize = (Float) map.getAttribute(Attribute.RENDER_TILE_SIZE);
-		final int width = (Integer) map.getAttribute(Attribute.WIDTH);
+    static private Tile tileFromPixel(final Entity map, final Vector2f pos) {
+        final float tileSize = (Float) map
+                .getAttribute(Attribute.RENDER_TILE_SIZE);
+        final int width = (Integer) map.getAttribute(Attribute.WIDTH);
 
-		final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
+        final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
-		return tiles.get((int) (pos.x / tileSize) + width
-				* (int) (pos.y / tileSize));
-	}
+        return tiles.get((int) (pos.x / tileSize) + width
+                * (int) (pos.y / tileSize));
+    }
 
-	static public void calculateEntityCollisions(
-			final Collection<Entity> entities, final double delta) {
-		Entity[] entArray = new Entity[0];
-		entArray = entities.toArray(entArray);
+    static public void calculateEntityCollisions(
+            final Collection<Entity> entities, final double delta) {
+        Entity[] entArray = new Entity[0];
+        entArray = entities.toArray(entArray);
 
-		for (int i = 0; i < entArray.length - 1; i++) {
-			for (int j = i + 1; j < entArray.length; j++) {
-				if (!entArray[i].hasAttribute(Attribute.BOUNDING_RECT)
-						|| !entArray[j].hasAttribute(Attribute.BOUNDING_RECT)) {
-					continue;
-				}
+        for (int i = 0; i < entArray.length - 1; i++) {
+            for (int j = i + 1; j < entArray.length; j++) {
+                if (!entArray[i].hasAttribute(Attribute.BOUNDING_RECT)
+                        || !entArray[j].hasAttribute(Attribute.BOUNDING_RECT)) {
+                    continue;
+                }
 
-				// TODO: test if faster
-				/*Circle circA = (Circle) entArray[i]
-						.getAttribute(Attribute.BOUNDING_CIRCLE);
-				Circle circB = (Circle) entArray[j]
-						.getAttribute(Attribute.BOUNDING_CIRCLE);
+                // TODO: test if faster
+                /*
+                 * Circle circA = (Circle) entArray[i]
+                 * .getAttribute(Attribute.BOUNDING_CIRCLE); Circle circB =
+                 * (Circle) entArray[j]
+                 * .getAttribute(Attribute.BOUNDING_CIRCLE);
+                 * 
+                 * circA = circA.addPos((Vector2f) entArray[i]
+                 * .getAttribute(Attribute.POSITION)); circB =
+                 * circB.addPos((Vector2f) entArray[j]
+                 * .getAttribute(Attribute.POSITION));
+                 * 
+                 * if (!circA.intersects(circB)) { continue; }
+                 */
 
-				circA = circA.addPos((Vector2f) entArray[i]
-						.getAttribute(Attribute.POSITION));
-				circB = circB.addPos((Vector2f) entArray[j]
-						.getAttribute(Attribute.POSITION));
+                Rectangle rectA = (Rectangle) entArray[i]
+                        .getAttribute(Attribute.BOUNDING_RECT);
+                Rectangle rectB = (Rectangle) entArray[j]
+                        .getAttribute(Attribute.BOUNDING_RECT);
 
-				if (!circA.intersects(circB)) {
-					continue;
-				}*/
+                rectA = rectA.translate((Vector2f) entArray[i]
+                        .getAttribute(Attribute.POSITION));
+                rectB = rectB.translate((Vector2f) entArray[j]
+                        .getAttribute(Attribute.POSITION));
 
-				Rectangle rectA = (Rectangle) entArray[i]
-						.getAttribute(Attribute.BOUNDING_RECT);
-				Rectangle rectB = (Rectangle) entArray[j]
-						.getAttribute(Attribute.BOUNDING_RECT);
+                if (!rectA.intersects(rectB)) {
+                    continue;
+                }
 
-				rectA = rectA.translate((Vector2f) entArray[i]
-						.getAttribute(Attribute.POSITION));
-				rectB = rectB.translate((Vector2f) entArray[j]
-						.getAttribute(Attribute.POSITION));
+                final Vector2f posA = (Vector2f) entArray[i]
+                        .getAttribute(Attribute.POSITION);
+                final Vector2f posB = (Vector2f) entArray[j]
+                        .getAttribute(Attribute.POSITION);
 
-				if (!rectA.intersects(rectB)) {
-					continue;
-				}
+                // no response yet, so give the same data
+                entArray[i].sendMessage(MessageType.COLLIDED,
+                        new CollisionData(posA, posA, posA, entArray[j]));
+                entArray[j].sendMessage(MessageType.COLLIDED,
+                        new CollisionData(posB, posB, posB, entArray[i]));
+            }
+        }
+    }
 
-				final Vector2f posA = (Vector2f) entArray[i]
-						.getAttribute(Attribute.POSITION);
-				final Vector2f posB = (Vector2f) entArray[j]
-						.getAttribute(Attribute.POSITION);
+    static public void calculateMapCollisions(final Entity map,
+            final Collection<Entity> entities, final double delta) {
+        final float tileSize = (Float) map
+                .getAttribute(Attribute.RENDER_TILE_SIZE);
 
-				// no response yet, so give the same data
-				entArray[i].sendMessage(MessageType.COLLIDED,
-						new CollisionData(posA, posA, posA, entArray[j]));
-				entArray[j].sendMessage(MessageType.COLLIDED,
-						new CollisionData(posB, posB, posB, entArray[i]));
-			}
-		}
-	}
+        for (final Entity ent : entities) {
+            if (ent.hasAttribute(Attribute.BOUNDING_RECT) && !ent.equals(map)) {
 
-	static public void calculateMapCollisions(final Entity map,
-			final Collection<Entity> entities, final double delta) {
-		final float tileSize = (Float) map.getAttribute(Attribute.RENDER_TILE_SIZE);
+                Vector2f vel = (Vector2f) ent.getAttribute(Attribute.VELOCITY);
 
-		for (final Entity ent : entities) {
-			if (ent.hasAttribute(Attribute.BOUNDING_RECT) && !ent.equals(map)) {
+                if (vel.x == 0 && vel.y == 0) {
+                    continue;
+                }
 
-				Vector2f vel = (Vector2f) ent.getAttribute(Attribute.VELOCITY);
+                vel = vel.scale((float) delta); // velocity per frame
+                Rectangle rect = (Rectangle) ent
+                        .getAttribute(Attribute.BOUNDING_RECT);
+                final Vector2f curPos = (Vector2f) ent
+                        .getAttribute(Attribute.POSITION);
+                final Vector2f oldPos = curPos.sub(vel);
 
-				if (vel.x == 0 && vel.y == 0) {
-					continue;
-				}
+                float x = curPos.x; // new x position after collision
+                float y = curPos.y; // new y position after collision
 
-				vel = vel.scale((float) delta); // velocity per frame
-				Rectangle rect = (Rectangle) ent.getAttribute(Attribute.BOUNDING_RECT);
-				final Vector2f curPos = (Vector2f) ent.getAttribute(Attribute.POSITION);
-				final Vector2f oldPos = curPos.sub(vel);
+                // small value to prevent floating errors
+                final float eps = 0.001f;
 
-				float x = curPos.x; // new x position after collision
-				float y = curPos.y; // new y position after collision
+                // VERTICAL CHECK - move vertically only
+                rect = rect.setPos(new Vector2f(oldPos.x, curPos.y));
 
-				// small value to prevent floating errors
-				final float eps = 0.001f;
+                // check the four edges
+                Tile lt = tileFromPixel(map, rect.getLeftTop());
+                Tile lb = tileFromPixel(map, rect.getLeftBottom());
+                Tile rt = tileFromPixel(map, rect.getRightTop());
+                Tile rb = tileFromPixel(map, rect.getRightBottom());
 
-				// VERTICAL CHECK - move vertically only
-				rect = rect.setPos(new Vector2f(oldPos.x, curPos.y));
+                // bottom check
+                if (vel.y > 0
+                        && (lb.getType().isSolid() || rb.getType().isSolid())) {
+                    final int rest = (int) (rect.getBottom() / tileSize);
+                    y = rest * tileSize - rect.getHeight() - eps;
+                } else
+                // top check
+                if (vel.y < 0
+                        && (lt.getType().isSolid() || rt.getType().isSolid())) {
+                    final int rest = (int) (rect.getTop() / tileSize);
+                    y = (rest + 1) * tileSize + eps;
+                }
 
-				// check the four edges
-				Tile lt = tileFromPixel(map, rect.getLeftTop());
-				Tile lb = tileFromPixel(map, rect.getLeftBottom());
-				Tile rt = tileFromPixel(map, rect.getRightTop());
-				Tile rb = tileFromPixel(map, rect.getRightBottom());
+                // HORIZONTAL CHECK - move horizontally only
+                rect = rect.setPos(new Vector2f(curPos.x, y));
 
-				// bottom check
-				if (vel.y > 0
-						&& (lb.getType().isSolid() || rb.getType().isSolid())) {
-					final int rest = (int) (rect.getBottom() / tileSize);
-					y = rest * tileSize - rect.getHeight() - eps;
-				} else
-				// top check
-				if (vel.y < 0
-						&& (lt.getType().isSolid() || rt.getType().isSolid())) {
-					final int rest = (int) (rect.getTop() / tileSize);
-					y = (rest + 1) * tileSize + eps;
-				}
+                lt = tileFromPixel(map, rect.getLeftTop());
+                lb = tileFromPixel(map, rect.getLeftBottom());
+                rt = tileFromPixel(map, rect.getRightTop());
+                rb = tileFromPixel(map, rect.getRightBottom());
 
-				// HORIZONTAL CHECK - move horizontally only
-				rect = rect.setPos(new Vector2f(curPos.x, y));
+                // right check
+                if (vel.x > 0
+                        && (rt.getType().isSolid() || rb.getType().isSolid())) {
+                    final int rest = (int) (rect.getRight() / tileSize);
+                    x = rest * tileSize - rect.getWidth() - eps;
+                } else
+                // left check
+                if (vel.x < 0
+                        && (lt.getType().isSolid() || lb.getType().isSolid())) {
+                    final int rest = (int) (rect.getLeft() / tileSize);
+                    x = (rest + 1) * tileSize + eps;
+                }
 
-				lt = tileFromPixel(map, rect.getLeftTop());
-				lb = tileFromPixel(map, rect.getLeftBottom());
-				rt = tileFromPixel(map, rect.getRightTop());
-				rb = tileFromPixel(map, rect.getRightBottom());
+                ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
+                ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldPos.x,
+                        y - oldPos.y).scale((float) (1 / delta)));
 
-				// right check
-				if (vel.x > 0
-						&& (rt.getType().isSolid() || rb.getType().isSolid())) {
-					final int rest = (int) (rect.getRight() / tileSize);
-					x = rest * tileSize - rect.getWidth() - eps;
-				} else
-				// left check
-				if (vel.x < 0
-						&& (lt.getType().isSolid() || lb.getType().isSolid())) {
-					final int rest = (int) (rect.getLeft() / tileSize);
-					x = (rest + 1) * tileSize + eps;
-				}
+                // if there is no difference, there has been no collision
+                if (Math.abs(x - curPos.x) > 0.0001f
+                        || Math.abs(y - curPos.y) > 0.0001f) {
+                    ent.sendMessage(MessageType.COLLIDED, new CollisionData(
+                            new Vector2f(x, y), oldPos, curPos, map));
+                }
+            }
+        }
 
-				ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-				ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldPos.x,
-						y - oldPos.y).scale((float) (1 / delta)));
-
-				// if there is no difference, there has been no collision
-				if (Math.abs(x - curPos.x) > 0.0001f
-						|| Math.abs(y - curPos.y) > 0.0001f) {
-					ent.sendMessage(MessageType.COLLIDED, new CollisionData(
-							new Vector2f(x, y), oldPos, curPos, map));
-				}
-			}
-		}
-
-	}
+    }
 
 }

@@ -29,50 +29,52 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class SpatialBehavior extends Behavior {
-	protected Vector2f position;
-	protected Vector2f velocity;
-	protected Rectangle boundingBox;
-	protected Circle boundingCircle;
+    protected Vector2f position;
+    protected Vector2f velocity;
+    protected Rectangle boundingBox;
+    protected Circle boundingCircle;
 
-	public SpatialBehavior(final Entity owner) {
-		super(owner);
-		position = new Vector2f();
-		velocity = new Vector2f();
-		boundingBox = new Rectangle();
-		boundingCircle = new Circle();
+    public SpatialBehavior(final Entity owner) {
+        super(owner);
+        position = new Vector2f();
+        velocity = new Vector2f();
+        boundingBox = new Rectangle();
+        boundingCircle = new Circle();
 
-		setAttribute(Attribute.POSITION, position); // create attribute
-		setAttribute(Attribute.VELOCITY, velocity);
-		setAttribute(Attribute.BOUNDING_RECT, boundingBox);
-		setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
-	}
+        setAttribute(Attribute.POSITION, position); // create attribute
+        setAttribute(Attribute.VELOCITY, velocity);
+        setAttribute(Attribute.BOUNDING_RECT, boundingBox);
+        setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.ATTRIBUTE_SET) {
-			final Attribute attribute = (Attribute) data;
-			switch (attribute) {
-			case POSITION:
-				position = (Vector2f) getAttribute(attribute);
-				break;
-			case VELOCITY:
-				velocity = (Vector2f) getAttribute(attribute);
-				break;
-			case BOUNDING_RECT:
-				boundingBox = (Rectangle) getAttribute(attribute);
-				// recreate circle
-				boundingCircle = Circle.fromRect(boundingBox);
-				setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
-				break;
-			}
-		}
-	}
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.ATTRIBUTE_SET) {
+            final Attribute attribute = (Attribute) data;
+            switch (attribute) {
+            case POSITION:
+                position = (Vector2f) getAttribute(attribute);
+                break;
+            case VELOCITY:
+                velocity = (Vector2f) getAttribute(attribute);
+                break;
+            case BOUNDING_RECT:
+                boundingBox = (Rectangle) getAttribute(attribute);
+                // recreate circle
+                boundingCircle = Circle.fromRect(boundingBox);
+                setAttribute(Attribute.BOUNDING_CIRCLE, boundingCircle);
+                break;
+            }
+        }
+    }
 
-	@Override
-	public void onUpdate(final double delta) {
-		/*Vector2f scaledVelocity = new Vector2f(velocity);
-		scaledVelocity = scaledVelocity.scale((float) delta);
-		position = position.add(scaledVelocity);
-		setAttribute(Attribute.POSITION, position);*/
-	}
+    @Override
+    public void onUpdate(final double delta) {
+        /*
+         * Vector2f scaledVelocity = new Vector2f(velocity); scaledVelocity =
+         * scaledVelocity.scale((float) delta); position =
+         * position.add(scaledVelocity); setAttribute(Attribute.POSITION,
+         * position);
+         */
+    }
 }

@@ -29,75 +29,75 @@ import walledin.game.EntityManager;
  * 
  */
 public abstract class Behavior {
-	private final Entity owner;
+    private final Entity owner;
 
-	public Behavior(final Entity owner) {
-		this.owner = owner;
-	}
+    public Behavior(final Entity owner) {
+        this.owner = owner;
+    }
 
-	/**
-	 * Returns the current owner
-	 * 
-	 * @return The owner
-	 */
-	public Entity getOwner() {
-		return owner;
-	}
+    /**
+     * Returns the current owner
+     * 
+     * @return The owner
+     */
+    public Entity getOwner() {
+        return owner;
+    }
 
-	/**
-	 * Gets the object bound to the attribute. The attribute is owned by the
-	 * owner of this behavior.
-	 * 
-	 * @param attribute
-	 *            The attribute to get
-	 * @return Returns the object bound to this attribute
-	 */
-	protected Object getAttribute(final Attribute attribute) {
-		return getOwner().getAttribute(attribute);
-	}
+    /**
+     * Gets the object bound to the attribute. The attribute is owned by the
+     * owner of this behavior.
+     * 
+     * @param attribute
+     *            The attribute to get
+     * @return Returns the object bound to this attribute
+     */
+    protected Object getAttribute(final Attribute attribute) {
+        return getOwner().getAttribute(attribute);
+    }
 
-	/**
-	 * Binds the object to the attribute and returns the old object. The
-	 * attribute is owned by the owner of this behavior.
-	 * 
-	 * @param attribute
-	 *            The attribute to bind
-	 * @param newObject
-	 *            Object to bind
-	 * @return Returns the object bound to the attribute before
-	 * @throws IllegalArgumentException
-	 *             if the newObect is not of the class specified in the
-	 *             attribute
-	 */
-	protected <T> T setAttribute(final Attribute attribute, final T newObject) {
-		return getOwner().setAttribute(attribute, newObject);
-	}
+    /**
+     * Binds the object to the attribute and returns the old object. The
+     * attribute is owned by the owner of this behavior.
+     * 
+     * @param attribute
+     *            The attribute to bind
+     * @param newObject
+     *            Object to bind
+     * @return Returns the object bound to the attribute before
+     * @throws IllegalArgumentException
+     *             if the newObect is not of the class specified in the
+     *             attribute
+     */
+    protected <T> T setAttribute(final Attribute attribute, final T newObject) {
+        return getOwner().setAttribute(attribute, newObject);
+    }
 
-	/**
-	 * Sends a message to this behavior. Subclasses should react to certain
-	 * messages.
-	 * 
-	 * @param messageType
-	 *            Enum that specifies the message type
-	 * @param data
-	 *            Message specific data
-	 */
-	public abstract void onMessage(MessageType messageType, Object data);
+    /**
+     * Sends a message to this behavior. Subclasses should react to certain
+     * messages.
+     * 
+     * @param messageType
+     *            Enum that specifies the message type
+     * @param data
+     *            Message specific data
+     */
+    public abstract void onMessage(MessageType messageType, Object data);
 
-	/**
-	 * Called when the engine request an update in the status.
-	 * 
-	 * @param delta
-	 *            Amount of time elapsed since last update
-	 */
-	public abstract void onUpdate(double delta);
+    /**
+     * Called when the engine request an update in the status.
+     * 
+     * @param delta
+     *            Amount of time elapsed since last update
+     */
+    public abstract void onUpdate(double delta);
 
-	/**
-	 * Retrives the current entity manager from this owner
-	 * 
-	 * @return the entity manager
-	 */
-	protected EntityManager getEntityManager() {
-		return owner.getEntityManager();
-	}
+    /**
+     * Retrives the current entity manager from this owner
+     * 
+     * @return the entity manager
+     */
+    protected EntityManager getEntityManager() {
+        return owner.getEntityManager();
+    }
 }

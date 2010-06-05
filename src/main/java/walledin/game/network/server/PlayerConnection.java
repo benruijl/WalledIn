@@ -27,42 +27,42 @@ import org.apache.log4j.Logger;
 import walledin.game.entity.Entity;
 
 public class PlayerConnection {
-	private static final Logger LOG = Logger.getLogger(PlayerConnection.class);
-	private final Entity player;
-	private final SocketAddress address;
-	private int receivedVersion;
-	private boolean isNew;
+    private static final Logger LOG = Logger.getLogger(PlayerConnection.class);
+    private final Entity player;
+    private final SocketAddress address;
+    private int receivedVersion;
+    private boolean isNew;
 
-	public PlayerConnection(final SocketAddress address, final Entity player,
-			int currentVersion) {
-		super();
-		this.player = player;
-		this.address = address;
-		receivedVersion = currentVersion;
-		isNew = true;
-	}
+    public PlayerConnection(final SocketAddress address, final Entity player,
+            int currentVersion) {
+        super();
+        this.player = player;
+        this.address = address;
+        receivedVersion = currentVersion;
+        isNew = true;
+    }
 
-	public Entity getPlayer() {
-		return player;
-	}
+    public Entity getPlayer() {
+        return player;
+    }
 
-	public SocketAddress getAddress() {
-		return address;
-	}
+    public SocketAddress getAddress() {
+        return address;
+    }
 
-	public void setReceivedVersion(int receivedVersion) {
-		this.receivedVersion = receivedVersion;
-	}
+    public void setReceivedVersion(int receivedVersion) {
+        this.receivedVersion = receivedVersion;
+    }
 
-	public int getReceivedVersion() {
-		return receivedVersion;
-	}
+    public int getReceivedVersion() {
+        return receivedVersion;
+    }
 
-	public void setNew() {
-		this.isNew = false;
-	}
+    public void setNew() {
+        this.isNew = false;
+    }
 
-	public boolean isNew() {
-		return isNew;
-	}
+    public boolean isNew() {
+        return isNew;
+    }
 }

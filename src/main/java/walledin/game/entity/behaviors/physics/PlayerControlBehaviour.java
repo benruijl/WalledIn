@@ -25,92 +25,89 @@ import java.util.HashSet;
 import java.util.Set;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
-	private static final float MOVE_SPEED = 240.0f;
-	private static final float JUMP_SPEED = 8000.0f;
-	private boolean canJump;
-	private Set<Integer> keysDown;
+    private static final float MOVE_SPEED = 240.0f;
+    private static final float JUMP_SPEED = 8000.0f;
+    private boolean canJump;
+    private Set<Integer> keysDown;
 
-	public PlayerControlBehaviour(final Entity owner) {
-		super(owner);
-		keysDown = new HashSet<Integer>();
-		setAttribute(Attribute.KEYS_DOWN, keysDown);
-	}
+    public PlayerControlBehaviour(final Entity owner) {
+        super(owner);
+        keysDown = new HashSet<Integer>();
+        setAttribute(Attribute.KEYS_DOWN, keysDown);
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.COLLIDED) {
-			final CollisionData colData = (CollisionData) data;
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.COLLIDED) {
+            final CollisionData colData = (CollisionData) data;
 
-			if (colData.getNewPos().getY() < colData.getTheorPos().getY())
-				canJump = true;
-		} else if (messageType == MessageType.ATTRIBUTE_SET) {
-			final Attribute attribute = (Attribute) data;
-			switch (attribute) {
-			case KEYS_DOWN:
-				keysDown = (Set<Integer>) getAttribute(attribute);
-				break;
-			}
-		}
-		else if (messageType == MessageType.DROP) { // drop all items
-				if (getOwner().hasAttribute(Attribute.WEAPON))
-				{
-					Entity weapon = (Entity) getOwner().getAttribute(Attribute.WEAPON);
-					weapon.setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
-					setAttribute(Attribute.WEAPON, null); // disown weapon
-				}
-			}
+            if (colData.getNewPos().getY() < colData.getTheorPos().getY())
+                canJump = true;
+        } else if (messageType == MessageType.ATTRIBUTE_SET) {
+            final Attribute attribute = (Attribute) data;
+            switch (attribute) {
+            case KEYS_DOWN:
+                keysDown = (Set<Integer>) getAttribute(attribute);
+                break;
+            }
+        } else if (messageType == MessageType.DROP) { // drop all items
+            if (getOwner().hasAttribute(Attribute.WEAPON)) {
+                Entity weapon = (Entity) getOwner().getAttribute(
+                        Attribute.WEAPON);
+                weapon.setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
+                setAttribute(Attribute.WEAPON, null); // disown weapon
+            }
+        }
 
-		super.onMessage(messageType, data);
-	}
+        super.onMessage(messageType, data);
+    }
 
-	@Override
-	public void onUpdate(final double delta) {
-		float x = 0;
-		float y = 0;
+    @Override
+    public void onUpdate(final double delta) {
+        float x = 0;
+        float y = 0;
 
-		if (keysDown.contains(KeyEvent.VK_RIGHT)
-				|| keysDown.contains(KeyEvent.VK_D)) {
-			x += MOVE_SPEED;
-			setAttribute(Attribute.ORIENTATION, 1);
+        if (keysDown.contains(KeyEvent.VK_RIGHT)
+                || keysDown.contains(KeyEvent.VK_D)) {
+            x += MOVE_SPEED;
+            setAttribute(Attribute.ORIENTATION, 1);
 
-		}
-		if (keysDown.contains(KeyEvent.VK_LEFT)
-				|| keysDown.contains(KeyEvent.VK_A)) {
-			x -= MOVE_SPEED;
-			setAttribute(Attribute.ORIENTATION, -1);
-		}
-		if (keysDown.contains(KeyEvent.VK_UP)
-				|| keysDown.contains(KeyEvent.VK_W)) {
-			y -= MOVE_SPEED;
-		}
+        }
+        if (keysDown.contains(KeyEvent.VK_LEFT)
+                || keysDown.contains(KeyEvent.VK_A)) {
+            x -= MOVE_SPEED;
+            setAttribute(Attribute.ORIENTATION, -1);
+        }
+        if (keysDown.contains(KeyEvent.VK_UP)
+                || keysDown.contains(KeyEvent.VK_W)) {
+            y -= MOVE_SPEED;
+        }
 
-		if (keysDown.contains(KeyEvent.VK_DOWN)
-				|| keysDown.contains(KeyEvent.VK_S)) {
-			y += MOVE_SPEED;
-		}
+        if (keysDown.contains(KeyEvent.VK_DOWN)
+                || keysDown.contains(KeyEvent.VK_S)) {
+            y += MOVE_SPEED;
+        }
 
-		if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
-			y -= JUMP_SPEED;
-		}
+        if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
+            y -= JUMP_SPEED;
+        }
 
-		if (keysDown.contains(KeyEvent.VK_ENTER)) {
-			if (getOwner().hasAttribute(Attribute.WEAPON))
-			{
-				Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
-				weapon.sendMessage(MessageType.SHOOT, getOwner());
-			}
-		}
+        if (keysDown.contains(KeyEvent.VK_ENTER)) {
+            if (getOwner().hasAttribute(Attribute.WEAPON)) {
+                Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
+                weapon.sendMessage(MessageType.SHOOT, getOwner());
+            }
+        }
 
-		getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
-		canJump = false;
-		
-		super.onUpdate(delta);
-	}
+        getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
+        canJump = false;
+
+        super.onUpdate(delta);
+    }
 }

@@ -36,77 +36,78 @@ import walledin.game.entity.MessageType;
 import walledin.game.network.server.Server;
 
 public class DrawOrderManager {
-	private static final Logger LOG = Logger.getLogger(Server.class);
-	private static class ZOrderComperator implements Comparator<Entity> {
-		@Override
-		public int compare(final Entity o1, final Entity o2) {
-			final int zA = (Integer) o1.getAttribute(Attribute.Z_INDEX);
-			final int zB = (Integer) o2.getAttribute(Attribute.Z_INDEX);
+    private static final Logger LOG = Logger.getLogger(Server.class);
 
-			if (zA == zB) {
-				return o1.getName().compareTo(o2.getName());
-			}
+    private static class ZOrderComperator implements Comparator<Entity> {
+        @Override
+        public int compare(final Entity o1, final Entity o2) {
+            final int zA = (Integer) o1.getAttribute(Attribute.Z_INDEX);
+            final int zB = (Integer) o2.getAttribute(Attribute.Z_INDEX);
 
-			return zA - zB;
-		}
-	}
+            if (zA == zB) {
+                return o1.getName().compareTo(o2.getName());
+            }
 
-	private final SortedSet<Entity> entities;
-	private final Set<Entity> addLater;
-	private final Set<Entity> removeLater;
+            return zA - zB;
+        }
+    }
 
-	public DrawOrderManager() {
-		super();
-		entities = new TreeSet<Entity>(new ZOrderComperator());
-		addLater = new HashSet<Entity>();
-		removeLater = new HashSet<Entity>();
-	}
+    private final SortedSet<Entity> entities;
+    private final Set<Entity> addLater;
+    private final Set<Entity> removeLater;
 
-	/**
-	 * Add a list of entities to a list sorted on z-index
-	 * 
-	 * @param Collection
-	 *            of entities to be added
-	 */
-	public void add(final Collection<Entity> entitiesList) {
-		for (final Entity en : entitiesList) {
-			add(en);
-		}
-	}
+    public DrawOrderManager() {
+        super();
+        entities = new TreeSet<Entity>(new ZOrderComperator());
+        addLater = new HashSet<Entity>();
+        removeLater = new HashSet<Entity>();
+    }
 
-	/**
-	 * Add entity to a list sorted on z-index
-	 * 
-	 * @param e
-	 *            Entity to be added
-	 * @return True if added, false if not
-	 */
-	public boolean add(final Entity e) {
-		if (!e.hasAttribute(Attribute.Z_INDEX)) {
-			return false;
-		}
-		return addLater.add(e);
-	}
+    /**
+     * Add a list of entities to a list sorted on z-index
+     * 
+     * @param Collection
+     *            of entities to be added
+     */
+    public void add(final Collection<Entity> entitiesList) {
+        for (final Entity en : entitiesList) {
+            add(en);
+        }
+    }
 
-	public void removeEntity(final Entity entity) {
-		if (entity == null) {
-			LOG.debug("removing null!");
-		}
-		removeLater.add(entity);
-	}
+    /**
+     * Add entity to a list sorted on z-index
+     * 
+     * @param e
+     *            Entity to be added
+     * @return True if added, false if not
+     */
+    public boolean add(final Entity e) {
+        if (!e.hasAttribute(Attribute.Z_INDEX)) {
+            return false;
+        }
+        return addLater.add(e);
+    }
 
-	public SortedSet<Entity> getList() {
-		return entities;
-	}
+    public void removeEntity(final Entity entity) {
+        if (entity == null) {
+            LOG.debug("removing null!");
+        }
+        removeLater.add(entity);
+    }
 
-	public void draw(final Renderer renderer) {
-		entities.addAll(addLater);
-		entities.removeAll(removeLater);
-		addLater.clear();
-		removeLater.clear();
-		/* Draw all entities in the correct order */
-		for (final Entity ent : entities) {
-			ent.sendMessage(MessageType.RENDER, renderer);
-		}
-	}
+    public SortedSet<Entity> getList() {
+        return entities;
+    }
+
+    public void draw(final Renderer renderer) {
+        entities.addAll(addLater);
+        entities.removeAll(removeLater);
+        addLater.clear();
+        removeLater.clear();
+        /* Draw all entities in the correct order */
+        for (final Entity ent : entities) {
+            ent.sendMessage(MessageType.RENDER, renderer);
+        }
+    }
 }

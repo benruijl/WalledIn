@@ -35,129 +35,129 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XMLReader {
-	Document dom;
-	Element root;
+    Document dom;
+    Element root;
 
-	public boolean open(final URL file) {
-		// get the factory
-		final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    public boolean open(final URL file) {
+        // get the factory
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-		try {
-			final DocumentBuilder db = dbf.newDocumentBuilder();
-			dom = db.parse(file.openStream());
-			root = dom.getDocumentElement();
-			return true;
+        try {
+            final DocumentBuilder db = dbf.newDocumentBuilder();
+            dom = db.parse(file.openStream());
+            root = dom.getDocumentElement();
+            return true;
 
-		} catch (final ParserConfigurationException pce) {
-			pce.printStackTrace();
-		} catch (final SAXException se) {
-			se.printStackTrace();
-		} catch (final IOException ioe) {
-			ioe.printStackTrace();
-		}
-		return false;
-	}
+        } catch (final ParserConfigurationException pce) {
+            pce.printStackTrace();
+        } catch (final SAXException se) {
+            se.printStackTrace();
+        } catch (final IOException ioe) {
+            ioe.printStackTrace();
+        }
+        return false;
+    }
 
-	public Element getRootElement() {
-		return root;
-	}
+    public Element getRootElement() {
+        return root;
+    }
 
-	/**
-	 * Gets all the child elements with name <i>tag</i> of the element el.
-	 * 
-	 * @param el
-	 *            Current element
-	 * @param tag
-	 *            Tag name
-	 * @return List of sub-elements with name tag or null on failure
-	 */
-	static public List<Element> getElements(final Element el, final String tag) {
-		final NodeList nl = el.getElementsByTagName(tag);
-		if (nl == null) {
-			return null;
-		}
+    /**
+     * Gets all the child elements with name <i>tag</i> of the element el.
+     * 
+     * @param el
+     *            Current element
+     * @param tag
+     *            Tag name
+     * @return List of sub-elements with name tag or null on failure
+     */
+    static public List<Element> getElements(final Element el, final String tag) {
+        final NodeList nl = el.getElementsByTagName(tag);
+        if (nl == null) {
+            return null;
+        }
 
-		final List<Element> childElements = new ArrayList<Element>();
+        final List<Element> childElements = new ArrayList<Element>();
 
-		for (int i = 0; i < nl.getLength(); i++) {
-			childElements.add((Element) nl.item(i));
-		}
+        for (int i = 0; i < nl.getLength(); i++) {
+            childElements.add((Element) nl.item(i));
+        }
 
-		return childElements;
-	}
+        return childElements;
+    }
 
-	/**
-	 * Returns the text value of a tag in the given element. Example:</br> XML
-	 * file:<book><name>ABC</name></book> This function will return ABC.
-	 * 
-	 * @param el
-	 *            Current element
-	 * @param tag
-	 *            Tag name
-	 * @return Text of the value of tag node, or null on failure
-	 */
-	static public String getTextValue(final Element el, final String tag) {
-		String textVal = null;
-		final NodeList nl = el.getElementsByTagName(tag);
+    /**
+     * Returns the text value of a tag in the given element. Example:</br> XML
+     * file:<book><name>ABC</name></book> This function will return ABC.
+     * 
+     * @param el
+     *            Current element
+     * @param tag
+     *            Tag name
+     * @return Text of the value of tag node, or null on failure
+     */
+    static public String getTextValue(final Element el, final String tag) {
+        String textVal = null;
+        final NodeList nl = el.getElementsByTagName(tag);
 
-		if (nl != null && nl.getLength() > 0) {
-			final Element childEl = (Element) nl.item(0);
-			textVal = childEl.getFirstChild().getNodeValue();
-		}
+        if (nl != null && nl.getLength() > 0) {
+            final Element childEl = (Element) nl.item(0);
+            textVal = childEl.getFirstChild().getNodeValue();
+        }
 
-		return textVal;
-	}
+        return textVal;
+    }
 
-	/**
-	 * Calls getTextValue and returns a integer value
-	 * 
-	 * @param ele
-	 *            Current element
-	 * @param tag
-	 *            Tag name
-	 * @return Integer value in tag, or null on failure
-	 */
-	static public Integer getIntValue(final Element el, final String tag) {
-		try {
-			return Integer.parseInt(getTextValue(el, tag));
-		} catch (final NumberFormatException nu) {
+    /**
+     * Calls getTextValue and returns a integer value
+     * 
+     * @param ele
+     *            Current element
+     * @param tag
+     *            Tag name
+     * @return Integer value in tag, or null on failure
+     */
+    static public Integer getIntValue(final Element el, final String tag) {
+        try {
+            return Integer.parseInt(getTextValue(el, tag));
+        } catch (final NumberFormatException nu) {
 
-			System.err.print("Error converting to int in tag " + tag + ": "
-					+ nu.getMessage());
-		}
+            System.err.print("Error converting to int in tag " + tag + ": "
+                    + nu.getMessage());
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Calls getTextValue and returns a floating value
-	 * 
-	 * @param ele
-	 *            Current element
-	 * @param tag
-	 *            Tag name
-	 * @return Floating value in tag, or null on failure
-	 */
-	static public Float getFloatValue(final Element el, final String tag) {
-		try {
-			return Float.parseFloat(getTextValue(el, tag));
-		} catch (final NumberFormatException nu) {
+    /**
+     * Calls getTextValue and returns a floating value
+     * 
+     * @param ele
+     *            Current element
+     * @param tag
+     *            Tag name
+     * @return Floating value in tag, or null on failure
+     */
+    static public Float getFloatValue(final Element el, final String tag) {
+        try {
+            return Float.parseFloat(getTextValue(el, tag));
+        } catch (final NumberFormatException nu) {
 
-			System.err.print("Error converting to int in tag " + tag + ": "
-					+ nu.getMessage());
-		}
+            System.err.print("Error converting to int in tag " + tag + ": "
+                    + nu.getMessage());
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	static public Element getFirstElement(final Element element,
-			final String tag) {
-		final List<Element> elementList = getElements(element, tag);
+    static public Element getFirstElement(final Element element,
+            final String tag) {
+        final List<Element> elementList = getElements(element, tag);
 
-		if (elementList != null && !elementList.isEmpty()) {
-			return elementList.get(0);
-		} else {
-			return null;
-		}
-	}
+        if (elementList != null && !elementList.isEmpty()) {
+            return elementList.get(0);
+        } else {
+            return null;
+        }
+    }
 }

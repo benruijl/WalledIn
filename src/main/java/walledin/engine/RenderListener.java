@@ -30,8 +30,11 @@ package walledin.engine;
  */
 public interface RenderListener {
 
-	void init();
-	void update(double delta);
-	void draw(Renderer renderer);
-	void dispose();
+    void init();
+
+    void update(double delta);
+
+    void draw(Renderer renderer);
+
+    void dispose();
 }

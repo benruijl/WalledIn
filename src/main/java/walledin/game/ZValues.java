@@ -21,11 +21,11 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game;
 
 public enum ZValues {
-	BACKGROUND(-20), MAP(-10), ITEM(0), PLAYER(1), WEAPON(2);
+    BACKGROUND(-20), MAP(-10), ITEM(0), PLAYER(1), WEAPON(2);
 
-	public final int z;
+    public final int z;
 
-	private ZValues(final int z) {
-		this.z = z;
-	}
+    private ZValues(final int z) {
+        this.z = z;
+    }
 }

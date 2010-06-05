@@ -26,16 +26,16 @@ import walledin.game.entity.Entity;
 
 public interface EntityFactory {
 
-	public abstract Entity create(final EntityManager entityManager,
-			final String familyName, final String entityName);
+    public abstract Entity create(final EntityManager entityManager,
+            final String familyName, final String entityName);
 
-	/**
-	 * Loads all information for the prototypes from an XML file.
-	 * 
-	 * @param file
-	 *            XML file
-	 * @return True on success, false on failure
-	 */
-	public abstract boolean loadItemsFromXML(final URL file);
+    /**
+     * Loads all information for the prototypes from an XML file.
+     * 
+     * @param file
+     *            XML file
+     * @return True on success, false on failure
+     */
+    public abstract boolean loadItemsFromXML(final URL file);
 
 }

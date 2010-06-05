@@ -21,31 +21,40 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity.behaviors.logic;
 
 import walledin.game.CollisionManager.CollisionData;
-import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class BulletBehavior extends Behavior {
+    /** The damage the player takes from this bullet. */
+    private final int damage;
 
-	public BulletBehavior(final Entity owner) {
-		super(owner);
-	}
+    public BulletBehavior(final Entity owner, final int damage) {
+        super(owner);
+        this.damage = damage;
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.COLLIDED) {
-			final CollisionData colData = (CollisionData) data;
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.COLLIDED) {
+            final CollisionData colData = (CollisionData) data;
 
-			// if collided with map, destroy
-			if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)) {
-				getOwner().remove();
-			}
-		}
+            // if collided with map, destroy
+            if (colData.getCollisionEntity().getFamilyName().equals("Map")) {
+                getOwner().remove();
+            }
 
-	}
+            // if collided with player, remove and do damage
+            if (colData.getCollisionEntity().getFamilyName().equals("Player")) {
+                colData.getCollisionEntity().sendMessage(
+                        MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
+                getOwner().remove();
+            }
+        }
 
-	@Override
-	public void onUpdate(final double delta) {
-	}
+    }
+
+    @Override
+    public void onUpdate(final double delta) {
+    }
 }

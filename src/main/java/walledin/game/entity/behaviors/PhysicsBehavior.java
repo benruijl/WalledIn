@@ -29,58 +29,58 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PhysicsBehavior extends Behavior {
-	private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-	private final Vector2f gravity; // acceleration of gravity
-	private final float frictionCoefficient; // part of the velocity that is
-	// kept
-	private Vector2f acceleration = new Vector2f(0, 0);
+    private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
+    private final Vector2f gravity; // acceleration of gravity
+    private final float frictionCoefficient; // part of the velocity that is
+    // kept
+    private Vector2f acceleration = new Vector2f(0, 0);
 
+    public PhysicsBehavior(Entity owner) {
+        this(owner, true, true);
+    }
 
-	public PhysicsBehavior(Entity owner) {
-		this(owner, true, true);
-	}
+    public PhysicsBehavior(Entity owner, boolean doGravity, boolean doFriction) {
+        super(owner);
+        if (doGravity) {
+            gravity = new Vector2f(0, 300.0f);
+        } else {
+            gravity = new Vector2f(0, 0);
+        }
+        if (doFriction) {
+            frictionCoefficient = 0.02f;
+        } else {
+            frictionCoefficient = 0;
+        }
+    }
 
-	public PhysicsBehavior(Entity owner, boolean doGravity, boolean doFriction) {
-		super(owner);
-		if (doGravity) {
-			gravity = new Vector2f(0, 300.0f);
-		} else {
-			gravity = new Vector2f(0, 0);
-		}
-		if (doFriction) {
-			frictionCoefficient = 0.02f;
-		} else {
-			frictionCoefficient = 0;
-		}
-	}
+    @Override
+    public void onMessage(MessageType messageType, Object data) {
+        if (messageType == MessageType.APPLY_FORCE) {
+            acceleration = acceleration.add((Vector2f) data);
+        }
 
-	@Override
-	public void onMessage(MessageType messageType, Object data) {
-		if (messageType == MessageType.APPLY_FORCE) {
-			acceleration = acceleration.add((Vector2f) data);
-		}
+    }
 
-	}
+    @Override
+    public void onUpdate(double delta) {
+        Vector2f velCur = (Vector2f) getAttribute(Attribute.VELOCITY);
+        Vector2f posCur = (Vector2f) getAttribute(Attribute.POSITION);
 
-	@Override
-	public void onUpdate(double delta) {
-		Vector2f velCur = (Vector2f) getAttribute(Attribute.VELOCITY);
-		Vector2f posCur = (Vector2f) getAttribute(Attribute.POSITION);
+        acceleration = acceleration.add(gravity);
 
-		acceleration = acceleration.add(gravity);
+        // add friction
+        acceleration = acceleration.add(new Vector2f(-Math.signum(velCur.x)
+                * velCur.x * velCur.x * frictionCoefficient, -Math
+                .signum(velCur.y)
+                * velCur.y * velCur.y * frictionCoefficient));
 
-    	// add friction
-		acceleration = acceleration.add(new Vector2f(-Math.signum(velCur.x)
-				* velCur.x * velCur.x * frictionCoefficient, -Math.signum(velCur.y)
-				* velCur.y * velCur.y * frictionCoefficient));
+        Vector2f velNew = velCur.add(acceleration.scale((float) delta));
+        Vector2f posNew = posCur.add(velNew.scale((float) delta));
 
-		Vector2f velNew = velCur.add(acceleration.scale((float) delta));
-		Vector2f posNew = posCur.add(velNew.scale((float) delta));
+        setAttribute(Attribute.VELOCITY, velNew);
+        setAttribute(Attribute.POSITION, posNew);
 
-		setAttribute(Attribute.VELOCITY, velNew);
-		setAttribute(Attribute.POSITION, posNew);
-
-		acceleration = new Vector2f(0, 0);
-	}
+        acceleration = new Vector2f(0, 0);
+    }
 
 }

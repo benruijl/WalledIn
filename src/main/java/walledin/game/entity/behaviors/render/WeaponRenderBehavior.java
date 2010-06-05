@@ -29,56 +29,56 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class WeaponRenderBehavior extends RenderBehavior {
-	private final String texPart;
-	private final Rectangle WEAPON_RECT;
+    private final String texPart;
+    private final Rectangle WEAPON_RECT;
 
-	/**
-	 * Creates a new item rendering behavior.
-	 * 
-	 * @param owner
-	 *            Owner of behavior, a Weapon
-	 * @param texPart
-	 * @param destRect
-	 */
-	public WeaponRenderBehavior(final Entity owner, final String texPart,
-			final Rectangle destRect) {
-		super(owner, ZValues.WEAPON);
+    /**
+     * Creates a new item rendering behavior.
+     * 
+     * @param owner
+     *            Owner of behavior, a Weapon
+     * @param texPart
+     * @param destRect
+     */
+    public WeaponRenderBehavior(final Entity owner, final String texPart,
+            final Rectangle destRect) {
+        super(owner, ZValues.WEAPON);
 
-		this.texPart = texPart;
-		WEAPON_RECT = destRect;
-	}
+        this.texPart = texPart;
+        WEAPON_RECT = destRect;
+    }
 
-	/**
-	 * Generic weapon renderer. It draws the texture part to the screen at the
-	 * weapon's position.
-	 * 
-	 * @param renderer
-	 */
-	private void render(final Renderer renderer) {
-		renderer.pushMatrix();
-		
-		Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
-		renderer.translate(pos);
-		
-		if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
-			renderer.translate(new Vector2f(-23, 0));
-			renderer.scale(new Vector2f(-1, 1));
-	
-		}
-		
-		renderer.drawTexturePart(texPart, WEAPON_RECT);
-		
-		renderer.popMatrix();
-	}
+    /**
+     * Generic weapon renderer. It draws the texture part to the screen at the
+     * weapon's position.
+     * 
+     * @param renderer
+     */
+    private void render(final Renderer renderer) {
+        renderer.pushMatrix();
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
+        Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+        renderer.translate(pos);
 
-		if (messageType == MessageType.RENDER) {
-			render((Renderer) data);
-		}
+        if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
+            renderer.translate(new Vector2f(-23, 0));
+            renderer.scale(new Vector2f(-1, 1));
 
-		super.onMessage(messageType, data);
-	}
+        }
+
+        renderer.drawTexturePart(texPart, WEAPON_RECT);
+
+        renderer.popMatrix();
+    }
+
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+
+        if (messageType == MessageType.RENDER) {
+            render((Renderer) data);
+        }
+
+        super.onMessage(messageType, data);
+    }
 
 }

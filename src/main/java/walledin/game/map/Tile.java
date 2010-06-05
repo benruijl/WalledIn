@@ -27,25 +27,25 @@ package walledin.game.map;
  * @author Ben Ruijl
  */
 public class Tile {
-	private final TileType type;
-	private final int x;
-	private final int y;
+    private final TileType type;
+    private final int x;
+    private final int y;
 
-	public Tile(final TileType type, final int x, final int y) {
-		this.x = x;
-		this.y = y;
-		this.type = type;
-	}
+    public Tile(final TileType type, final int x, final int y) {
+        this.x = x;
+        this.y = y;
+        this.type = type;
+    }
 
-	public TileType getType() {
-		return type;
-	}
+    public TileType getType() {
+        return type;
+    }
 
-	public int getX() {
-		return x;
-	}
+    public int getX() {
+        return x;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public int getY() {
+        return y;
+    }
 }

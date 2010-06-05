@@ -26,35 +26,46 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class HealthBehavior extends Behavior {
-	private int health;
-	private final int maxHealth;
+    private int health;
+    private final int maxHealth;
 
-	public HealthBehavior(final Entity owner, final int maxHealth,
-			final int curHealth) {
-		super(owner);
+    public HealthBehavior(final Entity owner, final int maxHealth,
+            final int curHealth) {
+        super(owner);
 
-		health = curHealth;
-		this.maxHealth = maxHealth;
+        health = curHealth;
+        this.maxHealth = maxHealth;
 
-		setAttribute(Attribute.HEALTH, health);
-	}
+        setAttribute(Attribute.HEALTH, health);
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.RESTORE_HEALTH) {
-			final int hp = (Integer) data;
-			if (health + hp > maxHealth) {
-				health = maxHealth;
-			} else {
-				health += hp;
-			}
+    @Override
+    public final void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.RESTORE_HEALTH) {
+            final int hp = (Integer) data;
+            if (health + hp > maxHealth) {
+                health = maxHealth;
+            } else {
+                health += hp;
+            }
 
-			setAttribute(Attribute.HEALTH, health);
-		}
+            setAttribute(Attribute.HEALTH, health);
+        }
 
-	}
+        if (messageType == MessageType.TAKE_DAMAGE) {
+            final int dp = (Integer) data;
+            if (health - dp < 0) {
+                health = 0;
+            } else {
+                health -= dp;
+            }
 
-	@Override
-	public void onUpdate(final double delta) {
-	}
+            setAttribute(Attribute.HEALTH, health);
+        }
+
+    }
+
+    @Override
+    public void onUpdate(final double delta) {
+    }
 }
