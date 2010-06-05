@@ -47,8 +47,9 @@ public class PlayerControlBehaviour extends SpatialBehavior {
         if (messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
 
-            if (colData.getNewPos().getY() < colData.getTheorPos().getY())
+            if (colData.getNewPos().getY() < colData.getTheorPos().getY()) {
                 canJump = true;
+            }
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attribute = (Attribute) data;
             switch (attribute) {
@@ -58,7 +59,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
             }
         } else if (messageType == MessageType.DROP) { // drop all items
             if (getOwner().hasAttribute(Attribute.WEAPON)) {
-                Entity weapon = (Entity) getOwner().getAttribute(
+                final Entity weapon = (Entity) getOwner().getAttribute(
                         Attribute.WEAPON);
                 weapon.setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
                 setAttribute(Attribute.WEAPON, null); // disown weapon
@@ -100,7 +101,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 
         if (keysDown.contains(KeyEvent.VK_ENTER)) {
             if (getOwner().hasAttribute(Attribute.WEAPON)) {
-                Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
+                final Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
                 weapon.sendMessage(MessageType.SHOOT, getOwner());
             }
         }

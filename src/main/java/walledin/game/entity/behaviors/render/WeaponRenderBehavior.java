@@ -57,7 +57,7 @@ public class WeaponRenderBehavior extends RenderBehavior {
     private void render(final Renderer renderer) {
         renderer.pushMatrix();
 
-        Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+        final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
         renderer.translate(pos);
 
         if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {

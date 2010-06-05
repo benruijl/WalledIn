@@ -84,18 +84,23 @@ public class Vector2f {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        Vector2f other = (Vector2f) obj;
-        if (!Utils.equals(x, other.x))
+        }
+        final Vector2f other = (Vector2f) obj;
+        if (!Utils.equals(x, other.x)) {
             return false;
-        if (!Utils.equals(y, other.y))
+        }
+        if (!Utils.equals(y, other.y)) {
             return false;
+        }
         return true;
     }
 }

@@ -186,13 +186,13 @@ public class Entity {
      * @return The changed attributes
      */
     public Set<Attribute> getChangedAttributes() {
-        Set<Attribute> temp = changedAttributes;
+        final Set<Attribute> temp = changedAttributes;
         changedAttributes = new HashSet<Attribute>();
         return temp;
     }
 
     public Map<Attribute, Object> getAttributes(
-            Set<Attribute> requestedAttributes) {
+            final Set<Attribute> requestedAttributes) {
         final Map<Attribute, Object> temp = new HashMap<Attribute, Object>();
         for (final Attribute attribute : requestedAttributes) {
             temp.put(attribute, attributes.get(attribute));

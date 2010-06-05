@@ -34,7 +34,7 @@ public class PlayerConnection {
     private boolean isNew;
 
     public PlayerConnection(final SocketAddress address, final Entity player,
-            int currentVersion) {
+            final int currentVersion) {
         super();
         this.player = player;
         this.address = address;
@@ -50,7 +50,7 @@ public class PlayerConnection {
         return address;
     }
 
-    public void setReceivedVersion(int receivedVersion) {
+    public void setReceivedVersion(final int receivedVersion) {
         this.receivedVersion = receivedVersion;
     }
 
@@ -59,7 +59,7 @@ public class PlayerConnection {
     }
 
     public void setNew() {
-        this.isNew = false;
+        isNew = false;
     }
 
     public boolean isNew() {

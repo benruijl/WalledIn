@@ -63,7 +63,7 @@ public class NetworkDataReader {
         final int oldVersion = buffer.getInt();
         final int newVersion = buffer.getInt();
         // Ask the client if the we should process this gamestate
-        boolean process = listener.receivedGamestateMessage(address,
+        final boolean process = listener.receivedGamestateMessage(address,
                 oldVersion, newVersion);
         boolean hasMore = true;
         if (process) {

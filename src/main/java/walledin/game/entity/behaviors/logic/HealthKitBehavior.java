@@ -42,8 +42,9 @@ public class HealthKitBehavior extends Behavior {
 
             final CollisionData colData = (CollisionData) data;
 
-            if (!colData.getCollisionEntity().getFamilyName().equals("Player"))
+            if (!colData.getCollisionEntity().getFamilyName().equals("Player")) {
                 return;
+            }
 
             LOG.info(getOwner().getName() + " collided with "
                     + colData.getCollisionEntity().getName());

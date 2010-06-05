@@ -44,12 +44,12 @@ public class ChangeSet {
     private final Set<String> removed;
     private final Map<String, Set<Attribute>> updated;
 
-    public ChangeSet(int version, Set<Entity> created, Set<Entity> removed,
-            Map<String, Entity> entities) {
+    public ChangeSet(final int version, final Set<Entity> created,
+            final Set<Entity> removed, final Map<String, Entity> entities) {
         this.version = version;
         this.created = new HashMap<String, String>();
         this.removed = new HashSet<String>();
-        this.updated = new HashMap<String, Set<Attribute>>();
+        updated = new HashMap<String, Set<Attribute>>();
         initialize(created, removed, entities);
     }
 
@@ -60,16 +60,16 @@ public class ChangeSet {
      * @param removed
      * @param entities
      */
-    private void initialize(Set<Entity> created, Set<Entity> removed,
-            Map<String, Entity> entities) {
-        for (Entity entity : created) {
+    private void initialize(final Set<Entity> created,
+            final Set<Entity> removed, final Map<String, Entity> entities) {
+        for (final Entity entity : created) {
             this.created.put(entity.getName(), entity.getFamilyName());
         }
-        for (Entity entity : removed) {
+        for (final Entity entity : removed) {
             this.removed.add(entity.getName());
         }
-        for (Entity entity : entities.values()) {
-            Set<Attribute> changes = entity.getChangedAttributes();
+        for (final Entity entity : entities.values()) {
+            final Set<Attribute> changes = entity.getChangedAttributes();
             if (!changes.isEmpty()) {
                 updated.put(entity.getName(), changes);
             }
@@ -82,15 +82,16 @@ public class ChangeSet {
      * 
      * @param changeSet
      */
-    public void merge(ChangeSet changeSet) {
+    public void merge(final ChangeSet changeSet) {
         // Add created to our created
         created.putAll(changeSet.created);
         // Add removed to our remved
         removed.addAll(changeSet.removed);
 
         // Add updates to our updates
-        for (Entry<String, Set<Attribute>> entry : changeSet.updated.entrySet()) {
-            String name = entry.getKey();
+        for (final Entry<String, Set<Attribute>> entry : changeSet.updated
+                .entrySet()) {
+            final String name = entry.getKey();
             Set<Attribute> ourChanges = updated.get(name);
             if (ourChanges == null) {
                 // Create new changes if we done have it yet
@@ -103,8 +104,8 @@ public class ChangeSet {
 
         // Remove removed entities from our created entities and updated
         // entities
-        for (String name : changeSet.removed) {
-            String removedName = created.remove(name);
+        for (final String name : changeSet.removed) {
+            final String removedName = created.remove(name);
             if (removedName != null) {
                 // If there was something to be removed from the created set
                 // then also remove it from the removed set because it has been
@@ -116,8 +117,8 @@ public class ChangeSet {
         }
 
         // Remove created entities from our removed entities
-        for (String name : changeSet.created.keySet()) {
-            boolean removedSomething = removed.remove(name);
+        for (final String name : changeSet.created.keySet()) {
+            final boolean removedSomething = removed.remove(name);
             if (removedSomething) {
                 // If there was something to be removed from the removed set
                 // then also remove it from the created set because it has been

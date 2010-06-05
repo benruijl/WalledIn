@@ -28,7 +28,7 @@ import walledin.game.entity.MessageType;
 
 public class PlayerParentBehavior extends Behavior {
 
-    public PlayerParentBehavior(Entity owner) {
+    public PlayerParentBehavior(final Entity owner) {
         super(owner);
     }
 
@@ -37,12 +37,14 @@ public class PlayerParentBehavior extends Behavior {
      * the current player position, orientation etc.
      */
     @Override
-    public void onMessage(MessageType messageType, Object data) {
-        if (messageType != MessageType.ATTRIBUTE_SET)
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType != MessageType.ATTRIBUTE_SET) {
             return;
+        }
 
-        if (getOwner().hasAttribute(Attribute.WEAPON) == false)
+        if (getOwner().hasAttribute(Attribute.WEAPON) == false) {
             return;
+        }
 
         final Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
         final Attribute attrib = (Attribute) data;
@@ -52,8 +54,8 @@ public class PlayerParentBehavior extends Behavior {
 
         switch (attrib) {
         case POSITION:
-            weapon.setAttribute(Attribute.POSITION, pos.add(new Vector2f(35.0f,
-                    20.0f)));
+            weapon.setAttribute(Attribute.POSITION,
+                    pos.add(new Vector2f(35.0f, 20.0f)));
             break;
         case VELOCITY:
             weapon.setAttribute(Attribute.VELOCITY, vel);
@@ -66,6 +68,6 @@ public class PlayerParentBehavior extends Behavior {
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
     }
 }

@@ -248,14 +248,14 @@ public class ClientEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(filename)) {
-            final List<Element> elList = XMLReader.getElements(reader
-                    .getRootElement(), "item");
+            final List<Element> elList = XMLReader.getElements(
+                    reader.getRootElement(), "item");
 
             final String texture = reader.getRootElement().getAttribute(
                     "texture");
             final String texName = reader.getRootElement().getAttribute(
                     "texname");
-            URL textureURL = Utils.getClasspathURL(texture);
+            final URL textureURL = Utils.getClasspathURL(texture);
             TextureManager.getInstance().loadFromURL(textureURL, texName);
 
             for (final Element cur : elList) {

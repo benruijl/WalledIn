@@ -73,7 +73,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
         bl.addBehavior(new SpatialBehavior(bl));
         bl.addBehavior(new PhysicsBehavior(bl, false, false));
         bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
-        
+
         // read strength
         final int strength = XMLReader.getIntValue(el, "strength");
 
@@ -264,8 +264,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(file)) {
-            final List<Element> elList = XMLReader.getElements(reader
-                    .getRootElement(), "item");
+            final List<Element> elList = XMLReader.getElements(
+                    reader.getRootElement(), "item");
 
             for (final Element cur : elList) {
                 final String familyName = XMLReader.getTextValue(cur, "name");

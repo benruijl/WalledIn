@@ -80,12 +80,12 @@ public class TextureManager extends ResourceManager<String, Texture> {
     public boolean loadFromURL(final URL file, final String textureID) {
 
         try {
-            BufferedImage img = ImageIO.read(file);
-            BufferedImage argbImg = new BufferedImage(img.getWidth(), img
-                    .getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
-            Graphics g = argbImg.createGraphics();
+            final BufferedImage img = ImageIO.read(file);
+            final BufferedImage argbImg = new BufferedImage(img.getWidth(),
+                    img.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+            final Graphics g = argbImg.createGraphics();
             g.drawImage(img, 0, 0, null);
-            Texture texture = TextureIO.newTexture(img, false);
+            final Texture texture = TextureIO.newTexture(img, false);
             return put(textureID, texture);
 
         } catch (final IOException e) {

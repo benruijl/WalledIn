@@ -21,8 +21,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity.behaviors.logic;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -35,11 +35,12 @@ public class WeaponBehavior extends Behavior {
     private boolean canShoot;
     private int lastShot; // frame of last shot
 
-    public WeaponBehavior(Entity owner, int fireLag, String bulletFamily) {
+    public WeaponBehavior(final Entity owner, final int fireLag,
+            final String bulletFamily) {
         super(owner);
         this.fireLag = fireLag;
-        this.lastShot = fireLag;
-        this.canShoot = true;
+        lastShot = fireLag;
+        canShoot = true;
         this.bulletFamily = bulletFamily;
 
         // can be picked up, is not owned by any player
@@ -65,7 +66,7 @@ public class WeaponBehavior extends Behavior {
 
         if (messageType == MessageType.SHOOT) {
             if (canShoot) {
-                Entity player = (Entity) data;
+                final Entity player = (Entity) data;
 
                 final int or = (Integer) player
                         .getAttribute(Attribute.ORIENTATION);
@@ -86,8 +87,8 @@ public class WeaponBehavior extends Behavior {
                         0);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily, manager
-                        .generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily,
+                        manager.generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);

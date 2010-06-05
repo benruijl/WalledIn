@@ -56,10 +56,10 @@ public class NetworkDataWriter {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 
-    public void sendGamestateMessage(DatagramChannel channel,
-            SocketAddress address, EntityManager entityManager,
-            ChangeSet changeSet, int knownClientVersion, int currentVersion)
-            throws IOException {
+    public void sendGamestateMessage(final DatagramChannel channel,
+            final SocketAddress address, final EntityManager entityManager,
+            final ChangeSet changeSet, final int knownClientVersion,
+            final int currentVersion) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
@@ -79,7 +79,7 @@ public class NetworkDataWriter {
         }
         for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
                 .entrySet()) {
-            Entity entity = entityManager.get(entry.getKey());
+            final Entity entity = entityManager.get(entry.getKey());
             writeAttributesData(entity, entry.getValue(), buffer);
         }
         // write end
@@ -89,8 +89,8 @@ public class NetworkDataWriter {
         channel.send(buffer, address);
     }
 
-    public void sendInputMessage(final DatagramChannel channel, int version,
-            final Set<Integer> keysDown) throws IOException {
+    public void sendInputMessage(final DatagramChannel channel,
+            final int version, final Set<Integer> keysDown) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);

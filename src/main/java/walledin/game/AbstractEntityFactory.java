@@ -46,6 +46,7 @@ public abstract class AbstractEntityFactory implements EntityFactory {
      * @see walledin.game.EntityFactory#create(java.lang.String,
      *      java.lang.String)
      */
+    @Override
     public Entity create(final EntityManager entityManager,
             final String familyName, final String entityName) {
         final Entity ent = new Entity(entityManager, familyName, entityName);
