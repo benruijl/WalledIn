@@ -28,17 +28,17 @@ import walledin.game.entity.MessageType;
 
 public class RenderBehavior extends Behavior {
 
-	public RenderBehavior(final Entity owner, final ZValues z) {
-		super(owner);
+    public RenderBehavior(final Entity owner, final ZValues z) {
+        super(owner);
 
-		setAttribute(Attribute.Z_INDEX, z.z);
-	}
+        setAttribute(Attribute.Z_INDEX, z.z);
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-	}
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+    }
 
-	@Override
-	public void onUpdate(final double delta) {
-	}
+    @Override
+    public void onUpdate(final double delta) {
+    }
 }

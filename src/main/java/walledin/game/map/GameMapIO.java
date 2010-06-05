@@ -31,7 +31,7 @@ import walledin.game.entity.Entity;
  * @author ben
  */
 public interface GameMapIO {
-	Entity readFromURL(final URL file);
+    Entity readFromURL(final URL file);
 
-	boolean writeToFile(final Entity map, final String filename);
+    boolean writeToFile(final Entity map, final String filename);
 }

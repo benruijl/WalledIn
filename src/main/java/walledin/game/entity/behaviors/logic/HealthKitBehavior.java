@@ -29,33 +29,33 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class HealthKitBehavior extends Behavior {
-	private static final Logger LOG = Logger.getLogger(HealthKitBehavior.class);
-	private final int strength;
+    private static final Logger LOG = Logger.getLogger(HealthKitBehavior.class);
+    private final int strength;
 
-	public HealthKitBehavior(final Entity owner, final int strength) {
-		super(owner);
-		this.strength = strength;
-	}
+    public HealthKitBehavior(final Entity owner, final int strength) {
+        super(owner);
+        this.strength = strength;
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.COLLIDED) {
-			
-			final CollisionData colData = (CollisionData) data;
-			
-			if (!colData.getCollisionEntity().getFamily().equals(Family.PLAYER))
-				return;
-			
-			LOG.info(getOwner().getName() + " collided with "
-					+ colData.getCollisionEntity().getName());
-			colData.getCollisionEntity().sendMessage(
-					MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.COLLIDED) {
 
-			getOwner().remove(); // remove after usage
-		}
-	}
+            final CollisionData colData = (CollisionData) data;
 
-	@Override
-	public void onUpdate(final double delta) {
-	}
+            if (!colData.getCollisionEntity().getFamily().equals(Family.PLAYER))
+                return;
+
+            LOG.info(getOwner().getName() + " collided with "
+                    + colData.getCollisionEntity().getName());
+            colData.getCollisionEntity().sendMessage(
+                    MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
+
+            getOwner().remove(); // remove after usage
+        }
+    }
+
+    @Override
+    public void onUpdate(final double delta) {
+    }
 }

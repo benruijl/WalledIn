@@ -30,37 +30,39 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 
 public abstract class AbstractEntityFactory implements EntityFactory {
-	private final static Logger LOG = Logger.getLogger(AbstractEntityFactory.class);
-	
-	public interface EntityConstructionFunction {
-		Entity create(final Entity ent);
-	}
+    private final static Logger LOG = Logger
+            .getLogger(AbstractEntityFactory.class);
 
-	protected final Map<Family, EntityConstructionFunction> entityContructionFunctions;
+    public interface EntityConstructionFunction {
+        Entity create(final Entity ent);
+    }
 
-	public AbstractEntityFactory() {
-		entityContructionFunctions = new HashMap<Family, EntityConstructionFunction>();
-	}
+    protected final Map<Family, EntityConstructionFunction> entityContructionFunctions;
 
-	/**
-	 * @see walledin.game.EntityFactory#create(java.lang.String,
-	 *      java.lang.String)
-	 */
-	@Override
-	public Entity create(final EntityManager entityManager,
-			final Family family, final String entityName) {
-		final Entity ent = new Entity(entityManager, family, entityName);
-		final EntityConstructionFunction func = entityContructionFunctions
-				.get(family);
-		
-		if (func == null) {
-			LOG.warn("Failed to find family name '" + family + "'. Returning generic entity.");
-			return ent; // return generic entity
-		}
-		return func.create(ent);
-	}
+    public AbstractEntityFactory() {
+        entityContructionFunctions = new HashMap<Family, EntityConstructionFunction>();
+    }
 
-	@Override
-	public abstract boolean loadItemsFromXML(URL filename);
+    /**
+     * @see walledin.game.EntityFactory#create(java.lang.String,
+     *      java.lang.String)
+     */
+    @Override
+    public Entity create(final EntityManager entityManager,
+            final Family family, final String entityName) {
+        final Entity ent = new Entity(entityManager, family, entityName);
+        final EntityConstructionFunction func = entityContructionFunctions
+                .get(family);
+
+        if (func == null) {
+            LOG.warn("Failed to find family name '" + family
+                    + "'. Returning generic entity.");
+            return ent; // return generic entity
+        }
+        return func.create(ent);
+    }
+
+    @Override
+    public abstract boolean loadItemsFromXML(URL filename);
 
 }

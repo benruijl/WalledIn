@@ -28,24 +28,24 @@ import walledin.game.entity.MessageType;
 
 public class BulletBehavior extends Behavior {
 
-	public BulletBehavior(final Entity owner) {
-		super(owner);
-	}
+    public BulletBehavior(final Entity owner) {
+        super(owner);
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.COLLIDED) {
-			final CollisionData colData = (CollisionData) data;
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.COLLIDED) {
+            final CollisionData colData = (CollisionData) data;
 
-			// if collided with map, destroy
-			if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)) {
-				getOwner().remove();
-			}
-		}
+            // if collided with map, destroy
+            if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)) {
+                getOwner().remove();
+            }
+        }
 
-	}
+    }
 
-	@Override
-	public void onUpdate(final double delta) {
-	}
+    @Override
+    public void onUpdate(final double delta) {
+    }
 }

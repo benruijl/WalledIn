@@ -28,36 +28,37 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerAnimationBehavior extends AnimationBehavior {
-	private final static Logger LOG = Logger.getLogger(PlayerAnimationBehavior.class);
-	
-	private float walkAnimFrame;
-	private final float animSpeed;
-	private Vector2f velocity;
+    private final static Logger LOG = Logger
+            .getLogger(PlayerAnimationBehavior.class);
 
-	public PlayerAnimationBehavior(final Entity owner) {
-		super(owner);
-		setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
-		animSpeed = 0.002f;
-	}
+    private float walkAnimFrame;
+    private final float animSpeed;
+    private Vector2f velocity;
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.ATTRIBUTE_SET) {
-			final Attribute attribute = (Attribute) data;
-			switch (attribute) {
-			case VELOCITY:
-				velocity = (Vector2f) getAttribute(attribute);
-				break;
-			}
-		}
-	}
+    public PlayerAnimationBehavior(final Entity owner) {
+        super(owner);
+        setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
+        animSpeed = 0.002f;
+    }
 
-	@Override
-	public void onUpdate(final double delta) {
-		if (Math.abs(velocity.getX()) > 0.5f) {
-			walkAnimFrame += animSpeed * velocity.getX();
-			walkAnimFrame %= 2 * Math.PI;
-			setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
-		}
-	}
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.ATTRIBUTE_SET) {
+            final Attribute attribute = (Attribute) data;
+            switch (attribute) {
+            case VELOCITY:
+                velocity = (Vector2f) getAttribute(attribute);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onUpdate(final double delta) {
+        if (Math.abs(velocity.getX()) > 0.5f) {
+            walkAnimFrame += animSpeed * velocity.getX();
+            walkAnimFrame %= 2 * Math.PI;
+            setAttribute(Attribute.WALK_ANIM_FRAME, new Float(walkAnimFrame));
+        }
+    }
 }

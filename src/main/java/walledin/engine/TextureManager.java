@@ -39,65 +39,66 @@ import com.sun.opengl.util.texture.TextureIO;
  * @author ben
  */
 public class TextureManager extends ResourceManager<String, Texture> {
-	private final static Logger LOG = Logger.getLogger(TextureManager.class);
-	private static final TextureManager INSTANCE = new TextureManager();
+    private final static Logger LOG = Logger.getLogger(TextureManager.class);
+    private static final TextureManager INSTANCE = new TextureManager();
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
 
-	public static TextureManager getInstance() {
-		return INSTANCE;
-	}
+    public static TextureManager getInstance() {
+        return INSTANCE;
+    }
 
-	private TextureManager() {
+    private TextureManager() {
 
-	}
+    }
 
-	private String generateUniqueID() {
-		return "TEX_" + getCount();
-	}
+    private String generateUniqueID() {
+        return "TEX_" + getCount();
+    }
 
-	/*
-	 * Returns the string ID of the texture. Useful for internal textures
-	 * 
-	 * @Returns: string ID on succes, null on failure
-	 */
-	public String loadFromFile(final URL file) {
-		final String id = generateUniqueID();
+    /*
+     * Returns the string ID of the texture. Useful for internal textures
+     * 
+     * @Returns: string ID on succes, null on failure
+     */
+    public String loadFromFile(final URL file) {
+        final String id = generateUniqueID();
 
-		if (loadFromURL(file, id)) {
-			return id;
-		}
+        if (loadFromURL(file, id)) {
+            return id;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/*
-	 * Loads a texture from a file and links it with the given ID
-	 */
-	public boolean loadFromURL(final URL file, final String textureID) {
+    /*
+     * Loads a texture from a file and links it with the given ID
+     */
+    public boolean loadFromURL(final URL file, final String textureID) {
 
-		try {
-			BufferedImage img = ImageIO.read(file);
-			BufferedImage argbImg = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
-			Graphics g = argbImg.createGraphics();
-			g.drawImage(img, 0, 0, null);
-			Texture texture = TextureIO.newTexture(img, false);
-			return put(textureID, texture);
+        try {
+            BufferedImage img = ImageIO.read(file);
+            BufferedImage argbImg = new BufferedImage(img.getWidth(), img
+                    .getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+            Graphics g = argbImg.createGraphics();
+            g.drawImage(img, 0, 0, null);
+            Texture texture = TextureIO.newTexture(img, false);
+            return put(textureID, texture);
 
-		} catch (final IOException e) {
-			LOG.error("IO exception durng loading of " + file, e);
-		} catch (final GLException e) {
-			LOG.error("GL exception durng loading of " + file, e);
-		}
+        } catch (final IOException e) {
+            LOG.error("IO exception durng loading of " + file, e);
+        } catch (final GLException e) {
+            LOG.error("GL exception durng loading of " + file, e);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public void loadFromTextureData(final String name, final TextureData texData) {
-		final Texture tex = TextureIO.newTexture(texData);
-		put(name, tex);
-	}
+    public void loadFromTextureData(final String name, final TextureData texData) {
+        final Texture tex = TextureIO.newTexture(texData);
+        put(name, tex);
+    }
 }

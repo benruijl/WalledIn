@@ -33,105 +33,106 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
-	private static final Logger LOG = Logger.getLogger(PlayerControlBehaviour.class);
-	private static final float MOVE_SPEED = 240.0f;
-	private static final float JUMP_SPEED = 8000.0f;
-	private boolean canJump;
-	private Set<Integer> keysDown;
+    private static final Logger LOG = Logger
+            .getLogger(PlayerControlBehaviour.class);
+    private static final float MOVE_SPEED = 240.0f;
+    private static final float JUMP_SPEED = 8000.0f;
+    private boolean canJump;
+    private Set<Integer> keysDown;
 
-	public PlayerControlBehaviour(final Entity owner) {
-		super(owner);
-		keysDown = new HashSet<Integer>();
-		setAttribute(Attribute.KEYS_DOWN, keysDown);
-	}
+    public PlayerControlBehaviour(final Entity owner) {
+        super(owner);
+        keysDown = new HashSet<Integer>();
+        setAttribute(Attribute.KEYS_DOWN, keysDown);
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.COLLIDED) {
-			final CollisionData colData = (CollisionData) data;
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.COLLIDED) {
+            final CollisionData colData = (CollisionData) data;
 
-			if (colData.getNewPos().getY() < colData.getTheorPos().getY())
-				canJump = true;
-		} else if (messageType == MessageType.ATTRIBUTE_SET) {
-			final Attribute attribute = (Attribute) data;
-			switch (attribute) {
-			case KEYS_DOWN:
-				keysDown = (Set<Integer>) getAttribute(attribute);
-				break;
-			}
-		}
-		else if (messageType == MessageType.DROP) {
-				if (data == null) // drop all
-				{
-					// FIXME: find better way to drop all entities
-					onMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
-					return;
-				}
-				
-				Attribute at = (Attribute) data;
-				
-				if (getOwner().hasAttribute(at))
-				{
-					Entity ent = (Entity) getAttribute(at);
-					ent.sendMessage(MessageType.DROP, null);
-					setAttribute(at, null);
-				}
-				else
-					LOG.warn("Trying to remove attribute " + at.toString() + ", but entity " + getOwner().getName() + " does not have this attribute.");
-			}
+            if (colData.getNewPos().getY() < colData.getTheorPos().getY())
+                canJump = true;
+        } else if (messageType == MessageType.ATTRIBUTE_SET) {
+            final Attribute attribute = (Attribute) data;
+            switch (attribute) {
+            case KEYS_DOWN:
+                keysDown = (Set<Integer>) getAttribute(attribute);
+                break;
+            }
+        } else if (messageType == MessageType.DROP) {
+            if (data == null) // drop all
+            {
+                // FIXME: find better way to drop all entities
+                onMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
+                return;
+            }
 
-		super.onMessage(messageType, data);
-	}
+            Attribute at = (Attribute) data;
 
-	@Override
-	public void onUpdate(final double delta) {
-		float x = 0;
-		float y = 0;
+            if (getOwner().hasAttribute(at)) {
+                Entity ent = (Entity) getAttribute(at);
+                ent.sendMessage(MessageType.DROP, null);
+                setAttribute(at, null);
+            } else
+                LOG.warn("Trying to remove attribute " + at.toString()
+                        + ", but entity " + getOwner().getName()
+                        + " does not have this attribute.");
+        }
 
-		if (keysDown.contains(KeyEvent.VK_RIGHT)
-				|| keysDown.contains(KeyEvent.VK_D)) {
-			x += MOVE_SPEED;
-			setAttribute(Attribute.ORIENTATION, 1);
+        super.onMessage(messageType, data);
+    }
 
-		}
-		if (keysDown.contains(KeyEvent.VK_LEFT)
-				|| keysDown.contains(KeyEvent.VK_A)) {
-			x -= MOVE_SPEED;
-			setAttribute(Attribute.ORIENTATION, -1);
-		}
-		if (keysDown.contains(KeyEvent.VK_UP)
-				|| keysDown.contains(KeyEvent.VK_W)) {
-			y -= MOVE_SPEED;
-		}
+    @Override
+    public void onUpdate(final double delta) {
+        float x = 0;
+        float y = 0;
 
-		if (keysDown.contains(KeyEvent.VK_DOWN)
-				|| keysDown.contains(KeyEvent.VK_S)) {
-			y += MOVE_SPEED;
-		}
+        if (keysDown.contains(KeyEvent.VK_RIGHT)
+                || keysDown.contains(KeyEvent.VK_D)) {
+            x += MOVE_SPEED;
+            setAttribute(Attribute.ORIENTATION, 1);
 
-		if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
-			y -= JUMP_SPEED;
-		}
-		
-		if (keysDown.contains(KeyEvent.VK_1)) {
-			getOwner().sendMessage(MessageType.SELECT_WEAPON, Integer.valueOf(1));
-		}
-		
-		if (keysDown.contains(KeyEvent.VK_2)) {
-			getOwner().sendMessage(MessageType.SELECT_WEAPON, Integer.valueOf(2));
-		}
+        }
+        if (keysDown.contains(KeyEvent.VK_LEFT)
+                || keysDown.contains(KeyEvent.VK_A)) {
+            x -= MOVE_SPEED;
+            setAttribute(Attribute.ORIENTATION, -1);
+        }
+        if (keysDown.contains(KeyEvent.VK_UP)
+                || keysDown.contains(KeyEvent.VK_W)) {
+            y -= MOVE_SPEED;
+        }
 
-		if (keysDown.contains(KeyEvent.VK_ENTER)) {
-			if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON))
-			{
-				Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
-				weapon.sendMessage(MessageType.SHOOT, getOwner());
-			}
-		}
+        if (keysDown.contains(KeyEvent.VK_DOWN)
+                || keysDown.contains(KeyEvent.VK_S)) {
+            y += MOVE_SPEED;
+        }
 
-		getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
-		canJump = false;
-		
-		super.onUpdate(delta);
-	}
+        if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
+            y -= JUMP_SPEED;
+        }
+
+        if (keysDown.contains(KeyEvent.VK_1)) {
+            getOwner().sendMessage(MessageType.SELECT_WEAPON,
+                    Integer.valueOf(1));
+        }
+
+        if (keysDown.contains(KeyEvent.VK_2)) {
+            getOwner().sendMessage(MessageType.SELECT_WEAPON,
+                    Integer.valueOf(2));
+        }
+
+        if (keysDown.contains(KeyEvent.VK_ENTER)) {
+            if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
+                Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
+                weapon.sendMessage(MessageType.SHOOT, getOwner());
+            }
+        }
+
+        getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
+        canJump = false;
+
+        super.onUpdate(delta);
+    }
 }

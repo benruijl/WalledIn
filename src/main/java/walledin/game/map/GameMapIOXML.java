@@ -39,100 +39,101 @@ import walledin.util.XMLReader;
  * @author ben
  */
 public class GameMapIOXML implements GameMapIO {
-	// FIXME dont use instance vars for this...
-	private int width;
-	private int height;
-	private final EntityManager entityManager;
+    // FIXME dont use instance vars for this...
+    private int width;
+    private int height;
+    private final EntityManager entityManager;
 
-	public GameMapIOXML(final EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
+    public GameMapIOXML(final EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
-	/**
-	 * Reads tile information
-	 * 
-	 * @param reader
-	 *            XML reader
-	 * @param element
-	 *            Current element
-	 * @return An list of tiles
-	 */
-	private List<Tile> parseTiles(final Element element) {
-		final List<Tile> result = new ArrayList<Tile>();
-		final String tiles = XMLReader.getTextValue(element, "tiles");
-		final String[] rows = tiles.split("\n");
-		int x = 0;
-		int y = 0;
-		for (final String row : rows) {
-			if (row.trim().isEmpty()) {
-				continue;
-			}
-			y = 0;
-			for (final char mapChar : row.trim().toCharArray()) {
-				final TileType type = TileType.getTile(mapChar);
-				final Tile tile = new Tile(type, x, y);
-				result.add(tile);
-				y++;
-			}
-			x++;
-		}
-		height = x;
-		width = y;
-		return result;
-	}
+    /**
+     * Reads tile information
+     * 
+     * @param reader
+     *            XML reader
+     * @param element
+     *            Current element
+     * @return An list of tiles
+     */
+    private List<Tile> parseTiles(final Element element) {
+        final List<Tile> result = new ArrayList<Tile>();
+        final String tiles = XMLReader.getTextValue(element, "tiles");
+        final String[] rows = tiles.split("\n");
+        int x = 0;
+        int y = 0;
+        for (final String row : rows) {
+            if (row.trim().isEmpty()) {
+                continue;
+            }
+            y = 0;
+            for (final char mapChar : row.trim().toCharArray()) {
+                final TileType type = TileType.getTile(mapChar);
+                final Tile tile = new Tile(type, x, y);
+                result.add(tile);
+                y++;
+            }
+            x++;
+        }
+        height = x;
+        width = y;
+        return result;
+    }
 
-	private List<Entity> parseItems(final Element element) {
-		final List<Entity> itList = new ArrayList<Entity>();
-		final Element itemsNode = XMLReader.getFirstElement(element, "items");
-		final List<Element> items = XMLReader.getElements(itemsNode, "item");
+    private List<Entity> parseItems(final Element element) {
+        final List<Entity> itList = new ArrayList<Entity>();
+        final Element itemsNode = XMLReader.getFirstElement(element, "items");
+        final List<Element> items = XMLReader.getElements(itemsNode, "item");
 
-		for (final Element el : items) {
-			final String name = el.getAttribute("name");
-			final String type = el.getAttribute("type");
-			final int x = Integer.parseInt(el.getAttribute("x"));
-			final int y = Integer.parseInt(el.getAttribute("y"));
+        for (final Element el : items) {
+            final String name = el.getAttribute("name");
+            final String type = el.getAttribute("type");
+            final int x = Integer.parseInt(el.getAttribute("x"));
+            final int y = Integer.parseInt(el.getAttribute("y"));
 
-			final Entity item = entityManager.create(Enum.valueOf(Family.class, type), name);
-			item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-			itList.add(item);
-		}
+            final Entity item = entityManager.create(Enum.valueOf(Family.class,
+                    type), name);
+            item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
+            itList.add(item);
+        }
 
-		return itList;
-	}
+        return itList;
+    }
 
-	/**
-	 * Reads map data from an XML file
-	 * 
-	 * @param filename
-	 *            Filename of XML data
-	 * @return Returns true on success and false on failure
-	 */
-	@Override
-	public Entity readFromURL(final URL file) {
-		final XMLReader reader = new XMLReader();
+    /**
+     * Reads map data from an XML file
+     * 
+     * @param filename
+     *            Filename of XML data
+     * @return Returns true on success and false on failure
+     */
+    @Override
+    public Entity readFromURL(final URL file) {
+        final XMLReader reader = new XMLReader();
 
-		if (reader.open(file)) {
-			final Element mapElement = reader.getRootElement();
+        if (reader.open(file)) {
+            final Element mapElement = reader.getRootElement();
 
-			final String name = XMLReader.getTextValue(mapElement, "name");
-			final List<Entity> items = parseItems(mapElement);
-			final List<Tile> tiles = parseTiles(mapElement);
+            final String name = XMLReader.getTextValue(mapElement, "name");
+            final List<Entity> items = parseItems(mapElement);
+            final List<Tile> tiles = parseTiles(mapElement);
 
-			final Entity map = entityManager.create(Family.MAP, name);
-			map.setAttribute(Attribute.WIDTH, width);
-			map.setAttribute(Attribute.HEIGHT, height);
-			map.setAttribute(Attribute.TILES, tiles);
-			map.setAttribute(Attribute.ITEM_LIST, items);
+            final Entity map = entityManager.create(Family.MAP, name);
+            map.setAttribute(Attribute.WIDTH, width);
+            map.setAttribute(Attribute.HEIGHT, height);
+            map.setAttribute(Attribute.TILES, tiles);
+            map.setAttribute(Attribute.ITEM_LIST, items);
 
-			return map;
-		} else {
-			return null;
-		}
+            return map;
+        } else {
+            return null;
+        }
 
-	}
+    }
 
-	@Override
-	public boolean writeToFile(final Entity map, final String filename) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+    @Override
+    public boolean writeToFile(final Entity map, final String filename) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

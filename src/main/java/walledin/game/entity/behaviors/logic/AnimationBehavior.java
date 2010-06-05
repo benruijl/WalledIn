@@ -26,16 +26,16 @@ import walledin.game.entity.MessageType;
 
 public class AnimationBehavior extends Behavior {
 
-	public AnimationBehavior(final Entity owner) {
-		super(owner);
-	}
+    public AnimationBehavior(final Entity owner) {
+        super(owner);
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-	}
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+    }
 
-	@Override
-	public void onUpdate(final double delta) {
-	}
+    @Override
+    public void onUpdate(final double delta) {
+    }
 
 }

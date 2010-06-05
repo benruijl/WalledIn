@@ -36,127 +36,128 @@ import walledin.game.network.server.ChangeSet;
 import walledin.util.Utils;
 
 public class EntityManager {
-	private final Map<String, Entity> entities;
-	private final DrawOrderManager drawOrderManager;
-	private final EntityFactory factory;
-	private int uniqueNameCount = 0;
-	private Set<Entity> removed;
-	private Set<Entity> created;
-	private int currentVersion;
+    private final Map<String, Entity> entities;
+    private final DrawOrderManager drawOrderManager;
+    private final EntityFactory factory;
+    private int uniqueNameCount = 0;
+    private Set<Entity> removed;
+    private Set<Entity> created;
+    private int currentVersion;
 
-	public EntityManager(final EntityFactory factory) {
-		entities = new ConcurrentHashMap<String, Entity>();
-		removed = new HashSet<Entity>();
-		created = new HashSet<Entity>();
-		this.factory = factory;
-		drawOrderManager = new DrawOrderManager();
-		currentVersion = 0;
-	}
+    public EntityManager(final EntityFactory factory) {
+        entities = new ConcurrentHashMap<String, Entity>();
+        removed = new HashSet<Entity>();
+        created = new HashSet<Entity>();
+        this.factory = factory;
+        drawOrderManager = new DrawOrderManager();
+        currentVersion = 0;
+    }
 
-	/**
-	 * Creates a new Entity and adds it to the entities list.
-	 * 
-	 * @param familyName
-	 * @param name
-	 * @return The created entity or null on failure
-	 */
-	public Entity create(final Family familyName, final String entityName) {
-		final Entity entity = factory.create(this, familyName, entityName);
-		add(entity);
-		created.add(entity);
-		return entity;
-	}
+    /**
+     * Creates a new Entity and adds it to the entities list.
+     * 
+     * @param familyName
+     * @param name
+     * @return The created entity or null on failure
+     */
+    public Entity create(final Family familyName, final String entityName) {
+        final Entity entity = factory.create(this, familyName, entityName);
+        add(entity);
+        created.add(entity);
+        return entity;
+    }
 
-	/**
-	 * Generates a unique name for an object. Useful when generating entities in
-	 * runtime. The entities will be named in the following format:
-	 * ENT_<i>familyname</i>_<i>num</i>, where <i>familyname</i> is the family
-	 * name and <i>num</i> is the number of already generated unique names.
-	 * 
-	 * @param family
-	 *            Name of the item's family
-	 * @return Unique entity name
-	 */
-	public String generateUniqueName(final Family family) {
-		uniqueNameCount++;
-		return "ENT_" + family.toString() + "_" + Integer.toString(uniqueNameCount);
-	}
+    /**
+     * Generates a unique name for an object. Useful when generating entities in
+     * runtime. The entities will be named in the following format:
+     * ENT_<i>familyname</i>_<i>num</i>, where <i>familyname</i> is the family
+     * name and <i>num</i> is the number of already generated unique names.
+     * 
+     * @param family
+     *            Name of the item's family
+     * @return Unique entity name
+     */
+    public String generateUniqueName(final Family family) {
+        uniqueNameCount++;
+        return "ENT_" + family.toString() + "_"
+                + Integer.toString(uniqueNameCount);
+    }
 
-	/**
-	 * Adds an entity to the list.
-	 * 
-	 * @param entity
-	 *            Entity to add
-	 */
-	public void add(final Entity entity) {
-		entities.put(entity.getName(), entity);
+    /**
+     * Adds an entity to the list.
+     * 
+     * @param entity
+     *            Entity to add
+     */
+    public void add(final Entity entity) {
+        entities.put(entity.getName(), entity);
 
-		if (entity.hasAttribute(Attribute.Z_INDEX)) {
-			drawOrderManager.add(entity);
-		}
-	}
+        if (entity.hasAttribute(Attribute.Z_INDEX)) {
+            drawOrderManager.add(entity);
+        }
+    }
 
-	public void add(final Collection<Entity> entitiesList) {
-		for (final Entity en : entitiesList) {
-			add(en);
-		}
-	}
+    public void add(final Collection<Entity> entitiesList) {
+        for (final Entity en : entitiesList) {
+            add(en);
+        }
+    }
 
-	public Entity remove(final String name) {
-		final Entity entity = entities.get(name);
-		drawOrderManager.removeEntity(entity);
-		entities.remove(name);
+    public Entity remove(final String name) {
+        final Entity entity = entities.get(name);
+        drawOrderManager.removeEntity(entity);
+        entities.remove(name);
 
-		removed.add(entity);
-		return entity;
-	}
+        removed.add(entity);
+        return entity;
+    }
 
-	public Entity get(final String name) {
-		return entities.get(name);
-	}
+    public Entity get(final String name) {
+        return entities.get(name);
+    }
 
-	public void draw(final Renderer renderer) {
-		drawOrderManager.draw(renderer);
-	}
+    public void draw(final Renderer renderer) {
+        drawOrderManager.draw(renderer);
+    }
 
-	public void update(final double delta) {
-		/* Clean up entities which are flagged for removal */
-		final List<Entity> removeList = new ArrayList<Entity>();
-		for (final Entity entity : entities.values()) {
-			if (entity.isMarkedRemoved()) {
-				removeList.add(entity);
-			}
-		}
+    public void update(final double delta) {
+        /* Clean up entities which are flagged for removal */
+        final List<Entity> removeList = new ArrayList<Entity>();
+        for (final Entity entity : entities.values()) {
+            if (entity.isMarkedRemoved()) {
+                removeList.add(entity);
+            }
+        }
 
-		for (int i = 0; i < removeList.size(); i++) {
-			remove(removeList.get(i).getName());
-		}
+        for (int i = 0; i < removeList.size(); i++) {
+            remove(removeList.get(i).getName());
+        }
 
-		for (final Entity entity : entities.values()) {
-			entity.sendUpdate(delta);
-		}
-	}
+        for (final Entity entity : entities.values()) {
+            entity.sendUpdate(delta);
+        }
+    }
 
-	public void doCollisionDetection(final Entity curMap, final double delta) {
-		CollisionManager.calculateMapCollisions(curMap, entities.values(),
-				delta);
-		CollisionManager.calculateEntityCollisions(entities.values(), delta);
-	}
+    public void doCollisionDetection(final Entity curMap, final double delta) {
+        CollisionManager.calculateMapCollisions(curMap, entities.values(),
+                delta);
+        CollisionManager.calculateEntityCollisions(entities.values(), delta);
+    }
 
-	public void init() {
-		factory.loadItemsFromXML(Utils.getClasspathURL("items.xml"));
-	}
+    public void init() {
+        factory.loadItemsFromXML(Utils.getClasspathURL("items.xml"));
+    }
 
-	public ChangeSet getChangeSet() {
-		ChangeSet result = new ChangeSet(currentVersion, created, removed,
-				entities);
-		created.clear();
-		removed.clear();
-		currentVersion++;
-		return result;
-	}
+    public ChangeSet getChangeSet() {
+        ChangeSet result = new ChangeSet(currentVersion, created, removed,
+                entities);
+        created.clear();
+        removed.clear();
+        currentVersion++;
+        return result;
+    }
 
-	public int getCurrentVersion() {
-		return currentVersion;
-	}
+    public int getCurrentVersion() {
+        return currentVersion;
+    }
 }

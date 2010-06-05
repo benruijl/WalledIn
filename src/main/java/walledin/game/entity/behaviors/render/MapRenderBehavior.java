@@ -32,64 +32,64 @@ import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
 
 public class MapRenderBehavior extends RenderBehavior {
-	private final static float TILE_WIDTH = 32.0f;
-	private final static int STEP_SIZE = 10;
-	private int height;
-	private int width;
-	private List<Tile> tiles;
+    private final static float TILE_WIDTH = 32.0f;
+    private final static int STEP_SIZE = 10;
+    private int height;
+    private int width;
+    private List<Tile> tiles;
 
-	public MapRenderBehavior(final Entity owner) {
-		super(owner, ZValues.MAP);
-		setAttribute(Attribute.RENDER_TILE_SIZE, TILE_WIDTH);
-		tiles = new ArrayList<Tile>();
-	}
+    public MapRenderBehavior(final Entity owner) {
+        super(owner, ZValues.MAP);
+        setAttribute(Attribute.RENDER_TILE_SIZE, TILE_WIDTH);
+        tiles = new ArrayList<Tile>();
+    }
 
-	private void render(final Renderer renderer) {
-		/* Partition the map */
-		for (int sw = 0; sw < width; sw += STEP_SIZE) {
-			for (int sh = 0; sh < height; sh += STEP_SIZE) {
-				renderPart(renderer, sw, sh);
+    private void render(final Renderer renderer) {
+        /* Partition the map */
+        for (int sw = 0; sw < width; sw += STEP_SIZE) {
+            for (int sh = 0; sh < height; sh += STEP_SIZE) {
+                renderPart(renderer, sw, sh);
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	private void renderPart(final Renderer renderer, final int sw, final int sh) {
-		final Rectangle part = new Rectangle(sw * TILE_WIDTH, sh * TILE_WIDTH,
-				TILE_WIDTH * STEP_SIZE, TILE_WIDTH * STEP_SIZE);
-		if (renderer.inFrustum(part)) {
-			for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
-				for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
-					final int index = (sh + i) * width + sw + j;
-					if (index >= 0 && index < tiles.size()) {
-						final Tile tile = tiles.get(index);
-						renderer.drawTexturePart(tile.getType()
-								.getTexturePartID(), new Rectangle((sw + j)
-								* TILE_WIDTH, (sh + i) * TILE_WIDTH,
-								TILE_WIDTH, TILE_WIDTH));
-					}
-				}
-			}
-		}
-	}
+    private void renderPart(final Renderer renderer, final int sw, final int sh) {
+        final Rectangle part = new Rectangle(sw * TILE_WIDTH, sh * TILE_WIDTH,
+                TILE_WIDTH * STEP_SIZE, TILE_WIDTH * STEP_SIZE);
+        if (renderer.inFrustum(part)) {
+            for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
+                for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
+                    final int index = (sh + i) * width + sw + j;
+                    if (index >= 0 && index < tiles.size()) {
+                        final Tile tile = tiles.get(index);
+                        renderer.drawTexturePart(tile.getType()
+                                .getTexturePartID(), new Rectangle((sw + j)
+                                * TILE_WIDTH, (sh + i) * TILE_WIDTH,
+                                TILE_WIDTH, TILE_WIDTH));
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	public void onMessage(final MessageType messageType, final Object data) {
-		if (messageType == MessageType.RENDER) {
-			render((Renderer) data);
-		} else if (messageType == MessageType.ATTRIBUTE_SET) {
-			final Attribute attribute = (Attribute) data;
-			switch (attribute) {
-			case HEIGHT:
-				height = (Integer) getAttribute(attribute);
-				break;
-			case WIDTH:
-				width = (Integer) getAttribute(attribute);
-				break;
-			case TILES:
-				tiles = (List<Tile>) getAttribute(attribute);
-				break;
-			}
-		}
-	}
+    @Override
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.RENDER) {
+            render((Renderer) data);
+        } else if (messageType == MessageType.ATTRIBUTE_SET) {
+            final Attribute attribute = (Attribute) data;
+            switch (attribute) {
+            case HEIGHT:
+                height = (Integer) getAttribute(attribute);
+                break;
+            case WIDTH:
+                width = (Integer) getAttribute(attribute);
+                break;
+            case TILES:
+                tiles = (List<Tile>) getAttribute(attribute);
+                break;
+            }
+        }
+    }
 }

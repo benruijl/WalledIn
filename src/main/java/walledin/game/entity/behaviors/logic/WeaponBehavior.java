@@ -30,94 +30,94 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class WeaponBehavior extends Behavior {
-	private Entity owner; // entity that carries the gun
-	private final int fireLag;
-	private final Family bulletFamily;
-	private boolean canShoot;
-	private int lastShot; // frame of last shot
+    private Entity owner; // entity that carries the gun
+    private final int fireLag;
+    private final Family bulletFamily;
+    private boolean canShoot;
+    private int lastShot; // frame of last shot
 
-	public WeaponBehavior(Entity owner, int fireLag, Family bulletFamily2) {
-		super(owner);
-		this.fireLag = fireLag;
-		this.lastShot = fireLag;
-		this.canShoot = true;
-		this.bulletFamily = bulletFamily2;
+    public WeaponBehavior(Entity owner, int fireLag, Family bulletFamily2) {
+        super(owner);
+        this.fireLag = fireLag;
+        this.lastShot = fireLag;
+        this.canShoot = true;
+        this.bulletFamily = bulletFamily2;
 
-		// can be picked up, is not owned by any player
-		setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
-		setAttribute(Attribute.ORIENTATION, Integer.valueOf(1));
-	}
+        // can be picked up, is not owned by any player
+        setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
+        setAttribute(Attribute.ORIENTATION, Integer.valueOf(1));
+    }
 
-	@Override
-	public void onMessage(MessageType messageType, Object data) {
-		if ((Boolean) getAttribute(Attribute.COLLECTABLE)
-				&& messageType == MessageType.COLLIDED) {
-			final CollisionData colData = (CollisionData) data;
-			final Entity ent = colData.getCollisionEntity();
-			
-			if (!ent.getFamily().equals(Family.PLAYER))
-				return;
-			
-			owner = ent;			
-			
-			/* Check if player had a previous weapon, if so drop it */
-		/*	if (owner.hasAttribute(Attribute.ACTIVE_WEAPON))
-			{
-				owner.sendMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
-			}		
-			
-			owner.setAttribute(Attribute.ACTIVE_WEAPON, getOwner()); */
-			setAttribute(Attribute.COLLECTABLE, Boolean.FALSE);
-		}
-		
-		if (messageType == MessageType.DROP) // to be called by Player only
-		{
-			setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
-			owner = null;
-		}
+    @Override
+    public void onMessage(MessageType messageType, Object data) {
+        if ((Boolean) getAttribute(Attribute.COLLECTABLE)
+                && messageType == MessageType.COLLIDED) {
+            final CollisionData colData = (CollisionData) data;
+            final Entity ent = colData.getCollisionEntity();
 
-		if (messageType == MessageType.SHOOT) // TODO: use owner
-			if (canShoot) {
-				Entity player = (Entity) data;
+            if (!ent.getFamily().equals(Family.PLAYER))
+                return;
 
-				final int or = (Integer) player
-						.getAttribute(Attribute.ORIENTATION);
-				final Vector2f playerPos = (Vector2f) player
-						.getAttribute(Attribute.POSITION);
+            owner = ent;
 
-				final Vector2f bulletPosition;
+            /* Check if player had a previous weapon, if so drop it */
+            /*
+             * if (owner.hasAttribute(Attribute.ACTIVE_WEAPON)) {
+             * owner.sendMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON); }
+             * 
+             * owner.setAttribute(Attribute.ACTIVE_WEAPON, getOwner());
+             */
+            setAttribute(Attribute.COLLECTABLE, Boolean.FALSE);
+        }
 
-				// slightly more complicated, since the player pos is defined as
-				// the top left
-				if (or > 0)
-					bulletPosition = playerPos.add(new Vector2f(50.0f, 20.0f));
-				else
-					bulletPosition = playerPos.add(new Vector2f(0.0f, 20.0f));
+        if (messageType == MessageType.DROP) // to be called by Player only
+        {
+            setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
+            owner = null;
+        }
 
-				final Vector2f bulletAcceleration = new Vector2f(or * 30000.0f,
-						0);
+        if (messageType == MessageType.SHOOT) // TODO: use owner
+            if (canShoot) {
+                Entity player = (Entity) data;
 
-				final EntityManager manager = getEntityManager();
-				final Entity bullet = manager.create(bulletFamily, manager
-						.generateUniqueName(bulletFamily));
+                final int or = (Integer) player
+                        .getAttribute(Attribute.ORIENTATION);
+                final Vector2f playerPos = (Vector2f) player
+                        .getAttribute(Attribute.POSITION);
 
-				bullet.setAttribute(Attribute.POSITION, bulletPosition);
-				bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
+                final Vector2f bulletPosition;
 
-				canShoot = false;
-				lastShot = fireLag;
-			}
-	}
+                // slightly more complicated, since the player pos is defined as
+                // the top left
+                if (or > 0)
+                    bulletPosition = playerPos.add(new Vector2f(50.0f, 20.0f));
+                else
+                    bulletPosition = playerPos.add(new Vector2f(0.0f, 20.0f));
 
-	@Override
-	public void onUpdate(double delta) {
-		if (!canShoot) {
-			lastShot--;
+                final Vector2f bulletAcceleration = new Vector2f(or * 30000.0f,
+                        0);
 
-			if (lastShot <= 0)
-				canShoot = true;
-		}
+                final EntityManager manager = getEntityManager();
+                final Entity bullet = manager.create(bulletFamily, manager
+                        .generateUniqueName(bulletFamily));
 
-	}
+                bullet.setAttribute(Attribute.POSITION, bulletPosition);
+                bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
+
+                canShoot = false;
+                lastShot = fireLag;
+            }
+    }
+
+    @Override
+    public void onUpdate(double delta) {
+        if (!canShoot) {
+            lastShot--;
+
+            if (lastShot <= 0)
+                canShoot = true;
+        }
+
+    }
 
 }

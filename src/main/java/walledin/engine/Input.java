@@ -34,62 +34,62 @@ import java.util.Set;
  * @author ben
  */
 public class Input implements KeyListener {
-	private static Input ref = null;
-	private final Set<Integer> keysDown;
+    private static Input ref = null;
+    private final Set<Integer> keysDown;
 
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		throw new CloneNotSupportedException();
-	}
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
 
-	private Input() {
-		keysDown = new HashSet<Integer>();
-	}
+    private Input() {
+        keysDown = new HashSet<Integer>();
+    }
 
-	public static Input getInstance() {
-		if (ref == null) {
-			ref = new Input();
-		}
+    public static Input getInstance() {
+        if (ref == null) {
+            ref = new Input();
+        }
 
-		return ref;
-	}
+        return ref;
+    }
 
-	@Override
-	public void keyTyped(final KeyEvent e) {
-	}
+    @Override
+    public void keyTyped(final KeyEvent e) {
+    }
 
-	@Override
-	public void keyPressed(final KeyEvent e) {
-		keysDown.add(e.getKeyCode());
-	}
+    @Override
+    public void keyPressed(final KeyEvent e) {
+        keysDown.add(e.getKeyCode());
+    }
 
-	@Override
-	public void keyReleased(final KeyEvent e) {
-		keysDown.remove(e.getKeyCode());
-	}
+    @Override
+    public void keyReleased(final KeyEvent e) {
+        keysDown.remove(e.getKeyCode());
+    }
 
-	/**
-	 * Set the key to the up state
-	 * 
-	 * @param key
-	 */
-	public void setKeyUp(final int key) {
-		keysDown.remove(key);
-	}
+    /**
+     * Set the key to the up state
+     * 
+     * @param key
+     */
+    public void setKeyUp(final int key) {
+        keysDown.remove(key);
+    }
 
-	/**
-	 * check if the key is down
-	 * 
-	 * @param key
-	 *            keycode of the key
-	 * @return if the key is down
-	 */
-	public boolean isKeyDown(final int key) {
-		return keysDown.contains(key);
-	}
+    /**
+     * check if the key is down
+     * 
+     * @param key
+     *            keycode of the key
+     * @return if the key is down
+     */
+    public boolean isKeyDown(final int key) {
+        return keysDown.contains(key);
+    }
 
-	public Set<Integer> getKeysDown() {
-		return new HashSet<Integer>(keysDown);
-	}
+    public Set<Integer> getKeysDown() {
+        return new HashSet<Integer>(keysDown);
+    }
 
 }
