@@ -64,5 +64,4 @@ public abstract class AbstractEntityFactory implements EntityFactory {
 
     @Override
     public abstract boolean loadItemsFromXML(URL filename);
-
 }

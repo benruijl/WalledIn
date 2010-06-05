@@ -27,7 +27,7 @@ import walledin.game.entity.Family;
 
 public interface EntityFactory {
 
-    public abstract Entity create(final EntityManager entityManager,
+    Entity create(final EntityManager entityManager,
             final Family familyName, final String entityName);
 
     /**
@@ -37,6 +37,6 @@ public interface EntityFactory {
      *            XML file
      * @return True on success, false on failure
      */
-    public abstract boolean loadItemsFromXML(final URL file);
+    boolean loadItemsFromXML(final URL file);
 
 }

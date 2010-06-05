@@ -30,7 +30,7 @@ import walledin.game.entity.MessageType;
 
 public class WeaponRenderBehavior extends RenderBehavior {
     private final String texPart;
-    private final Rectangle WEAPON_RECT;
+    private final Rectangle weaponRect;
 
     /**
      * Creates a new item rendering behavior.
@@ -45,7 +45,7 @@ public class WeaponRenderBehavior extends RenderBehavior {
         super(owner, ZValues.WEAPON);
 
         this.texPart = texPart;
-        WEAPON_RECT = destRect;
+        weaponRect = destRect;
     }
 
     /**
@@ -66,7 +66,7 @@ public class WeaponRenderBehavior extends RenderBehavior {
 
         }
 
-        renderer.drawTexturePart(texPart, WEAPON_RECT);
+        renderer.drawTexturePart(texPart, weaponRect);
 
         renderer.popMatrix();
     }

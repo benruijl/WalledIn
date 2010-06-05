@@ -30,7 +30,7 @@ import walledin.game.entity.MessageType;
 
 public class ItemRenderBehavior extends RenderBehavior {
     private final String texPart;
-    private final Rectangle ITEM_RECT;
+    private final Rectangle itemRect;
 
     /**
      * Creates a new item rendering behavior.
@@ -45,7 +45,7 @@ public class ItemRenderBehavior extends RenderBehavior {
         super(owner, ZValues.ITEM);
 
         this.texPart = texPart;
-        ITEM_RECT = destRect;
+        itemRect = destRect;
     }
 
     /**
@@ -55,7 +55,7 @@ public class ItemRenderBehavior extends RenderBehavior {
      * @param renderer
      */
     private void render(final Renderer renderer) {
-        renderer.drawTexturePart(texPart, ITEM_RECT
+        renderer.drawTexturePart(texPart, itemRect
                 .translate((Vector2f) getAttribute(Attribute.POSITION)));
     }
 
