@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
  * @author ben
  */
 public class ResourceManager<U, T> {
-    private final static Logger LOG = Logger.getLogger(ResourceManager.class);
+    private static final Logger LOG = Logger.getLogger(ResourceManager.class);
     private final Map<U, T> resources;
 
     public ResourceManager() {

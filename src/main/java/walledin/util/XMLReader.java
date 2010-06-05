@@ -108,7 +108,8 @@ public class XMLReader {
         return textVal;
     }
 
-    /**Calls getTextValue and returns a integer value
+    /**
+     * Calls getTextValue and returns a integer value
      * 
      * @param ele
      *            Current element

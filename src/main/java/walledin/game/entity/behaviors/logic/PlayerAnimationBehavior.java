@@ -28,7 +28,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerAnimationBehavior extends AnimationBehavior {
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(PlayerAnimationBehavior.class);
 
     private float walkAnimFrame;

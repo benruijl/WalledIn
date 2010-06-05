@@ -32,8 +32,8 @@ import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
 
 public class MapRenderBehavior extends RenderBehavior {
-    private final static float TILE_WIDTH = 32.0f;
-    private final static int STEP_SIZE = 10;
+    private static final float TILE_WIDTH = 32.0f;
+    private static final int STEP_SIZE = 10;
     private int height;
     private int width;
     private List<Tile> tiles;

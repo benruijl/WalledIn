@@ -38,21 +38,21 @@ import com.sun.opengl.util.texture.TextureIO;
  * 
  * @author ben
  */
-public class TextureManager extends ResourceManager<String, Texture> {
-    private final static Logger LOG = Logger.getLogger(TextureManager.class);
+public final class TextureManager extends ResourceManager<String, Texture> {
+    private static final Logger LOG = Logger.getLogger(TextureManager.class);
     private static final TextureManager INSTANCE = new TextureManager();
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
+    private TextureManager() {
+
     }
 
     public static TextureManager getInstance() {
         return INSTANCE;
     }
 
-    private TextureManager() {
-
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
     }
 
     private String generateUniqueID() {

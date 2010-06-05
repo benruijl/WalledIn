@@ -32,27 +32,11 @@ import walledin.game.map.Tile;
 
 public class CollisionManager {
 
-    static public class CollisionData {
+    public static class CollisionData {
         private final Vector2f newPos;
         private final Vector2f oldPos;
         private final Vector2f theorPos;
         private final Entity collisionEntity;
-
-        public final Vector2f getNewPos() {
-            return newPos;
-        }
-
-        public final Vector2f getOldPos() {
-            return oldPos;
-        }
-
-        public final Vector2f getTheorPos() {
-            return theorPos;
-        }
-
-        public final Entity getCollisionEntity() {
-            return collisionEntity;
-        }
 
         /**
          * @param newPos
@@ -75,9 +59,25 @@ public class CollisionManager {
             this.collisionEntity = collisionEntity;
         }
 
+        public final Vector2f getNewPos() {
+            return newPos;
+        }
+
+        public final Vector2f getOldPos() {
+            return oldPos;
+        }
+
+        public final Vector2f getTheorPos() {
+            return theorPos;
+        }
+
+        public final Entity getCollisionEntity() {
+            return collisionEntity;
+        }
+
     }
 
-    static private Tile tileFromPixel(final Entity map, final Vector2f pos) {
+    private static Tile tileFromPixel(final Entity map, final Vector2f pos) {
         final float tileSize = (Float) map
                 .getAttribute(Attribute.RENDER_TILE_SIZE);
         final int width = (Integer) map.getAttribute(Attribute.WIDTH);
@@ -88,7 +88,7 @@ public class CollisionManager {
                 * (int) (pos.y / tileSize));
     }
 
-    static public void calculateEntityCollisions(
+    public static void calculateEntityCollisions(
             final Collection<Entity> entities, final double delta) {
         Entity[] entArray = new Entity[0];
         entArray = entities.toArray(entArray);
@@ -143,7 +143,7 @@ public class CollisionManager {
         }
     }
 
-    static public void calculateMapCollisions(final Entity map,
+    public static void calculateMapCollisions(final Entity map,
             final Collection<Entity> entities, final double delta) {
         final float tileSize = (Float) map
                 .getAttribute(Attribute.RENDER_TILE_SIZE);

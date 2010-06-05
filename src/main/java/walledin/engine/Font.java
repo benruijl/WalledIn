@@ -46,7 +46,7 @@ public class Font {
      * @author Ben Ruijl
      * 
      */
-    public class Glyph {
+    private class Glyph {
         public int width;
         public int height;
         public int advance;

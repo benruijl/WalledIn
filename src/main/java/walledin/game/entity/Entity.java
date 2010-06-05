@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 import walledin.game.EntityManager;
 
 public class Entity {
-    private final static Logger LOG = Logger.getLogger(Entity.class.getName());
+    private static final Logger LOG = Logger.getLogger(Entity.class.getName());
     private final Map<Class<? extends Behavior>, Behavior> behaviors;
     private final Map<Attribute, Object> attributes;
     private Set<Attribute> changedAttributes;

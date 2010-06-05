@@ -33,17 +33,17 @@ import java.util.Set;
  * 
  * @author ben
  */
-public class Input implements KeyListener {
+public final class Input implements KeyListener {
     private static Input ref = null;
     private final Set<Integer> keysDown;
+
+    private Input() {
+        keysDown = new HashSet<Integer>();
+    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         throw new CloneNotSupportedException();
-    }
-
-    private Input() {
-        keysDown = new HashSet<Integer>();
     }
 
     public static Input getInstance() {

@@ -27,5 +27,12 @@ package walledin.game.entity;
  * 
  */
 public enum MessageType {
-    RENDER, ATTRIBUTE_SET, COLLIDED, RESTORE_HEALTH, SHOOT, APPLY_FORCE, DROP, TAKE_DAMAGE;
+    RENDER,
+    ATTRIBUTE_SET,
+    COLLIDED,
+    RESTORE_HEALTH,
+    SHOOT,
+    APPLY_FORCE,
+    DROP,
+    TAKE_DAMAGE;
 }

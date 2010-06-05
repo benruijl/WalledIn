@@ -48,7 +48,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener, Runnable {
-    private final static Logger LOG = Logger.getLogger(Client.class);
+    private static final Logger LOG = Logger.getLogger(Client.class);
     private static final int PORT = 1234;
     private static final int TILE_SIZE = 64;
     private static final int TILES_PER_LINE = 16;
@@ -64,23 +64,6 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     private String playerEntityName;
     private boolean quitting = false;
     private int receivedVersion = 0;
-
-    public static void main(final String[] args) {
-        final Renderer renderer = new Renderer();
-        Client client;
-        try {
-            client = new Client(renderer);
-        } catch (final IOException e) {
-            LOG.fatal("IO exception while creation of client", e);
-            return;
-        }
-        LOG.info("initializing renderer");
-        renderer.initialize("WalledIn", 800, 600, false);
-        renderer.addListener(client);
-        // Start renderer
-        LOG.info("starting renderer");
-        renderer.beginLoop();
-    }
 
     /**
      * Create the client
@@ -99,6 +82,23 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         host = new InetSocketAddress("localhost", PORT);
         username = System.getProperty("user.name");
         channel = DatagramChannel.open();
+    }
+
+    public static void main(final String[] args) {
+        final Renderer renderer = new Renderer();
+        Client client;
+        try {
+            client = new Client(renderer);
+        } catch (final IOException e) {
+            LOG.fatal("IO exception while creation of client", e);
+            return;
+        }
+        LOG.info("initializing renderer");
+        renderer.initialize("WalledIn", 800, 600, false);
+        renderer.addListener(client);
+        // Start renderer
+        LOG.info("starting renderer");
+        renderer.beginLoop();
     }
 
     /**
