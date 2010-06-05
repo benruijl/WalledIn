@@ -33,11 +33,8 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends SpatialBehavior {
-<<<<<<< HEAD
     private static final Logger LOG = Logger
             .getLogger(PlayerControlBehaviour.class);
-=======
->>>>>>> master
     private static final float MOVE_SPEED = 240.0f;
     private static final float JUMP_SPEED = 8000.0f;
     private boolean canJump;
@@ -54,14 +51,10 @@ public class PlayerControlBehaviour extends SpatialBehavior {
         if (messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
 
-<<<<<<< HEAD
-            if (colData.getNewPos().getY() < colData.getTheorPos().getY())
-                canJump = true;
-=======
             if (colData.getNewPos().getY() < colData.getTheorPos().getY()) {
                 canJump = true;
             }
->>>>>>> master
+            
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attribute = (Attribute) data;
             switch (attribute) {
@@ -69,10 +62,8 @@ public class PlayerControlBehaviour extends SpatialBehavior {
                 keysDown = (Set<Integer>) getAttribute(attribute);
                 break;
             }
-<<<<<<< HEAD
         } else if (messageType == MessageType.DROP) {
-            if (data == null) // drop all
-            {
+            if (data == null) { // drop all
                 // FIXME: find better way to drop all entities
                 onMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
                 return;
@@ -84,21 +75,14 @@ public class PlayerControlBehaviour extends SpatialBehavior {
                 Entity ent = (Entity) getAttribute(at);
                 ent.sendMessage(MessageType.DROP, null);
                 setAttribute(at, null);
-            } else
+            } else {
                 LOG.warn("Trying to remove attribute " + at.toString()
                         + ", but entity " + getOwner().getName()
                         + " does not have this attribute.");
-=======
-        } else if (messageType == MessageType.DROP) { // drop all items
-            if (getOwner().hasAttribute(Attribute.WEAPON)) {
-                final Entity weapon = (Entity) getOwner().getAttribute(
-                        Attribute.WEAPON);
-                weapon.setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
-                setAttribute(Attribute.WEAPON, null); // disown weapon
             }
->>>>>>> master
         }
 
+            
         super.onMessage(messageType, data);
     }
 
@@ -132,7 +116,6 @@ public class PlayerControlBehaviour extends SpatialBehavior {
             y -= JUMP_SPEED;
         }
 
-<<<<<<< HEAD
         if (keysDown.contains(KeyEvent.VK_1)) {
             getOwner().sendMessage(MessageType.SELECT_WEAPON,
                     Integer.valueOf(1));
@@ -146,11 +129,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
         if (keysDown.contains(KeyEvent.VK_ENTER)) {
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                 Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
-=======
-        if (keysDown.contains(KeyEvent.VK_ENTER)) {
-            if (getOwner().hasAttribute(Attribute.WEAPON)) {
-                final Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
->>>>>>> master
+                
                 weapon.sendMessage(MessageType.SHOOT, getOwner());
             }
         }

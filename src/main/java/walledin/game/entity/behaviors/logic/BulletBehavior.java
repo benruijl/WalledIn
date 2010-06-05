@@ -23,21 +23,16 @@ package walledin.game.entity.behaviors.logic;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class BulletBehavior extends Behavior {
-<<<<<<< HEAD
-
-    public BulletBehavior(final Entity owner) {
-        super(owner);
-=======
     /** The damage the player takes from this bullet. */
     private final int damage;
 
     public BulletBehavior(final Entity owner, final int damage) {
         super(owner);
         this.damage = damage;
->>>>>>> master
     }
 
     @Override
@@ -46,18 +41,15 @@ public class BulletBehavior extends Behavior {
             final CollisionData colData = (CollisionData) data;
 
             // if collided with map, destroy
-<<<<<<< HEAD
-            if (colData.getCollisionEntity().hasAttribute(Attribute.TILES)) {
-=======
-            if (colData.getCollisionEntity().getFamilyName().equals("Map")) {
+            if (colData.getCollisionEntity().getFamily().equals(Family.MAP)) {
                 getOwner().remove();
             }
 
             // if collided with player, remove and do damage
-            if (colData.getCollisionEntity().getFamilyName().equals("Player")) {
+            if (colData.getCollisionEntity().getFamily().equals(Family.PLAYER)) {
                 colData.getCollisionEntity().sendMessage(
                         MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
->>>>>>> master
+                
                 getOwner().remove();
             }
         }

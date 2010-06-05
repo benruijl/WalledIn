@@ -122,11 +122,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     private void doRun() throws IOException {
         channel.configureBlocking(true);
         channel.connect(host);
-<<<<<<< HEAD
-        NetworkInterface networkInterface = NetworkInterface
-=======
         final NetworkInterface networkInterface = NetworkInterface
->>>>>>> master
                 .getByInetAddress(channel.socket().getLocalAddress());
         LOG.debug("Connection MTU: " + networkInterface.getMTU());
         playerEntityName = NetworkConstants.getAddressRepresentation(channel
@@ -149,11 +145,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
      */
     @Override
     public boolean receivedGamestateMessage(final SocketAddress address,
-<<<<<<< HEAD
-            int oldVersion, int newVersion) {
-=======
             final int oldVersion, final int newVersion) {
->>>>>>> master
         boolean result = false;
         if (LOG.isTraceEnabled()) {
             LOG.trace("version:" + newVersion + " receivedVersion:"
@@ -185,11 +177,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 
     @Override
     public void receivedInputMessage(final SocketAddress address,
-<<<<<<< HEAD
-            int newVersion, final Set<Integer> keys) {
-=======
             final int newVersion, final Set<Integer> keys) {
->>>>>>> master
         // ignore
     }
 
@@ -239,14 +227,10 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 
             /* Render current FPS */
             renderer.startHUDRendering();
-<<<<<<< HEAD
-            font.renderText(renderer, "FPS: "
-                    + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
-=======
             font.renderText(renderer,
                     "FPS: " + Float.toString(renderer.getFPS()), new Vector2f(
                             600, 20));
->>>>>>> master
+            
             renderer.stopHUDRendering();
         }
     }
@@ -268,11 +252,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         entityManager.init();
 
         // Background is not created by server (not yet anyway)
-<<<<<<< HEAD
         entityManager.create(Family.BACKGROUND, "Background");
-=======
-        entityManager.create("Background", "Background");
->>>>>>> master
 
         LOG.info("starting network thread");
         // start network thread
@@ -302,45 +282,6 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         manager.createTexturePart("player_foot", "player", new Rectangle(192,
                 32, 96, 32));
         manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
-<<<<<<< HEAD
-        manager.createTexturePart("tile_empty", "tiles",
-                createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_filled", "tiles",
-                createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_top_grass_end_left", "tiles",
-                createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_top_grass_end_right", "tiles",
-                createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_top_grass", "tiles",
-                createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_left_grass", "tiles",
-                createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_left_mud", "tiles",
-                createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_right_mud", "tiles",
-                createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_top_left_grass", "tiles",
-                createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_bottom_left_mud", "tiles",
-                createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_bottom_right_mud", "tiles",
-                createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_top_left_grass_end", "tiles",
-                createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart("tile_bottom_mud", "tiles",
-=======
         manager.createTexturePart(
                 "tile_empty",
                 "tiles",
@@ -404,7 +345,6 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         manager.createTexturePart(
                 "tile_bottom_mud",
                 "tiles",
->>>>>>> master
                 createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
     }

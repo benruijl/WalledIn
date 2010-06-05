@@ -41,29 +41,16 @@ import walledin.game.entity.Family;
  */
 public class ChangeSet {
     private final int version;
-<<<<<<< HEAD
     private final Map<String, Family> created;
-    private final Set<String> removed;
-    private final Map<String, Set<Attribute>> updated;
-
-    public ChangeSet(int version, Set<Entity> created, Set<Entity> removed,
-            Map<String, Entity> entities) {
-        this.version = version;
-        this.created = new HashMap<String, Family>();
-        this.removed = new HashSet<String>();
-        this.updated = new HashMap<String, Set<Attribute>>();
-=======
-    private final Map<String, String> created;
     private final Set<String> removed;
     private final Map<String, Set<Attribute>> updated;
 
     public ChangeSet(final int version, final Set<Entity> created,
             final Set<Entity> removed, final Map<String, Entity> entities) {
         this.version = version;
-        this.created = new HashMap<String, String>();
+        this.created = new HashMap<String, Family>();
         this.removed = new HashSet<String>();
         updated = new HashMap<String, Set<Attribute>>();
->>>>>>> master
         initialize(created, removed, entities);
     }
 
@@ -74,29 +61,16 @@ public class ChangeSet {
      * @param removed
      * @param entities
      */
-<<<<<<< HEAD
-    private void initialize(Set<Entity> created, Set<Entity> removed,
-            Map<String, Entity> entities) {
-        for (Entity entity : created) {
-            this.created.put(entity.getName(), entity.getFamily());
-        }
-        for (Entity entity : removed) {
-            this.removed.add(entity.getName());
-        }
-        for (Entity entity : entities.values()) {
-            Set<Attribute> changes = entity.getChangedAttributes();
-=======
     private void initialize(final Set<Entity> created,
             final Set<Entity> removed, final Map<String, Entity> entities) {
         for (final Entity entity : created) {
-            this.created.put(entity.getName(), entity.getFamilyName());
+            this.created.put(entity.getName(), entity.getFamily());
         }
         for (final Entity entity : removed) {
             this.removed.add(entity.getName());
         }
         for (final Entity entity : entities.values()) {
             final Set<Attribute> changes = entity.getChangedAttributes();
->>>>>>> master
             if (!changes.isEmpty()) {
                 updated.put(entity.getName(), changes);
             }
@@ -109,25 +83,16 @@ public class ChangeSet {
      * 
      * @param changeSet
      */
-<<<<<<< HEAD
-    public void merge(ChangeSet changeSet) {
-=======
     public void merge(final ChangeSet changeSet) {
->>>>>>> master
         // Add created to our created
         created.putAll(changeSet.created);
         // Add removed to our remved
         removed.addAll(changeSet.removed);
 
         // Add updates to our updates
-<<<<<<< HEAD
-        for (Entry<String, Set<Attribute>> entry : changeSet.updated.entrySet()) {
-            String name = entry.getKey();
-=======
         for (final Entry<String, Set<Attribute>> entry : changeSet.updated
                 .entrySet()) {
             final String name = entry.getKey();
->>>>>>> master
             Set<Attribute> ourChanges = updated.get(name);
             if (ourChanges == null) {
                 // Create new changes if we done have it yet
@@ -140,15 +105,9 @@ public class ChangeSet {
 
         // Remove removed entities from our created entities and updated
         // entities
-<<<<<<< HEAD
         for (String name : changeSet.removed) {
-            Family removedFamily = created.remove(name);
+            final Family removedFamily = created.remove(name);
             if (removedFamily != null) {
-=======
-        for (final String name : changeSet.removed) {
-            final String removedName = created.remove(name);
-            if (removedName != null) {
->>>>>>> master
                 // If there was something to be removed from the created set
                 // then also remove it from the removed set because it has been
                 // created and then removed between this version and the current
@@ -159,13 +118,8 @@ public class ChangeSet {
         }
 
         // Remove created entities from our removed entities
-<<<<<<< HEAD
-        for (String name : changeSet.created.keySet()) {
-            boolean removedSomething = removed.remove(name);
-=======
         for (final String name : changeSet.created.keySet()) {
             final boolean removedSomething = removed.remove(name);
->>>>>>> master
             if (removedSomething) {
                 // If there was something to be removed from the removed set
                 // then also remove it from the created set because it has been
@@ -180,11 +134,7 @@ public class ChangeSet {
         return version;
     }
 
-<<<<<<< HEAD
     public Map<String, Family> getCreated() {
-=======
-    public Map<String, String> getCreated() {
->>>>>>> master
         return created;
     }
 

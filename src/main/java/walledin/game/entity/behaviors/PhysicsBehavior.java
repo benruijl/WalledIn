@@ -35,20 +35,12 @@ public class PhysicsBehavior extends Behavior {
     // kept
     private Vector2f acceleration = new Vector2f(0, 0);
 
-<<<<<<< HEAD
-    public PhysicsBehavior(Entity owner) {
-        this(owner, true, true);
-    }
-
-    public PhysicsBehavior(Entity owner, boolean doGravity, boolean doFriction) {
-=======
     public PhysicsBehavior(final Entity owner) {
         this(owner, true, true);
     }
 
     public PhysicsBehavior(final Entity owner, final boolean doGravity,
             final boolean doFriction) {
->>>>>>> master
         super(owner);
         if (doGravity) {
             gravity = new Vector2f(0, 300.0f);
@@ -63,11 +55,7 @@ public class PhysicsBehavior extends Behavior {
     }
 
     @Override
-<<<<<<< HEAD
-    public void onMessage(MessageType messageType, Object data) {
-=======
     public void onMessage(final MessageType messageType, final Object data) {
->>>>>>> master
         if (messageType == MessageType.APPLY_FORCE) {
             acceleration = acceleration.add((Vector2f) data);
         }
@@ -75,33 +63,19 @@ public class PhysicsBehavior extends Behavior {
     }
 
     @Override
-<<<<<<< HEAD
-    public void onUpdate(double delta) {
-        Vector2f velCur = (Vector2f) getAttribute(Attribute.VELOCITY);
-        Vector2f posCur = (Vector2f) getAttribute(Attribute.POSITION);
-=======
     public void onUpdate(final double delta) {
         final Vector2f velCur = (Vector2f) getAttribute(Attribute.VELOCITY);
         final Vector2f posCur = (Vector2f) getAttribute(Attribute.POSITION);
->>>>>>> master
 
         acceleration = acceleration.add(gravity);
 
         // add friction
         acceleration = acceleration.add(new Vector2f(-Math.signum(velCur.x)
                 * velCur.x * velCur.x * frictionCoefficient, -Math
-<<<<<<< HEAD
-                .signum(velCur.y)
-                * velCur.y * velCur.y * frictionCoefficient));
-
-        Vector2f velNew = velCur.add(acceleration.scale((float) delta));
-        Vector2f posNew = posCur.add(velNew.scale((float) delta));
-=======
                 .signum(velCur.y) * velCur.y * velCur.y * frictionCoefficient));
 
         final Vector2f velNew = velCur.add(acceleration.scale((float) delta));
         final Vector2f posNew = posCur.add(velNew.scale((float) delta));
->>>>>>> master
 
         setAttribute(Attribute.VELOCITY, velNew);
         setAttribute(Attribute.POSITION, posNew);

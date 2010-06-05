@@ -91,13 +91,9 @@ public class GameMapIOXML implements GameMapIO {
             final String type = el.getAttribute("type");
             final int x = Integer.parseInt(el.getAttribute("x"));
             final int y = Integer.parseInt(el.getAttribute("y"));
-
-<<<<<<< HEAD
             final Entity item = entityManager.create(Enum.valueOf(Family.class,
                     type), name);
-=======
-            final Entity item = entityManager.create(type, name);
->>>>>>> master
+
             item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
             itList.add(item);
         }
@@ -122,12 +118,8 @@ public class GameMapIOXML implements GameMapIO {
             final String name = XMLReader.getTextValue(mapElement, "name");
             final List<Entity> items = parseItems(mapElement);
             final List<Tile> tiles = parseTiles(mapElement);
-
-<<<<<<< HEAD
             final Entity map = entityManager.create(Family.MAP, name);
-=======
-            final Entity map = entityManager.create("Map", name);
->>>>>>> master
+
             map.setAttribute(Attribute.WIDTH, width);
             map.setAttribute(Attribute.HEIGHT, height);
             map.setAttribute(Attribute.TILES, tiles);

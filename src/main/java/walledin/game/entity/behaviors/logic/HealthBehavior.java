@@ -40,11 +40,7 @@ public class HealthBehavior extends Behavior {
     }
 
     @Override
-<<<<<<< HEAD
-    public void onMessage(final MessageType messageType, final Object data) {
-=======
     public final void onMessage(final MessageType messageType, final Object data) {
->>>>>>> master
         if (messageType == MessageType.RESTORE_HEALTH) {
             final int hp = (Integer) data;
             if (health + hp > maxHealth) {
@@ -56,10 +52,6 @@ public class HealthBehavior extends Behavior {
             setAttribute(Attribute.HEALTH, health);
         }
 
-<<<<<<< HEAD
-    }
-
-=======
         if (messageType == MessageType.TAKE_DAMAGE) {
             final int dp = (Integer) data;
             if (health - dp < 0) {
@@ -73,7 +65,6 @@ public class HealthBehavior extends Behavior {
 
     }
 
->>>>>>> master
     @Override
     public void onUpdate(final double delta) {
     }

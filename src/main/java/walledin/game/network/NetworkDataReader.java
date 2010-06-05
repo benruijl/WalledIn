@@ -64,11 +64,7 @@ public class NetworkDataReader {
         final int oldVersion = buffer.getInt();
         final int newVersion = buffer.getInt();
         // Ask the client if the we should process this gamestate
-<<<<<<< HEAD
-        boolean process = listener.receivedGamestateMessage(address,
-=======
         final boolean process = listener.receivedGamestateMessage(address,
->>>>>>> master
                 oldVersion, newVersion);
         boolean hasMore = true;
         if (process) {
@@ -106,7 +102,7 @@ public class NetworkDataReader {
             final ByteBuffer buffer, final EntityManager entityManager) {
         // Write attribute identification
         final short ord = buffer.getShort();
-        // FIXME dont user ordinal
+        // FIXME don't user ordinal
         final Attribute attribute = Attribute.values()[ord];
         Object data = null;
         switch (attribute) {
@@ -167,12 +163,10 @@ public class NetworkDataReader {
         switch (type) {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
-<<<<<<< HEAD
+            
             entity = entityManager.create(Enum
                     .valueOf(Family.class, familyName), name);
-=======
-            entity = entityManager.create(familyName, name);
->>>>>>> master
+
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
             entityManager.remove(name);

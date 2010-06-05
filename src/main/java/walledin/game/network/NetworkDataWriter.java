@@ -57,17 +57,10 @@ public class NetworkDataWriter {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 
-<<<<<<< HEAD
-    public void sendGamestateMessage(DatagramChannel channel,
-            SocketAddress address, EntityManager entityManager,
-            ChangeSet changeSet, int knownClientVersion, int currentVersion)
-            throws IOException {
-=======
     public void sendGamestateMessage(final DatagramChannel channel,
             final SocketAddress address, final EntityManager entityManager,
             final ChangeSet changeSet, final int knownClientVersion,
             final int currentVersion) throws IOException {
->>>>>>> master
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
@@ -77,29 +70,19 @@ public class NetworkDataWriter {
             buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
             writeStringData(name, buffer);
         }
-<<<<<<< HEAD
+        
         for (final Entry<String, Family> entry : changeSet.getCreated()
-=======
-        for (final Entry<String, String> entry : changeSet.getCreated()
->>>>>>> master
                 .entrySet()) {
             buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
             // write name of entity
             writeStringData(entry.getKey(), buffer);
             // write family of entity
-<<<<<<< HEAD
             writeStringData(entry.getValue().toString(), buffer);
         }
         for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
                 .entrySet()) {
-            Entity entity = entityManager.get(entry.getKey());
-=======
-            writeStringData(entry.getValue(), buffer);
-        }
-        for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
-                .entrySet()) {
             final Entity entity = entityManager.get(entry.getKey());
->>>>>>> master
+
             writeAttributesData(entity, entry.getValue(), buffer);
         }
         // write end
@@ -109,13 +92,8 @@ public class NetworkDataWriter {
         channel.send(buffer, address);
     }
 
-<<<<<<< HEAD
-    public void sendInputMessage(final DatagramChannel channel, int version,
-            final Set<Integer> keysDown) throws IOException {
-=======
     public void sendInputMessage(final DatagramChannel channel,
             final int version, final Set<Integer> keysDown) throws IOException {
->>>>>>> master
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);

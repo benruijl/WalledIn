@@ -57,15 +57,11 @@ public class ServerEntityFactory extends AbstractEntityFactory {
         player.addBehavior(new PlayerControlBehaviour(player));
         player.addBehavior(new PlayerParentBehavior(player));
         player.addBehavior(new PhysicsBehavior(player));
-<<<<<<< HEAD
         player.addBehavior(new PlayerWeaponInventoryBehavior(player));
-=======
->>>>>>> master
 
         // FIXME correct the drawing instead of the hack the bounding box
         player.setAttribute(Attribute.BOUNDING_RECT,
                 new Rectangle(0, 0, 44, 43));
-        // player.setAttribute(Attribute.BOUNDING_CIRCLE, new Circle());
 
         return player;
     }
@@ -81,14 +77,10 @@ public class ServerEntityFactory extends AbstractEntityFactory {
         bl.addBehavior(new PhysicsBehavior(bl, false, false));
         bl.setAttribute(Attribute.BOUNDING_RECT, destRect);
 
-<<<<<<< HEAD
-        bl.addBehavior(new BulletBehavior(bl));
-=======
         // read strength
         final int strength = XMLReader.getIntValue(el, "strength");
 
         bl.addBehavior(new BulletBehavior(bl, strength));
->>>>>>> master
         return bl;
     }
 
@@ -131,11 +123,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
     }
 
     private Entity createWeapon(final Rectangle destRect, final Entity hg,
-<<<<<<< HEAD
             final Family bulletFamily) {
-=======
-            final String bulletFamily) {
->>>>>>> master
         hg.addBehavior(new SpatialBehavior(hg));
         // hg.addBehavior(new PhysicsBehavior(hg));
         hg.setAttribute(Attribute.BOUNDING_RECT, destRect);
@@ -160,17 +148,10 @@ public class ServerEntityFactory extends AbstractEntityFactory {
      *            Element in XML file which contains item specific information,
      *            like health kit strength or armor penetration value
      */
-<<<<<<< HEAD
     private void addItemFunction(final Family familyName,
             final Rectangle destRect, final Element el) {
 
         if (familyName.equals(Family.HEALTHKIT)) {
-=======
-    private void addItemFunction(final String familyName,
-            final Rectangle destRect, final Element el) {
-
-        if (familyName.equals("healthkit")) {
->>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -181,11 +162,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
                     });
         }
 
-<<<<<<< HEAD
         if (familyName.equals(Family.ARMOURKIT)) {
-=======
-        if (familyName.equals("armourkit")) {
->>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -196,11 +173,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
                     });
         }
 
-<<<<<<< HEAD
         if (familyName.equals(Family.HANDGUN_BULLET)) {
-=======
-        if (familyName.equals("handgunbullet")) {
->>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -212,11 +185,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
                     });
         }
 
-<<<<<<< HEAD
         if (familyName.equals(Family.FOAMGUN_BULLET)) {
-=======
-        if (familyName.equals("foambullet")) {
->>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -228,11 +197,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
                     });
         }
 
-<<<<<<< HEAD
         if (familyName.equals(Family.FOAM_PARTICLE)) {
-=======
-        if (familyName.equals("foampartical")) {
->>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -244,42 +209,26 @@ public class ServerEntityFactory extends AbstractEntityFactory {
                     });
         }
 
-<<<<<<< HEAD
         if (familyName.equals(Family.HANDGUN)) {
-=======
-        if (familyName.equals("handgun")) {
->>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
                         @Override
                         public Entity create(final Entity hg) {
-<<<<<<< HEAD
                             return createWeapon(destRect, hg,
                                     Family.HANDGUN_BULLET);
-=======
-                            return createWeapon(destRect, hg, "handgunbullet");
->>>>>>> master
                         }
                     });
         }
 
-<<<<<<< HEAD
         if (familyName.equals(Family.FOAMGUN)) {
-=======
-        if (familyName.equals("foamweapon")) {
->>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
                         @Override
                         public Entity create(final Entity hg) {
-<<<<<<< HEAD
                             return createWeapon(destRect, hg,
                                     Family.FOAMGUN_BULLET);
-=======
-                            return createWeapon(destRect, hg, "foambullet");
->>>>>>> master
                         }
                     });
         }
@@ -289,11 +238,7 @@ public class ServerEntityFactory extends AbstractEntityFactory {
      * Creates skeletons for all the standard entities, like player and map.
      */
     private void addStandardEntityCreationFunctions() {
-<<<<<<< HEAD
         entityContructionFunctions.put(Family.PLAYER,
-=======
-        entityContructionFunctions.put("Player",
->>>>>>> master
                 new EntityConstructionFunction() {
 
                     @Override
@@ -302,7 +247,6 @@ public class ServerEntityFactory extends AbstractEntityFactory {
                     }
                 });
 
-<<<<<<< HEAD
         entityContructionFunctions.put(Family.MAP,
                 new EntityConstructionFunction() {
 
@@ -311,16 +255,6 @@ public class ServerEntityFactory extends AbstractEntityFactory {
                         return createGameMap(ent);
                     }
                 });
-=======
-        entityContructionFunctions.put("Map", new EntityConstructionFunction() {
-
-            @Override
-            public Entity create(final Entity ent) {
-                return createGameMap(ent);
-            }
-        });
->>>>>>> master
-
     }
 
     /**
@@ -335,26 +269,16 @@ public class ServerEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(file)) {
-<<<<<<< HEAD
             final List<Element> elList = XMLReader.getElements(reader
                     .getRootElement(), "item");
-=======
-            final List<Element> elList = XMLReader.getElements(
-                    reader.getRootElement(), "item");
->>>>>>> master
 
             for (final Element cur : elList) {
                 final String familyName = XMLReader.getTextValue(cur, "name");
                 final int destWidth = XMLReader.getIntValue(cur, "width");
                 final int destHeight = XMLReader.getIntValue(cur, "height");
 
-<<<<<<< HEAD
                 addItemFunction(Enum.valueOf(Family.class, familyName),
                         new Rectangle(0, 0, destWidth, destHeight), cur);
-=======
-                addItemFunction(familyName, new Rectangle(0, 0, destWidth,
-                        destHeight), cur);
->>>>>>> master
             }
 
         }
