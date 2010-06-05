@@ -21,8 +21,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity.behaviors.logic;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -36,12 +36,12 @@ public class WeaponBehavior extends Behavior {
     private boolean canShoot;
     private int lastShot; // frame of last shot
 
-    public WeaponBehavior(Entity owner, int fireLag, Family bulletFamily2) {
+    public WeaponBehavior(final Entity owner, int fireLag, final Family bulletFamily) {
         super(owner);
         this.fireLag = fireLag;
         this.lastShot = fireLag;
         this.canShoot = true;
-        this.bulletFamily = bulletFamily2;
+        this.bulletFamily = bulletFamily;
 
         // can be picked up, is not owned by any player
         setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
@@ -49,7 +49,7 @@ public class WeaponBehavior extends Behavior {
     }
 
     @Override
-    public void onMessage(MessageType messageType, Object data) {
+    public final void onMessage(MessageType messageType, Object data) {
         if ((Boolean) getAttribute(Attribute.COLLECTABLE)
                 && messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
@@ -89,17 +89,18 @@ public class WeaponBehavior extends Behavior {
 
                 // slightly more complicated, since the player pos is defined as
                 // the top left
-                if (or > 0)
+                if (or > 0) {
                     bulletPosition = playerPos.add(new Vector2f(50.0f, 20.0f));
-                else
-                    bulletPosition = playerPos.add(new Vector2f(0.0f, 20.0f));
+                } else {
+                    bulletPosition = playerPos.add(new Vector2f(-30.0f, 20.0f));
+                }
 
                 final Vector2f bulletAcceleration = new Vector2f(or * 30000.0f,
                         0);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily, manager
-                        .generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily,
+                        manager.generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
@@ -107,15 +108,16 @@ public class WeaponBehavior extends Behavior {
                 canShoot = false;
                 lastShot = fireLag;
             }
-    }
+        }
 
     @Override
-    public void onUpdate(double delta) {
+    public final void onUpdate(final double delta) {
         if (!canShoot) {
             lastShot--;
 
-            if (lastShot <= 0)
+            if (lastShot <= 0) {
                 canShoot = true;
+            }
         }
 
     }

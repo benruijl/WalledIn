@@ -25,11 +25,19 @@ import java.net.URL;
 public class Utils {
     private final static float EPSILON = 0.00001f;
 
+<<<<<<< HEAD
     public static URL getClasspathURL(String filename) {
         return ClassLoader.getSystemResource(filename);
     }
 
     public static boolean equals(float a, float b) {
+=======
+    public static URL getClasspathURL(final String filename) {
+        return ClassLoader.getSystemResource(filename);
+    }
+
+    public static boolean equals(final float a, final float b) {
+>>>>>>> master
         return a == b ? true : Math.abs(a - b) < EPSILON;
     }
 }

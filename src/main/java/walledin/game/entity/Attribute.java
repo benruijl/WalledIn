@@ -32,6 +32,7 @@ public enum Attribute {
             Integer.class, true), HEIGHT(Integer.class, true), TILES(
             List.class, true), ITEM_LIST(List.class, true), HEALTH(
             Integer.class, true), PLAYER_NAME(String.class, true), ORIENTATION(
+
             Integer.class, true), ACTIVE_WEAPON(Entity.class), COLLECTABLE(
             Boolean.class),
 

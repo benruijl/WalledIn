@@ -40,8 +40,8 @@ public class EntityManager {
     private final DrawOrderManager drawOrderManager;
     private final EntityFactory factory;
     private int uniqueNameCount = 0;
-    private Set<Entity> removed;
-    private Set<Entity> created;
+    private final Set<Entity> removed;
+    private final Set<Entity> created;
     private int currentVersion;
 
     public EntityManager(final EntityFactory factory) {
@@ -149,8 +149,8 @@ public class EntityManager {
     }
 
     public ChangeSet getChangeSet() {
-        ChangeSet result = new ChangeSet(currentVersion, created, removed,
-                entities);
+        final ChangeSet result = new ChangeSet(currentVersion, created,
+                removed, entities);
         created.clear();
         removed.clear();
         currentVersion++;

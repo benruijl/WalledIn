@@ -28,7 +28,11 @@ import walledin.game.entity.MessageType;
 
 public class PlayerParentBehavior extends Behavior {
 
+<<<<<<< HEAD
     public PlayerParentBehavior(Entity owner) {
+=======
+    public PlayerParentBehavior(final Entity owner) {
+>>>>>>> master
         super(owner);
     }
 
@@ -37,6 +41,7 @@ public class PlayerParentBehavior extends Behavior {
      * the current player position, orientation etc.
      */
     @Override
+<<<<<<< HEAD
     public void onMessage(MessageType messageType, Object data) {
         if (messageType != MessageType.ATTRIBUTE_SET)
             return;
@@ -45,6 +50,18 @@ public class PlayerParentBehavior extends Behavior {
             return;
 
         final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
+=======
+    public void onMessage(final MessageType messageType, final Object data) {
+        if (messageType != MessageType.ATTRIBUTE_SET) {
+            return;
+        }
+
+        if (getOwner().hasAttribute(Attribute.WEAPON) == false) {
+            return;
+        }
+
+        final Entity weapon = (Entity) getAttribute(Attribute.WEAPON);
+>>>>>>> master
         final Attribute attrib = (Attribute) data;
         final int or = (Integer) getAttribute(Attribute.ORIENTATION);
         final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
@@ -52,8 +69,13 @@ public class PlayerParentBehavior extends Behavior {
 
         switch (attrib) {
         case POSITION:
+<<<<<<< HEAD
             weapon.setAttribute(Attribute.POSITION, pos.add(new Vector2f(35.0f,
                     20.0f)));
+=======
+            weapon.setAttribute(Attribute.POSITION,
+                    pos.add(new Vector2f(35.0f, 20.0f)));
+>>>>>>> master
             break;
         case VELOCITY:
             weapon.setAttribute(Attribute.VELOCITY, vel);
@@ -66,6 +88,10 @@ public class PlayerParentBehavior extends Behavior {
     }
 
     @Override
+<<<<<<< HEAD
     public void onUpdate(double delta) {
+=======
+    public void onUpdate(final double delta) {
+>>>>>>> master
     }
 }

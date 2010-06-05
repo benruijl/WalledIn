@@ -119,8 +119,9 @@ public class Renderer implements GLEventListener {
         win.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(final WindowEvent e) {
-                if (gd.getFullScreenWindow() == win)
+                if (gd.getFullScreenWindow() == win) {
                     gd.setFullScreenWindow(null);
+                }
 
                 mEvListener.dispose();
             }

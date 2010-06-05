@@ -84,7 +84,11 @@ public class ClientEntityFactory extends AbstractEntityFactory {
         return bl;
     }
 
+<<<<<<< HEAD
     private Entity createFoamParticle(final String texPart,
+=======
+    private Entity createFoamPartical(final String texPart,
+>>>>>>> master
             final Rectangle destRect, final Element el, final Entity bl) {
         bl.addBehavior(new ItemRenderBehavior(bl, texPart, destRect));
         return bl;
@@ -126,10 +130,17 @@ public class ClientEntityFactory extends AbstractEntityFactory {
      *            Element in XML file which contains item specific information,
      *            like health kit strength or armor penetration value
      */
+<<<<<<< HEAD
     private void addItemFunction(final Family familyName, final String texPart,
             final Rectangle destRect, final Element el) {
 
         if (familyName.equals(Family.HEALTHKIT)) {
+=======
+    private void addItemFunction(final String familyName, final String texPart,
+            final Rectangle destRect, final Element el) {
+
+        if (familyName.equals("healthkit")) {
+>>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -140,7 +151,11 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     });
         }
 
+<<<<<<< HEAD
         if (familyName.equals(Family.ARMOURKIT)) {
+=======
+        if (familyName.equals("armourkit")) {
+>>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -151,7 +166,11 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     });
         }
 
+<<<<<<< HEAD
         if (familyName.equals(Family.HANDGUN_BULLET)) {
+=======
+        if (familyName.equals("handgunbullet")) {
+>>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -163,7 +182,11 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     });
         }
 
+<<<<<<< HEAD
         if (familyName.equals(Family.FOAMGUN_BULLET)) {
+=======
+        if (familyName.equals("foambullet")) {
+>>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -175,19 +198,31 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     });
         }
 
+<<<<<<< HEAD
         if (familyName.equals(Family.FOAM_PARTICLE)) {
+=======
+        if (familyName.equals("foampartical")) {
+>>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
                         @Override
                         public Entity create(final Entity bl) {
+<<<<<<< HEAD
                             return createFoamParticle(texPart, destRect, el, bl);
+=======
+                            return createFoamPartical(texPart, destRect, el, bl);
+>>>>>>> master
 
                         }
                     });
         }
 
+<<<<<<< HEAD
         if (familyName.equals(Family.HANDGUN)) {
+=======
+        if (familyName.equals("handgun")) {
+>>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -198,7 +233,11 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     });
         }
 
+<<<<<<< HEAD
         if (familyName.equals(Family.FOAMGUN)) {
+=======
+        if (familyName.equals("foamweapon")) {
+>>>>>>> master
             entityContructionFunctions.put(familyName,
                     new EntityConstructionFunction() {
 
@@ -214,7 +253,11 @@ public class ClientEntityFactory extends AbstractEntityFactory {
      * Creates skeletons for all the standard entities, like player and map.
      */
     private void addStandardEntityCreationFunctions() {
+<<<<<<< HEAD
         entityContructionFunctions.put(Family.PLAYER,
+=======
+        entityContructionFunctions.put("Player",
+>>>>>>> master
                 new EntityConstructionFunction() {
 
                     @Override
@@ -223,7 +266,11 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     }
                 });
 
+<<<<<<< HEAD
         entityContructionFunctions.put(Family.BACKGROUND,
+=======
+        entityContructionFunctions.put("Background",
+>>>>>>> master
                 new EntityConstructionFunction() {
 
                     @Override
@@ -232,6 +279,7 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     }
                 });
 
+<<<<<<< HEAD
         entityContructionFunctions.put(Family.MAP,
                 new EntityConstructionFunction() {
 
@@ -240,6 +288,15 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                         return createGameMap(ent);
                     }
                 });
+=======
+        entityContructionFunctions.put("Map", new EntityConstructionFunction() {
+
+            @Override
+            public Entity create(final Entity ent) {
+                return createGameMap(ent);
+            }
+        });
+>>>>>>> master
     }
 
     /**
@@ -250,14 +307,23 @@ public class ClientEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(filename)) {
+<<<<<<< HEAD
             final List<Element> elList = XMLReader.getElements(reader
                     .getRootElement(), "item");
+=======
+            final List<Element> elList = XMLReader.getElements(
+                    reader.getRootElement(), "item");
+>>>>>>> master
 
             final String texture = reader.getRootElement().getAttribute(
                     "texture");
             final String texName = reader.getRootElement().getAttribute(
                     "texname");
+<<<<<<< HEAD
             URL textureURL = Utils.getClasspathURL(texture);
+=======
+            final URL textureURL = Utils.getClasspathURL(texture);
+>>>>>>> master
             TextureManager.getInstance().loadFromURL(textureURL, texName);
 
             for (final Element cur : elList) {
@@ -277,9 +343,14 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                 TexturePartManager.getInstance().createTexturePart(texPartName,
                         texName, new Rectangle(x, y, width, height));
 
+<<<<<<< HEAD
                 addItemFunction(Enum.valueOf(Family.class, familyName),
                         texPartName,
                         new Rectangle(0, 0, destWidth, destHeight), cur);
+=======
+                addItemFunction(familyName, texPartName, new Rectangle(0, 0,
+                        destWidth, destHeight), cur);
+>>>>>>> master
             }
 
         }

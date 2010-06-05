@@ -79,7 +79,11 @@ public class Server implements NetworkEventListener {
         changeSetLookup = new HashMap<Integer, ChangeSet>();
         changeSets = new LinkedList<ChangeSet>();
         // Store the first version so we can give it new players
+<<<<<<< HEAD
         ChangeSet firstChangeSet = entityManager.getChangeSet();
+=======
+        final ChangeSet firstChangeSet = entityManager.getChangeSet();
+>>>>>>> master
         changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
     }
 
@@ -163,6 +167,7 @@ public class Server implements NetworkEventListener {
     private void processChanges() {
         // Get the oldest changeset (we dont support this version anymore from
         // now)
+<<<<<<< HEAD
         ChangeSet oldChangeSet = changeSets.remove();
         changeSetLookup.remove(oldChangeSet.getVersion());
         // Remove the player that are still on this version or older
@@ -176,12 +181,30 @@ public class Server implements NetworkEventListener {
             }
         }
         for (SocketAddress address : removedPlayers) {
+=======
+        final ChangeSet oldChangeSet = changeSets.remove();
+        changeSetLookup.remove(oldChangeSet.getVersion());
+        // Remove the player that are still on this version or older
+        final Set<SocketAddress> removedPlayers = new HashSet<SocketAddress>();
+        for (final PlayerConnection connection : players.values()) {
+            if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
+                removedPlayers.add(connection.getAddress());
+                LOG.info("Connection lost to client " + connection.getAddress());
+            }
+        }
+        for (final SocketAddress address : removedPlayers) {
+>>>>>>> master
             removePlayer(address);
         }
         // Get current change set from entity manager and merge it with all the
         // save versions
+<<<<<<< HEAD
         ChangeSet currentChangeSet = entityManager.getChangeSet();
         for (ChangeSet changeSet : changeSetLookup.values()) {
+=======
+        final ChangeSet currentChangeSet = entityManager.getChangeSet();
+        for (final ChangeSet changeSet : changeSetLookup.values()) {
+>>>>>>> master
             changeSet.merge(currentChangeSet);
         }
         // Add the current change set
@@ -199,14 +222,23 @@ public class Server implements NetworkEventListener {
      */
     private void sendGamestate(final DatagramChannel channel)
             throws IOException {
+<<<<<<< HEAD
         int currentVersion = entityManager.getCurrentVersion();
         for (PlayerConnection connection : players.values()) {
+=======
+        final int currentVersion = entityManager.getCurrentVersion();
+        for (final PlayerConnection connection : players.values()) {
+>>>>>>> master
             int sendVersion = connection.getReceivedVersion();
             if (connection.isNew()) {
                 // Set to first version
                 sendVersion = 0;
             }
+<<<<<<< HEAD
             ChangeSet changeSet = changeSetLookup.get(sendVersion);
+=======
+            final ChangeSet changeSet = changeSetLookup.get(sendVersion);
+>>>>>>> master
             if (LOG.isTraceEnabled()) {
                 LOG.trace("currentVersion: " + currentVersion + " changeset: "
                         + changeSet.getVersion() + " " + changeSet.getCreated()
@@ -219,15 +251,24 @@ public class Server implements NetworkEventListener {
         }
     }
 
+<<<<<<< HEAD
     private void removePlayer(SocketAddress address) {
         PlayerConnection connection = players.remove(address);
+=======
+    private void removePlayer(final SocketAddress address) {
+        final PlayerConnection connection = players.remove(address);
+>>>>>>> master
         connection.getPlayer().sendMessage(MessageType.DROP, null);
         entityManager.remove(connection.getPlayer().getName());
     }
 
     @Override
     public boolean receivedGamestateMessage(final SocketAddress address,
+<<<<<<< HEAD
             int oldVersion, int newVersion) {
+=======
+            final int oldVersion, final int newVersion) {
+>>>>>>> master
         // ignore .. should not happen
         return false;
     }
@@ -245,7 +286,11 @@ public class Server implements NetworkEventListener {
             final String name) {
         final String entityName = NetworkConstants
                 .getAddressRepresentation(address);
+<<<<<<< HEAD
         final Entity player = entityManager.create(Family.PLAYER, entityName);
+=======
+        final Entity player = entityManager.create("Player", entityName);
+>>>>>>> master
         player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
         player.setAttribute(Attribute.PLAYER_NAME, name);
 
@@ -277,7 +322,11 @@ public class Server implements NetworkEventListener {
      */
     @Override
     public void receivedInputMessage(final SocketAddress address,
+<<<<<<< HEAD
             int newVersion, final Set<Integer> keys) {
+=======
+            final int newVersion, final Set<Integer> keys) {
+>>>>>>> master
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
             connection.setNew();
@@ -308,7 +357,11 @@ public class Server implements NetworkEventListener {
     public void init() {
         // Fill the change set queue
         for (int i = 0; i < STORED_CHANGESETS; i++) {
+<<<<<<< HEAD
             ChangeSet changeSet = entityManager.getChangeSet();
+=======
+            final ChangeSet changeSet = entityManager.getChangeSet();
+>>>>>>> master
             changeSets.add(changeSet);
             changeSetLookup.put(changeSet.getVersion(), changeSet);
         }

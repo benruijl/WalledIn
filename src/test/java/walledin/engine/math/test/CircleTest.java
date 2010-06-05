@@ -24,16 +24,26 @@ public class CircleTest {
 
     @Test
     public void testGetSetDefault() {
+<<<<<<< HEAD
         Circle circle = new Circle();
+=======
+        final Circle circle = new Circle();
+>>>>>>> master
         Assert.assertEquals(circle.getRadius(), 0f);
         Assert.assertEquals(circle.getPos(), new Vector2f(0, 0));
     }
 
     @Test
     public void testGetSetNonDefault() {
+<<<<<<< HEAD
         float radius = 3.5f;
         Vector2f pos = new Vector2f(2, 3);
         Circle circle = new Circle(pos, radius);
+=======
+        final float radius = 3.5f;
+        final Vector2f pos = new Vector2f(2, 3);
+        final Circle circle = new Circle(pos, radius);
+>>>>>>> master
         Assert.assertEquals(circle.getRadius(), radius);
         // assumes equals for vector
         Assert.assertEquals(circle.getPos(), new Vector2f(2, 3));
@@ -41,18 +51,30 @@ public class CircleTest {
 
     @Test
     public void testPointInSphere() {
+<<<<<<< HEAD
         Circle circle = new Circle(new Vector2f(2, 3), 3f);
         Vector2f point = new Vector2f(1, 2);
+=======
+        final Circle circle = new Circle(new Vector2f(2, 3), 3f);
+        final Vector2f point = new Vector2f(1, 2);
+>>>>>>> master
         Assert.assertTrue(circle.pointInSphere(point));
         // TODO test more corner cases
     }
 
     @Test
     public void testPerformance() {
+<<<<<<< HEAD
         Rectangle rect1 = new Rectangle(1, 2, 3, 4);
         Rectangle rect2 = new Rectangle(34322, 2343, 2030, 43223);
         Circle circ1 = Circle.fromRect(rect1);
         Circle circ2 = Circle.fromRect(rect2);
+=======
+        final Rectangle rect1 = new Rectangle(1, 2, 3, 4);
+        final Rectangle rect2 = new Rectangle(34322, 2343, 2030, 43223);
+        final Circle circ1 = Circle.fromRect(rect1);
+        final Circle circ2 = Circle.fromRect(rect2);
+>>>>>>> master
 
         doPreformanceTest(rect1, rect2, circ1, circ2, 100000);
         doPreformanceTest(rect1, rect2, circ1, circ2, 1000000);
@@ -65,8 +87,14 @@ public class CircleTest {
 
     }
 
+<<<<<<< HEAD
     private void doPreformanceTest(Rectangle rect1, Rectangle rect2,
             Circle circ1, Circle circ2, int amount) {
+=======
+    private void doPreformanceTest(final Rectangle rect1,
+            final Rectangle rect2, final Circle circ1, final Circle circ2,
+            final int amount) {
+>>>>>>> master
         long time = System.nanoTime();
         for (int i = 0; i < amount; i++) {
             rect1.intersects(rect2);
