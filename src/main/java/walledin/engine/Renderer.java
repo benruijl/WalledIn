@@ -227,6 +227,7 @@ public class Renderer implements GLEventListener {
         if (lastUpdate == -1) {
             lastUpdate = System.nanoTime();
         }
+        
 
         final long currentTime = System.nanoTime();
         double delta = currentTime - lastUpdate;

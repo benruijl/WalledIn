@@ -60,8 +60,12 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
         if (messageType == MessageType.SELECT_WEAPON) {
             final Entity weapon = weapons.get(weaponKeyMap.get(data));
 
-            if (weapon != null) {
+            if (weapon != null && !getAttribute(Attribute.ACTIVE_WEAPON).equals(weapon)) {
                 getEntityManager().add(weapon);
+                
+                Entity oldWeapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
+                oldWeapon.remove();
+                
                 setAttribute(Attribute.ACTIVE_WEAPON, weapon);
             }
         }

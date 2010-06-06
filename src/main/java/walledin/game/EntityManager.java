@@ -28,14 +28,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
+import walledin.game.network.client.Client;
 import walledin.game.network.server.ChangeSet;
 import walledin.util.Utils;
 
 public class EntityManager {
+    private static final Logger LOG = Logger.getLogger(EntityManager.class);
     private final Map<String, Entity> entities;
     private final DrawOrderManager drawOrderManager;
     private final EntityFactory factory;
@@ -89,6 +93,13 @@ public class EntityManager {
      *            Entity to add
      */
     public void add(final Entity entity) {
+
+        if (entities.containsKey(entity.getName())) {
+            LOG.warn("Trying to add entity " + entity.getName()
+                    + " , but entity already exists.");
+            return;
+        }
+
         entities.put(entity.getName(), entity);
         created.add(entity);
 
@@ -103,12 +114,23 @@ public class EntityManager {
         }
     }
 
+    /**
+     * Removes the entity from the list, resets the markedRemoved flag and
+     * resets the entity changed attributes list. This is required, because the entity still exists
+     * and can be added later.
+     * 
+     * @param name
+     *            Entity name
+     * @return Removed entity
+     */
     public Entity remove(final String name) {
         final Entity entity = entities.get(name);
         drawOrderManager.removeEntity(entity);
         entities.remove(name);
 
         removed.add(entity);
+        entity.resetMarkedRemoved();
+        entity.resetAttributes();
         return entity;
     }
 

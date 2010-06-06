@@ -23,6 +23,7 @@ package walledin.game.network.server;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import walledin.engine.math.Rectangle;
@@ -40,9 +41,11 @@ import walledin.game.entity.behaviors.logic.PlayerWeaponInventoryBehavior;
 import walledin.game.entity.behaviors.logic.WeaponBehavior;
 import walledin.game.entity.behaviors.physics.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.physics.SpatialBehavior;
+import walledin.game.network.client.ClientEntityFactory;
 import walledin.util.XMLReader;
 
 public class ServerEntityFactory extends AbstractEntityFactory {
+    private static final Logger LOG = Logger.getLogger(ServerEntityFactory.class);
     public ServerEntityFactory() {
         super();
         addStandardEntityCreationFunctions();
