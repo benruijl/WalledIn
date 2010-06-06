@@ -49,7 +49,10 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                     if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                         getOwner()
                                 .setAttribute(Attribute.ACTIVE_WEAPON, weapon);
+                    } else {
+                        weapon.remove();
                     }
+
                 }
             }
         }
@@ -58,6 +61,7 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
             final Entity weapon = weapons.get(weaponKeyMap.get(data));
 
             if (weapon != null) {
+                getEntityManager().add(weapon);
                 setAttribute(Attribute.ACTIVE_WEAPON, weapon);
             }
         }

@@ -170,7 +170,9 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG.info("Connection lost to client " + connection.getAddress());
+                LOG
+                        .info("Connection lost to client "
+                                + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {

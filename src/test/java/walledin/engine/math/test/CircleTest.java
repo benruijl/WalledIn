@@ -70,9 +70,9 @@ public class CircleTest {
     @Test
     public void testPerformance() {
         final Rectangle rect1 = new Rectangle(1, 2, 3, 4);
-        final Rectangle rect2 = new Rectangle(34322, 2343, 2030, 43223);
-        final Circle circ1 = Circle.fromRect(rect1);
-        final Circle circ2 = Circle.fromRect(rect2);
+        final Rectangle rect2 = new Rectangle(9, 5, 1, 8);
+        final Circle circ1 = rect1.asCircumscribedCircle();
+        final Circle circ2 = rect2.asCircumscribedCircle();
 
         doPreformanceTest(rect1, rect2, circ1, circ2, 100000);
         doPreformanceTest(rect1, rect2, circ1, circ2, 1000000);

@@ -63,7 +63,6 @@ public class EntityManager {
     public Entity create(final Family familyName, final String entityName) {
         final Entity entity = factory.create(this, familyName, entityName);
         add(entity);
-        created.add(entity);
         return entity;
     }
 
@@ -91,6 +90,7 @@ public class EntityManager {
      */
     public void add(final Entity entity) {
         entities.put(entity.getName(), entity);
+        created.add(entity);
 
         if (entity.hasAttribute(Attribute.Z_INDEX)) {
             drawOrderManager.add(entity);

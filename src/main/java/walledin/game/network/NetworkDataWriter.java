@@ -26,8 +26,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -157,6 +157,9 @@ public class NetworkDataWriter {
             break;
         case VELOCITY:
             writeVector2fData((Vector2f) data, buffer);
+            break;
+        default:
+            LOG.error("Could not process attribute " + attribute);
             break;
         }
     }

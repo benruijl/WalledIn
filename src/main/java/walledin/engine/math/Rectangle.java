@@ -28,7 +28,7 @@ package walledin.engine.math;
  * 
  * @author ben
  */
-public class Rectangle {
+public class Rectangle extends Geometry {
     private final float x;
     private final float y;
     private final float width;
@@ -89,11 +89,6 @@ public class Rectangle {
         return new Vector2f(x, getBottom());
     }
 
-    public boolean intersects(final Rectangle rect) {
-        return rect.getRight() > getLeft() && rect.getLeft() < getRight()
-                && rect.getBottom() > getTop() && rect.getTop() < getBottom();
-    }
-
     public Rectangle setPos(final Vector2f vPos) {
         return new Rectangle(vPos.x, vPos.y, width, height);
     }
@@ -109,5 +104,35 @@ public class Rectangle {
     public Rectangle scaleAll(final Vector2f scale) {
         return new Rectangle(x * scale.getX(), y * scale.getY(), width
                 * scale.getX(), height * scale.getY());
+    }
+
+    @Override
+    public boolean intersects(final Rectangle rect) {
+        return rect.getRight() > getLeft() && rect.getLeft() < getRight()
+                && rect.getBottom() > getTop() && rect.getTop() < getBottom();
+    }
+
+    @Override
+    public boolean intersects(final Circle circ) {
+        return Geometry.intersects(this, circ);
+    }
+
+    @Override
+    public Circle asCircumscribedCircle() {
+        final Vector2f dir = getRightBottom().sub(getLeftTop()).scale(0.5f);
+        final Vector2f center = dir.add(getLeftTop());
+        final float radius = (float) Math.sqrt(dir.lengthSquared());
+        return new Circle(center, radius);
+    }
+
+    @Override
+    public Circle asInscribedCircle() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Rectangle asRectangle() {
+        return this;
     }
 }

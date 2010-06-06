@@ -55,8 +55,8 @@ public class ItemRenderBehavior extends RenderBehavior {
      * @param renderer
      */
     private void render(final Renderer renderer) {
-        renderer.drawTexturePart(texPart,
-                itemRect.translate((Vector2f) getAttribute(Attribute.POSITION)));
+        renderer.drawTexturePart(texPart, itemRect
+                .translate((Vector2f) getAttribute(Attribute.POSITION)));
     }
 
     @Override

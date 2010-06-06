@@ -250,8 +250,8 @@ public class ClientEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(filename)) {
-            final List<Element> elList = XMLReader.getElements(
-                    reader.getRootElement(), "item");
+            final List<Element> elList = XMLReader.getElements(reader
+                    .getRootElement(), "item");
 
             final String texture = reader.getRootElement().getAttribute(
                     "texture");
