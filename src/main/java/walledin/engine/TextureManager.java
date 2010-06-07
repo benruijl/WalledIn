@@ -81,8 +81,8 @@ public final class TextureManager extends ResourceManager<String, Texture> {
 
         try {
             final BufferedImage img = ImageIO.read(file);
-            final BufferedImage argbImg = new BufferedImage(img.getWidth(),
-                    img.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+            final BufferedImage argbImg = new BufferedImage(img.getWidth(), img
+                    .getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
             final Graphics g = argbImg.createGraphics();
             g.drawImage(img, 0, 0, null);
             final Texture texture = TextureIO.newTexture(img, false);

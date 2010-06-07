@@ -34,6 +34,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
+import walledin.engine.math.Vector2i;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -170,7 +171,9 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG.info("Connection lost to client " + connection.getAddress());
+                LOG
+                        .info("Connection lost to client "
+                                + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {
@@ -278,10 +281,15 @@ public class Server implements NetworkEventListener {
      */
     @Override
     public void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<Integer> keys) {
+            final int newVersion, final Set<Integer> keys,
+            final Vector2i mousePos) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
             connection.setNew();
+            connection.setKeysDown(keys);
+            connection.setMousePos(mousePos);
+
+            // also send the keys down it the player, it will process them
             connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
             connection.setReceivedVersion(newVersion);
         }

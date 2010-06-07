@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
+import walledin.engine.math.Vector2i;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -83,7 +84,8 @@ public class NetworkDataReader {
         for (int i = 0; i < numKeys; i++) {
             keys.add((int) buffer.getShort());
         }
-        listener.receivedInputMessage(address, newVersion, keys);
+        final Vector2i mousePos = new Vector2i(buffer.getInt(), buffer.getInt());
+        listener.receivedInputMessage(address, newVersion, keys, mousePos);
     }
 
     private void processLoginMessage(final SocketAddress address) {
@@ -167,8 +169,8 @@ public class NetworkDataReader {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
 
-            entity = entityManager.create(
-                    Enum.valueOf(Family.class, familyName), name);
+            entity = entityManager.create(Enum
+                    .valueOf(Family.class, familyName), name);
 
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:

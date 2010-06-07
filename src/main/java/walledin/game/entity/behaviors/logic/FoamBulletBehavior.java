@@ -20,8 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
-import walledin.game.CollisionManager.CollisionData;
 import walledin.game.EntityManager;
+import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -45,12 +45,12 @@ public class FoamBulletBehavior extends BulletBehavior {
                 // if collided with map or other foam particle create a
                 // foam particle
                 if (colData.getCollisionEntity().getFamily() == Family.MAP
-                        || colData.getCollisionEntity().getFamily()
-                                .equals(Family.FOAM_PARTICLE)) {
+                        || colData.getCollisionEntity().getFamily().equals(
+                                Family.FOAM_PARTICLE)) {
                     final EntityManager manager = getEntityManager();
                     final Entity partical = manager.create(
-                            Family.FOAM_PARTICLE,
-                            manager.generateUniqueName(Family.FOAM_PARTICLE));
+                            Family.FOAM_PARTICLE, manager
+                                    .generateUniqueName(Family.FOAM_PARTICLE));
 
                     partical.setAttribute(Attribute.POSITION,
                             getAttribute(Attribute.POSITION));
