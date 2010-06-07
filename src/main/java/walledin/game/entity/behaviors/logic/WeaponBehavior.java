@@ -20,9 +20,11 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Vector2f;
-import walledin.game.CollisionManager.CollisionData;
 import walledin.game.EntityManager;
+import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -30,6 +32,7 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class WeaponBehavior extends Behavior {
+    private static final Logger LOG = Logger.getLogger(WeaponBehavior.class);
     private Entity owner; // entity that carries the gun
     private final int fireLag;
     private final Family bulletFamily;
@@ -74,6 +77,7 @@ public class WeaponBehavior extends Behavior {
 
         if (messageType == MessageType.DROP) // to be called by Player only
         {
+            LOG.info("Weapon " + getOwner().getName() + " dropped.");
             setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
             owner = null;
         }
@@ -101,8 +105,8 @@ public class WeaponBehavior extends Behavior {
                         0);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily,
-                        manager.generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily, manager
+                        .generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);

@@ -119,7 +119,7 @@ public class PlayerControlBehaviour extends SpatialBehavior {
             getOwner().sendMessage(MessageType.SELECT_WEAPON,
                     Integer.valueOf(1));
         }
-
+        else
         if (keysDown.contains(KeyEvent.VK_2)) {
             getOwner().sendMessage(MessageType.SELECT_WEAPON,
                     Integer.valueOf(2));
