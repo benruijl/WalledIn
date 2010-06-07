@@ -41,11 +41,12 @@ import walledin.game.entity.behaviors.logic.PlayerWeaponInventoryBehavior;
 import walledin.game.entity.behaviors.logic.WeaponBehavior;
 import walledin.game.entity.behaviors.physics.PlayerControlBehaviour;
 import walledin.game.entity.behaviors.physics.SpatialBehavior;
-import walledin.game.network.client.ClientEntityFactory;
 import walledin.util.XMLReader;
 
 public class ServerEntityFactory extends AbstractEntityFactory {
-    private static final Logger LOG = Logger.getLogger(ServerEntityFactory.class);
+    private static final Logger LOG = Logger
+            .getLogger(ServerEntityFactory.class);
+
     public ServerEntityFactory() {
         super();
         addStandardEntityCreationFunctions();
@@ -271,8 +272,8 @@ public class ServerEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(file)) {
-            final List<Element> elList = XMLReader.getElements(reader
-                    .getRootElement(), "item");
+            final List<Element> elList = XMLReader.getElements(
+                    reader.getRootElement(), "item");
 
             for (final Element cur : elList) {
                 final String familyName = XMLReader.getTextValue(cur, "name");

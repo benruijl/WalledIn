@@ -45,7 +45,9 @@ import walledin.util.Utils;
 import walledin.util.XMLReader;
 
 public class ClientEntityFactory extends AbstractEntityFactory {
-    private static final Logger LOG = Logger.getLogger(ClientEntityFactory.class);
+    private static final Logger LOG = Logger
+            .getLogger(ClientEntityFactory.class);
+
     public ClientEntityFactory() {
         super();
         addStandardEntityCreationFunctions();
@@ -252,8 +254,8 @@ public class ClientEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(filename)) {
-            final List<Element> elList = XMLReader.getElements(reader
-                    .getRootElement(), "item");
+            final List<Element> elList = XMLReader.getElements(
+                    reader.getRootElement(), "item");
 
             final String texture = reader.getRootElement().getAttribute(
                     "texture");
