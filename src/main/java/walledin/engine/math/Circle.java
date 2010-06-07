@@ -20,7 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
-public class Circle {
+public class Circle extends Geometry {
     private Vector2f pos;
     private float radius;
 
@@ -58,18 +58,37 @@ public class Circle {
         return pos.sub(this.pos).lengthSquared() < radius * radius;
     }
 
+    @Override
     public boolean intersects(final Circle circ) {
         return (getRadius() + circ.getRadius())
                 * (getRadius() + circ.getRadius()) >= getPos().sub(
                 circ.getPos()).lengthSquared();
     }
 
-    public static Circle fromRect(final Rectangle rect) {
-        final Vector2f dir = rect.getRightBottom().sub(rect.getLeftTop())
-                .scale(0.5f);
-        final Vector2f center = dir.add(rect.getLeftTop());
-        final float radius = (float) Math.sqrt(dir.lengthSquared());
-        return new Circle(center, radius);
+    @Override
+    public boolean intersects(final Rectangle rect) {
+        return Geometry.intersects(rect, this);
+    }
+
+    @Override
+    public Circle asCircumscribedCircle() {
+        return this;
+    }
+
+    @Override
+    public Circle asInscribedCircle() {
+        return this;
+    }
+
+    /**
+     * Returns the smallest axis-aligned rectangle that contains
+     * the circle.
+     * 
+     * @return Rectangle
+     */
+    @Override
+    public Rectangle asRectangle() {
+        return new Rectangle(pos.x - radius, pos.y - radius, (float)Math.sqrt(2), (float)Math.sqrt(2));
     }
 
 }

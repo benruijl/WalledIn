@@ -24,7 +24,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
+
+import org.apache.log4j.Logger;
 
 import walledin.game.EntityManager;
 
@@ -112,7 +113,7 @@ public class Entity {
     public <T extends Behavior> T getBehavior(final Class<T> clazz) {
         if (!behaviors.containsKey(clazz)) {
             throw new IllegalArgumentException("Object " + name
-                    + " does not have behaviour of class " + clazz.getName());
+                    + "@" + hashCode() + "does not have behaviour of class " + clazz.getName());
         }
 
         final T beh = (T) behaviors.get(clazz);
@@ -131,7 +132,7 @@ public class Entity {
     @Deprecated
     public boolean hasAttribute(final Attribute attribute) {
         return attributes.containsKey(attribute)
-                && attributes.get(attribute) != null;
+              && attributes.get(attribute) != null;
     }
 
     /**
@@ -143,7 +144,7 @@ public class Entity {
      */
     public Object getAttribute(final Attribute attribute) {
         if (!attributes.containsKey(attribute)) {
-            LOG.warning("Object " + name + " does not have attribute "
+            LOG.warn("Object " + name + "@" + hashCode()+ " does not have attribute "
                     + attribute.name());
         }
 
@@ -166,6 +167,7 @@ public class Entity {
     public <T> T setAttribute(final Attribute attribute, final T newObject) {
         if (attribute.clazz.isInstance(newObject) || newObject == null) {
             final T result = (T) attributes.put(attribute, newObject);
+            
             // Only add it if it is actually changed
             if (attribute.sendOverNetwork && !newObject.equals(result)) {
                 changedAttributes.add(attribute);
@@ -175,6 +177,18 @@ public class Entity {
         } else {
             throw new IllegalArgumentException("Object should be of class: "
                     + attribute.clazz.getName());
+        }
+    }
+    
+    /**
+     * Resets the list that keeps track of attribute changes. This involves adding
+     * every attribute which can be sent over network to that list. 
+     */
+    public void resetAttributes() {
+        for (Attribute attribute: attributes.keySet()) {
+            if (attribute.sendOverNetwork) {
+                changedAttributes.add(attribute);
+            }
         }
     }
 
@@ -235,6 +249,10 @@ public class Entity {
      */
     public void remove() {
         markedRemoved = true;
+    }
+    
+    public void resetMarkedRemoved() {
+        markedRemoved = false;
     }
 
     public boolean isMarkedRemoved() {

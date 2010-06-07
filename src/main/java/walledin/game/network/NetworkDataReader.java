@@ -133,6 +133,9 @@ public class NetworkDataReader {
         case VELOCITY:
             data = readVector2fData(buffer);
             break;
+        default:
+            LOG.error("Could not process attribute " + attribute);
+            break;
         }
         entity.setAttribute(attribute, data);
     }
@@ -164,8 +167,8 @@ public class NetworkDataReader {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
 
-            entity = entityManager.create(
-                    Enum.valueOf(Family.class, familyName), name);
+            entity = entityManager.create(Enum
+                    .valueOf(Family.class, familyName), name);
 
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:

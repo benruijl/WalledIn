@@ -23,6 +23,7 @@ package walledin.game.network.client;
 import java.net.URL;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import walledin.engine.TextureManager;
@@ -44,6 +45,7 @@ import walledin.util.Utils;
 import walledin.util.XMLReader;
 
 public class ClientEntityFactory extends AbstractEntityFactory {
+    private static final Logger LOG = Logger.getLogger(ClientEntityFactory.class);
     public ClientEntityFactory() {
         super();
         addStandardEntityCreationFunctions();
@@ -250,8 +252,8 @@ public class ClientEntityFactory extends AbstractEntityFactory {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(filename)) {
-            final List<Element> elList = XMLReader.getElements(
-                    reader.getRootElement(), "item");
+            final List<Element> elList = XMLReader.getElements(reader
+                    .getRootElement(), "item");
 
             final String texture = reader.getRootElement().getAttribute(
                     "texture");

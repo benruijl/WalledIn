@@ -91,8 +91,8 @@ public class GameMapIOXML implements GameMapIO {
             final String type = el.getAttribute("type");
             final int x = Integer.parseInt(el.getAttribute("x"));
             final int y = Integer.parseInt(el.getAttribute("y"));
-            final Entity item = entityManager.create(
-                    Enum.valueOf(Family.class, type), name);
+            final Entity item = entityManager.create(Enum.valueOf(Family.class,
+                    type), name);
 
             item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
             itList.add(item);

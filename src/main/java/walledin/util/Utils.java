@@ -23,7 +23,8 @@ package walledin.util;
 import java.net.URL;
 
 public class Utils {
-    private static final float EPSILON = 0.00001f;
+    /** A small value to prevent rounding errors */
+    private static final float EPSILON = 0.00001f; 
 
     public static URL getClasspathURL(final String filename) {
         return ClassLoader.getSystemResource(filename);
@@ -31,5 +32,16 @@ public class Utils {
 
     public static boolean equals(final float a, final float b) {
         return a == b ? true : Math.abs(a - b) < EPSILON;
+    }
+    
+    /**
+     * Clamps an integer to a range
+     * @param x Integer to clamp
+     * @param min Minimum value
+     * @param max Maximum value
+     * @return Clamped integer
+     */
+    public static float clamp(float x, float min, float max) {
+        return x < min ? min : (x > max ? max : x);       
     }
 }
