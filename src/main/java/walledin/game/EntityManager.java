@@ -34,7 +34,6 @@ import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
-import walledin.game.network.client.Client;
 import walledin.game.network.server.ChangeSet;
 import walledin.util.Utils;
 
@@ -116,8 +115,8 @@ public class EntityManager {
 
     /**
      * Removes the entity from the list, resets the markedRemoved flag and
-     * resets the entity changed attributes list. This is required, because the entity still exists
-     * and can be added later.
+     * resets the entity changed attributes list. This is required, because the
+     * entity still exists and can be added later.
      * 
      * @param name
      *            Entity name

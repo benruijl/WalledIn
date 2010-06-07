@@ -81,14 +81,14 @@ public class Circle extends Geometry {
     }
 
     /**
-     * Returns the smallest axis-aligned rectangle that contains
-     * the circle.
+     * Returns the smallest axis-aligned rectangle that contains the circle.
      * 
      * @return Rectangle
      */
     @Override
     public Rectangle asRectangle() {
-        return new Rectangle(pos.x - radius, pos.y - radius, (float)Math.sqrt(2), (float)Math.sqrt(2));
+        return new Rectangle(pos.x - radius, pos.y - radius,
+                (float) Math.sqrt(2), (float) Math.sqrt(2));
     }
 
 }

@@ -21,8 +21,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity.behaviors.logic;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -101,8 +101,8 @@ public class WeaponBehavior extends Behavior {
                         0);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily, manager
-                        .generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily,
+                        manager.generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
