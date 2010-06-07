@@ -92,15 +92,23 @@ public class EntityManager {
      *            Entity to add
      */
     public void add(final Entity entity) {
-
         if (entities.containsKey(entity.getName())) {
             LOG.warn("Trying to add entity " + entity.getName()
                     + " , but entity already exists.");
             return;
         }
+        if (removed.contains(entity)) {
+            // If the entity is already removed in this update, remove it
+            // because
+            // it also created in this update
+            removed.remove(entity);
+            // Dont add it to created because it was never removed so we cannot
+            // create it
+        } else {
+            created.add(entity);
+        }
 
         entities.put(entity.getName(), entity);
-        created.add(entity);
 
         if (entity.hasAttribute(Attribute.Z_INDEX)) {
             drawOrderManager.add(entity);
@@ -124,10 +132,20 @@ public class EntityManager {
      */
     public Entity remove(final String name) {
         final Entity entity = entities.get(name);
+        if (created.contains(entity)) {
+            // If the entity is already created in this update, remove it
+            // because
+            // it also removed in this update
+            created.remove(entity);
+            // Dont add it to removed because it never existed so we cannot
+            // remove it
+        } else {
+            removed.add(entity);
+        }
+
         drawOrderManager.removeEntity(entity);
         entities.remove(name);
 
-        removed.add(entity);
         entity.resetMarkedRemoved();
         entity.resetAttributes();
         return entity;
