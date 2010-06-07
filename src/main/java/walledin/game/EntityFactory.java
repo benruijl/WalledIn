@@ -20,23 +20,41 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import groovy.lang.GroovyShell;
+
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.codehaus.groovy.control.CompilationFailedException;
 
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 
-public interface EntityFactory {
+public class EntityFactory {
+    public List<Map<Family, EntityFunction>> maps;
+    
+    public EntityFactory() {
+        maps = new ArrayList<Map<Family, EntityFunction>>();
+    }
+    
+    public Entity create(final EntityManager entityManager,
+            final Family family, final String entityName) {
+        final Entity entity = new Entity(entityManager, family, entityName);
+        for (Map<Family, EntityFunction> map : maps) {
+            map.get(family).create(entity);
+        }
+        return entity;
+    }
 
-    Entity create(final EntityManager entityManager, final Family familyName,
-            final String entityName);
+    public void loadScript(final URL scriptURL)
+            throws CompilationFailedException, IOException {
+        final GroovyShell shell = new GroovyShell();
+        final Map<Family, EntityFunction> value = (Map<Family, EntityFunction>) shell
+                .evaluate(scriptURL.openStream());
 
-    /**
-     * Loads all information for the prototypes from an XML file.
-     * 
-     * @param file
-     *            XML file
-     * @return True on success, false on failure
-     */
-    boolean loadItemsFromXML(final URL file);
-
+        maps.add(value);
+    }
 }

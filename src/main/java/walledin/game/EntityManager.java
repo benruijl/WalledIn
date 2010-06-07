@@ -145,7 +145,6 @@ public class EntityManager {
     }
 
     public void init() {
-        factory.loadItemsFromXML(Utils.getClasspathURL("items.xml"));
     }
 
     public ChangeSet getChangeSet() {

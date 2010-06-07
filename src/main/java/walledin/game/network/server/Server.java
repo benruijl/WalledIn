@@ -32,8 +32,10 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.codehaus.groovy.control.CompilationFailedException;
 
 import walledin.engine.math.Vector2f;
+import walledin.game.EntityFactory;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -66,6 +68,7 @@ public class Server implements NetworkEventListener {
     private final EntityManager entityManager;
     private final Queue<ChangeSet> changeSets;
     private final Map<Integer, ChangeSet> changeSetLookup;
+    private EntityFactory entityFactory;
 
     /**
      * Creates a new server. Initializes variables to their default values.
@@ -75,7 +78,8 @@ public class Server implements NetworkEventListener {
         running = false;
         networkWriter = new NetworkDataWriter();
         networkReader = new NetworkDataReader(this);
-        entityManager = new EntityManager(new ServerEntityFactory());
+        entityFactory = new EntityFactory();
+        entityManager = new EntityManager(entityFactory);
         changeSetLookup = new HashMap<Integer, ChangeSet>();
         changeSets = new LinkedList<ChangeSet>();
         // Store the first version so we can give it new players
@@ -314,6 +318,16 @@ public class Server implements NetworkEventListener {
             changeSetLookup.put(changeSet.getVersion(), changeSet);
         }
 
+        try {
+            entityFactory.loadScript(Utils
+                    .getClasspathURL("entities/entities.groovy"));
+            entityFactory.loadScript(Utils
+                    .getClasspathURL("entities/serverentities.groovy"));
+        } catch (CompilationFailedException e) {
+            LOG.fatal("Could not compile script", e);
+        } catch (IOException e) {
+            LOG.fatal("IOException during loading of scripts", e);
+        }
         // initialize entity manager
         entityManager.init();
 
