@@ -238,8 +238,15 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 
             /* Render current FPS */
             renderer.startHUDRendering();
-            font.renderText(renderer, "FPS: "
-                    + Float.toString(renderer.getFPS()), new Vector2f(600, 20));
+            font.renderText(renderer, "FPS: " + renderer.getFPS(),
+                    new Vector2f(600, 20));
+
+            final Entity player = entityManager.get(playerEntityName);
+
+            if (player != null)
+                font.renderText(renderer, "HP: "
+                        + (Integer) player.getAttribute(Attribute.HEALTH),
+                        new Vector2f(600, 40));
 
             renderer.stopHUDRendering();
         }
