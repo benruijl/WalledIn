@@ -38,7 +38,7 @@ import walledin.game.entity.behaviors.physics.*
     entity.addBehavior(new SpatialBehavior(entity));
     entity.addBehavior(new PhysicsBehavior(entity, false, false));
     entity.setAttribute(Attribute.BOUNDING_RECT, destRect);
-    entity.addBehavior(new FoamBulletBehavior(entity));
+    entity.addBehavior(new BulletBehavior(entity,10));
 } as EntityFunction,
 
 (Family.FOAM_PARTICLE): { Entity entity ->
