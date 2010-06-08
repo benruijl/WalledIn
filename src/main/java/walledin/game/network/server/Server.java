@@ -283,15 +283,16 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
-            final Vector2f mousePos) {
+            final Vector2f cursorPos) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
             connection.setNew();
             connection.setKeysDown(keys);
-            connection.setMousePos(mousePos);
+            connection.setMousePos(cursorPos);
 
-            // also send the keys down it the player, it will process them
+            // also send the received data to the player
             connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
+            connection.getPlayer().setAttribute(Attribute.CURSOR_POS, cursorPos);
             connection.setReceivedVersion(newVersion);
         }
     }
