@@ -27,6 +27,7 @@ package walledin.engine;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +38,7 @@ import walledin.engine.math.Vector2i;
  * 
  * @author ben
  */
-public final class Input implements KeyListener, MouseMotionListener {
+public final class Input implements KeyListener, MouseListener, MouseMotionListener {
     private static Input ref = null;
     private final Set<Integer> keysDown;
     private Vector2i mousePos;
@@ -111,6 +112,35 @@ public final class Input implements KeyListener, MouseMotionListener {
 
     public Vector2i getMousePos() {
         return mousePos;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        mousePos = new Vector2i(e.getX(), e.getY());   
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 
 }
