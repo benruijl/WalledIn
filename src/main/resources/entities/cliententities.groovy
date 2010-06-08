@@ -31,9 +31,6 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
     // spatial behavior does the interpolation in between server messages
     entity.addBehavior(new SpatialBehavior(entity));
     entity.addBehavior(new PlayerParentBehavior(entity));
-
-    // FIXME correct the drawing instead of the hack the bounding box
-    entity.setAttribute(Attribute.BOUNDING_RECT, new Rectangle(0, 0, 44, 43));
 } as EntityFunction,
 
 (Family.BACKGROUND): { Entity entity ->
@@ -44,18 +41,19 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
     entity.addBehavior(new MapRenderBehavior(entity));
 } as EntityFunction,
 
+(Family.BULLET): { entity ->
+    // spatial behavior does the interpolation in between server messages
+    entity.addBehavior(new SpatialBehavior(entity));
+} as EntityFunction,
+
 (Family.FOAMGUN_BULLET): { Entity entity ->
     def destRect = new Rectangle(0, 0, 16, 16)
     entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
-    // spatial behavior does the interpolation in between server messages
-    entity.addBehavior(new SpatialBehavior(entity));
 } as EntityFunction,
 
 (Family.HANDGUN_BULLET): { Entity entity ->
     def destRect = new Rectangle(0, 0, 22, 11)
     entity.addBehavior(new ItemRenderBehavior(entity, "handgunbullet", destRect));
-    // spatial behavior does the interpolation in between server messages
-    entity.addBehavior(new SpatialBehavior(entity));
 } as EntityFunction,
 
 (Family.FOAM_PARTICLE): { Entity entity ->
@@ -73,15 +71,18 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
     entity.addBehavior(new ItemRenderBehavior(entity, "healthkit", destRect));
 } as EntityFunction,
 
-(Family.HANDGUN): { Entity entity ->
+(Family.WEAPON): { Entity entity ->
     def destRect = new Rectangle(0, 0, 40, 21)
     entity.addBehavior(new SpatialBehavior(entity));
+} as EntityFunction,
+
+(Family.HANDGUN): { Entity entity ->
+    def destRect = new Rectangle(0, 0, 40, 21)
     entity.addBehavior(new WeaponRenderBehavior(entity, "handgun", destRect));
 } as EntityFunction,
 
 (Family.FOAMGUN): { Entity entity ->
     def destRect = new Rectangle(0, 0, 80, 21)
-    entity.addBehavior(new SpatialBehavior(entity));
     entity.addBehavior(new WeaponRenderBehavior(entity, "foamgun", destRect));
 } as EntityFunction,
 

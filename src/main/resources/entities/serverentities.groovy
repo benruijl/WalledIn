@@ -47,20 +47,19 @@ import walledin.game.entity.behaviors.physics.*
     entity.setAttribute(Attribute.BOUNDING_RECT, destRect);
 } as EntityFunction,
 
-(Family.ARMOURKIT): { Entity entity ->
-    def destRect = new Rectangle(0, 0, 32, 32)
+(Family.ITEM): { Entity entity ->
     entity.addBehavior(new SpatialBehavior(entity));
     entity.addBehavior(new PhysicsBehavior(entity));
+} as EntityFunction,
 
+(Family.ARMOURKIT): { Entity entity ->
+    def destRect = new Rectangle(0, 0, 32, 32)
     entity.setAttribute(Attribute.BOUNDING_RECT, destRect);
 } as EntityFunction,
 
 (Family.HEALTHKIT): { Entity entity ->
     def destRect = new Rectangle(0, 0, 32, 32)
-    entity.addBehavior(new SpatialBehavior(entity));
-    entity.addBehavior(new PhysicsBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_RECT, destRect);
-
     entity.addBehavior(new HealthKitBehavior(entity, 10));
 } as EntityFunction,
 

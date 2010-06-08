@@ -17,7 +17,7 @@ public enum Family {
     FOAM_PARTICLE(BULLET),
     CURSOR(ROOT);
 
-    Family parent;
+    private final Family parent;
 
     private Family(final Family parent) {
         this.parent = parent;
