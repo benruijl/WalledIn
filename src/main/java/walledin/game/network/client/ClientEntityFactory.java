@@ -30,6 +30,7 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.game.AbstractEntityFactory;
+import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -37,6 +38,7 @@ import walledin.game.entity.behaviors.logic.PlayerAnimationBehavior;
 import walledin.game.entity.behaviors.logic.PlayerParentBehavior;
 import walledin.game.entity.behaviors.physics.SpatialBehavior;
 import walledin.game.entity.behaviors.render.BackgroundRenderBehavior;
+import walledin.game.entity.behaviors.render.CursorRenderBehavior;
 import walledin.game.entity.behaviors.render.ItemRenderBehavior;
 import walledin.game.entity.behaviors.render.MapRenderBehavior;
 import walledin.game.entity.behaviors.render.PlayerRenderBehavior;
@@ -242,6 +244,17 @@ public class ClientEntityFactory extends AbstractEntityFactory {
                     @Override
                     public Entity create(final Entity ent) {
                         return createGameMap(ent);
+                    }
+                });
+
+        entityContructionFunctions.put(Family.CURSOR,
+                new EntityConstructionFunction() {
+
+                    @Override
+                    public Entity create(final Entity ent) {
+                        ent.addBehavior(new CursorRenderBehavior(ent,
+                                ZValues.CURSOR));
+                        return ent;
                     }
                 });
     }

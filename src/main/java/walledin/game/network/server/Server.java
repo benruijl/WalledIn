@@ -34,7 +34,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.engine.math.Vector2i;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -222,6 +221,11 @@ public class Server implements NetworkEventListener {
         }
     }
 
+    /**
+     * Removes the player and player specific entities, like their cursor.
+     * 
+     * @param address
+     */
     private void removePlayer(final SocketAddress address) {
         final PlayerConnection connection = players.remove(address);
         connection.getPlayer().sendMessage(MessageType.DROP, null);
@@ -253,13 +257,6 @@ public class Server implements NetworkEventListener {
         player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
         player.setAttribute(Attribute.PLAYER_NAME, name);
 
-        /* Let the player start with a handgun */
-        /*
-         * final Entity weapon = entityManager.create("handgun",
-         * entityManager.generateUniqueName("handgun"));
-         * player.setAttribute(Attribute.WEAPON, weapon);
-         */
-
         final PlayerConnection con = new PlayerConnection(address, player,
                 entityManager.getCurrentVersion());
         players.put(address, con);
@@ -282,7 +279,7 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
-            final Vector2i mousePos) {
+            final Vector2f mousePos) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
             connection.setNew();
@@ -305,6 +302,11 @@ public class Server implements NetworkEventListener {
     public void update(final double delta) {
         /* Update all entities */
         entityManager.update(delta);
+
+        /* Update client specific data, like mouse position */
+        for (final PlayerConnection con : players.values()) {
+            con.update(delta);
+        }
 
         /* Do collision detection */
         entityManager.doCollisionDetection(map, delta);

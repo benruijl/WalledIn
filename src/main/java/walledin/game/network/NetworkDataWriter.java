@@ -32,7 +32,6 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.engine.math.Vector2i;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -95,7 +94,7 @@ public class NetworkDataWriter {
 
     public void sendInputMessage(final DatagramChannel channel,
             final int version, final Set<Integer> keysDown,
-            final Vector2i mousePos) throws IOException {
+            final Vector2f mousePos) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);
@@ -104,8 +103,8 @@ public class NetworkDataWriter {
         for (final int key : keysDown) {
             buffer.putShort((short) key);
         }
-        buffer.putInt(mousePos.x);
-        buffer.putInt(mousePos.y);
+        buffer.putFloat(mousePos.x);
+        buffer.putFloat(mousePos.y);
         buffer.flip();
         channel.write(buffer);
     }

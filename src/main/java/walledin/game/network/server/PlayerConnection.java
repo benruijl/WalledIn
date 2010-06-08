@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import walledin.engine.math.Vector2i;
+import walledin.engine.math.Vector2f;
 import walledin.game.entity.Entity;
 
 public class PlayerConnection {
@@ -34,7 +34,7 @@ public class PlayerConnection {
 
     private final Entity player;
     private Set<Integer> keysDown;
-    private Vector2i mousePos;
+    private Vector2f mousePos;
 
     private final SocketAddress address;
     private int receivedVersion;
@@ -45,11 +45,15 @@ public class PlayerConnection {
         super();
 
         keysDown = new HashSet<Integer>();
+        mousePos = new Vector2f();
 
         this.player = player;
         this.address = address;
         receivedVersion = currentVersion;
         isNew = true;
+    }
+
+    public void update(final double delta) {
     }
 
     public Entity getPlayer() {
@@ -84,11 +88,11 @@ public class PlayerConnection {
         this.keysDown = keysDown;
     }
 
-    public Vector2i getMousePos() {
+    public Vector2f getMousePos() {
         return mousePos;
     }
 
-    public void setMousePos(final Vector2i mousePos) {
+    public void setMousePos(final Vector2f mousePos) {
         this.mousePos = mousePos;
     }
 
