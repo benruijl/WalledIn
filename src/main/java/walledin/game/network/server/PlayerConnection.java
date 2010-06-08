@@ -21,14 +21,21 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.network.server;
 
 import java.net.SocketAddress;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import walledin.engine.math.Vector2i;
 import walledin.game.entity.Entity;
 
 public class PlayerConnection {
     private static final Logger LOG = Logger.getLogger(PlayerConnection.class);
+
     private final Entity player;
+    private Set<Integer> keysDown;
+    private Vector2i mousePos;
+
     private final SocketAddress address;
     private int receivedVersion;
     private boolean isNew;
@@ -36,6 +43,9 @@ public class PlayerConnection {
     public PlayerConnection(final SocketAddress address, final Entity player,
             final int currentVersion) {
         super();
+
+        keysDown = new HashSet<Integer>();
+
         this.player = player;
         this.address = address;
         receivedVersion = currentVersion;
@@ -65,4 +75,21 @@ public class PlayerConnection {
     public boolean isNew() {
         return isNew;
     }
+
+    public Set<Integer> getKeysDown() {
+        return keysDown;
+    }
+
+    public void setKeysDown(final Set<Integer> keysDown) {
+        this.keysDown = keysDown;
+    }
+
+    public Vector2i getMousePos() {
+        return mousePos;
+    }
+
+    public void setMousePos(final Vector2i mousePos) {
+        this.mousePos = mousePos;
+    }
+
 }
