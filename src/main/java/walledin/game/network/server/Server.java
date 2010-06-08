@@ -35,10 +35,10 @@ import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityFactory;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 import walledin.game.map.GameMapIO;
@@ -319,7 +319,7 @@ public class Server implements NetworkEventListener {
         }
 
         try {
-            entityFactory.loadScript(Utils
+           entityFactory.loadScript(Utils
                     .getClasspathURL("entities/entities.groovy"));
             entityFactory.loadScript(Utils
                     .getClasspathURL("entities/serverentities.groovy"));

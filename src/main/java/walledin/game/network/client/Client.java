@@ -39,10 +39,10 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityFactory;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
@@ -253,8 +253,10 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         font.readFromStream(Utils.getClasspathURL("arial20.font"));
 
         try {
-            entityFactory.loadScript(Utils.getClasspathURL("entities/entities.groovy"));
-            entityFactory.loadScript(Utils.getClasspathURL("entities/cliententities.groovy"));
+            entityFactory.loadScript(Utils
+                    .getClasspathURL("entities/entities.groovy"));
+            entityFactory.loadScript(Utils
+                    .getClasspathURL("entities/cliententities.groovy"));
         } catch (CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
         } catch (IOException e) {

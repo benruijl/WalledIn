@@ -1,6 +1,4 @@
-package walledin.game;
-
-import walledin.game.entity.Entity;
+package walledin.game.entity;
 
 public interface EntityFunction {
     void create(Entity entity);

@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game;
+package walledin.game.entity;
 
 import groovy.lang.GroovyShell;
 
@@ -28,23 +28,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
-import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
+import walledin.game.EntityManager;
+import walledin.game.network.server.Server;
 
 public class EntityFactory {
+    private static final Logger LOG = Logger.getLogger(EntityFactory.class);
     public List<Map<Family, EntityFunction>> maps;
-    
+
     public EntityFactory() {
         maps = new ArrayList<Map<Family, EntityFunction>>();
     }
-    
+
     public Entity create(final EntityManager entityManager,
             final Family family, final String entityName) {
         final Entity entity = new Entity(entityManager, family, entityName);
+        boolean empty = true;
         for (Map<Family, EntityFunction> map : maps) {
-            map.get(family).create(entity);
+            EntityFunction function = map.get(family);
+            if (function != null) {
+                function.create(entity);
+                empty = false;
+            }
+        }
+        if (empty) {
+            LOG.warn("Entity " + entityName
+                    + " created empty. No behaviors were added");
         }
         return entity;
     }

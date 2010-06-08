@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.network.server.ChangeSet;
 import walledin.util.Utils;
