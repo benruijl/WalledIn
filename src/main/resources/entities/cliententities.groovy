@@ -84,4 +84,9 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
     entity.addBehavior(new SpatialBehavior(entity));
     entity.addBehavior(new WeaponRenderBehavior(entity, "foamgun", destRect));
 } as EntityFunction,
+
+(Family.CURSOR): { Entity entity ->
+    entity.addBehavior(new CursorRenderBehavior(entity, ZValues.CURSOR));
+} as EntityFunction,
+
 ]

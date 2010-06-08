@@ -14,7 +14,8 @@ public enum Family {
     FOAMGUN_BULLET(BULLET),
     MAP(ROOT),
     BACKGROUND(ROOT),
-    FOAM_PARTICLE(BULLET);
+    FOAM_PARTICLE(BULLET),
+    CURSOR(ROOT);
 
     Family parent;
 

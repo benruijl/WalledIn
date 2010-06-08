@@ -32,7 +32,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.engine.math.Vector2i;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -84,7 +83,8 @@ public class NetworkDataReader {
         for (int i = 0; i < numKeys; i++) {
             keys.add((int) buffer.getShort());
         }
-        final Vector2i mousePos = new Vector2i(buffer.getInt(), buffer.getInt());
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
+                .getFloat());
         listener.receivedInputMessage(address, newVersion, keys, mousePos);
     }
 

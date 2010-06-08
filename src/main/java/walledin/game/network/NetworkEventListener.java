@@ -23,7 +23,7 @@ package walledin.game.network;
 import java.net.SocketAddress;
 import java.util.Set;
 
-import walledin.engine.math.Vector2i;
+import walledin.engine.math.Vector2f;
 
 public interface NetworkEventListener {
     boolean receivedGamestateMessage(SocketAddress address, int oldVersion,
@@ -34,5 +34,5 @@ public interface NetworkEventListener {
     void receivedLogoutMessage(SocketAddress address);
 
     void receivedInputMessage(SocketAddress address, int newVersion,
-            Set<Integer> keys, Vector2i mousePos);
+            Set<Integer> keys, Vector2f mousePos);
 }

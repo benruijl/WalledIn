@@ -39,7 +39,6 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.engine.math.Vector2i;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -63,6 +62,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     private final EntityFactory entityFactory;
     private final SocketAddress host;
     private final String username;
+    private Entity cursor;
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
@@ -162,8 +162,8 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         }
         try {
             networkDataWriter.sendInputMessage(channel, receivedVersion, Input
-                    .getInstance().getKeysDown(), Input.getInstance()
-                    .getMousePos());
+                    .getInstance().getKeysDown(), renderer.screenToWorld(Input
+                    .getInstance().getMousePos()));
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
         }
@@ -184,7 +184,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     @Override
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
-            final Vector2i mousePos) {
+            final Vector2f mousePos) {
         // ignore
     }
 
@@ -210,6 +210,10 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
                 }
             }
         }
+
+        /* Update cursor position */
+        cursor.setAttribute(Attribute.POSITION, renderer.screenToWorld(Input
+                .getInstance().getMousePos()));
 
         if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
             dispose();
@@ -270,6 +274,9 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         // Background is not created by server (not yet anyway)
         entityManager.create(Family.BACKGROUND, "Background");
 
+        // create cursor
+        cursor = entityManager.create(Family.CURSOR, "cursor");
+
         LOG.info("starting network thread");
         // start network thread
         final Thread thread = new Thread(this, "network");
@@ -282,7 +289,6 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         manager.loadFromURL(Utils.getClasspathURL("zon.png"), "sun");
         manager.loadFromURL(Utils.getClasspathURL("player.png"), "player");
         manager.loadFromURL(Utils.getClasspathURL("wall.png"), "wall");
-        manager.loadFromURL(Utils.getClasspathURL("game.png"), "game");
     }
 
     private void createTextureParts() {
