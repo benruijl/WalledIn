@@ -34,7 +34,7 @@ public enum Attribute {
             Integer.class, true), PLAYER_NAME(String.class, true), ORIENTATION(
 
     Integer.class, true), ACTIVE_WEAPON(Entity.class), COLLECTABLE(
-            Boolean.class),
+            Boolean.class), CURSOR_POS(Vector2f.class),
 
     KEYS_DOWN(Set.class), WALK_ANIM_FRAME(Float.class), BOUNDING_RECT(
             Rectangle.class), BOUNDING_CIRCLE(Circle.class), Z_INDEX(

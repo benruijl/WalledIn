@@ -33,6 +33,8 @@ import walledin.game.entity.MessageType;
 
 public class WeaponBehavior extends Behavior {
     private static final Logger LOG = Logger.getLogger(WeaponBehavior.class);
+
+    private final float bulletAccelerationConstant = 30000.0f;
     private Entity owner; // entity that carries the gun
     private final int fireLag;
     private final Family bulletFamily;
@@ -101,8 +103,9 @@ public class WeaponBehavior extends Behavior {
                     bulletPosition = playerPos.add(new Vector2f(-30.0f, 20.0f));
                 }
 
-                final Vector2f bulletAcceleration = new Vector2f(or * 30000.0f,
-                        0);
+                final Vector2f target = (Vector2f) getAttribute(Attribute.CURSOR_POS);
+                final Vector2f bulletAcceleration = target.sub(bulletPosition)
+                        .normalize().scale(bulletAccelerationConstant);
 
                 final EntityManager manager = getEntityManager();
                 final Entity bullet = manager.create(bulletFamily, manager

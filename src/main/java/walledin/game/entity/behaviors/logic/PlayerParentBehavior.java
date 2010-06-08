@@ -51,8 +51,12 @@ public class PlayerParentBehavior extends Behavior {
         final int or = (Integer) getAttribute(Attribute.ORIENTATION);
         final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
         final Vector2f vel = (Vector2f) getAttribute(Attribute.VELOCITY);
+        final Vector2f cursorPos = (Vector2f) getAttribute(Attribute.CURSOR_POS);
 
         switch (attrib) {
+        case CURSOR_POS:
+            weapon.setAttribute(Attribute.CURSOR_POS, cursorPos);
+            break;
         case POSITION:
             weapon.setAttribute(Attribute.POSITION, pos.add(new Vector2f(35.0f,
                     20.0f)));

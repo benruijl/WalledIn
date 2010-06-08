@@ -72,6 +72,11 @@ public class Vector2f {
     public Vector2f scale(final float amount) {
         return new Vector2f(x * amount, y * amount);
     }
+    
+    public Vector2f normalize() {
+        float invLength = 1.00f / (float) Math.sqrt(lengthSquared());
+        return new Vector2f(x * invLength, y * invLength);
+    }
 
     // FIXME .. breaks the general contract of hashcode
     @Override
