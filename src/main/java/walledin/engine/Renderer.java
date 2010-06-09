@@ -134,6 +134,7 @@ public class Renderer implements GLEventListener {
         mCanvas.addKeyListener(Input.getInstance()); // listen to keys
         mCanvas.addMouseMotionListener(Input.getInstance()); // listen to mouse
                                                              // moves
+        mCanvas.addMouseListener(Input.getInstance());
         lastUpdate = -1;
     }
 

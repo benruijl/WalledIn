@@ -279,7 +279,7 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
-            final Vector2f cursorPos) {
+            final Vector2f cursorPos, Boolean mouseDown) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
             connection.setNew();
@@ -289,6 +289,7 @@ public class Server implements NetworkEventListener {
             // also send the received data to the player
             connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
             connection.getPlayer().setAttribute(Attribute.CURSOR_POS, cursorPos);
+            connection.getPlayer().setAttribute(Attribute.LEFTMOUSEBUTTON_DOWN, mouseDown);
             connection.setReceivedVersion(newVersion);
         }
     }

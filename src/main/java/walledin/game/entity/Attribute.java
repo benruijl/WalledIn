@@ -38,7 +38,7 @@ public enum Attribute {
 
     KEYS_DOWN(Set.class), WALK_ANIM_FRAME(Float.class), BOUNDING_RECT(
             Rectangle.class), BOUNDING_CIRCLE(Circle.class), Z_INDEX(
-            Integer.class), RENDER_TILE_SIZE(Float.class);
+            Integer.class), RENDER_TILE_SIZE(Float.class), LEFTMOUSEBUTTON_DOWN(Boolean.class);
 
     public final Class<?> clazz;
     public final boolean sendOverNetwork;

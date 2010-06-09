@@ -94,7 +94,7 @@ public class NetworkDataWriter {
 
     public void sendInputMessage(final DatagramChannel channel,
             final int version, final Set<Integer> keysDown,
-            final Vector2f mousePos) throws IOException {
+            final Vector2f mousePos, final Boolean mouseButtonDown) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);
@@ -105,6 +105,7 @@ public class NetworkDataWriter {
         }
         buffer.putFloat(mousePos.x);
         buffer.putFloat(mousePos.y);
+        buffer.putInt(mouseButtonDown ? 1 : 0);
         buffer.flip();
         channel.write(buffer);
     }

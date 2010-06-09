@@ -85,7 +85,8 @@ public class NetworkDataReader {
         }
         final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
                 .getFloat());
-        listener.receivedInputMessage(address, newVersion, keys, mousePos);
+        final Boolean mouseDown = buffer.getInt() != 0;
+        listener.receivedInputMessage(address, newVersion, keys, mousePos, mouseDown);
     }
 
     private void processLoginMessage(final SocketAddress address) {

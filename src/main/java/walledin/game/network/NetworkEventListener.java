@@ -34,5 +34,5 @@ public interface NetworkEventListener {
     void receivedLogoutMessage(SocketAddress address);
 
     void receivedInputMessage(SocketAddress address, int newVersion,
-            Set<Integer> keys, Vector2f mousePos);
+            Set<Integer> keys, Vector2f mousePos, Boolean mouseButtonDown);
 }

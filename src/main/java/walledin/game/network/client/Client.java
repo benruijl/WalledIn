@@ -159,7 +159,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         try {
             networkDataWriter.sendInputMessage(channel, receivedVersion, Input
                     .getInstance().getKeysDown(), renderer.screenToWorld(Input
-                    .getInstance().getMousePos()));
+                    .getInstance().getMousePos()), Input.getInstance().getMouseDown());
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
         }
@@ -180,7 +180,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     @Override
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
-            final Vector2f mousePos) {
+            final Vector2f mousePos, final Boolean mouseDown) {
         // ignore
     }
 
