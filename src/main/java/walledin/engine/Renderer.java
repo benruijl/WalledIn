@@ -504,10 +504,10 @@ public class Renderer implements GLEventListener {
      * Rotate the current matrix.
      * 
      * @param rad
-     *            Angle in <b>degrees</b>
+     *            Angle in <b>radians</b>
      */
     public void rotate(final float rad) {
-        gl.glRotatef(rad, 0, 0, 1);
+        gl.glRotatef((float) (rad * 180.0f / Math.PI), 0, 0, 1);
 
     }
 
