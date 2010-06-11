@@ -46,15 +46,31 @@ public class Font {
      * @author Ben Ruijl
      * 
      */
-    private class Glyph {
-        public int width;
-        public int height;
-        public int advance;
-        public int bearingX;
-        public int bearingY;
-        public int startX;
-        public int startY;
-        public char charCode;
+    private static class Glyph {
+        private final int width;
+        private final int height;
+        private final int advance;
+        private final int bearingX;
+        private final int bearingY;
+        private final int startX;
+        private final int startY;
+        private final char charCode;
+
+        public Glyph(final DataInputStream in) throws IOException {
+            width = toBigEndian(in.readInt());
+            height = toBigEndian(in.readInt());
+            advance = toBigEndian(in.readInt());
+            bearingX = toBigEndian(in.readInt());
+            bearingY = toBigEndian(in.readInt());
+            startX = toBigEndian(in.readInt());
+            startY = toBigEndian(in.readInt());
+
+            // try to read an UTF-8 char
+            final byte[] charCodeArray = new byte[4];
+            in.read(charCodeArray, 0, 4);
+            final String s = new String(charCodeArray, "UTF-8");
+            charCode = s.charAt(0);
+        }
     }
 
     private static final Logger LOG = Logger.getLogger(Font.class);
@@ -80,7 +96,7 @@ public class Font {
      *            little endian int
      * @return big endian int
      */
-    private int toBigEndian(final int i) {
+    private static int toBigEndian(final int i) {
 
         return ((i & 0xff) << 24) + ((i & 0xff00) << 8) + ((i & 0xff0000) >> 8)
                 + (i >> 24 & 0xff);
@@ -113,21 +129,7 @@ public class Font {
             glyphs = new HashMap<Character, Glyph>();
 
             for (int i = 0; i < glyphCount; i++) {
-                final Glyph gl = new Glyph();
-                gl.width = toBigEndian(in.readInt());
-                gl.height = toBigEndian(in.readInt());
-                gl.advance = toBigEndian(in.readInt());
-                gl.bearingX = toBigEndian(in.readInt());
-                gl.bearingY = toBigEndian(in.readInt());
-                gl.startX = toBigEndian(in.readInt());
-                gl.startY = toBigEndian(in.readInt());
-
-                // try to read an UTF-8 char
-                final byte[] charCode = new byte[4];
-                in.read(charCode, 0, 4);
-                final String s = new String(charCode, "UTF-8");
-                gl.charCode = s.charAt(0);
-
+                final Glyph gl = new Glyph(in);
                 glyphs.put(gl.charCode, gl);
             }
 
@@ -135,6 +137,7 @@ public class Font {
             width = toBigEndian(in.readInt());
             height = toBigEndian(in.readInt());
             final byte[] texBufArray = new byte[width * height * 2];
+            // FIXME: ignores the amount of lines read
             in.read(texBufArray, 0, width * height * 2);
 
             final TextureData texData = new TextureData(GL.GL_RGBA, width,
@@ -180,14 +183,15 @@ public class Font {
         final Texture tex = TextureManager.getInstance().get(name);
 
         // FIXME: calculate true texture positions somewhere else
-        renderer.drawRect(name, new Rectangle((glyph.startX + 0.500f)
-                / tex.getWidth(), (glyph.startY + 0.500f) / tex.getHeight(),
-                (glyph.width - 1.000f) / tex.getWidth(),
-                (glyph.height - 1.000f) / tex.getHeight()), new Rectangle(pos
-                .getX()
+        renderer.drawRect(name,
+                new Rectangle((glyph.startX + 0.500f) / tex.getWidth(),
+                        (glyph.startY + 0.500f) / tex.getHeight(),
+                        (glyph.width - 1.000f) / tex.getWidth(),
+                        (glyph.height - 1.000f) / tex.getHeight()),
+                new Rectangle(pos.getX()
 
                 + glyph.bearingX, pos.getY() - glyph.bearingY, glyph.width,
-                glyph.height));
+                        glyph.height));
 
         renderer.translate(new Vector2f(glyph.advance, 0));
     }

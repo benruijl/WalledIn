@@ -40,7 +40,8 @@ import walledin.engine.math.Vector2i;
  * 
  * @author ben
  */
-public final class Input implements KeyListener, MouseListener, MouseMotionListener {
+public final class Input implements KeyListener, MouseListener,
+        MouseMotionListener {
     private static final Logger LOG = Logger.getLogger(Input.class);
     private static Input ref = null;
     private final Set<Integer> keysDown;
@@ -119,32 +120,32 @@ public final class Input implements KeyListener, MouseListener, MouseMotionListe
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
+    public void mouseClicked(final MouseEvent e) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void mouseEntered(MouseEvent e) {
-        mousePos = new Vector2i(e.getX(), e.getY());   
+    public void mouseEntered(final MouseEvent e) {
+        mousePos = new Vector2i(e.getX(), e.getY());
     }
 
     @Override
-    public void mouseExited(MouseEvent e) {
+    public void mouseExited(final MouseEvent e) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
-    public void mousePressed(MouseEvent e) {
+    public void mousePressed(final MouseEvent e) {
         mouseDown = true;
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
-        mouseDown = false;        
+    public void mouseReleased(final MouseEvent e) {
+        mouseDown = false;
     }
-    
+
     public boolean getMouseDown() {
         return mouseDown;
     }

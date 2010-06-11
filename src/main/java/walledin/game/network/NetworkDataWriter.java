@@ -26,8 +26,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -94,7 +94,8 @@ public class NetworkDataWriter {
 
     public void sendInputMessage(final DatagramChannel channel,
             final int version, final Set<Integer> keysDown,
-            final Vector2f mousePos, final Boolean mouseButtonDown) throws IOException {
+            final Vector2f mousePos, final Boolean mouseButtonDown)
+            throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);

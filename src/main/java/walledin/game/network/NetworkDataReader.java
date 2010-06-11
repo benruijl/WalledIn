@@ -83,10 +83,11 @@ public class NetworkDataReader {
         for (int i = 0; i < numKeys; i++) {
             keys.add((int) buffer.getShort());
         }
-        final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
-                .getFloat());
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
+                buffer.getFloat());
         final Boolean mouseDown = buffer.getInt() != 0;
-        listener.receivedInputMessage(address, newVersion, keys, mousePos, mouseDown);
+        listener.receivedInputMessage(address, newVersion, keys, mousePos,
+                mouseDown);
     }
 
     private void processLoginMessage(final SocketAddress address) {
@@ -170,8 +171,7 @@ public class NetworkDataReader {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
 
-            entity = entityManager.create(Enum
-                    .valueOf(Family.class, familyName), name);
+            entityManager.create(Enum.valueOf(Family.class, familyName), name);
 
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
