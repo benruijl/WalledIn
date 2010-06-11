@@ -24,6 +24,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 /**
  * 
  * @author ben
@@ -93,6 +95,7 @@ public class Rectangle extends Geometry {
         return new Rectangle(vPos.x, vPos.y, width, height);
     }
 
+    @Override
     public Rectangle translate(final Vector2f vPos) {
         return new Rectangle(x + vPos.x, y + vPos.y, width, height);
     }
@@ -104,6 +107,12 @@ public class Rectangle extends Geometry {
     public Rectangle scaleAll(final Vector2f scale) {
         return new Rectangle(x * scale.getX(), y * scale.getY(), width
                 * scale.getX(), height * scale.getY());
+    }
+
+    @Override
+    public boolean intersects(final Geometry geometry) {
+        // uses double callback trick
+        return geometry.intersects(this);
     }
 
     @Override
@@ -127,8 +136,7 @@ public class Rectangle extends Geometry {
 
     @Override
     public Circle asInscribedCircle() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override

@@ -23,33 +23,21 @@ package walledin.game.entity;
 import java.util.List;
 import java.util.Set;
 
-import walledin.engine.math.Circle;
-import walledin.engine.math.Rectangle;
+import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
 
 public enum Attribute {
-    POSITION(Vector2f.class, true),
-    VELOCITY(Vector2f.class, true),
-    WIDTH(Integer.class, true),
-    HEIGHT(Integer.class, true),
-    TILES(List.class, true),
-    ITEM_LIST(List.class, true),
-    HEALTH(Integer.class, true),
-    PLAYER_NAME(String.class, true),
-    ORIENTATION(
+    POSITION(Vector2f.class, true), VELOCITY(Vector2f.class, true), WIDTH(
+            Integer.class, true), HEIGHT(Integer.class, true), TILES(
+            List.class, true), ITEM_LIST(List.class, true), HEALTH(
+            Integer.class, true), PLAYER_NAME(String.class, true), ORIENTATION(
 
-    Integer.class, true),
-    ACTIVE_WEAPON(Entity.class),
-    COLLECTABLE(Boolean.class),
-    CURSOR_POS(Vector2f.class),
+    Integer.class, true), ACTIVE_WEAPON(Entity.class), COLLECTABLE(
+            Boolean.class), CURSOR_POS(Vector2f.class),
 
-    KEYS_DOWN(Set.class),
-    WALK_ANIM_FRAME(Float.class),
-    BOUNDING_RECT(Rectangle.class),
-    BOUNDING_CIRCLE(Circle.class),
-    Z_INDEX(Integer.class),
-    RENDER_TILE_SIZE(Float.class),
-    LEFTMOUSEBUTTON_DOWN(Boolean.class);
+    KEYS_DOWN(Set.class), WALK_ANIM_FRAME(Float.class), BOUNDING_GEOMETRY(
+            Geometry.class), Z_INDEX(Integer.class), RENDER_TILE_SIZE(
+            Float.class), LEFTMOUSEBUTTON_DOWN(Boolean.class);
 
     public final Class<?> clazz;
     public final boolean sendOverNetwork;

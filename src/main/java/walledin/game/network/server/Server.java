@@ -68,7 +68,7 @@ public class Server implements NetworkEventListener {
     private final EntityManager entityManager;
     private final Queue<ChangeSet> changeSets;
     private final Map<Integer, ChangeSet> changeSetLookup;
-    private EntityFactory entityFactory;
+    private final EntityFactory entityFactory;
 
     /**
      * Creates a new server. Initializes variables to their default values.
@@ -331,13 +331,13 @@ public class Server implements NetworkEventListener {
         }
 
         try {
-           entityFactory.loadScript(Utils
+            entityFactory.loadScript(Utils
                     .getClasspathURL("entities/entities.groovy"));
             entityFactory.loadScript(Utils
                     .getClasspathURL("entities/serverentities.groovy"));
-        } catch (CompilationFailedException e) {
+        } catch (final CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.fatal("IOException during loading of scripts", e);
         }
         // initialize entity manager

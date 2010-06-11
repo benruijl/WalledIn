@@ -21,6 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity.behaviors.render;
 
 import walledin.engine.Renderer;
+import walledin.engine.math.Geometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ZValues;
@@ -41,11 +42,11 @@ public class ItemRenderBehavior extends RenderBehavior {
      * @param destRect
      */
     public ItemRenderBehavior(final Entity owner, final String texPart,
-            final Rectangle destRect) {
+            final Geometry destRect) {
         super(owner, ZValues.ITEM);
 
         this.texPart = texPart;
-        itemRect = destRect;
+        itemRect = destRect.asRectangle();
     }
 
     /**

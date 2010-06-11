@@ -29,10 +29,11 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class PlayerControlBehaviour extends SpatialBehavior {
+public class PlayerControlBehaviour extends Behavior {
     private static final Logger LOG = Logger
             .getLogger(PlayerControlBehaviour.class);
     private static final float MOVE_SPEED = 240.0f;
@@ -81,8 +82,6 @@ public class PlayerControlBehaviour extends SpatialBehavior {
                         + " does not have this attribute.");
             }
         }
-
-        super.onMessage(messageType, data);
     }
 
     @Override
@@ -142,7 +141,5 @@ public class PlayerControlBehaviour extends SpatialBehavior {
 
         getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
         canJump = false;
-
-        super.onUpdate(delta);
     }
 }

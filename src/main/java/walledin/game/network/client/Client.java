@@ -272,9 +272,9 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
                     .getClasspathURL("entities/entities.groovy"));
             entityFactory.loadScript(Utils
                     .getClasspathURL("entities/cliententities.groovy"));
-        } catch (CompilationFailedException e) {
+        } catch (final CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.fatal("IOException during loading of scripts", e);
         }
         // initialize entity manager

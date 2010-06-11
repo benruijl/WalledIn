@@ -3,6 +3,8 @@ package walledin.engine.math;
 import walledin.util.Utils;
 
 public abstract class Geometry {
+    public abstract boolean intersects(Geometry geometry);
+
     public abstract boolean intersects(Rectangle rect);
 
     public abstract boolean intersects(Circle circ);
@@ -24,4 +26,6 @@ public abstract class Geometry {
     public abstract Circle asCircumscribedCircle();
 
     public abstract Circle asInscribedCircle();
+
+    public abstract Geometry translate(final Vector2f pos);
 }

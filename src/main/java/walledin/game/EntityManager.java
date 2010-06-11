@@ -36,7 +36,6 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.network.server.ChangeSet;
-import walledin.util.Utils;
 
 public class EntityManager {
     private static final Logger LOG = Logger.getLogger(EntityManager.class);

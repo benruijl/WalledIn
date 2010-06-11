@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,18 +59,6 @@ public class DrawOrderManager {
         entities = new TreeSet<Entity>(new ZOrderComperator());
         addLater = new HashSet<Entity>();
         removeLater = new HashSet<Entity>();
-    }
-
-    /**
-     * Add a list of entities to a list sorted on z-index
-     * 
-     * @param Collection
-     *            of entities to be added
-     */
-    public void add(final Collection<Entity> entitiesList) {
-        for (final Entity en : entitiesList) {
-            add(en);
-        }
     }
 
     /**

@@ -69,8 +69,8 @@ public class EntityFactory {
             final Family family, final String entityName) {
         final Entity entity = new Entity(entityManager, family, entityName);
         boolean empty = true;
-        for (Map<Family, EntityFunction> map : maps) {
-            boolean result = callFunctions(family, entity, map);
+        for (final Map<Family, EntityFunction> map : maps) {
+            final boolean result = callFunctions(family, entity, map);
             empty = empty && result;
         }
         if (empty) {

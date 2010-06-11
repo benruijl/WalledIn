@@ -13,7 +13,7 @@ def texturePartManager = TexturePartManager.getInstance()
 def itemsTexture = "tex_items"
 textureManager.loadFromURL(Utils.getClasspathURL("game.png"), itemsTexture);
 
-texturePartManager.createTexturePart("foambullet", itemsTexture, new Rectangle(334, 213, 32, 32))
+texturePartManager.createTexturePart("foambullet", itemsTexture, new Rectangle(340, 212, 24, 24))
 texturePartManager.createTexturePart("handgunbullet", itemsTexture, new Rectangle(205, 152, 44, 22))
 texturePartManager.createTexturePart("armorkit", itemsTexture, new Rectangle(384, 64, 64, 64))
 texturePartManager.createTexturePart("healthkit", itemsTexture, new Rectangle(320, 64, 64, 64))
@@ -24,12 +24,9 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
 (Family.PLAYER): { Entity entity ->
     entity.setAttribute(Attribute.ORIENTATION, 1); // start looking to
     // the right
-
     entity.addBehavior(new PlayerAnimationBehavior(entity));
     // TODO: we should be able to define player texture here
     entity.addBehavior(new PlayerRenderBehavior(entity));
-    // spatial behavior does the interpolation in between server messages
-    entity.addBehavior(new SpatialBehavior(entity));
     entity.addBehavior(new PlayerParentBehavior(entity));
 } as EntityFunction,
 
@@ -41,13 +38,8 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
     entity.addBehavior(new MapRenderBehavior(entity));
 } as EntityFunction,
 
-(Family.BULLET): { entity ->
-    // spatial behavior does the interpolation in between server messages
-    entity.addBehavior(new SpatialBehavior(entity));
-} as EntityFunction,
-
 (Family.FOAMGUN_BULLET): { Entity entity ->
-    def destRect = new Rectangle(0, 0, 16, 16)
+    def destRect = new Circle(new Vector2f(8, 8), 8)
     entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
 } as EntityFunction,
 
@@ -57,7 +49,7 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
 } as EntityFunction,
 
 (Family.FOAM_PARTICLE): { Entity entity ->
-    def destRect = new Rectangle(0, 0, 32, 32)
+    def destRect = new Circle(new Vector2f(16, 16), 16)
     entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
 } as EntityFunction,
 
@@ -69,11 +61,6 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
 (Family.HEALTHKIT): { Entity entity ->
     def destRect = new Rectangle(0, 0, 32, 32)
     entity.addBehavior(new ItemRenderBehavior(entity, "healthkit", destRect));
-} as EntityFunction,
-
-(Family.WEAPON): { Entity entity ->
-    def destRect = new Rectangle(0, 0, 40, 21)
-    entity.addBehavior(new SpatialBehavior(entity));
 } as EntityFunction,
 
 (Family.HANDGUN): { Entity entity ->

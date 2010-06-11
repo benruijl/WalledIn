@@ -23,6 +23,7 @@ package walledin.game;
 import java.util.Collection;
 import java.util.List;
 
+import walledin.engine.math.Geometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
@@ -95,37 +96,23 @@ public class CollisionManager {
 
         for (int i = 0; i < entArray.length - 1; i++) {
             for (int j = i + 1; j < entArray.length; j++) {
-                if (!entArray[i].hasAttribute(Attribute.BOUNDING_RECT)
-                        || !entArray[j].hasAttribute(Attribute.BOUNDING_RECT)) {
+                if (!entArray[i].hasAttribute(Attribute.BOUNDING_GEOMETRY)
+                        || !entArray[j]
+                                .hasAttribute(Attribute.BOUNDING_GEOMETRY)) {
                     continue;
                 }
 
-                // TODO: test if faster
-                /*
-                 * Circle circA = (Circle) entArray[i]
-                 * .getAttribute(Attribute.BOUNDING_CIRCLE); Circle circB =
-                 * (Circle) entArray[j]
-                 * .getAttribute(Attribute.BOUNDING_CIRCLE);
-                 * 
-                 * circA = circA.addPos((Vector2f) entArray[i]
-                 * .getAttribute(Attribute.POSITION)); circB =
-                 * circB.addPos((Vector2f) entArray[j]
-                 * .getAttribute(Attribute.POSITION));
-                 * 
-                 * if (!circA.intersects(circB)) { continue; }
-                 */
+                Geometry boundsA = (Geometry) entArray[i]
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY);
+                Geometry rectB = (Geometry) entArray[j]
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY);
 
-                Rectangle rectA = (Rectangle) entArray[i]
-                        .getAttribute(Attribute.BOUNDING_RECT);
-                Rectangle rectB = (Rectangle) entArray[j]
-                        .getAttribute(Attribute.BOUNDING_RECT);
-
-                rectA = rectA.translate((Vector2f) entArray[i]
+                boundsA = boundsA.translate((Vector2f) entArray[i]
                         .getAttribute(Attribute.POSITION));
                 rectB = rectB.translate((Vector2f) entArray[j]
                         .getAttribute(Attribute.POSITION));
 
-                if (!rectA.intersects(rectB)) {
+                if (!boundsA.intersects(rectB)) {
                     continue;
                 }
 
@@ -149,7 +136,8 @@ public class CollisionManager {
                 .getAttribute(Attribute.RENDER_TILE_SIZE);
 
         for (final Entity ent : entities) {
-            if (ent.hasAttribute(Attribute.BOUNDING_RECT) && !ent.equals(map)) {
+            if (ent.hasAttribute(Attribute.BOUNDING_GEOMETRY)
+                    && !ent.equals(map)) {
 
                 Vector2f vel = (Vector2f) ent.getAttribute(Attribute.VELOCITY);
 
@@ -158,8 +146,9 @@ public class CollisionManager {
                 }
 
                 vel = vel.scale((float) delta); // velocity per frame
-                Rectangle rect = (Rectangle) ent
-                        .getAttribute(Attribute.BOUNDING_RECT);
+                final Geometry bounds = (Geometry) ent
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY);
+                Rectangle rect = bounds.asRectangle();
                 final Vector2f curPos = (Vector2f) ent
                         .getAttribute(Attribute.POSITION);
                 final Vector2f oldPos = curPos.sub(vel);

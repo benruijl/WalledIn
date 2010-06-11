@@ -59,6 +59,17 @@ public class Circle extends Geometry {
     }
 
     @Override
+    public Circle translate(final Vector2f pos) {
+        return new Circle(pos.add(pos), radius);
+    }
+
+    @Override
+    public boolean intersects(final Geometry geometry) {
+        // uses double callback trick
+        return geometry.intersects(this);
+    }
+
+    @Override
     public boolean intersects(final Circle circ) {
         return (getRadius() + circ.getRadius())
                 * (getRadius() + circ.getRadius()) >= getPos().sub(
@@ -87,8 +98,8 @@ public class Circle extends Geometry {
      */
     @Override
     public Rectangle asRectangle() {
-        return new Rectangle(pos.x - radius, pos.y - radius,
-                (float) Math.sqrt(2), (float) Math.sqrt(2));
+        return new Rectangle(pos.x - radius, pos.y - radius, 2 * radius,
+                2 * radius);
     }
 
 }
