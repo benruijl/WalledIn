@@ -74,13 +74,13 @@ public class CircleTest {
         final Circle circ1 = rect1.asCircumscribedCircle();
         final Circle circ2 = rect2.asCircumscribedCircle();
 
-        doPreformanceTest(rect1, rect2, circ1, circ2, 100000);
-        doPreformanceTest(rect1, rect2, circ1, circ2, 1000000);
-        doPreformanceTest(rect1, rect2, circ1, circ2, 10000000);
-        doPreformanceTest(rect1, rect2, circ1, circ2, 100000000);
-        doPreformanceTest(rect1, rect2, circ1, circ2, 10);
-        doPreformanceTest(rect1, rect2, circ1, circ2, 100);
-        doPreformanceTest(rect1, rect2, circ1, circ2, 1000);
+        // doPreformanceTest(rect1, rect2, circ1, circ2, 100000);
+        // doPreformanceTest(rect1, rect2, circ1, circ2, 1000000);
+        // doPreformanceTest(rect1, rect2, circ1, circ2, 10000000);
+        // doPreformanceTest(rect1, rect2, circ1, circ2, 100000000);
+        // doPreformanceTest(rect1, rect2, circ1, circ2, 10);
+        // doPreformanceTest(rect1, rect2, circ1, circ2, 100);
+        // k doPreformanceTest(rect1, rect2, circ1, circ2, 1000);
         doPreformanceTest(rect1, rect2, circ1, circ2, 10000);
 
     }

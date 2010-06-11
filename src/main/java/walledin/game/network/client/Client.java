@@ -163,7 +163,8 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         try {
             networkDataWriter.sendInputMessage(channel, receivedVersion, Input
                     .getInstance().getKeysDown(), renderer.screenToWorld(Input
-                    .getInstance().getMousePos()));
+                    .getInstance().getMousePos()), Input.getInstance()
+                    .getMouseDown());
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
         }
@@ -184,7 +185,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     @Override
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
-            final Vector2f mousePos) {
+            final Vector2f mousePos, final Boolean mouseDown) {
         // ignore
     }
 
@@ -212,8 +213,8 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         }
 
         /* Update cursor position */
-        cursor.setAttribute(Attribute.POSITION, renderer.screenToWorld(Input
-                .getInstance().getMousePos()));
+        cursor.setAttribute(Attribute.POSITION,
+                renderer.screenToWorld(Input.getInstance().getMousePos()));
 
         if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
             dispose();
@@ -243,10 +244,11 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
 
             final Entity player = entityManager.get(playerEntityName);
 
-            if (player != null)
-                font.renderText(renderer, "HP: "
-                        + (Integer) player.getAttribute(Attribute.HEALTH),
+            if (player != null) {
+                font.renderText(renderer,
+                        "HP: " + player.getAttribute(Attribute.HEALTH),
                         new Vector2f(600, 40));
+            }
 
             renderer.stopHUDRendering();
         }
@@ -311,43 +313,69 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         manager.createTexturePart("player_foot", "player", new Rectangle(192,
                 32, 96, 32));
         manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
-        manager.createTexturePart("tile_empty", "tiles",
+        manager.createTexturePart(
+                "tile_empty",
+                "tiles",
                 createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_filled", "tiles",
+        manager.createTexturePart(
+                "tile_filled",
+                "tiles",
                 createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_top_grass_end_left", "tiles",
+        manager.createTexturePart(
+                "tile_top_grass_end_left",
+                "tiles",
                 createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_top_grass_end_right", "tiles",
+        manager.createTexturePart(
+                "tile_top_grass_end_right",
+                "tiles",
                 createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_top_grass", "tiles",
+        manager.createTexturePart(
+                "tile_top_grass",
+                "tiles",
                 createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_left_grass", "tiles",
+        manager.createTexturePart(
+                "tile_left_grass",
+                "tiles",
                 createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_left_mud", "tiles",
+        manager.createTexturePart(
+                "tile_left_mud",
+                "tiles",
                 createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_right_mud", "tiles",
+        manager.createTexturePart(
+                "tile_right_mud",
+                "tiles",
                 createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_top_left_grass", "tiles",
+        manager.createTexturePart(
+                "tile_top_left_grass",
+                "tiles",
                 createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_bottom_left_mud", "tiles",
+        manager.createTexturePart(
+                "tile_bottom_left_mud",
+                "tiles",
                 createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_bottom_right_mud", "tiles",
+        manager.createTexturePart(
+                "tile_bottom_right_mud",
+                "tiles",
                 createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_top_left_grass_end", "tiles",
+        manager.createTexturePart(
+                "tile_top_left_grass_end",
+                "tiles",
                 createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart("tile_bottom_mud", "tiles",
+        manager.createTexturePart(
+                "tile_bottom_mud",
+                "tiles",
                 createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
     }

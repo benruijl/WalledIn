@@ -55,8 +55,20 @@ public class ItemRenderBehavior extends RenderBehavior {
      * @param renderer
      */
     private void render(final Renderer renderer) {
-        renderer.drawTexturePart(texPart, itemRect
-                .translate((Vector2f) getAttribute(Attribute.POSITION)));
+
+        renderer.pushMatrix();
+
+        renderer.translate((Vector2f) getAttribute(Attribute.POSITION));
+
+        if (getOwner().hasAttribute(Attribute.VELOCITY)) {
+            final Vector2f velocity = (Vector2f) getOwner().getAttribute(
+                    Attribute.VELOCITY);
+            renderer.rotate((float) Math.atan2(velocity.y, velocity.x));
+        }
+
+        renderer.drawTexturePart(texPart, itemRect);
+
+        renderer.popMatrix();
     }
 
     @Override

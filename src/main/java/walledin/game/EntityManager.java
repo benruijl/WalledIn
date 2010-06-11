@@ -153,7 +153,11 @@ public class EntityManager {
     }
 
     public Entity get(final String name) {
+        if (name == null) {
+            return null;
+        }
         return entities.get(name);
+
     }
 
     public void draw(final Renderer renderer) {

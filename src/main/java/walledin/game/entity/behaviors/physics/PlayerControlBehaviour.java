@@ -123,7 +123,16 @@ public class PlayerControlBehaviour extends SpatialBehavior {
                     Integer.valueOf(2));
         }
 
-        if (keysDown.contains(KeyEvent.VK_ENTER)) {
+        // change orientation if shooting in other directory
+        if (getAttribute(Attribute.LEFTMOUSEBUTTON_DOWN) == Boolean.TRUE) {
+            setAttribute(
+                    Attribute.ORIENTATION,
+                    ((Vector2f) getAttribute(Attribute.CURSOR_POS)).x < ((Vector2f) getAttribute(Attribute.POSITION)).x ? -1
+                            : 1);
+        }
+
+        if (keysDown.contains(KeyEvent.VK_ENTER)
+                || getAttribute(Attribute.LEFTMOUSEBUTTON_DOWN) == Boolean.TRUE) {
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                 final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
 

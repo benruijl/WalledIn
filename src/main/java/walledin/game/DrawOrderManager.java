@@ -33,10 +33,9 @@ import walledin.engine.Renderer;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
-import walledin.game.network.server.Server;
 
 public class DrawOrderManager {
-    private static final Logger LOG = Logger.getLogger(Server.class);
+    private static final Logger LOG = Logger.getLogger(DrawOrderManager.class);
 
     private static class ZOrderComperator implements Comparator<Entity> {
         @Override

@@ -174,9 +174,7 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG
-                        .info("Connection lost to client "
-                                + connection.getAddress());
+                LOG.info("Connection lost to client " + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {
@@ -283,7 +281,7 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
-            final Vector2f cursorPos) {
+            final Vector2f cursorPos, final Boolean mouseDown) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
             connection.setNew();
@@ -292,7 +290,10 @@ public class Server implements NetworkEventListener {
 
             // also send the received data to the player
             connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
-            connection.getPlayer().setAttribute(Attribute.CURSOR_POS, cursorPos);
+            connection.getPlayer()
+                    .setAttribute(Attribute.CURSOR_POS, cursorPos);
+            connection.getPlayer().setAttribute(Attribute.LEFTMOUSEBUTTON_DOWN,
+                    mouseDown);
             connection.setReceivedVersion(newVersion);
         }
     }
