@@ -23,6 +23,8 @@ package walledin.game;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Geometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -31,7 +33,15 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
 
+/**
+ * CollisionManager checks for collisions between all non-map entities and
+ * between entities and the map.
+ * 
+ * @author Ben Ruijl
+ * 
+ */
 public class CollisionManager {
+    private static final Logger LOG = Logger.getLogger(CollisionManager.class);
 
     public static class CollisionData {
         private final Vector2f newPos;
@@ -78,17 +88,43 @@ public class CollisionManager {
 
     }
 
+    /**
+     * Calculates the tile containing the point <code>pos</code>.
+     * 
+     * @param map
+     *            Map
+     * @param pos
+     *            The position
+     * @return The tile containing <code>pos</code>.
+     */
     private static Tile tileFromPixel(final Entity map, final Vector2f pos) {
         final float tileSize = (Float) map
                 .getAttribute(Attribute.RENDER_TILE_SIZE);
         final int width = (Integer) map.getAttribute(Attribute.WIDTH);
-
+        final int height = (Integer) map.getAttribute(Attribute.HEIGHT);
         final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
+        final int x = (int) (pos.getX() / tileSize);
+        final int y = (int) (pos.getY() / tileSize);
 
-        return tiles.get((int) (pos.x / tileSize) + width
-                * (int) (pos.y / tileSize));
+        if (x < 0 || x < 0 || x >= width || y >= height) {
+            LOG.fatal("Illegal tile requested! "
+                    + "Tried to access tile at coordinates (" + x + "," + y
+                    + "), but the boundaries are (0,0) - (" + width + ","
+                    + height + ").");
+        }
+
+        return tiles.get((int) (pos.getX() / tileSize) + width
+                * (int) (pos.getY() / tileSize));
     }
 
+    /**
+     * Performs collision detection between entities other than a map.
+     * 
+     * @param entities
+     *            Entities to check
+     * @param delta
+     *            Delta time, used for interpolation
+     */
     public static void calculateEntityCollisions(
             final Collection<Entity> entities, final double delta) {
         Entity[] entArray = new Entity[0];
@@ -101,6 +137,12 @@ public class CollisionManager {
                                 .hasAttribute(Attribute.BOUNDING_GEOMETRY)) {
                     continue;
                 }
+
+                if (entArray[j].getAttribute(Attribute.VELOCITY).equals(
+                        new Vector2f(0, 0))
+                        && entArray[i].getAttribute(Attribute.VELOCITY).equals(
+                                new Vector2f(0, 0)))
+                    continue;
 
                 Geometry boundsA = (Geometry) entArray[i]
                         .getAttribute(Attribute.BOUNDING_GEOMETRY);
@@ -130,6 +172,16 @@ public class CollisionManager {
         }
     }
 
+    /**
+     * Performs collision detection between entities and the map.
+     * 
+     * @param map
+     *            The map to check against
+     * @param entities
+     *            Entities in the map
+     * @param delta
+     *            Delta time, used for interpolation
+     */
     public static void calculateMapCollisions(final Entity map,
             final Collection<Entity> entities, final double delta) {
         final float tileSize = (Float) map
@@ -141,7 +193,8 @@ public class CollisionManager {
 
                 Vector2f vel = (Vector2f) ent.getAttribute(Attribute.VELOCITY);
 
-                if (vel.x == 0 && vel.y == 0) {
+                // skip static entities
+                if (vel.equals(new Vector2f(0, 0))) {
                     continue;
                 }
 
@@ -153,14 +206,14 @@ public class CollisionManager {
                         .getAttribute(Attribute.POSITION);
                 final Vector2f oldPos = curPos.sub(vel);
 
-                float x = curPos.x; // new x position after collision
-                float y = curPos.y; // new y position after collision
+                float x = curPos.getX(); // new x position after collision
+                float y = curPos.getY(); // new y position after collision
 
                 // small value to prevent floating errors
                 final float eps = 0.001f;
 
                 // VERTICAL CHECK - move vertically only
-                rect = rect.setPos(new Vector2f(oldPos.x, curPos.y));
+                rect = rect.setPos(new Vector2f(oldPos.getX(), curPos.getY()));
 
                 // check the four edges
                 Tile lt = tileFromPixel(map, rect.getLeftTop());
@@ -169,20 +222,20 @@ public class CollisionManager {
                 Tile rb = tileFromPixel(map, rect.getRightBottom());
 
                 // bottom check
-                if (vel.y > 0
+                if (vel.getY() > 0
                         && (lb.getType().isSolid() || rb.getType().isSolid())) {
                     final int rest = (int) (rect.getBottom() / tileSize);
                     y = rest * tileSize - rect.getHeight() - eps;
                 } else
                 // top check
-                if (vel.y < 0
+                if (vel.getY() < 0
                         && (lt.getType().isSolid() || rt.getType().isSolid())) {
                     final int rest = (int) (rect.getTop() / tileSize);
                     y = (rest + 1) * tileSize + eps;
                 }
 
                 // HORIZONTAL CHECK - move horizontally only
-                rect = rect.setPos(new Vector2f(curPos.x, y));
+                rect = rect.setPos(new Vector2f(curPos.getX(), y));
 
                 lt = tileFromPixel(map, rect.getLeftTop());
                 lb = tileFromPixel(map, rect.getLeftBottom());
@@ -190,25 +243,26 @@ public class CollisionManager {
                 rb = tileFromPixel(map, rect.getRightBottom());
 
                 // right check
-                if (vel.x > 0
+                if (vel.getX() > 0
                         && (rt.getType().isSolid() || rb.getType().isSolid())) {
                     final int rest = (int) (rect.getRight() / tileSize);
                     x = rest * tileSize - rect.getWidth() - eps;
                 } else
                 // left check
-                if (vel.x < 0
+                if (vel.getX() < 0
                         && (lt.getType().isSolid() || lb.getType().isSolid())) {
                     final int rest = (int) (rect.getLeft() / tileSize);
                     x = (rest + 1) * tileSize + eps;
                 }
 
                 ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-                ent.setAttribute(Attribute.VELOCITY, new Vector2f(x - oldPos.x,
-                        y - oldPos.y).scale((float) (1 / delta)));
+                ent.setAttribute(Attribute.VELOCITY, new Vector2f(x
+                        - oldPos.getX(), y - oldPos.getY())
+                        .scale((float) (1 / delta)));
 
                 // if there is no difference, there has been no collision
-                if (Math.abs(x - curPos.x) > 0.0001f
-                        || Math.abs(y - curPos.y) > 0.0001f) {
+                if (Math.abs(x - curPos.getX()) > eps
+                        || Math.abs(y - curPos.getY()) > eps) {
                     ent.sendMessage(MessageType.COLLIDED, new CollisionData(
                             new Vector2f(x, y), oldPos, curPos, map));
                 }

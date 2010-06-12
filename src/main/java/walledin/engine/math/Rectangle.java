@@ -92,12 +92,12 @@ public class Rectangle extends Geometry {
     }
 
     public Rectangle setPos(final Vector2f vPos) {
-        return new Rectangle(vPos.x, vPos.y, width, height);
+        return new Rectangle(vPos.getX(), vPos.getY(), width, height);
     }
 
     @Override
     public Rectangle translate(final Vector2f vPos) {
-        return new Rectangle(x + vPos.x, y + vPos.y, width, height);
+        return new Rectangle(x + vPos.getX(), y + vPos.getY(), width, height);
     }
 
     public Rectangle scaleSize(final Vector2f scale) {

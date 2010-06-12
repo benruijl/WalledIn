@@ -27,8 +27,10 @@ import walledin.util.Utils;
  * @author ben
  */
 public class Vector2f {
-    public final float x;
-    public final float y;
+    /** X component of the vector */
+    private final float x;
+    /** Y component of the vector */
+    private final float y;
 
     public Vector2f() {
         x = 0;

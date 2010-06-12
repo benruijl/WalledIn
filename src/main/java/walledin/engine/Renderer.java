@@ -529,7 +529,7 @@ public class Renderer implements GLEventListener {
      *            The point the camera will center around
      */
     public void centerAround(final Vector2f vec) {
-        mCam.setPos(new Vector2f(-vec.x + mWidth * 0.5f, -vec.y + mHeight
+        mCam.setPos(new Vector2f(-vec.getX() + mWidth * 0.5f, -vec.getY() + mHeight
                 * 0.5f));
     }
 
@@ -571,8 +571,8 @@ public class Renderer implements GLEventListener {
         // translation
         final Matrix2f invRot = new Matrix2f(mCam.getRot()).transpose();
         Vector2f vRes = invRot.apply(fp.sub(mCam.getPos()));
-        final float fSXZ = mCam.getScale().x;
-        final float fSXY = fSXZ * mCam.getScale().y;
+        final float fSXZ = mCam.getScale().getX();
+        final float fSXY = fSXZ * mCam.getScale().getY();
         final float fSYZ = 1.0f;
         final float fInvDet = 1.0f / (fSXY * fSXZ);
 

@@ -104,8 +104,8 @@ public class NetworkDataWriter {
         for (final int key : keysDown) {
             buffer.putShort((short) key);
         }
-        buffer.putFloat(mousePos.x);
-        buffer.putFloat(mousePos.y);
+        buffer.putFloat(mousePos.getX());
+        buffer.putFloat(mousePos.getY());
         buffer.putInt(mouseButtonDown ? 1 : 0);
         buffer.flip();
         channel.write(buffer);
@@ -206,7 +206,7 @@ public class NetworkDataWriter {
     }
 
     private void writeVector2fData(final Vector2f data, final ByteBuffer buffer) {
-        buffer.putFloat(data.x);
-        buffer.putFloat(data.y);
+        buffer.putFloat(data.getX());
+        buffer.putFloat(data.getY());
     }
 }
