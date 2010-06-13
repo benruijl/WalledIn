@@ -67,6 +67,8 @@ public class PlayerParentBehavior extends Behavior {
         case ORIENTATION:
             weapon.setAttribute(Attribute.ORIENTATION, or);
             break;
+        default:
+            break;
         }
 
     }

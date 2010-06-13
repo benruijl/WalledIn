@@ -131,7 +131,7 @@ public class CollisionManager {
         entArray = entities.toArray(entArray);
 
         for (int i = 0; i < entArray.length - 1; i++) {
-            for (int j = i + 1; j < entArray.length; j++) {
+            for (int j = i + 1; j < entArray.length; j++) {               
                 if (!entArray[i].hasAttribute(Attribute.BOUNDING_GEOMETRY)
                         || !entArray[j]
                                 .hasAttribute(Attribute.BOUNDING_GEOMETRY)) {
@@ -141,20 +141,21 @@ public class CollisionManager {
                 if (entArray[j].getAttribute(Attribute.VELOCITY).equals(
                         new Vector2f(0, 0))
                         && entArray[i].getAttribute(Attribute.VELOCITY).equals(
-                                new Vector2f(0, 0)))
+                                new Vector2f(0, 0))) {
                     continue;
+                }
 
                 Geometry boundsA = (Geometry) entArray[i]
                         .getAttribute(Attribute.BOUNDING_GEOMETRY);
-                Geometry rectB = (Geometry) entArray[j]
+                Geometry boundsB = (Geometry) entArray[j]
                         .getAttribute(Attribute.BOUNDING_GEOMETRY);
 
                 boundsA = boundsA.translate((Vector2f) entArray[i]
                         .getAttribute(Attribute.POSITION));
-                rectB = rectB.translate((Vector2f) entArray[j]
+                boundsB = boundsB.translate((Vector2f) entArray[j]
                         .getAttribute(Attribute.POSITION));
 
-                if (!boundsA.intersects(rectB)) {
+                if (!boundsA.intersects(boundsB)) {
                     continue;
                 }
 
@@ -163,11 +164,18 @@ public class CollisionManager {
                 final Vector2f posB = (Vector2f) entArray[j]
                         .getAttribute(Attribute.POSITION);
 
-                // no response yet, so give the same data
+                final Vector2f velA = ((Vector2f) entArray[i]
+                        .getAttribute(Attribute.VELOCITY)).scale((float) delta);
+                final Vector2f velB = ((Vector2f) entArray[j]
+                        .getAttribute(Attribute.VELOCITY)).scale((float) delta);
+
+                final Vector2f oldPosA = posA.sub(velA);
+                final Vector2f oldPosB = posB.sub(velB);
+
                 entArray[i].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posA, posA, posA, entArray[j]));
+                        new CollisionData(posA, oldPosA, posA, entArray[j]));
                 entArray[j].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posB, posB, posB, entArray[i]));
+                        new CollisionData(posB, oldPosB, posB, entArray[i]));
             }
         }
     }

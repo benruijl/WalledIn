@@ -67,9 +67,13 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                             + weapon.getFamily().toString());
 
                     if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
-                        getOwner()
-                                .setAttribute(Attribute.ACTIVE_WEAPON, weapon);
+                        setAttribute(Attribute.ACTIVE_WEAPON, weapon);
+
+                        // set some attributes for the weapon
+                        weapon.setAttribute(Attribute.ORIENTATION,
+                                getAttribute(Attribute.ORIENTATION));
                     } else {
+                        // remove weapon if picked up
                         weapon.remove();
                     }
 
@@ -85,9 +89,16 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                 getEntityManager().add(weapon);
 
                 final Entity oldWeapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
-                oldWeapon.remove();
+                
+                if (oldWeapon != null) {
+                    oldWeapon.remove();
+                }
 
                 setAttribute(Attribute.ACTIVE_WEAPON, weapon);
+
+                // set some attributes for the weapon
+                weapon.setAttribute(Attribute.ORIENTATION,
+                        getAttribute(Attribute.ORIENTATION));
             }
         }
     }

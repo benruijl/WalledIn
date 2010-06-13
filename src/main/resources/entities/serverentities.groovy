@@ -15,6 +15,7 @@ import walledin.game.entity.behaviors.physics.*
     entity.addBehavior(new PlayerParentBehavior(entity));
     entity.addBehavior(new PhysicsBehavior(entity));
     entity.addBehavior(new PlayerWeaponInventoryBehavior(entity));
+    //entity.addBehavior(new StandardCollisionResponseBehavior(entity));
 
     // FIXME correct the drawing instead of the hack the bounding box
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY,
