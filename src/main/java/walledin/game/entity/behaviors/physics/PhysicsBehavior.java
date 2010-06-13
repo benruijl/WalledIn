@@ -30,6 +30,8 @@ import walledin.game.entity.MessageType;
 
 public class PhysicsBehavior extends Behavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
+    
+    private final float mass; // mass of object
     private final Vector2f gravity; // acceleration of gravity
     private final float frictionCoefficient; // part of the velocity that is
     // kept
@@ -37,17 +39,25 @@ public class PhysicsBehavior extends Behavior {
     private Vector2f velocity;
     private Vector2f acceleration = new Vector2f(0, 0);
 
-    public PhysicsBehavior(final Entity owner) {
-        this(owner, true, true);
+    public PhysicsBehavior(final Entity owner, final float mass) {
+        this(owner, mass, true, true);
     }
 
-    public PhysicsBehavior(final Entity owner, final boolean doGravity,
+    public PhysicsBehavior(final Entity owner, final float mass, final boolean doGravity,
             final boolean doFriction) {
         super(owner);
-        position = new Vector2f();
-        velocity = new Vector2f();
-        setAttribute(Attribute.POSITION, position); // create attribute
-        setAttribute(Attribute.VELOCITY, velocity);
+
+        if (mass == 0)
+            LOG.warn("Mass of " + getOwner().getName() + " is 0. Applying a force will give an infinite acceleration.");
+        
+        this.mass = mass;
+        
+        
+        setAttribute(Attribute.POSITION, new Vector2f());
+        setAttribute(Attribute.VELOCITY, new Vector2f());
+        position = (Vector2f) getAttribute(Attribute.POSITION);
+        velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
+        
         if (doGravity) {
             gravity = new Vector2f(0, 300.0f);
         } else {
@@ -63,7 +73,7 @@ public class PhysicsBehavior extends Behavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.APPLY_FORCE) {
-            acceleration = acceleration.add((Vector2f) data);
+            acceleration = acceleration.add(((Vector2f) data).scale(1 / mass));
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attribute = (Attribute) data;
             switch (attribute) {

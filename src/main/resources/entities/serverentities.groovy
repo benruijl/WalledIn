@@ -13,7 +13,7 @@ import walledin.game.entity.behaviors.physics.*
     entity.addBehavior(new HealthBehavior(entity, 100, 100));
     entity.addBehavior(new PlayerControlBehaviour(entity));
     entity.addBehavior(new PlayerParentBehavior(entity));
-    entity.addBehavior(new PhysicsBehavior(entity));
+    entity.addBehavior(new PhysicsBehavior(entity, 1));
     entity.addBehavior(new PlayerWeaponInventoryBehavior(entity));
     //entity.addBehavior(new StandardCollisionResponseBehavior(entity));
 
@@ -28,14 +28,14 @@ import walledin.game.entity.behaviors.physics.*
 
 (Family.FOAMGUN_BULLET): { Entity entity ->
     def destRect = new Circle(new Vector2f(8, 8), 8)
-    entity.addBehavior(new PhysicsBehavior(entity, false, false));
+    entity.addBehavior(new PhysicsBehavior(entity, 0.5, false, false));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.addBehavior(new FoamBulletBehavior(entity));
 } as EntityFunction,
 
 (Family.HANDGUN_BULLET): { Entity entity ->
     def destRect = new Rectangle(0, 0, 22, 11)
-    entity.addBehavior(new PhysicsBehavior(entity, false, false));
+    entity.addBehavior(new PhysicsBehavior(entity, 0.5, false, false));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.addBehavior(new BulletBehavior(entity,10));
 } as EntityFunction,
@@ -47,7 +47,7 @@ import walledin.game.entity.behaviors.physics.*
 } as EntityFunction,
 
 (Family.ITEM): { Entity entity ->
-    entity.addBehavior(new PhysicsBehavior(entity));
+    entity.addBehavior(new PhysicsBehavior(entity, 10)); // every item weighs the same
 } as EntityFunction,
 
 (Family.ARMOURKIT): { Entity entity ->
