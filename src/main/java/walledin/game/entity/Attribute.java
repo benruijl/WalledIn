@@ -33,7 +33,7 @@ public enum Attribute {
             Integer.class, true), PLAYER_NAME(String.class, true), ORIENTATION(
 
     Integer.class, true), ACTIVE_WEAPON(Entity.class), COLLECTABLE(
-            Boolean.class), CURSOR_POS(Vector2f.class),
+            Boolean.class), CURSOR_POS(Vector2f.class), MASS(Float.class),
 
     KEYS_DOWN(Set.class), WALK_ANIM_FRAME(Float.class), BOUNDING_GEOMETRY(
             Geometry.class), Z_INDEX(Integer.class), RENDER_TILE_SIZE(

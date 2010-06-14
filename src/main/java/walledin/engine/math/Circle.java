@@ -46,10 +46,6 @@ public class Circle extends Geometry {
         this.pos = pos;
     }
 
-    public Circle addPos(final Vector2f pos) {
-        return new Circle(this.pos.add(pos), radius);
-    }
-
     public void setRadius(final float radius) {
         this.radius = radius;
     }
@@ -60,7 +56,7 @@ public class Circle extends Geometry {
 
     @Override
     public Circle translate(final Vector2f pos) {
-        return new Circle(pos.add(pos), radius);
+        return new Circle(this.pos.add(pos), radius);
     }
 
     @Override
