@@ -39,15 +39,17 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.screens.GameScreen;
+import walledin.game.screens.Screen;
+import walledin.game.screens.ScreenManager;
+import walledin.game.screens.Screen.ScreenState;
 import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener, Runnable {
@@ -56,10 +58,11 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     private static final int TILE_SIZE = 64;
     private static final int TILES_PER_LINE = 16;
 
-    private Font font;
     private final Renderer renderer; // current renderer
-    private final EntityManager entityManager;
-    private final EntityFactory entityFactory;
+    private final ScreenManager screenManager;
+    private Screen gameScreen;
+    //private final EntityManager entityManager;
+   // private final EntityFactory entityFactory;
     private final SocketAddress host;
     private final String username;
     private Entity cursor;
@@ -79,8 +82,10 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
      */
     public Client(final Renderer renderer) throws IOException {
         this.renderer = renderer;
-        entityFactory = new EntityFactory();
-        entityManager = new EntityManager(entityFactory);
+        screenManager = new ScreenManager();
+        
+        //entityFactory = new EntityFactory();
+        //entityManager = new EntityManager(entityFactory);
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
         quitting = false;
@@ -138,7 +143,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         while (!quitting) {
             // Read messages. Locks on the entitymanager to prevent renderer or
             // update from being preformed half way
-            networkDataReader.recieveMessage(channel, entityManager);
+            networkDataReader.recieveMessage(channel, screenManager.getEntityManager());
         }
         // write logout message
         networkDataWriter.sendLogoutMessage(channel);
@@ -198,13 +203,13 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     @Override
     public void update(final double delta) {
         // prevent network from coming in between
-        synchronized (entityManager) {
+        synchronized (screenManager.getEntityManager()) {
             /* Update all entities */
-            entityManager.update(delta);
+            screenManager.getEntityManager().update(delta);
 
             /* Center the camera around the player */
             if (playerEntityName != null) {
-                final Entity player = entityManager.get(playerEntityName);
+                final Entity player = screenManager.getEntityManager().get(playerEntityName);
                 if (player != null) {
                     renderer.centerAround((Vector2f) player
                             .getAttribute(Attribute.POSITION));
@@ -229,29 +234,11 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     }
 
     /**
-     * Render the current game state
+     * Render the current gamestate.
      */
     @Override
     public void draw(final Renderer renderer) {
-        // prevent network from coming in between
-        synchronized (entityManager) {
-            entityManager.draw(renderer); // draw all entities in correct order
-
-            /* Render current FPS */
-            renderer.startHUDRendering();
-            font.renderText(renderer, "FPS: " + renderer.getFPS(),
-                    new Vector2f(600, 20));
-
-            final Entity player = entityManager.get(playerEntityName);
-
-            if (player != null) {
-                font.renderText(renderer,
-                        "HP: " + player.getAttribute(Attribute.HEALTH),
-                        new Vector2f(600, 40));
-            }
-
-            renderer.stopHUDRendering();
-        }
+        screenManager.draw(renderer);
     }
 
     /**
@@ -263,14 +250,21 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         loadTextures();
         createTextureParts();
 
-        font = new Font(); // load font
-
+        /* Load standard font */
+        Font font = new Font();
         font.readFromStream(Utils.getClasspathURL("arial20.font"));
+        screenManager.addFont("arial20", font);
+        
+        /* Create game screen and add it to the screen manager. */
+        gameScreen = new GameScreen();
+        gameScreen.setState(ScreenState.Visible);
+        screenManager.addScreen(gameScreen);
+        
 
         try {
-            entityFactory.loadScript(Utils
+            screenManager.getEntityFactory().loadScript(Utils
                     .getClasspathURL("entities/entities.groovy"));
-            entityFactory.loadScript(Utils
+            screenManager.getEntityFactory().loadScript(Utils
                     .getClasspathURL("entities/cliententities.groovy"));
         } catch (final CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
@@ -278,13 +272,13 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
             LOG.fatal("IOException during loading of scripts", e);
         }
         // initialize entity manager
-        entityManager.init();
+        screenManager.getEntityManager().init();
 
         // Background is not created by server (not yet anyway)
-        entityManager.create(Family.BACKGROUND, "Background");
+        screenManager.getEntityManager().create(Family.BACKGROUND, "Background");
 
         // create cursor
-        cursor = entityManager.create(Family.CURSOR, "cursor");
+        cursor = screenManager.getEntityManager().create(Family.CURSOR, "cursor");
 
         LOG.info("starting network thread");
         // start network thread

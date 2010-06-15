@@ -22,6 +22,11 @@ public abstract class Screen {
 
     /** Active flag */
     protected boolean active;
+    
+    /**
+     * Called when screen is created.
+     */
+    abstract public void initialize();
 
     /**
      * Updates the screen.
@@ -64,5 +69,9 @@ public abstract class Screen {
      */
     public void registerScreenManager(final ScreenManager manager) {
         this.manager = manager;
+    }
+    
+    public ScreenManager getManager() {
+        return manager;
     }
 }
