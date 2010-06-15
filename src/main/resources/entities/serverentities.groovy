@@ -27,7 +27,7 @@ import walledin.game.entity.behaviors.physics.*
 } as EntityFunction,
 
 (Family.FOAMGUN_BULLET): { Entity entity ->
-    def destRect = new Circle(new Vector2f(8, 8), 20)
+    def destRect = new Circle(new Vector2f(8, 8), 8)
     entity.addBehavior(new PhysicsBehavior(entity, 0.5, false, false));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.addBehavior(new FoamBulletBehavior(entity));
