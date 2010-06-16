@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network.client;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -39,7 +38,6 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
@@ -61,11 +59,8 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     private final Renderer renderer; // current renderer
     private final ScreenManager screenManager;
     private Screen gameScreen;
-    //private final EntityManager entityManager;
-   // private final EntityFactory entityFactory;
     private final SocketAddress host;
     private final String username;
-    private Entity cursor;
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
@@ -82,7 +77,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
      */
     public Client(final Renderer renderer) throws IOException {
         this.renderer = renderer;
-        screenManager = new ScreenManager();
+        screenManager = new ScreenManager(this, renderer);
         
         //entityFactory = new EntityFactory();
         //entityManager = new EntityManager(entityFactory);
@@ -137,12 +132,16 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         LOG.debug("Connection MTU: " + networkInterface.getMTU());
         playerEntityName = NetworkConstants.getAddressRepresentation(channel
                 .socket().getLocalSocketAddress());
+        
+        // Register player entity name with screen manager
+        screenManager.setPlayerName(playerEntityName);
+        
         LOG.debug(playerEntityName);
         networkDataWriter.sendLoginMessage(channel, username);
         LOG.info("starting network loop");
         while (!quitting) {
-            // Read messages. Locks on the entitymanager to prevent renderer or
-            // update from being preformed half way
+            // Read messages. Locks on the entity manager to prevent renderer or
+            // update from being performed half way
             networkDataReader.recieveMessage(channel, screenManager.getEntityManager());
         }
         // write logout message
@@ -202,35 +201,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
      */
     @Override
     public void update(final double delta) {
-        // prevent network from coming in between
-        synchronized (screenManager.getEntityManager()) {
-            /* Update all entities */
-            screenManager.getEntityManager().update(delta);
-
-            /* Center the camera around the player */
-            if (playerEntityName != null) {
-                final Entity player = screenManager.getEntityManager().get(playerEntityName);
-                if (player != null) {
-                    renderer.centerAround((Vector2f) player
-                            .getAttribute(Attribute.POSITION));
-                }
-            }
-        }
-
-        /* Update cursor position */
-        cursor.setAttribute(Attribute.POSITION,
-                renderer.screenToWorld(Input.getInstance().getMousePos()));
-
-        if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
-            dispose();
-            return;
-        }
-
-        /* Toggle full screen, current not working correctly */
-        if (Input.getInstance().isKeyDown(KeyEvent.VK_F1)) {
-            renderer.toggleFullScreen();
-            Input.getInstance().setKeyUp(KeyEvent.VK_F1);
-        }
+        screenManager.update(delta);
     }
 
     /**
@@ -278,7 +249,9 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         screenManager.getEntityManager().create(Family.BACKGROUND, "Background");
 
         // create cursor
-        cursor = screenManager.getEntityManager().create(Family.CURSOR, "cursor");
+        Entity cursor = screenManager.getEntityManager().create(Family.CURSOR, "cursor");
+        screenManager.setCursor(cursor);
+        
 
         LOG.info("starting network thread");
         // start network thread

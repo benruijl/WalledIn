@@ -8,7 +8,9 @@ import java.util.Map;
 import walledin.engine.Font;
 import walledin.engine.Renderer;
 import walledin.game.EntityManager;
+import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
+import walledin.game.network.client.Client;
 import walledin.game.screens.Screen.ScreenState;
 
 public class ScreenManager {
@@ -20,18 +22,31 @@ public class ScreenManager {
     private final EntityFactory entityFactory;
     /** Map of shared fonts */
     private final Map<String, Font> fonts;
+    /** Shared cursor */
+    private Entity cursor;
+    /** Shared renderer */
+    private final Renderer renderer;
     /** Player name */
     private String playerName;
+    /**
+     * Client using this screen manager. Useful for quitting the application.
+     */
+    private final Client client;
 
     /**
      * Creates a screen manager.
+     * 
+     * @param renderer
+     *            Renderer used by screen manager
      */
-    public ScreenManager() {
+    public ScreenManager(final Client client, final Renderer renderer) {
         screens = new ArrayList<Screen>();
         fonts = new HashMap<String, Font>();
-
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
+
+        this.client = client;
+        this.renderer = renderer;
     }
 
     public EntityManager getEntityManager() {
@@ -41,24 +56,38 @@ public class ScreenManager {
     public EntityFactory getEntityFactory() {
         return entityFactory;
     }
-    
+
     /**
-     * Registers the name of the player. Useful when the player object is needed.
-     * @param name Name of player
+     * Gets the renderer associated with all screens.
+     * 
+     * @return Renderer
+     */
+    public Renderer getRenderer() {
+        return renderer;
+    }
+
+    /**
+     * Registers the name of the player. Useful when the player object is
+     * needed.
+     * 
+     * @param name
+     *            Name of player
      */
     public void setPlayerName(String name) {
         playerName = name;
     }
-    
+
     public String getPlayerName() {
         return playerName;
-    } 
-    
-    
+    }
+
     /**
      * Adds font to shared list.
-     * @param name Name of font
-     * @param font Font object
+     * 
+     * @param name
+     *            Name of font
+     * @param font
+     *            Font object
      */
     public void addFont(String name, Font font) {
         fonts.put(name, font);
@@ -109,5 +138,20 @@ public class ScreenManager {
         for (Screen screen : screens)
             if (screen.getState() == ScreenState.Visible)
                 screen.draw(renderer);
+    }
+
+    public Entity getCursor() {
+        return cursor;
+    }
+
+    public void setCursor(Entity cursor) {
+        this.cursor = cursor;
+    }
+
+    /**
+     * Kill the application. Sends the dispose message to the client.
+     */
+    public void dispose() {
+        client.dispose();
     }
 }
