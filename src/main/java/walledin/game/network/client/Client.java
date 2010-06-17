@@ -46,8 +46,8 @@ import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.screens.GameScreen;
 import walledin.game.screens.Screen;
-import walledin.game.screens.ScreenManager;
 import walledin.game.screens.Screen.ScreenState;
+import walledin.game.screens.ScreenManager;
 import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener {
@@ -64,7 +64,6 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
-    private String playerEntityName;
     private boolean quitting = false;
     private int receivedVersion = 0;
     private long lastLoginTry;
@@ -175,10 +174,10 @@ public class Client implements RenderListener, NetworkEventListener {
             }
             // Read messages.
             boolean hasMore = networkDataReader.recieveMessage(channel,
-                    entityManager);
+                    screenManager.getEntityManager());
             while (hasMore) {
                 hasMore = networkDataReader.recieveMessage(channel,
-                        entityManager);
+                        screenManager.getEntityManager());
             }
         } catch (PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
@@ -245,9 +244,11 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             channel.configureBlocking(false);
             channel.connect(host);
-            playerEntityName = NetworkConstants
+            
+            String playerEntityName = NetworkConstants
                     .getAddressRepresentation(channel.socket()
                             .getLocalSocketAddress());
+            screenManager.setPlayerName(playerEntityName);
         } catch (PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
             dispose();
