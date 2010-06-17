@@ -23,7 +23,7 @@ package walledin.game.network.client;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
+import java.net.PortUnreachableException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.util.Set;
@@ -50,7 +50,7 @@ import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.util.Utils;
 
-public class Client implements RenderListener, NetworkEventListener, Runnable {
+public class Client implements RenderListener, NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(Client.class);
     private static final int PORT = 1234;
     private static final int TILE_SIZE = 64;
@@ -69,6 +69,9 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     private String playerEntityName;
     private boolean quitting = false;
     private int receivedVersion = 0;
+    private long lastLoginTry;
+    // in millisec
+    private long LOGIN_RETRY_TIME = 1000;
 
     /**
      * Create the client
@@ -84,6 +87,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
         quitting = false;
+        lastLoginTry = System.currentTimeMillis();
         // Hardcode the host and username for now
         host = new InetSocketAddress("localhost", PORT);
         username = System.getProperty("user.name");
@@ -108,53 +112,17 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
     }
 
     /**
-     * Run network code
-     */
-    @Override
-    public void run() {
-        try {
-            doRun();
-        } catch (final IOException e) {
-            LOG.fatal("IOException during network loop", e);
-        }
-    }
-
-    /**
-     * Do the actual network loop.
-     * 
-     * @throws IOException
-     */
-    private void doRun() throws IOException {
-        channel.configureBlocking(true);
-        channel.connect(host);
-        final NetworkInterface networkInterface = NetworkInterface
-                .getByInetAddress(channel.socket().getLocalAddress());
-        LOG.debug("Connection MTU: " + networkInterface.getMTU());
-        playerEntityName = NetworkConstants.getAddressRepresentation(channel
-                .socket().getLocalSocketAddress());
-        LOG.debug(playerEntityName);
-        networkDataWriter.sendLoginMessage(channel, username);
-        LOG.info("starting network loop");
-        while (!quitting) {
-            // Read messages. Locks on the entitymanager to prevent renderer or
-            // update from being preformed half way
-            networkDataReader.recieveMessage(channel, entityManager);
-        }
-        // write logout message
-        networkDataWriter.sendLogoutMessage(channel);
-    }
-
-    /**
      * Called when the gamestate has been updated. We only send a new input when
      * we receive the net game state
      */
     @Override
     public boolean receivedGamestateMessage(final SocketAddress address,
             final int oldVersion, final int newVersion) {
+        lastLoginTry = -1;
         boolean result = false;
         if (LOG.isTraceEnabled()) {
             LOG.trace("version:" + newVersion + " receivedVersion:"
-                    + receivedVersion);
+                    + receivedVersion + " oldversion: " + oldVersion);
         }
         if (receivedVersion == oldVersion && newVersion > receivedVersion) {
             receivedVersion = newVersion;
@@ -167,6 +135,7 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
                     .getMouseDown());
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
+            dispose();
         }
         return result;
     }
@@ -197,18 +166,37 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
      */
     @Override
     public void update(final double delta) {
-        // prevent network from coming in between
-        synchronized (entityManager) {
-            /* Update all entities */
-            entityManager.update(delta);
+        // network stuff
+        try {
+            if (lastLoginTry >= 0
+                    && ((System.currentTimeMillis() - lastLoginTry) > LOGIN_RETRY_TIME)) {
+                lastLoginTry = System.currentTimeMillis();
+                networkDataWriter.sendLoginMessage(channel, username);
+            }
+            // Read messages.
+            boolean hasMore = networkDataReader.recieveMessage(channel,
+                    entityManager);
+            while (hasMore) {
+                hasMore = networkDataReader.recieveMessage(channel,
+                        entityManager);
+            }
+        } catch (PortUnreachableException e) {
+            LOG.fatal("Could not connect to server. PortUnreachableException");
+            dispose();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
-            /* Center the camera around the player */
-            if (playerEntityName != null) {
-                final Entity player = entityManager.get(playerEntityName);
-                if (player != null) {
-                    renderer.centerAround((Vector2f) player
-                            .getAttribute(Attribute.POSITION));
-                }
+        /* Update all entities */
+        entityManager.update(delta);
+
+        /* Center the camera around the player */
+        if (playerEntityName != null) {
+            final Entity player = entityManager.get(playerEntityName);
+            if (player != null) {
+                renderer.centerAround((Vector2f) player
+                        .getAttribute(Attribute.POSITION));
             }
         }
 
@@ -274,8 +262,10 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
                     .getClasspathURL("entities/cliententities.groovy"));
         } catch (final CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
+            dispose();
         } catch (final IOException e) {
             LOG.fatal("IOException during loading of scripts", e);
+            dispose();
         }
         // initialize entity manager
         entityManager.init();
@@ -286,10 +276,20 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         // create cursor
         cursor = entityManager.create(Family.CURSOR, "cursor");
 
-        LOG.info("starting network thread");
-        // start network thread
-        final Thread thread = new Thread(this, "network");
-        thread.start();
+        LOG.info("configure network channel");
+        try {
+            channel.configureBlocking(false);
+            channel.connect(host);
+            playerEntityName = NetworkConstants
+                    .getAddressRepresentation(channel.socket()
+                            .getLocalSocketAddress());
+        } catch (PortUnreachableException e) {
+            LOG.fatal("Could not connect to server. PortUnreachableException");
+            dispose();
+        } catch (IOException e) {
+            LOG.fatal("IOException", e);
+            dispose();
+        }
     }
 
     private void loadTextures() {
@@ -391,6 +391,11 @@ public class Client implements RenderListener, NetworkEventListener, Runnable {
         if (!quitting) {
             quitting = true;
             renderer.dispose();
+            try {
+                networkDataWriter.sendLogoutMessage(channel);
+            } catch (IOException e) {
+                LOG.fatal("IOException during logout", e);
+            }
         }
     }
 }

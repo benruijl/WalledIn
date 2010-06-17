@@ -68,10 +68,8 @@ public class NetworkDataReader {
                 oldVersion, newVersion);
         boolean hasMore = true;
         if (process) {
-            synchronized (entityManager) {
-                while (hasMore) {
-                    hasMore = readEntityData(entityManager, buffer);
-                }
+            while (hasMore) {
+                hasMore = readEntityData(entityManager, buffer);
             }
         }
     }
