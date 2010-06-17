@@ -1,10 +1,7 @@
 package walledin.game.screens;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import walledin.engine.Font;
 import walledin.engine.Renderer;
 import walledin.game.EntityManager;
@@ -15,7 +12,7 @@ import walledin.game.screens.Screen.ScreenState;
 
 public class ScreenManager {
     /** List of screens */
-    private List<Screen> screens;
+    private Map<ScreenType, Screen> screens;
     /** Entity list of all screens together */
     private final EntityManager entityManager;
     /** Client entity factory */
@@ -40,7 +37,7 @@ public class ScreenManager {
      *            Renderer used by screen manager
      */
     public ScreenManager(final Client client, final Renderer renderer) {
-        screens = new ArrayList<Screen>();
+        screens = new HashMap<ScreenType, Screen>();
         fonts = new HashMap<String, Font>();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
@@ -110,9 +107,18 @@ public class ScreenManager {
      * @param screen
      *            Screen to add
      */
-    public void addScreen(Screen screen) {
-        screens.add(screen);
+    public void addScreen(ScreenType type, Screen screen) {
+        screens.put(type, screen);
         screen.registerScreenManager(this);
+    }
+    
+    /**
+     * Fetch a screen from the list.
+     * @param type Type of requested screen
+     * @return Screen if exists, else null
+     */
+    public Screen getScreen(ScreenType type) {
+        return screens.get(type);
     }
 
     /**
@@ -122,7 +128,7 @@ public class ScreenManager {
      *            Delta time
      */
     public void update(double delta) {
-        for (Screen screen : screens)
+        for (Screen screen : screens.values())
             screen.update(delta);
 
         // TODO: always update every screen or make selection?
@@ -135,7 +141,7 @@ public class ScreenManager {
      *            Renderer to draw with
      */
     public void draw(Renderer renderer) {
-        for (Screen screen : screens)
+        for (Screen screen : screens.values())
             if (screen.getState() == ScreenState.Visible)
                 screen.draw(renderer);
     }

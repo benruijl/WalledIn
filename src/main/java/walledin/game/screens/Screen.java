@@ -10,21 +10,21 @@ import walledin.engine.Renderer;
  */
 public abstract class Screen {
     public enum ScreenState {
-        Visible,
-        Hidden 
+        Visible, Hidden
     }
-    
+
     /** Manager of this screen */
     private ScreenManager manager;
-    
+
     /** State of this screen */
     private ScreenState state;
 
     /** Active flag */
     protected boolean active;
-    
+
     /**
-     * Called when screen is created.
+     * To be called when screen is added to the list. Do not call on beforehand,
+     * because some functions may require a parent screen manager.
      */
     abstract public void initialize();
 
@@ -48,14 +48,24 @@ public abstract class Screen {
         return active;
     }
 
+    /**
+     * Flag the screen as active/inactive. If activated, it will also make the
+     * screen visible.
+     * 
+     * @param active
+     *            Activate or deactivate
+     */
     public void setActive(boolean active) {
         this.active = active;
+
+        if (active)
+            this.state = ScreenState.Visible;
     }
-    
+
     public ScreenState getState() {
         return state;
     }
-    
+
     public void setState(ScreenState state) {
         this.state = state;
     }
@@ -70,7 +80,7 @@ public abstract class Screen {
     public void registerScreenManager(final ScreenManager manager) {
         this.manager = manager;
     }
-    
+
     public ScreenManager getManager() {
         return manager;
     }
