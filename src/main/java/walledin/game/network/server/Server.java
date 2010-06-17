@@ -252,18 +252,23 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedLoginMessage(final SocketAddress address,
             final String name) {
-        final String entityName = NetworkConstants
-                .getAddressRepresentation(address);
+        // Check if this player already logged in
+        if (!players.containsKey(address)) {
 
-        final Entity player = entityManager.create(Family.PLAYER, entityName);
-        player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
-        player.setAttribute(Attribute.PLAYER_NAME, name);
+            final String entityName = NetworkConstants
+                    .getAddressRepresentation(address);
 
-        final PlayerConnection con = new PlayerConnection(address, player,
-                entityManager.getCurrentVersion());
-        players.put(address, con);
+            final Entity player = entityManager.create(Family.PLAYER,
+                    entityName);
+            player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
+            player.setAttribute(Attribute.PLAYER_NAME, name);
 
-        LOG.info("new player " + name + " @ " + address);
+            final PlayerConnection con = new PlayerConnection(address, player,
+                    entityManager.getCurrentVersion());
+            players.put(address, con);
+
+            LOG.info("new player " + name + " @ " + address);
+        }
     }
 
     /**
