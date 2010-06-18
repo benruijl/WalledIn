@@ -3,6 +3,7 @@ package walledin.game.screens;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Vector2f;
+import walledin.game.entity.Attribute;
 import walledin.game.screens.ScreenManager.ScreenType;
 
 public class MainMenuScreen extends Screen {
@@ -26,9 +27,14 @@ public class MainMenuScreen extends Screen {
 
     @Override
     public void update(final double delta) {
+        if (getState() == ScreenState.Hidden) {
+            return;
+        }
+        
         super.update(delta);
 
         if (Input.getInstance().getMouseDown()) {
+            getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).setActive(true);
             setState(ScreenState.Hidden); // hide main menu
         }

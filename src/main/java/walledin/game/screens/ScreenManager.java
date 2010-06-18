@@ -172,4 +172,12 @@ public class ScreenManager {
     public void dispose() {
         client.dispose();
     }
+    
+    /**
+     * Get the client.
+     * @return Client that owns this screen manager.
+     */
+    public Client getClient() {
+        return client;
+    }
 }

@@ -67,7 +67,7 @@ public abstract class Screen {
      * @param renderer
      *            Renderer to draw with
      */
-    public void draw(Renderer renderer) {
+    public void draw(final Renderer renderer) {
         for (Screen screen : children) {
             screen.draw(renderer);
         }

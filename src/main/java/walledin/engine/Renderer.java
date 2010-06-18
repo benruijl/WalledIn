@@ -21,11 +21,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.engine;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.MemoryImageSource;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -143,6 +148,20 @@ public class Renderer implements GLEventListener {
         anim.stop();
         win.dispose();
         quitting = true; // prevent function calls to GL after this
+    }
+    
+    /**
+     * Hides the hardware cursor.
+     */
+    public final void hideHardwareCursor() {
+        int[] pixels = new int[16 * 16];
+        Image image = Toolkit.getDefaultToolkit().createImage(
+                new MemoryImageSource(16, 16, pixels, 0, 16));
+        Cursor transparentCursor =
+                Toolkit.getDefaultToolkit().createCustomCursor
+                     (image, new Point(0, 0), "invisibleCursor");
+        
+        mCanvas.setCursor(transparentCursor);
     }
 
     /**

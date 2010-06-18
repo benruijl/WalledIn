@@ -62,13 +62,16 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
     private boolean quitting = false;
+
+    /** Keeps track if the player is connected to a server. */
+    private boolean connected = false;
     private int receivedVersion = 0;
     private long lastLoginTry;
     // in milliseconds
     private final long LOGIN_RETRY_TIME = 1000;
 
     /**
-     * Create the client
+     * Create the client.
      * 
      * @param renderer
      *            Current renderer
@@ -161,26 +164,32 @@ public class Client implements RenderListener, NetworkEventListener {
     @Override
     public void update(final double delta) {
         // network stuff
-        try {
-            if (lastLoginTry >= 0
-                    && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
-                lastLoginTry = System.currentTimeMillis();
-                networkDataWriter.sendLoginMessage(channel, username);
-            }
-            // Read messages.
-            boolean hasMore = networkDataReader.recieveMessage(channel,
-                    screenManager.getEntityManager());
-            while (hasMore) {
-                hasMore = networkDataReader.recieveMessage(channel,
+
+        if (connected) {
+            try {
+
+                if (lastLoginTry >= 0
+                        && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
+                    lastLoginTry = System.currentTimeMillis();
+                    networkDataWriter.sendLoginMessage(channel, username);
+                }
+                // Read messages.
+                boolean hasMore = networkDataReader.recieveMessage(channel,
                         screenManager.getEntityManager());
+                while (hasMore) {
+                    hasMore = networkDataReader.recieveMessage(channel,
+                            screenManager.getEntityManager());
+                }
+            } catch (final PortUnreachableException e) {
+                LOG
+                        .fatal("Could not connect to server. PortUnreachableException");
+                dispose();
+            } catch (final IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-        } catch (final PortUnreachableException e) {
-            LOG.fatal("Could not connect to server. PortUnreachableException");
-            dispose();
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
+
         screenManager.update(delta);
     }
 
@@ -208,11 +217,11 @@ public class Client implements RenderListener, NetworkEventListener {
         gameScreen = new GameScreen(null);
         // gameScreen.setState(ScreenState.Visible);
         screenManager.addScreen(ScreenType.GAME, gameScreen);
-        gameScreen.initialize(); // load textures, etc.
         final Screen menuScreen = new MainMenuScreen(null);
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.setState(ScreenState.Visible);
+        renderer.hideHardwareCursor();
 
         try {
             screenManager.getEntityFactory().loadScript(
@@ -233,8 +242,13 @@ public class Client implements RenderListener, NetworkEventListener {
         final Entity cursor = screenManager.getEntityManager().create(
                 Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
+    }
 
-        LOG.info("configure network channel");
+    /**
+     * Connects to a game server.
+     */
+    public final void connectToServer() {
+        LOG.info("configure network channel and connecting to server");
         try {
             channel.configureBlocking(false);
             channel.connect(host);
@@ -243,6 +257,9 @@ public class Client implements RenderListener, NetworkEventListener {
                     .getAddressRepresentation(channel.socket()
                             .getLocalSocketAddress());
             screenManager.setPlayerName(playerEntityName);
+            
+            // the client is connected now
+            connected = true;
         } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
             dispose();
