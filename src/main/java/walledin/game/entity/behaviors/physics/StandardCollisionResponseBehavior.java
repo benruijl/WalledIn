@@ -30,7 +30,7 @@ import walledin.game.entity.MessageType;
 
 public class StandardCollisionResponseBehavior extends Behavior {
 
-    public StandardCollisionResponseBehavior(Entity owner) {
+    public StandardCollisionResponseBehavior(final Entity owner) {
         super(owner);
         // TODO Auto-generated constructor stub
     }
@@ -61,10 +61,10 @@ public class StandardCollisionResponseBehavior extends Behavior {
         float dx, dy; // position
 
         // do very basic col. response
-        Geometry boundsA = (Geometry) getOwner().getAttribute(
+        final Geometry boundsA = (Geometry) getOwner().getAttribute(
                 Attribute.BOUNDING_GEOMETRY);
-        Geometry boundsB = (Geometry) data.getCollisionEntity().getAttribute(
-                Attribute.BOUNDING_GEOMETRY);
+        final Geometry boundsB = (Geometry) data.getCollisionEntity()
+                .getAttribute(Attribute.BOUNDING_GEOMETRY);
 
         if (boundsB.translate(
                 new Vector2f(oldPosB.getX() + vel.getX(), oldPosB.getY()))
@@ -89,7 +89,7 @@ public class StandardCollisionResponseBehavior extends Behavior {
     }
 
     @Override
-    public void onMessage(MessageType messageType, Object data) {
+    public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
             doRepsonse((CollisionData) data);
         }
@@ -97,7 +97,7 @@ public class StandardCollisionResponseBehavior extends Behavior {
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
         // TODO Auto-generated method stub
 
     }

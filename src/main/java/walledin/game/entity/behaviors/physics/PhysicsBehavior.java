@@ -30,7 +30,7 @@ import walledin.game.entity.MessageType;
 
 public class PhysicsBehavior extends Behavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-    
+
     private final float mass; // mass of object
     private final Vector2f gravity; // acceleration of gravity
     private final float frictionCoefficient; // part of the velocity that is
@@ -43,21 +43,24 @@ public class PhysicsBehavior extends Behavior {
         this(owner, mass, true, true);
     }
 
-    public PhysicsBehavior(final Entity owner, final float mass, final boolean doGravity,
-            final boolean doFriction) {
+    public PhysicsBehavior(final Entity owner, final float mass,
+            final boolean doGravity, final boolean doFriction) {
         super(owner);
 
-        if (mass == 0)
-            LOG.warn("Mass of " + getOwner().getName() + " is 0. Applying a force will give an infinite acceleration.");
-        
+        if (mass == 0) {
+            LOG
+                    .warn("Mass of "
+                            + getOwner().getName()
+                            + " is 0. Applying a force will give an infinite acceleration.");
+        }
+
         this.mass = mass;
-        
-        
+
         setAttribute(Attribute.POSITION, new Vector2f());
         setAttribute(Attribute.VELOCITY, new Vector2f());
         position = (Vector2f) getAttribute(Attribute.POSITION);
         velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
-        
+
         if (doGravity) {
             gravity = new Vector2f(0, 300.0f);
         } else {
@@ -92,12 +95,11 @@ public class PhysicsBehavior extends Behavior {
         acceleration = acceleration.add(gravity);
 
         // add friction
-        acceleration = acceleration.add(new Vector2f(-Math.signum(velocity.getX())
-                * velocity.getX() * velocity.getX() * frictionCoefficient, -Math
-                .signum(velocity.getY())
-                * velocity.getY()
-                * velocity.getY()
-                * frictionCoefficient));
+        acceleration = acceleration.add(new Vector2f(-Math.signum(velocity
+                .getX())
+                * velocity.getX() * velocity.getX() * frictionCoefficient,
+                -Math.signum(velocity.getY()) * velocity.getY()
+                        * velocity.getY() * frictionCoefficient));
 
         final Vector2f velNew = velocity.add(acceleration.scale((float) delta));
         final Vector2f posNew = position.add(velNew.scale((float) delta));

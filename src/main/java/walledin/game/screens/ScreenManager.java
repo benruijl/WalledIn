@@ -2,6 +2,7 @@ package walledin.game.screens;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import walledin.engine.Font;
 import walledin.engine.Renderer;
 import walledin.game.EntityManager;
@@ -11,19 +12,25 @@ import walledin.game.network.client.Client;
 import walledin.game.screens.Screen.ScreenState;
 
 public class ScreenManager {
-    /** List of screens */
-    private Map<ScreenType, Screen> screens;
-    /** Entity list of all screens together */
+    
+    /** Screen types.*/
+    public enum ScreenType {
+        MAIN_MENU, GAME
+    }
+    
+    /** List of screens. */
+    private final Map<ScreenType, Screen> screens;
+    /** Entity list of all screens together. */
     private final EntityManager entityManager;
-    /** Client entity factory */
+    /** Client entity factory. */
     private final EntityFactory entityFactory;
-    /** Map of shared fonts */
+    /** Map of shared fonts. */
     private final Map<String, Font> fonts;
-    /** Shared cursor */
+    /** Shared cursor. */
     private Entity cursor;
-    /** Shared renderer */
+    /** Shared renderer. */
     private final Renderer renderer;
-    /** Player name */
+    /** Player name. */
     private String playerName;
     /**
      * Client using this screen manager. Useful for quitting the application.
@@ -70,7 +77,7 @@ public class ScreenManager {
      * @param name
      *            Name of player
      */
-    public void setPlayerName(String name) {
+    public void setPlayerName(final String name) {
         playerName = name;
     }
 
@@ -86,7 +93,7 @@ public class ScreenManager {
      * @param font
      *            Font object
      */
-    public void addFont(String name, Font font) {
+    public void addFont(final String name, final Font font) {
         fonts.put(name, font);
     }
 
@@ -97,7 +104,7 @@ public class ScreenManager {
      *            Name of the font
      * @return Font object if in list, else null.
      */
-    public Font getFont(String name) {
+    public Font getFont(final String name) {
         return fonts.get(name);
     }
 
@@ -107,17 +114,19 @@ public class ScreenManager {
      * @param screen
      *            Screen to add
      */
-    public void addScreen(ScreenType type, Screen screen) {
+    public void addScreen(final ScreenType type, final Screen screen) {
         screens.put(type, screen);
         screen.registerScreenManager(this);
     }
-    
+
     /**
      * Fetch a screen from the list.
-     * @param type Type of requested screen
+     * 
+     * @param type
+     *            Type of requested screen
      * @return Screen if exists, else null
      */
-    public Screen getScreen(ScreenType type) {
+    public Screen getScreen(final ScreenType type) {
         return screens.get(type);
     }
 
@@ -127,9 +136,10 @@ public class ScreenManager {
      * @param delta
      *            Delta time
      */
-    public void update(double delta) {
-        for (Screen screen : screens.values())
+    public void update(final double delta) {
+        for (final Screen screen : screens.values()) {
             screen.update(delta);
+        }
 
         // TODO: always update every screen or make selection?
     }
@@ -140,17 +150,19 @@ public class ScreenManager {
      * @param renderer
      *            Renderer to draw with
      */
-    public void draw(Renderer renderer) {
-        for (Screen screen : screens.values())
-            if (screen.getState() == ScreenState.Visible)
+    public void draw(final Renderer renderer) {
+        for (final Screen screen : screens.values()) {
+            if (screen.getState() == ScreenState.Visible) {
                 screen.draw(renderer);
+            }
+        }
     }
 
     public Entity getCursor() {
         return cursor;
     }
 
-    public void setCursor(Entity cursor) {
+    public void setCursor(final Entity cursor) {
         this.cursor = cursor;
     }
 

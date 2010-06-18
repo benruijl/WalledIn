@@ -89,7 +89,7 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                 getEntityManager().add(weapon);
 
                 final Entity oldWeapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
-                
+
                 if (oldWeapon != null) {
                     oldWeapon.remove();
                 }

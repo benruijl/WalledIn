@@ -98,8 +98,8 @@ public class Circle extends Geometry {
      */
     @Override
     public Rectangle asRectangle() {
-        return new Rectangle(pos.getX() - radius, pos.getY() - radius, 2 * radius,
-                2 * radius);
+        return new Rectangle(pos.getX() - radius, pos.getY() - radius,
+                2 * radius, 2 * radius);
     }
 
 }

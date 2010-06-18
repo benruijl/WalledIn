@@ -1,5 +1,8 @@
 package walledin.game.screens;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import walledin.engine.Renderer;
 
 /**
@@ -9,24 +12,42 @@ import walledin.engine.Renderer;
  * 
  */
 public abstract class Screen {
+    /** Screen states. */
     public enum ScreenState {
         Visible, Hidden
     }
 
-    /** Manager of this screen */
+    /** Parent of this screen. */
+    private final Screen parent;
+
+    /** Child screens of this screen. */
+    private List<Screen> children;
+
+    /** Manager of this screen. */
     private ScreenManager manager;
 
-    /** State of this screen */
+    /** State of this screen. */
     private ScreenState state;
 
-    /** Active flag */
+    /** Active flag. */
     protected boolean active;
+
+    /**
+     * Creates a new screen.
+     * 
+     * @param parent
+     *            Parent of the screen or null of there is no parent.
+     */
+    public Screen(final Screen parent) {
+        children = new ArrayList<Screen>();
+        this.parent = parent;
+    }
 
     /**
      * To be called when screen is added to the list. Do not call on beforehand,
      * because some functions may require a parent screen manager.
      */
-    abstract public void initialize();
+    public abstract void initialize();
 
     /**
      * Updates the screen.
@@ -34,7 +55,11 @@ public abstract class Screen {
      * @param delta
      *            Delta time since last update
      */
-    abstract public void update(double delta);
+    public void update(double delta) {
+        for (Screen screen : children) {
+            screen.update(delta);
+        }
+    }
 
     /**
      * Draws the screen.
@@ -42,9 +67,13 @@ public abstract class Screen {
      * @param renderer
      *            Renderer to draw with
      */
-    abstract public void draw(Renderer renderer);
+    public void draw(Renderer renderer) {
+        for (Screen screen : children) {
+            screen.draw(renderer);
+        }
+    }
 
-    public boolean isActive() {
+    public final boolean isActive() {
         return active;
     }
 
@@ -55,18 +84,19 @@ public abstract class Screen {
      * @param active
      *            Activate or deactivate
      */
-    public void setActive(boolean active) {
+    public final void setActive(final boolean active) {
         this.active = active;
 
-        if (active)
-            this.state = ScreenState.Visible;
+        if (active) {
+            state = ScreenState.Visible;
+        }
     }
 
-    public ScreenState getState() {
+    public final ScreenState getState() {
         return state;
     }
 
-    public void setState(ScreenState state) {
+    public final void setState(final ScreenState state) {
         this.state = state;
     }
 
@@ -77,11 +107,17 @@ public abstract class Screen {
      * @param manager
      *            Screen manager
      */
-    public void registerScreenManager(final ScreenManager manager) {
+    public final void registerScreenManager(final ScreenManager manager) {
         this.manager = manager;
     }
 
-    public ScreenManager getManager() {
+    public final ScreenManager getManager() {
         return manager;
     }
+
+    public void addChild(final Screen sc) {
+        children.add(sc);
+        sc.registerScreenManager(getManager());
+    }
+
 }

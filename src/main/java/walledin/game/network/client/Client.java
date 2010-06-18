@@ -45,8 +45,8 @@ import walledin.game.screens.GameScreen;
 import walledin.game.screens.MainMenuScreen;
 import walledin.game.screens.Screen;
 import walledin.game.screens.ScreenManager;
-import walledin.game.screens.ScreenType;
 import walledin.game.screens.Screen.ScreenState;
+import walledin.game.screens.ScreenManager.ScreenType;
 import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener {
@@ -65,7 +65,7 @@ public class Client implements RenderListener, NetworkEventListener {
     private int receivedVersion = 0;
     private long lastLoginTry;
     // in milliseconds
-    private long LOGIN_RETRY_TIME = 1000;
+    private final long LOGIN_RETRY_TIME = 1000;
 
     /**
      * Create the client
@@ -77,7 +77,7 @@ public class Client implements RenderListener, NetworkEventListener {
     public Client(final Renderer renderer) throws IOException {
         this.renderer = renderer;
         screenManager = new ScreenManager(this, renderer);
-        
+
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
         quitting = false;
@@ -163,7 +163,7 @@ public class Client implements RenderListener, NetworkEventListener {
         // network stuff
         try {
             if (lastLoginTry >= 0
-                    && ((System.currentTimeMillis() - lastLoginTry) > LOGIN_RETRY_TIME)) {
+                    && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
                 lastLoginTry = System.currentTimeMillis();
                 networkDataWriter.sendLoginMessage(channel, username);
             }
@@ -174,10 +174,10 @@ public class Client implements RenderListener, NetworkEventListener {
                 hasMore = networkDataReader.recieveMessage(channel,
                         screenManager.getEntityManager());
             }
-        } catch (PortUnreachableException e) {
+        } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
             dispose();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -200,25 +200,25 @@ public class Client implements RenderListener, NetworkEventListener {
         LOG.info("initializing client");
 
         /* Load standard font */
-        Font font = new Font();
+        final Font font = new Font();
         font.readFromStream(Utils.getClasspathURL("arial20.font"));
         screenManager.addFont("arial20", font);
-        
+
         /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen();
-        //gameScreen.setState(ScreenState.Visible);
+        gameScreen = new GameScreen(null);
+        // gameScreen.setState(ScreenState.Visible);
         screenManager.addScreen(ScreenType.GAME, gameScreen);
         gameScreen.initialize(); // load textures, etc.
-        Screen menuScreen = new MainMenuScreen();
+        final Screen menuScreen = new MainMenuScreen(null);
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
+        menuScreen.initialize();
         menuScreen.setState(ScreenState.Visible);
-        
 
         try {
-            screenManager.getEntityFactory().loadScript(Utils
-                    .getClasspathURL("entities/entities.groovy"));
-            screenManager.getEntityFactory().loadScript(Utils
-                    .getClasspathURL("entities/cliententities.groovy"));
+            screenManager.getEntityFactory().loadScript(
+                    Utils.getClasspathURL("entities/entities.groovy"));
+            screenManager.getEntityFactory().loadScript(
+                    Utils.getClasspathURL("entities/cliententities.groovy"));
         } catch (final CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
             dispose();
@@ -230,23 +230,23 @@ public class Client implements RenderListener, NetworkEventListener {
         screenManager.getEntityManager().init();
 
         // create cursor
-        Entity cursor = screenManager.getEntityManager().create(Family.CURSOR, "cursor");
+        final Entity cursor = screenManager.getEntityManager().create(
+                Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
-        
 
         LOG.info("configure network channel");
         try {
             channel.configureBlocking(false);
             channel.connect(host);
-            
-            String playerEntityName = NetworkConstants
+
+            final String playerEntityName = NetworkConstants
                     .getAddressRepresentation(channel.socket()
                             .getLocalSocketAddress());
             screenManager.setPlayerName(playerEntityName);
-        } catch (PortUnreachableException e) {
+        } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
             dispose();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.fatal("IOException", e);
             dispose();
         }
@@ -259,7 +259,7 @@ public class Client implements RenderListener, NetworkEventListener {
             renderer.dispose();
             try {
                 networkDataWriter.sendLogoutMessage(channel);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 LOG.fatal("IOException during logout", e);
             }
         }

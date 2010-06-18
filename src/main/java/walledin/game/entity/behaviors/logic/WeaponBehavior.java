@@ -23,8 +23,8 @@ package walledin.game.entity.behaviors.logic;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.CollisionManager.CollisionData;
 import walledin.game.EntityManager;
+import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -108,8 +108,8 @@ public class WeaponBehavior extends Behavior {
                         .normalize().scale(bulletAccelerationConstant);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily,
-                        manager.generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily, manager
+                        .generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);

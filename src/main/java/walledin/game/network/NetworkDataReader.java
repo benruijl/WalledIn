@@ -81,8 +81,8 @@ public class NetworkDataReader {
         for (int i = 0; i < numKeys; i++) {
             keys.add((int) buffer.getShort());
         }
-        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
-                buffer.getFloat());
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
+                .getFloat());
         final Boolean mouseDown = buffer.getInt() != 0;
         listener.receivedInputMessage(address, newVersion, keys, mousePos,
                 mouseDown);

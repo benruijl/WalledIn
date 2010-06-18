@@ -126,8 +126,7 @@ public class PlayerControlBehaviour extends Behavior {
         if (getAttribute(Attribute.LEFTMOUSEBUTTON_DOWN) == Boolean.TRUE) {
             setAttribute(
                     Attribute.ORIENTATION,
-                    ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < 
-                    ((Vector2f) getAttribute(Attribute.POSITION))
+                    ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))
                             .getX() ? -1 : 1);
         }
 

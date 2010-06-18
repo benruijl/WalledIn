@@ -133,7 +133,7 @@ public class Renderer implements GLEventListener {
 
         mCanvas.addKeyListener(Input.getInstance()); // listen to keys
         mCanvas.addMouseMotionListener(Input.getInstance()); // listen to mouse
-                                                             // moves
+        // moves
         mCanvas.addMouseListener(Input.getInstance());
         lastUpdate = -1;
     }
@@ -529,8 +529,8 @@ public class Renderer implements GLEventListener {
      *            The point the camera will center around
      */
     public void centerAround(final Vector2f vec) {
-        mCam.setPos(new Vector2f(-vec.getX() + mWidth * 0.5f, -vec.getY() + mHeight
-                * 0.5f));
+        mCam.setPos(new Vector2f(-vec.getX() + mWidth * 0.5f, -vec.getY()
+                + mHeight * 0.5f));
     }
 
     /**
