@@ -21,7 +21,7 @@ public class MainMenuScreen extends Screen {
 
     @Override
     public void initialize() {
-        startButton = new Button(this, new Rectangle(0, 0, 100, 60),
+        startButton = new Button(this, new Rectangle(0, -20, 100, 25),
                 "Start game", new Vector2f(300, 100));
         addChild(startButton);
     }

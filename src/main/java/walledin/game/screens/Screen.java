@@ -144,6 +144,10 @@ public abstract class Screen {
         this.position = position;
     }
     
+    public Screen getParent() {
+        return parent;
+    }
+    
     /**
      * Checks if a point is in this window.
      * @param point Point

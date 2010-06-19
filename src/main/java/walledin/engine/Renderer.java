@@ -149,7 +149,7 @@ public class Renderer implements GLEventListener {
         win.dispose();
         quitting = true; // prevent function calls to GL after this
     }
-    
+
     /**
      * Hides the hardware cursor.
      */
@@ -157,10 +157,9 @@ public class Renderer implements GLEventListener {
         int[] pixels = new int[16 * 16];
         Image image = Toolkit.getDefaultToolkit().createImage(
                 new MemoryImageSource(16, 16, pixels, 0, 16));
-        Cursor transparentCursor =
-                Toolkit.getDefaultToolkit().createCustomCursor
-                     (image, new Point(0, 0), "invisibleCursor");
-        
+        Cursor transparentCursor = Toolkit.getDefaultToolkit()
+                .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
+
         mCanvas.setCursor(transparentCursor);
     }
 
@@ -315,6 +314,29 @@ public class Renderer implements GLEventListener {
             texture.bind();
             lastTexture = texture;
         }
+    }
+
+    /**
+     * Draws the outline of a rectangle. Useful for checking and debugging
+     * bounding rectangles.
+     * 
+     * @param rect
+     *            Rectangle to draw
+     */
+    public final void drawRectOutline(final Rectangle rect) {
+        
+        gl.glPushAttrib(GL.GL_ENABLE_BIT);
+        gl.glDisable(GL.GL_TEXTURE_2D);
+        gl.glColor3f(1, 1, 1);
+        
+        gl.glBegin(GL.GL_LINE_LOOP);
+        gl.glVertex2f(rect.getLeft(), rect.getTop());
+        gl.glVertex2f(rect.getLeft(), rect.getBottom());
+        gl.glVertex2f(rect.getRight(), rect.getBottom());
+        gl.glVertex2f(rect.getRight(), rect.getTop());
+        gl.glEnd();
+        
+        gl.glPopAttrib();
     }
 
     /**

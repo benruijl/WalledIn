@@ -26,6 +26,8 @@ public class Button extends Screen {
 
         final Font font = getManager().getFont("arial20");
         font.renderText(renderer, text, getPosition());
+        
+        renderer.drawRectOutline(getRectangle().translate(getPosition()));
 
         super.draw(renderer);
     }
