@@ -20,7 +20,7 @@ public class GameScreen extends Screen {
     private static final int TILES_PER_LINE = 16;
     
      public GameScreen(Screen parent) {
-        super(parent);
+        super(parent, null);
     }
 
     @Override

@@ -54,10 +54,6 @@ public class Circle extends Geometry {
         this.radius = radius;
     }
 
-    public boolean pointInSphere(final Vector2f pos) {
-        return pos.sub(this.pos).lengthSquared() < radius * radius;
-    }
-
     @Override
     public Circle translate(final Vector2f pos) {
         return new Circle(pos.add(pos), radius);
@@ -100,6 +96,11 @@ public class Circle extends Geometry {
     public Rectangle asRectangle() {
         return new Rectangle(pos.getX() - radius, pos.getY() - radius,
                 2 * radius, 2 * radius);
+    }
+
+    @Override
+    public boolean containsPoint(Vector2f point) {
+        return pos.sub(this.pos).lengthSquared() < radius * radius;
     }
 
 }

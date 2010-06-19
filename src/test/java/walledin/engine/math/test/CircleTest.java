@@ -63,7 +63,7 @@ public class CircleTest {
     public void testPointInSphere() {
         final Circle circle = new Circle(new Vector2f(2, 3), 3f);
         final Vector2f point = new Vector2f(1, 2);
-        Assert.assertTrue(circle.pointInSphere(point));
+        Assert.assertTrue(circle.containsPoint(point));
         // TODO test more corner cases
     }
 

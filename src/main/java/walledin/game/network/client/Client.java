@@ -181,8 +181,7 @@ public class Client implements RenderListener, NetworkEventListener {
                             screenManager.getEntityManager());
                 }
             } catch (final PortUnreachableException e) {
-                LOG
-                        .fatal("Could not connect to server. PortUnreachableException");
+                LOG.fatal("Could not connect to server. PortUnreachableException");
                 dispose();
             } catch (final IOException e) {
                 // TODO Auto-generated catch block
@@ -202,7 +201,7 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     /**
-     * Initialize game
+     * Initialize game.
      */
     @Override
     public void init() {
@@ -221,7 +220,7 @@ public class Client implements RenderListener, NetworkEventListener {
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.setState(ScreenState.Visible);
-        renderer.hideHardwareCursor();
+        //renderer.hideHardwareCursor();
 
         try {
             screenManager.getEntityFactory().loadScript(
@@ -257,7 +256,7 @@ public class Client implements RenderListener, NetworkEventListener {
                     .getAddressRepresentation(channel.socket()
                             .getLocalSocketAddress());
             screenManager.setPlayerName(playerEntityName);
-            
+
             // the client is connected now
             connected = true;
         } catch (final PortUnreachableException e) {
@@ -274,10 +273,13 @@ public class Client implements RenderListener, NetworkEventListener {
         if (!quitting) {
             quitting = true;
             renderer.dispose();
-            try {
-                networkDataWriter.sendLogoutMessage(channel);
-            } catch (final IOException e) {
-                LOG.fatal("IOException during logout", e);
+
+            if (connected) {
+                try {
+                    networkDataWriter.sendLogoutMessage(channel);
+                } catch (final IOException e) {
+                    LOG.fatal("IOException during logout", e);
+                }
             }
         }
     }

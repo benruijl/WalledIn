@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Renderer;
+import walledin.engine.math.Rectangle;
+import walledin.engine.math.Vector2f;
 
 /**
  * A game screen. Can be anything from a background to a pop-up dialog.
@@ -28,6 +30,12 @@ public abstract class Screen {
 
     /** State of this screen. */
     private ScreenState state;
+    
+    /** Position. */
+    private Vector2f position;
+
+    /** Bounding rectangle. */
+    private final Rectangle rectangle;
 
     /** Active flag. */
     protected boolean active;
@@ -37,10 +45,14 @@ public abstract class Screen {
      * 
      * @param parent
      *            Parent of the screen or null of there is no parent.
+     * @param boudingRect
+     *            Bounding rectangle of this screen. null is allowed for root
+     *            screens only.
      */
-    public Screen(final Screen parent) {
+    public Screen(final Screen parent, final Rectangle boudingRect) {
         children = new ArrayList<Screen>();
         this.parent = parent;
+        this.rectangle = boudingRect;
     }
 
     /**
@@ -118,6 +130,27 @@ public abstract class Screen {
     public void addChild(final Screen sc) {
         children.add(sc);
         sc.registerScreenManager(getManager());
+    }
+
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
+    
+    public Vector2f getPosition() {
+        return position;
+    }
+    
+    public void setPosition(Vector2f position) {
+        this.position = position;
+    }
+    
+    /**
+     * Checks if a point is in this window.
+     * @param point Point
+     * @return True if in window, else false.
+     */
+    public boolean pointInScreen(Vector2f point) {
+        return rectangle.translate(position).containsPoint(point);
     }
 
 }

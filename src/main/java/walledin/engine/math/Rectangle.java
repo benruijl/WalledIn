@@ -143,4 +143,10 @@ public class Rectangle extends Geometry {
     public Rectangle asRectangle() {
         return this;
     }
+
+    @Override
+    public boolean containsPoint(Vector2f point) {
+        return getRight() > point.getX() && getLeft() < point.getX()
+        && getBottom() > point.getY() && getTop() < point.getY();
+    }
 }
