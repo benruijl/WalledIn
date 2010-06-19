@@ -25,7 +25,7 @@ import java.net.SocketAddress;
 
 public class NetworkConstants {
     public static final int BUFFER_SIZE = 1024 * 1024;
-    public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
+    public static final int DATAGRAM_IDENTIFICATION = 0x17FBB2CE;
     public static final byte LOGIN_MESSAGE = 0;
     public static final byte INPUT_MESSAGE = 1;
     public static final byte LOGOUT_MESSAGE = 2;
