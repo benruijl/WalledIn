@@ -41,7 +41,7 @@ public class CursorRenderBehavior extends RenderBehavior {
             final Renderer renderer = (Renderer) data;
             // FIXME: Do this with texturepartmanager
             renderer.drawRect("tex_items", new Rectangle(0, 0, 63.5f / 1024.0f,
-                    63.5f / 512.0f), new Rectangle(0, 0, 32, 32)
+                    63.5f / 512.0f), new Rectangle(-16, -16, 32, 32)
                     .translate((Vector2f) getAttribute(Attribute.POSITION)));
         }
 
