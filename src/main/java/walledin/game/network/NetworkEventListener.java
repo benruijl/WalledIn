@@ -35,4 +35,8 @@ public interface NetworkEventListener {
 
     void receivedInputMessage(SocketAddress address, int newVersion,
             Set<Integer> keys, Vector2f mousePos, Boolean mouseButtonDown);
+
+    void receivedChallengeMessage(SocketAddress address, long challengeData);
+
+    void receivedServersMessage(SocketAddress address, Set<ServerData> servers);
 }

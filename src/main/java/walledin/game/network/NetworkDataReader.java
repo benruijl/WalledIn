@@ -21,7 +21,10 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.network;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
@@ -81,8 +84,8 @@ public class NetworkDataReader {
         for (int i = 0; i < numKeys; i++) {
             keys.add((int) buffer.getShort());
         }
-        final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
-                .getFloat());
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
+                buffer.getFloat());
         final Boolean mouseDown = buffer.getInt() != 0;
         listener.receivedInputMessage(address, newVersion, keys, mousePos,
                 mouseDown);
@@ -98,6 +101,32 @@ public class NetworkDataReader {
 
     private void processLogoutMessage(final SocketAddress address) {
         listener.receivedLogoutMessage(address);
+    }
+    
+    private void processServersMessage(SocketAddress address) throws UnknownHostException {
+        int amount = buffer.getInt();
+        Set<ServerData> servers = new HashSet<ServerData>();
+        for (int i= 0; i < amount; i++) {
+            ServerData server = readServerData();
+        }
+        listener.receivedServersMessage(address, servers);
+    }
+
+    private void processChallengeMessage(SocketAddress address) {
+        long challengeData = buffer.getLong();
+        listener.receivedChallengeMessage(address,challengeData);
+    }
+    
+    private ServerData readServerData() throws UnknownHostException {
+        byte[] ip = new byte[4];
+        buffer.get(ip);
+        final int port = buffer.getShort() + Short.MIN_VALUE;
+        final SocketAddress serverAddress = new InetSocketAddress(
+                InetAddress.getByAddress(ip), port);
+        final String name = readStringData(buffer);
+        final int players = buffer.getInt();
+        final int maxPlayers = buffer.getInt();
+        return new ServerData(serverAddress, name, players, maxPlayers);
     }
 
     private void readAttributeData(final Entity entity,
@@ -168,9 +197,7 @@ public class NetworkDataReader {
         switch (type) {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
-
             entityManager.create(Enum.valueOf(Family.class, familyName), name);
-
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
             entityManager.remove(name);
@@ -260,6 +287,44 @@ public class NetworkDataReader {
         case NetworkConstants.INPUT_MESSAGE:
             processInputMessage(address);
             break;
+        default:
+            LOG.warn("Received unhandled message");
+            break;
+        }
+        return true;
+    }
+
+    /**
+     * Reads a datagram from the channel if there is one. Method to read from
+     * master server
+     * 
+     * @param channel
+     *            The channel to read from
+     * @param entityManager
+     *            the entity manager to process the changes in
+     * @return true if a datagram was present on the channel, else false
+     * @throws IOException
+     */
+    public boolean recieveMasterServerMessage(final DatagramChannel channel,
+            final EntityManager entityManager) throws IOException {
+        int ident = -1;
+        buffer.clear();
+        final SocketAddress address = channel.receive(buffer);
+        if (address == null) {
+            return false;
+        }
+        buffer.flip();
+        ident = buffer.getInt();
+        if (ident != NetworkConstants.MS_DATAGRAM_IDENTIFICATION) {
+            // ignore the datagram, incorrect format
+            return true;
+        }
+        final byte type = buffer.get();
+        switch (type) {
+        case NetworkConstants.CHALLENGE_MESSAGE:
+            processChallengeMessage(address);
+        case NetworkConstants.SERVERS_MESSAGE:
+            processServersMessage(address);
         default:
             LOG.warn("Received unhandled message");
             break;

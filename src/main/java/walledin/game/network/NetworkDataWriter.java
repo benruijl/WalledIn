@@ -130,6 +130,23 @@ public class NetworkDataWriter {
         buffer.flip();
         channel.write(buffer);
     }
+    
+    public void sendGetServersMessage(final DatagramChannel channel) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
+        buffer.flip();
+        channel.write(buffer);
+    }
+    
+    public void sendChallengeRespondse(final DatagramChannel channel,long challengeData) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
+        buffer.putLong(challengeData);
+        buffer.flip();
+        channel.write(buffer);
+    }
 
     private void writeAttributeData(final Attribute attribute,
             final Object data, final ByteBuffer buffer) {
