@@ -139,11 +139,24 @@ public class NetworkDataWriter {
         channel.write(buffer);
     }
     
-    public void sendChallengeRespondse(final DatagramChannel channel,long challengeData) throws IOException {
+    public void sendChallengeResponse(final DatagramChannel channel,long challengeData) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
+        buffer.put(NetworkConstants.CHALLENGE_RESPONSE_MESSAGE);
         buffer.putLong(challengeData);
+        buffer.flip();
+        channel.write(buffer);
+    }
+    
+    public void sendServerNotificationResponse(final DatagramChannel channel,
+            int port, String name, int players, int maxPlayers) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.SERVER_NOTIFICATION_MESSAGE);
+        buffer.putShort((short) (port - Short.MAX_VALUE));
+        writeStringData(name, buffer);
+        buffer.putInt(players);
+        buffer.putInt(maxPlayers);
         buffer.flip();
         channel.write(buffer);
     }
