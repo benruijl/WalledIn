@@ -220,7 +220,7 @@ public class Client implements RenderListener, NetworkEventListener {
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.setState(ScreenState.Visible);
-        //renderer.hideHardwareCursor();
+        renderer.hideHardwareCursor();
 
         try {
             screenManager.getEntityFactory().loadScript(

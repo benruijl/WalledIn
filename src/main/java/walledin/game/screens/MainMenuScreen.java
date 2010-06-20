@@ -4,6 +4,7 @@ import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.entity.MessageType;
 import walledin.game.screens.ScreenManager.ScreenType;
 
 public class MainMenuScreen extends Screen {
@@ -14,9 +15,9 @@ public class MainMenuScreen extends Screen {
     }
 
     @Override
-    public void draw(final Renderer renderer) {
-
+    public void draw(final Renderer renderer) {        
         super.draw(renderer);
+        getManager().getCursor().sendMessage(MessageType.RENDER, renderer);
     }
 
     @Override
