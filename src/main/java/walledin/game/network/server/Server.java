@@ -60,7 +60,7 @@ public class Server implements NetworkEventListener {
     private static final int PORT = 1234;
     private static final int UPDATES_PER_SECOND = 60;
     private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
-    private static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress("localhost", 1235);
+
     private static final String SERVER_NAME = "Cool WalledIn Server!";
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
@@ -73,6 +73,7 @@ public class Server implements NetworkEventListener {
     private final Map<Integer, ChangeSet> changeSetLookup;
     private final EntityFactory entityFactory;
     private DatagramChannel masterServerChannel;
+    private DatagramChannel channel;
 
     /**
      * Creates a new server. Initializes variables to their default values.
@@ -114,11 +115,11 @@ public class Server implements NetworkEventListener {
     public void run() throws IOException {
         LOG.info("initializing");
         init();
-        final DatagramChannel channel = DatagramChannel.open();
+        channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(PORT));
         channel.configureBlocking(false);
         masterServerChannel = DatagramChannel.open();
-        masterServerChannel.connect(MASTERSERVER_ADDRESS);
+        masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
         masterServerChannel.configureBlocking(false);
 
         networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
@@ -287,7 +288,7 @@ public class Server implements NetworkEventListener {
     public void receivedChallengeMessage(SocketAddress address,
             long challengeData) {
         try {
-            networkWriter.sendChallengeResponse(masterServerChannel, challengeData);
+            networkWriter.sendChallengeResponse(channel, address, challengeData);
         } catch (IOException e) {
             LOG.error("IOException during challengeResponse", e);
         }

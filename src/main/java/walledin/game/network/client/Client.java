@@ -25,7 +25,6 @@ import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,10 +46,10 @@ import walledin.game.network.ServerData;
 import walledin.game.screens.GameScreen;
 import walledin.game.screens.MainMenuScreen;
 import walledin.game.screens.Screen;
-import walledin.game.screens.ScreenManager;
-import walledin.game.screens.ServerListScreen;
 import walledin.game.screens.Screen.ScreenState;
+import walledin.game.screens.ScreenManager;
 import walledin.game.screens.ScreenManager.ScreenType;
+import walledin.game.screens.ServerListScreen;
 import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener {
@@ -65,11 +64,13 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
+    private final DatagramChannel masterServerChannel;
     private Set<ServerData> serverList;
     private boolean quitting = false;
 
     /** Keeps track if the player is connected to a server. */
     private boolean connected = false;
+    private boolean connectedMasterServer = false;
     private int receivedVersion = 0;
     private long lastLoginTry;
     // in milliseconds
@@ -95,6 +96,7 @@ public class Client implements RenderListener, NetworkEventListener {
         host = new InetSocketAddress("localhost", PORT);
         username = System.getProperty("user.name");
         channel = DatagramChannel.open();
+        masterServerChannel = DatagramChannel.open();
     }
 
     public static void main(final String[] args) {
@@ -194,9 +196,8 @@ public class Client implements RenderListener, NetworkEventListener {
     @Override
     public void update(final double delta) {
         // network stuff
-
-        if (connected) {
-            try {
+        try {
+            if (connected) {
 
                 if (lastLoginTry >= 0
                         && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
@@ -210,13 +211,23 @@ public class Client implements RenderListener, NetworkEventListener {
                     hasMore = networkDataReader.recieveMessage(channel,
                             screenManager.getEntityManager());
                 }
-            } catch (final PortUnreachableException e) {
-                LOG.fatal("Could not connect to server. PortUnreachableException");
-                dispose();
-            } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
+            if (connectedMasterServer) {
+                // Read messages.
+                boolean hasMore = networkDataReader.recieveMessage(
+                        masterServerChannel, screenManager.getEntityManager());
+                while (hasMore) {
+                    hasMore = networkDataReader.recieveMessage(
+                            masterServerChannel,
+                            screenManager.getEntityManager());
+                }
+            }
+        } catch (final PortUnreachableException e) {
+            LOG.fatal("Could not connect to server. PortUnreachableException");
+            dispose();
+        } catch (final IOException e) {
+            LOG.fatal("IOException", e);
+            dispose();
         }
 
         screenManager.update(delta);
@@ -274,6 +285,8 @@ public class Client implements RenderListener, NetworkEventListener {
         final Entity cursor = screenManager.getEntityManager().create(
                 Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
+        
+        connectToMasterServer();
     }
 
     /**
@@ -292,6 +305,24 @@ public class Client implements RenderListener, NetworkEventListener {
 
             // the client is connected now
             connected = true;
+        } catch (final PortUnreachableException e) {
+            LOG.fatal("Could not connect to server. PortUnreachableException");
+            dispose();
+        } catch (final IOException e) {
+            LOG.fatal("IOException", e);
+            dispose();
+        }
+    }
+    
+    /**
+     * Connects to a master server.
+     */
+    public final void connectToMasterServer() {
+        LOG.info("configure network channel and connecting to master server");
+        try {
+            masterServerChannel.configureBlocking(false);
+            masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
+            connectedMasterServer = true;
         } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
             dispose();

@@ -139,13 +139,13 @@ public class NetworkDataWriter {
         channel.write(buffer);
     }
     
-    public void sendChallengeResponse(final DatagramChannel channel,long challengeData) throws IOException {
+    public void sendChallengeResponse(final DatagramChannel channel,SocketAddress address, long challengeData) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.CHALLENGE_RESPONSE_MESSAGE);
         buffer.putLong(challengeData);
         buffer.flip();
-        channel.write(buffer);
+        channel.send(buffer, address);
     }
     
     public void sendServerNotificationResponse(final DatagramChannel channel,
