@@ -25,6 +25,8 @@ import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -63,6 +65,7 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
+    private Set<ServerData> serverList;
     private boolean quitting = false;
 
     /** Keeps track if the player is connected to a server. */
@@ -85,6 +88,7 @@ public class Client implements RenderListener, NetworkEventListener {
 
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
+        serverList = new HashSet<ServerData>();
         quitting = false;
         lastLoginTry = System.currentTimeMillis();
         // Hardcode the host and username for now
@@ -138,11 +142,23 @@ public class Client implements RenderListener, NetworkEventListener {
         }
         return result;
     }
+    
+    public void refreshServerList() {
+        try {
+            networkDataWriter.sendGetServersMessage(channel);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public Set<ServerData> getServerList() {
+        return serverList;
+    }
 
     @Override
     public void receivedServersMessage(SocketAddress address,
             Set<ServerData> servers) {
-        // TODO: process
+        serverList = servers;
     }
 
     @Override
