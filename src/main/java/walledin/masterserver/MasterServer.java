@@ -62,7 +62,6 @@ public class MasterServer implements NetworkEventListener {
         challengeData = random.nextLong();
         // TODO: hash with server ip?
         for (final ServerData server : servers.values()) {
-            LOG.info("Server challenge to " + server.getAddress());
             networkWriter.sendChallengeMessage(channel, server.getAddress(),
                     challengeData);
         }
@@ -75,6 +74,7 @@ public class MasterServer implements NetworkEventListener {
             final ServerData server = it.next();
             if (server.getTimeLastSeen() < time - TIMEOUT) {
                 it.remove();
+                LOG.info("Removed server: " + server);
             }
         }
     }
@@ -109,12 +109,8 @@ public class MasterServer implements NetworkEventListener {
     public void receivedChallengeResponseMessage(final SocketAddress address,
             final long challengeData) {
         final ServerData server = servers.get(address);
-        LOG.info("Server challenge response from " + address + " server: "
-                + server);
         if (server != null && this.challengeData == challengeData) {
             server.setTimeLastSeen(System.currentTimeMillis());
-            LOG.info("Server correct challenge response from " + address + " server: "
-                    + server);
         }
     }
 }
