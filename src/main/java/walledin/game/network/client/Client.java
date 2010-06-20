@@ -147,7 +147,7 @@ public class Client implements RenderListener, NetworkEventListener {
     
     public void refreshServerList() {
         try {
-            networkDataWriter.sendGetServersMessage(channel);
+            networkDataWriter.sendGetServersMessage(masterServerChannel);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,6 +160,7 @@ public class Client implements RenderListener, NetworkEventListener {
     @Override
     public void receivedServersMessage(SocketAddress address,
             Set<ServerData> servers) {
+        LOG.info("Received server list. " + servers.size() + " servers available.");
         serverList = servers;
     }
 
