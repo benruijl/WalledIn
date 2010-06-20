@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 public class MasterServer implements NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(MasterServer.class);
-    private static final int PORT = 1234;
+    private static final int PORT = 1235;
     private static final long TIMEOUT = 2000;
     private static final long CHALLENGE_INTERVAL = 1000;
     private boolean running;
