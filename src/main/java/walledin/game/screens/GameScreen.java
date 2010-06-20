@@ -120,9 +120,6 @@ public class GameScreen extends Screen {
         createTextureParts();
 
         getManager().getEntityManager().create(Family.BACKGROUND, "Background");
-        
-        // connect to server
-        getManager().getClient().connectToServer();
     }
 
     private void loadTextures() {

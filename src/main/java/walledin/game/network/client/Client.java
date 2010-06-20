@@ -59,12 +59,12 @@ public class Client implements RenderListener, NetworkEventListener {
     private final Renderer renderer; // current renderer
     private final ScreenManager screenManager;
     private Screen gameScreen;
-    private final SocketAddress host;
-    private final String username;
+    private SocketAddress host;
+    private String username;
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
-    private final DatagramChannel channel;
-    private final DatagramChannel masterServerChannel;
+    private DatagramChannel channel;
+    private DatagramChannel masterServerChannel;
     private Set<ServerData> serverList;
     private boolean quitting = false;
 
@@ -91,10 +91,7 @@ public class Client implements RenderListener, NetworkEventListener {
         networkDataReader = new NetworkDataReader(this);
         serverList = new HashSet<ServerData>();
         quitting = false;
-        lastLoginTry = System.currentTimeMillis();
-        // Hardcode the host and username for now
-        host = new InetSocketAddress("localhost", PORT);
-        username = System.getProperty("user.name");
+        
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
     }
@@ -293,9 +290,13 @@ public class Client implements RenderListener, NetworkEventListener {
     /**
      * Connects to a game server.
      */
-    public final void connectToServer() {
+    public final void connectToServer(final ServerData server) {
         LOG.info("configure network channel and connecting to server");
         try {
+            lastLoginTry = System.currentTimeMillis();
+            host = server.getAddress();
+            username = System.getProperty("user.name");
+            
             channel.configureBlocking(false);
             channel.connect(host);
 

@@ -83,7 +83,8 @@ public class ServerListWidget extends Screen {
         for (int i = 0; i < serverButtons.size(); i++) {
             if (serverButtons.get(i).pointInScreen(
                     Input.getInstance().getMousePos().asVector2f())) {
-
+                // connect to server
+                getManager().getClient().connectToServer(serverList.get(i));
             }
         }
 
