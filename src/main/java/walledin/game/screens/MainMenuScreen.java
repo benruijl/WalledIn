@@ -10,8 +10,8 @@ import walledin.game.screens.ScreenManager.ScreenType;
 public class MainMenuScreen extends Screen {
     Screen startButton;
 
-    public MainMenuScreen(Screen parent) {
-        super(parent, null);
+    public MainMenuScreen() {
+        super(null, null);
     }
 
     @Override
@@ -38,8 +38,8 @@ public class MainMenuScreen extends Screen {
         if (startButton.pointInScreen(Input.getInstance().getMousePos()
                 .asVector2f())) {
             if (Input.getInstance().getMouseDown()) {
-                getManager().getScreen(ScreenType.GAME).initialize();
-                getManager().getScreen(ScreenType.GAME).setActive(true);
+                getManager().getScreen(ScreenType.SERVER_LIST).initialize();
+                getManager().getScreen(ScreenType.SERVER_LIST).setActive(true);
                 setState(ScreenState.Hidden); // hide main menu
             }
         }

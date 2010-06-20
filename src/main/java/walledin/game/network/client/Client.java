@@ -45,6 +45,7 @@ import walledin.game.screens.GameScreen;
 import walledin.game.screens.MainMenuScreen;
 import walledin.game.screens.Screen;
 import walledin.game.screens.ScreenManager;
+import walledin.game.screens.ServerListScreen;
 import walledin.game.screens.Screen.ScreenState;
 import walledin.game.screens.ScreenManager.ScreenType;
 import walledin.util.Utils;
@@ -213,13 +214,16 @@ public class Client implements RenderListener, NetworkEventListener {
         screenManager.addFont("arial20", font);
 
         /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen(null);
-        // gameScreen.setState(ScreenState.Visible);
+        gameScreen = new GameScreen();
         screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen menuScreen = new MainMenuScreen(null);
+        final Screen menuScreen = new MainMenuScreen();
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.setState(ScreenState.Visible);
+        
+        final Screen serverListScreen = new ServerListScreen();
+        screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
+        
         renderer.hideHardwareCursor();
 
         try {

@@ -562,6 +562,16 @@ public class Renderer implements GLEventListener {
         gl.glScalef(vec.getX(), vec.getY(), 1);
 
     }
+    
+    /**
+     * Sets the current color.
+     * @param r R
+     * @param g G
+     * @param b B
+     */
+    public void setColorRGB(float r, float g, float b) {
+        gl.glColor3f(r, g, b);
+    }
 
     /**
      * Centers the camera around a specific point.

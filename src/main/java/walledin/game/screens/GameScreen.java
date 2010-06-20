@@ -19,8 +19,8 @@ public class GameScreen extends Screen {
     private static final int TILE_SIZE = 64;
     private static final int TILES_PER_LINE = 16;
     
-     public GameScreen(Screen parent) {
-        super(parent, null);
+     public GameScreen() {
+        super(null, null);
     }
 
     @Override

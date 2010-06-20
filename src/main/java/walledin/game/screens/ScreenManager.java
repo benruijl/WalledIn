@@ -15,7 +15,7 @@ public class ScreenManager {
     
     /** Screen types.*/
     public enum ScreenType {
-        MAIN_MENU, GAME
+        MAIN_MENU, GAME, SERVER_LIST
     }
     
     /** List of screens. */

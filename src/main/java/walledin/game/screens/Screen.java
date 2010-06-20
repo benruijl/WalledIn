@@ -51,6 +51,7 @@ public abstract class Screen {
      */
     public Screen(final Screen parent, final Rectangle boudingRect) {
         children = new ArrayList<Screen>();
+        position = new Vector2f();
         this.parent = parent;
         this.rectangle = boudingRect;
     }
@@ -130,6 +131,10 @@ public abstract class Screen {
     public void addChild(final Screen sc) {
         children.add(sc);
         sc.registerScreenManager(getManager());
+    }
+    
+    public void removeChild(final Screen sc) {
+        children.remove(sc);
     }
 
     public Rectangle getRectangle() {
