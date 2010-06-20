@@ -60,6 +60,8 @@ public class Server implements NetworkEventListener {
     private static final int PORT = 1234;
     private static final int UPDATES_PER_SECOND = 60;
     private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
+    private static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress("localhost", 1234);
+    private static final String SERVER_NAME = "Cool WalledIn Server!";
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
     private final NetworkDataWriter networkWriter;
@@ -70,6 +72,7 @@ public class Server implements NetworkEventListener {
     private final Queue<ChangeSet> changeSets;
     private final Map<Integer, ChangeSet> changeSetLookup;
     private final EntityFactory entityFactory;
+    private DatagramChannel masterServerChannel;
 
     /**
      * Creates a new server. Initializes variables to their default values.
@@ -114,6 +117,12 @@ public class Server implements NetworkEventListener {
         final DatagramChannel channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(PORT));
         channel.configureBlocking(false);
+        masterServerChannel = DatagramChannel.open();
+        masterServerChannel.connect(MASTERSERVER_ADDRESS);
+        masterServerChannel.configureBlocking(false);
+
+        networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
+                SERVER_NAME, players.size(), Integer.MAX_VALUE);
 
         currentTime = System.nanoTime(); // initialize
         running = true;
@@ -277,7 +286,11 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedChallengeMessage(SocketAddress address,
             long challengeData) {
-        // TODO: send response
+        try {
+            networkWriter.sendChallengeResponse(masterServerChannel, challengeData);
+        } catch (IOException e) {
+            LOG.error("IOException during challengeResponse", e);
+        }
     }
 
     @Override
