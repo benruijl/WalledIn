@@ -269,65 +269,41 @@ public class NetworkDataReader {
         }
         buffer.flip();
         ident = buffer.getInt();
-        if (ident != NetworkConstants.DATAGRAM_IDENTIFICATION) {
-            // ignore the datagram, incorrect format
-            return true;
-        }
-        final byte type = buffer.get();
-        switch (type) {
-        case NetworkConstants.GAMESTATE_MESSAGE:
-            processGamestateMessage(entityManager, address);
-            break;
-        case NetworkConstants.LOGIN_MESSAGE:
-            processLoginMessage(address);
-            break;
-        case NetworkConstants.LOGOUT_MESSAGE:
-            processLogoutMessage(address);
-            break;
-        case NetworkConstants.INPUT_MESSAGE:
-            processInputMessage(address);
-            break;
-        default:
-            LOG.warn("Received unhandled message");
-            break;
-        }
-        return true;
-    }
-
-    /**
-     * Reads a datagram from the channel if there is one. Method to read from
-     * master server
-     * 
-     * @param channel
-     *            The channel to read from
-     * @param entityManager
-     *            the entity manager to process the changes in
-     * @return true if a datagram was present on the channel, else false
-     * @throws IOException
-     */
-    public boolean recieveMasterServerMessage(final DatagramChannel channel,
-            final EntityManager entityManager) throws IOException {
-        int ident = -1;
-        buffer.clear();
-        final SocketAddress address = channel.receive(buffer);
-        if (address == null) {
-            return false;
-        }
-        buffer.flip();
-        ident = buffer.getInt();
-        if (ident != NetworkConstants.MS_DATAGRAM_IDENTIFICATION) {
-            // ignore the datagram, incorrect format
-            return true;
-        }
-        final byte type = buffer.get();
-        switch (type) {
-        case NetworkConstants.CHALLENGE_MESSAGE:
-            processChallengeMessage(address);
-        case NetworkConstants.SERVERS_MESSAGE:
-            processServersMessage(address);
-        default:
-            LOG.warn("Received unhandled message");
-            break;
+        if (ident == NetworkConstants.DATAGRAM_IDENTIFICATION) {
+            final byte type = buffer.get();
+            switch (type) {
+            case NetworkConstants.GAMESTATE_MESSAGE:
+                processGamestateMessage(entityManager, address);
+                break;
+            case NetworkConstants.LOGIN_MESSAGE:
+                processLoginMessage(address);
+                break;
+            case NetworkConstants.LOGOUT_MESSAGE:
+                processLogoutMessage(address);
+                break;
+            case NetworkConstants.INPUT_MESSAGE:
+                processInputMessage(address);
+                break;
+            default:
+                LOG.warn("Received unhandled message");
+                break;
+            }
+        } else if (ident == NetworkConstants.MS_DATAGRAM_IDENTIFICATION) {
+            final byte type = buffer.get();
+            switch (type) {
+            case NetworkConstants.CHALLENGE_MESSAGE:
+                processChallengeMessage(address);
+                break;
+            case NetworkConstants.SERVERS_MESSAGE:
+                processServersMessage(address);
+                break;
+            default:
+                LOG.warn("Received unhandled message");
+                break;
+            }
+        } else {
+            LOG.warn("Unknown ident");
+            // else ignore the datagram, incorrect format
         }
         return true;
     }
