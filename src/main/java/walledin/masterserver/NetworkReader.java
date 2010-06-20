@@ -62,7 +62,7 @@ public class NetworkReader {
         final InetSocketAddress inetAddress = (InetSocketAddress) address;
         // only read port. ip is derived from connection
         // read unsigned short
-        final int port = buffer.getShort() + Short.MIN_VALUE;
+        final int port = buffer.getShort() + Short.MAX_VALUE;
         final SocketAddress serverAddress = new InetSocketAddress(
                 InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
                 port);
