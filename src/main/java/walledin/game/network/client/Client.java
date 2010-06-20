@@ -146,7 +146,7 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             networkDataWriter.sendGetServersMessage(masterServerChannel);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("IOException", e);
         }
     }
     

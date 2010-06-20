@@ -108,6 +108,7 @@ public class NetworkDataReader {
         Set<ServerData> servers = new HashSet<ServerData>();
         for (int i= 0; i < amount; i++) {
             ServerData server = readServerData();
+            servers.add(server);
         }
         listener.receivedServersMessage(address, servers);
     }
