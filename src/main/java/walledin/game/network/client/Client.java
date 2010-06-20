@@ -41,6 +41,7 @@ import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.ServerData;
 import walledin.game.screens.GameScreen;
 import walledin.game.screens.MainMenuScreen;
 import walledin.game.screens.Screen;
@@ -138,6 +139,12 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
+    public void receivedServersMessage(SocketAddress address,
+            Set<ServerData> servers) {
+        // TODO: process
+    }
+
+    @Override
     public void receivedLoginMessage(final SocketAddress address,
             final String name) {
         // ignore
@@ -152,6 +159,12 @@ public class Client implements RenderListener, NetworkEventListener {
     public void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<Integer> keys,
             final Vector2f mousePos, final Boolean mouseDown) {
+        // ignore
+    }
+
+    @Override
+    public void receivedChallengeMessage(SocketAddress address,
+            long challengeData) {
         // ignore
     }
 

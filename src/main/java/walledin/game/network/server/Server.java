@@ -47,6 +47,7 @@ import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.ServerData;
 import walledin.util.Utils;
 
 /**
@@ -271,6 +272,18 @@ public class Server implements NetworkEventListener {
 
             LOG.info("new player " + name + " @ " + address);
         }
+    }
+    
+    @Override
+    public void receivedChallengeMessage(SocketAddress address,
+            long challengeData) {
+        // TODO: send response
+    }
+
+    @Override
+    public void receivedServersMessage(SocketAddress address,
+            Set<ServerData> servers) {
+     // ignore .. should not happen
     }
 
     /**
