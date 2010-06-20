@@ -60,7 +60,7 @@ public class Server implements NetworkEventListener {
     private static final int PORT = 1234;
     private static final int UPDATES_PER_SECOND = 60;
     private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
-    private static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress("localhost", 1234);
+    private static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress("localhost", 1235);
     private static final String SERVER_NAME = "Cool WalledIn Server!";
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
