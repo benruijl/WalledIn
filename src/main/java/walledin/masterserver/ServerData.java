@@ -2,15 +2,15 @@ package walledin.masterserver;
 
 import java.net.SocketAddress;
 
-public class Server {
+public class ServerData {
     private long timeLastSeen;
     private final SocketAddress address;
     private final String name;
     private final int players;
     private final int maxPlayers;
 
-    public Server(SocketAddress address, String name, int players,
-            int maxPlayers) {
+    public ServerData(final SocketAddress address, final String name,
+            final int players, final int maxPlayers) {
         this.address = address;
         this.name = name;
         this.players = players;
@@ -37,7 +37,7 @@ public class Server {
         return maxPlayers;
     }
 
-    public void setTimeLastSeen(long timeLastSeen) {
+    public void setTimeLastSeen(final long timeLastSeen) {
         this.timeLastSeen = timeLastSeen;
     }
 }

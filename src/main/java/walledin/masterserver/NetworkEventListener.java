@@ -25,5 +25,9 @@ import java.net.SocketAddress;
 public interface NetworkEventListener {
     void receivedGetServersMessage(SocketAddress address);
 
-    void receivedServerNotificationMessage(SocketAddress address, Server server);
+    void receivedServerNotificationMessage(SocketAddress address,
+            ServerData server);
+
+    void receivedChallengeResponseMessage(SocketAddress address,
+            long challengeData);
 }
