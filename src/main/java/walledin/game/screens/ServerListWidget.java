@@ -61,6 +61,7 @@ public class ServerListWidget extends Screen {
 
                 // request a refresh
                 getManager().getClient().refreshServerList();
+                Input.getInstance().setMouseUp(); // FIXME
             }
         }
 
