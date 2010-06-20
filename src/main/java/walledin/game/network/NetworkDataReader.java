@@ -121,7 +121,7 @@ public class NetworkDataReader {
     private ServerData readServerData() throws UnknownHostException {
         byte[] ip = new byte[4];
         buffer.get(ip);
-        final int port = buffer.getShort() + Short.MAX_VALUE;
+        final int port = buffer.getInt();
         final SocketAddress serverAddress = new InetSocketAddress(
                 InetAddress.getByAddress(ip), port);
         final String name = readStringData(buffer);
