@@ -2,20 +2,23 @@ package walledin.game.screens;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.network.ServerData;
 
 public class ServerListWidget extends Screen {
     Screen refreshButton;
-    List<Screen> servers; // list of servers
+    List<ServerData> serverList; // list of servers
+    List<Screen> serverButtons; // list of buttons
 
     public ServerListWidget(final Screen parent, final Rectangle boudingRect) {
         super(parent, boudingRect);
-        servers = new ArrayList<Screen>();
+        serverButtons = new ArrayList<Screen>();
     }
 
     @Override
@@ -32,26 +35,33 @@ public class ServerListWidget extends Screen {
         if (refreshButton.pointInScreen(Input.getInstance().getMousePos()
                 .asVector2f())) {
             if (Input.getInstance().getMouseDown()) {
-                servers.clear();
+                serverButtons.clear();
 
-                // hardcode one for now
-                Screen server = new Button(this,
-                        new Rectangle(0, -20, 100, 25), "localhost",
-                        getPosition().add(new Vector2f(10, 65)));
-
-                // for the server list it is easier to keep track of them
-                // manually
-                server.registerScreenManager(getManager());
-                servers.add(server);
+                // request a refresh
+                getManager().getClient().refreshServerList();
             }
         }
 
-        for (int i = 0; i < servers.size(); i++)
-            servers.get(i).update(delta);
+        serverList = new ArrayList<ServerData>(
+                getManager().getClient().getServerList());
+        
+        serverButtons.clear();
+        
+        for (int i = 0; i < serverList.size(); i++) {
+            Screen server = new Button(this,
+                    new Rectangle(0, -20, 100, 25), serverList.get(i).getName(),
+                    getPosition().add(new Vector2f(10, 65 + i * 20)));
+            server.registerScreenManager(getManager());
+            serverButtons.add(server);
+        }
+
+        for (int i = 0; i < serverButtons.size(); i++) {
+            serverButtons.get(i).update(delta);
+        }
 
         // if clicked on server, load the game
-        for (int i = 0; i < servers.size(); i++) {
-            if (servers.get(i).pointInScreen(
+        for (int i = 0; i < serverButtons.size(); i++) {
+            if (serverButtons.get(i).pointInScreen(
                     Input.getInstance().getMousePos().asVector2f())) {
 
             }
@@ -66,8 +76,8 @@ public class ServerListWidget extends Screen {
         font.renderText(renderer, "Server Name",
                 getPosition().add(new Vector2f(10, 40)));
 
-        for (int i = 0; i < servers.size(); i++)
-            servers.get(i).draw(renderer);
+        for (int i = 0; i < serverButtons.size(); i++)
+            serverButtons.get(i).draw(renderer);
 
         // TODO Auto-generated method stub
         renderer.drawRectOutline(getRectangle().translate(getPosition()));
