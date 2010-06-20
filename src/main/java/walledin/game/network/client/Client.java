@@ -294,6 +294,8 @@ public class Client implements RenderListener, NetworkEventListener {
         LOG.info("configure network channel and connecting to server");
         try {
             lastLoginTry = System.currentTimeMillis();
+            
+            LOG.info(server.getAddress());
             host = server.getAddress();
             username = System.getProperty("user.name");
             

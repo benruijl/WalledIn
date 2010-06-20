@@ -61,6 +61,7 @@ public class MainMenuScreen extends Screen {
                 getManager().getScreen(ScreenType.SERVER_LIST).initialize();
                 getManager().getScreen(ScreenType.SERVER_LIST).setActive(true);
                 setState(ScreenState.Hidden); // hide main menu
+                Input.getInstance().setMouseUp(); // FIXME
             }
         }
 

@@ -153,7 +153,7 @@ public class NetworkDataWriter {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.SERVER_NOTIFICATION_MESSAGE);
-        buffer.putShort((short) (port - Short.MAX_VALUE));
+        buffer.putInt(port);
         writeStringData(name, buffer);
         buffer.putInt(players);
         buffer.putInt(maxPlayers);

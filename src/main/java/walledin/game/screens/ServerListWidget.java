@@ -30,6 +30,8 @@ import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.network.ServerData;
+import walledin.game.screens.Screen.ScreenState;
+import walledin.game.screens.ScreenManager.ScreenType;
 
 public class ServerListWidget extends Screen {
     Screen refreshButton;
@@ -69,7 +71,7 @@ public class ServerListWidget extends Screen {
         
         for (int i = 0; i < serverList.size(); i++) {
             Screen server = new Button(this,
-                    new Rectangle(0, -20, 100, 25), serverList.get(i).getName(),
+                    new Rectangle(0, -20, 300, 25), serverList.get(i).getName(),
                     getPosition().add(new Vector2f(10, 65 + i * 20)));
             server.registerScreenManager(getManager());
             serverButtons.add(server);
@@ -83,8 +85,16 @@ public class ServerListWidget extends Screen {
         for (int i = 0; i < serverButtons.size(); i++) {
             if (serverButtons.get(i).pointInScreen(
                     Input.getInstance().getMousePos().asVector2f())) {
-                // connect to server
-                getManager().getClient().connectToServer(serverList.get(i));
+                if (Input.getInstance().getMouseDown()) {
+                    // connect to server
+                    getManager().getClient().connectToServer(serverList.get(i));
+                    
+                    getManager().getScreen(ScreenType.GAME).initialize();
+                    getManager().getScreen(ScreenType.GAME).setActive(true);
+                    getParent().setState(ScreenState.Hidden); // hide main menu
+                    
+                    Input.getInstance().setMouseUp(); // FIXME
+                }
             }
         }
 
