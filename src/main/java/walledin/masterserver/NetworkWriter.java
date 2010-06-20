@@ -73,8 +73,7 @@ public class NetworkWriter {
 
     private void writeInetSocketAddress(final InetSocketAddress address) {
         buffer.put(address.getAddress().getAddress());
-        // write unsigned short
-        buffer.putShort((short) (address.getPort() - Short.MIN_VALUE));
+        buffer.putInt(address.getPort());
     }
 
 }
