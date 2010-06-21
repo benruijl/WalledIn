@@ -46,7 +46,7 @@ public class NetworkConstants {
     public static final byte CHALLENGE_RESPONSE_MESSAGE = 3;
     public static final byte CHALLENGE_MESSAGE = 4;
     
-    public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress("localhost", 1235);
+    public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress("131.174.31.24", 1235);
 
     public static String getAddressRepresentation(final SocketAddress address) {
         final InetSocketAddress inetAddr = (InetSocketAddress) address;
