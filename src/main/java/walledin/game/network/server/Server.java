@@ -281,6 +281,13 @@ public class Server implements NetworkEventListener {
             players.put(address, con);
 
             LOG.info("new player " + name + " @ " + address);
+            
+            // send the client the unique entity name of the player
+            try {
+                networkWriter.sendLoginResponseMessage(channel, con.getAddress(), entityName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     
@@ -383,5 +390,11 @@ public class Server implements NetworkEventListener {
         
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, "map.xml");
+    }
+
+    @Override
+    public void receivedLoginReponseMessage(SocketAddress address,
+            String playerEntityName) {
+     // ignore .. should not happen
     }
 }

@@ -22,6 +22,8 @@ package walledin.game.screens;
 
 import java.awt.event.KeyEvent;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
@@ -36,6 +38,8 @@ import walledin.game.entity.Family;
 import walledin.util.Utils;
 
 public class GameScreen extends Screen {
+    private static final Logger LOG = Logger.getLogger(GameScreen.class);
+    
     private static final int TILE_SIZE = 64;
     private static final int TILES_PER_LINE = 16;
     

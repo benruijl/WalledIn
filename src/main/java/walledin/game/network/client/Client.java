@@ -91,7 +91,7 @@ public class Client implements RenderListener, NetworkEventListener {
         networkDataReader = new NetworkDataReader(this);
         serverList = new HashSet<ServerData>();
         quitting = false;
-        
+
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
     }
@@ -141,7 +141,7 @@ public class Client implements RenderListener, NetworkEventListener {
         }
         return result;
     }
-    
+
     public void refreshServerList() {
         try {
             networkDataWriter.sendGetServersMessage(masterServerChannel);
@@ -149,7 +149,7 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.error("IOException", e);
         }
     }
-    
+
     public Set<ServerData> getServerList() {
         return serverList;
     }
@@ -157,7 +157,8 @@ public class Client implements RenderListener, NetworkEventListener {
     @Override
     public void receivedServersMessage(SocketAddress address,
             Set<ServerData> servers) {
-        LOG.info("Received server list. " + servers.size() + " servers available.");
+        LOG.info("Received server list. " + servers.size()
+                + " servers available.");
         serverList = servers;
     }
 
@@ -216,8 +217,8 @@ public class Client implements RenderListener, NetworkEventListener {
                         masterServerChannel, screenManager.getEntityManager());
                 while (hasMore) {
                     hasMore = networkDataReader.recieveMessage(
-                            masterServerChannel,
-                            screenManager.getEntityManager());
+                            masterServerChannel, screenManager
+                                    .getEntityManager());
                 }
             }
         } catch (final PortUnreachableException e) {
@@ -258,10 +259,10 @@ public class Client implements RenderListener, NetworkEventListener {
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.setState(ScreenState.Visible);
-        
+
         final Screen serverListScreen = new ServerListScreen();
         screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
-        
+
         renderer.hideHardwareCursor();
 
         try {
@@ -283,7 +284,7 @@ public class Client implements RenderListener, NetworkEventListener {
         final Entity cursor = screenManager.getEntityManager().create(
                 Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
-        
+
         connectToMasterServer();
     }
 
@@ -294,18 +295,13 @@ public class Client implements RenderListener, NetworkEventListener {
         LOG.info("configure network channel and connecting to server");
         try {
             lastLoginTry = System.currentTimeMillis();
-            
+
             LOG.info(server.getAddress());
             host = server.getAddress();
             username = System.getProperty("user.name");
-            
+
             channel.configureBlocking(false);
             channel.connect(host);
-
-            final String playerEntityName = NetworkConstants
-                    .getAddressRepresentation(channel.socket()
-                            .getLocalSocketAddress());
-            screenManager.setPlayerName(playerEntityName);
 
             // the client is connected now
             connected = true;
@@ -317,7 +313,7 @@ public class Client implements RenderListener, NetworkEventListener {
             dispose();
         }
     }
-    
+
     /**
      * Connects to a master server.
      */
@@ -350,5 +346,12 @@ public class Client implements RenderListener, NetworkEventListener {
                 }
             }
         }
+    }
+
+    @Override
+    public void receivedLoginReponseMessage(SocketAddress address,
+            String playerEntityName) {
+        screenManager.setPlayerName(playerEntityName);
+        LOG.info("Player entity name received: " + playerEntityName);
     }
 }

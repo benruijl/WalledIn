@@ -30,6 +30,7 @@ public class NetworkConstants {
     // game protocol constants
     public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
     public static final byte LOGIN_MESSAGE = 0;
+    public static final byte LOGIN_RESPONSE_MESSAGE = 5;
     public static final byte INPUT_MESSAGE = 1;
     public static final byte LOGOUT_MESSAGE = 2;
     public static final byte GAMESTATE_MESSAGE = 4;

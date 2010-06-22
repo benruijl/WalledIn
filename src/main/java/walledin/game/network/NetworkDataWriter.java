@@ -36,7 +36,6 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
-import walledin.game.map.Tile;
 import walledin.game.network.server.ChangeSet;
 
 /**
@@ -146,6 +145,16 @@ public class NetworkDataWriter {
         buffer.flip();
         channel.write(buffer);
     }
+    
+    public void sendLoginResponseMessage(final DatagramChannel channel,
+            SocketAddress address, String entityName) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.LOGIN_RESPONSE_MESSAGE);
+        writeStringData(entityName, buffer);
+        buffer.flip();
+        channel.send(buffer, address);
+    }
 
     public void sendLogoutMessage(final DatagramChannel channel)
             throws IOException {
@@ -164,7 +173,7 @@ public class NetworkDataWriter {
         channel.write(buffer);
     }
     
-    public void sendChallengeResponse(final DatagramChannel channel,SocketAddress address, long challengeData) throws IOException {
+    public void sendChallengeResponse(final DatagramChannel channel, SocketAddress address, long challengeData) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.CHALLENGE_RESPONSE_MESSAGE);

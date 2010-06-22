@@ -30,6 +30,7 @@ public interface NetworkEventListener {
             int newVersion);
 
     void receivedLoginMessage(SocketAddress address, String name);
+    void receivedLoginReponseMessage(SocketAddress address, String playerEntityName);
 
     void receivedLogoutMessage(SocketAddress address);
 

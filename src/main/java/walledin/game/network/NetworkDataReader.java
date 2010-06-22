@@ -99,6 +99,14 @@ public class NetworkDataReader {
         final String name = new String(nameBytes);
         listener.receivedLoginMessage(address, name);
     }
+    
+    private void processLoginResponseMessage(final SocketAddress address) {
+        final int nameLength = buffer.getInt();
+        final byte[] nameBytes = new byte[nameLength];
+        buffer.get(nameBytes);
+        final String name = new String(nameBytes);
+        listener.receivedLoginReponseMessage(address, name);
+    }
 
     private void processLogoutMessage(final SocketAddress address) {
         listener.receivedLogoutMessage(address);
@@ -282,6 +290,9 @@ public class NetworkDataReader {
                 break;
             case NetworkConstants.LOGIN_MESSAGE:
                 processLoginMessage(address);
+                break;
+            case NetworkConstants.LOGIN_RESPONSE_MESSAGE:
+                processLoginResponseMessage(address);
                 break;
             case NetworkConstants.LOGOUT_MESSAGE:
                 processLogoutMessage(address);
