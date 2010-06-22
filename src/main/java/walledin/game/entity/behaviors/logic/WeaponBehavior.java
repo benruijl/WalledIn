@@ -56,7 +56,7 @@ public class WeaponBehavior extends Behavior {
 
     @Override
     public final void onMessage(final MessageType messageType, final Object data) {
-        if ((Boolean) getAttribute(Attribute.COLLECTABLE)
+      /*  if ((Boolean) getAttribute(Attribute.COLLECTABLE)
                 && messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
             final Entity ent = colData.getCollisionEntity();
@@ -67,15 +67,8 @@ public class WeaponBehavior extends Behavior {
 
             owner = ent;
 
-            /* Check if player had a previous weapon, if so drop it */
-            /*
-             * if (owner.hasAttribute(Attribute.ACTIVE_WEAPON)) {
-             * owner.sendMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON); }
-             * 
-             * owner.setAttribute(Attribute.ACTIVE_WEAPON, getOwner());
-             */
             setAttribute(Attribute.COLLECTABLE, Boolean.FALSE);
-        }
+        }*/
 
         if (messageType == MessageType.DROP) // to be called by Player only
         {

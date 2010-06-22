@@ -58,9 +58,16 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
             if (weapon.getFamily().getParent() == Family.WEAPON) {
                 if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)
                         || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
+                    
+                    // is weapon already owned?
+                    if ( (Boolean) weapon.getAttribute(Attribute.COLLECTABLE) == Boolean.FALSE)
+                        return;
+                    
                     if (weapons.containsKey(weapon.getFamily())) {
                         return;
                     }
+                    
+                    weapon.setAttribute(Attribute.COLLECTABLE, false);
 
                     weapons.put(weapon.getFamily(), weapon);
                     LOG.info("Adding weapon of family "

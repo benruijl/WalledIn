@@ -21,7 +21,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.map;
 
 import java.net.URL;
+import java.util.List;
 
+import walledin.game.EntityManager;
 import walledin.game.entity.Entity;
 
 /**
@@ -31,7 +33,12 @@ import walledin.game.entity.Entity;
  * @author ben
  */
 public interface GameMapIO {
-    Entity readFromURL(final URL file);
-
-    boolean writeToFile(final Entity map, final String filename);
+    Entity readFromURL(EntityManager entityManager, URL file);
+    /**
+     * The client only has to read the tiles.
+     * @param file File to read from
+     * @return List of tiles
+     */
+    List<Tile> readTilesFromURL(final URL file);
+    boolean writeToFile(final Entity map, final String filename); 
 }
