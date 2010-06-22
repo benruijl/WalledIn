@@ -42,11 +42,6 @@ public class GameMapIOXML implements GameMapIO {
     // FIXME dont use instance vars for this...
     private int width;
     private int height;
-    private final EntityManager entityManager;
-
-    public GameMapIOXML(final EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     /**
      * Reads tile information
@@ -81,7 +76,8 @@ public class GameMapIOXML implements GameMapIO {
         return result;
     }
 
-    private List<Entity> parseItems(final Element element) {
+    private List<Entity> parseItems(final EntityManager entityManager,
+            final Element element) {
         final List<Entity> itList = new ArrayList<Entity>();
         final Element itemsNode = XMLReader.getFirstElement(element, "items");
         final List<Element> items = XMLReader.getElements(itemsNode, "item");
@@ -91,8 +87,8 @@ public class GameMapIOXML implements GameMapIO {
             final String type = el.getAttribute("type");
             final int x = Integer.parseInt(el.getAttribute("x"));
             final int y = Integer.parseInt(el.getAttribute("y"));
-            final Entity item = entityManager.create(
-                    Enum.valueOf(Family.class, type), name);
+            final Entity item = entityManager.create(Enum.valueOf(Family.class,
+                    type), name);
 
             item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
             itList.add(item);
@@ -109,14 +105,14 @@ public class GameMapIOXML implements GameMapIO {
      * @return Returns true on success and false on failure
      */
     @Override
-    public Entity readFromURL(final URL file) {
+    public Entity readFromURL(final EntityManager entityManager, final URL file) {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(file)) {
             final Element mapElement = reader.getRootElement();
 
             final String name = XMLReader.getTextValue(mapElement, "name");
-            final List<Entity> items = parseItems(mapElement);
+            final List<Entity> items = parseItems(entityManager, mapElement);
             final List<Tile> tiles = parseTiles(mapElement);
             final Entity map = entityManager.create(Family.MAP, name);
 
@@ -135,5 +131,18 @@ public class GameMapIOXML implements GameMapIO {
     @Override
     public boolean writeToFile(final Entity map, final String filename) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<Tile> readTilesFromURL(URL file) {
+        final XMLReader reader = new XMLReader();
+
+        if (reader.open(file)) {
+            final Element mapElement = reader.getRootElement();
+            final List<Tile> tiles = parseTiles(mapElement);
+            return tiles;
+        } else {
+            return null;
+        }
     }
 }

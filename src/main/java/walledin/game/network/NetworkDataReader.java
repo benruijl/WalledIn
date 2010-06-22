@@ -36,8 +36,11 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
+import walledin.game.map.GameMapIO;
+import walledin.game.map.GameMapIOXML;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
+import walledin.util.Utils;
 
 /**
  * Reads network messages
@@ -104,7 +107,7 @@ public class NetworkDataReader {
             final ByteBuffer buffer, final EntityManager entityManager) {
         // Write attribute identification
         final short ord = buffer.getShort();
-        // FIXME don't user ordinal
+        // FIXME don't use ordinal
         final Attribute attribute = Attribute.values()[ord];
         Object data = null;
         switch (attribute) {
@@ -125,9 +128,6 @@ public class NetworkDataReader {
             break;
         case ITEM_LIST:
             data = readEntityListData(buffer, entityManager);
-            break;
-        case TILES:
-            data = readTileListData(buffer);
             break;
         case POSITION:
             data = readVector2fData(buffer);
@@ -168,8 +168,10 @@ public class NetworkDataReader {
         switch (type) {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
-
-            entityManager.create(Enum.valueOf(Family.class, familyName), name);
+            Family family = Enum.valueOf(Family.class, familyName);
+            
+            entity = entityManager.create(family, name);
+            readFamilySpecificData(family, entity);
 
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
@@ -181,6 +183,21 @@ public class NetworkDataReader {
             break;
         }
         return true;
+    }
+
+    private void readFamilySpecificData(Family family, Entity entity) {
+        switch (family) {
+        case MAP:
+            String mapName = readStringData(buffer);
+            entity.setAttribute(Attribute.MAP_NAME, mapName);
+            
+            // load the tiles
+            GameMapIO mapIO = new GameMapIOXML();
+            entity.setAttribute(Attribute.TILES, mapIO.readTilesFromURL(Utils.getClasspathURL(mapName)));
+            break;
+        default:
+            break;
+        }        
     }
 
     private Object readEntityListData(final ByteBuffer buffer,
@@ -200,20 +217,6 @@ public class NetworkDataReader {
         final byte[] bytes = new byte[size];
         buffer.get(bytes);
         return new String(bytes);
-    }
-
-    private Object readTileListData(final ByteBuffer buffer) {
-        final int size = buffer.getInt();
-        final List<Tile> tiles = new ArrayList<Tile>();
-        for (int i = 0; i < size; i++) {
-            final int x = buffer.getInt();
-            final int y = buffer.getInt();
-            final int ord = buffer.getInt();
-            final TileType type = TileType.values()[ord];
-            final Tile tile = new Tile(type, x, y);
-            tiles.add(tile);
-        }
-        return tiles;
     }
 
     private Object readVector2fData(final ByteBuffer buffer) {

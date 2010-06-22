@@ -174,7 +174,9 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG.info("Connection lost to client " + connection.getAddress());
+                LOG
+                        .info("Connection lost to client "
+                                + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {
@@ -348,8 +350,11 @@ public class Server implements NetworkEventListener {
         // initialize entity manager
         entityManager.init();
 
-        final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML
-        // as format
-        map = mapIO.readFromURL(Utils.getClasspathURL("map.xml"));
+        final GameMapIO mapIO = new GameMapIOXML(); // choose XML as format
+        map = mapIO
+                .readFromURL(entityManager, Utils.getClasspathURL("map.xml"));
+        
+        // this name will be sent to the client
+        map.setAttribute(Attribute.MAP_NAME, "map.xml");
     }
 }

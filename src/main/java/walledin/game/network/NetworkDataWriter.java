@@ -57,6 +57,26 @@ public class NetworkDataWriter {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 
+    /**
+     * Sometimes it is required to send extra data on entity creation. This
+     * function takes care of that.
+     * 
+     * @param family
+     *            Family of entity
+     * @param entity
+     *            Entity
+     */
+    private void writeFamilySpecificData(Family family, Entity entity) {
+        switch (family) {
+        case MAP:
+            writeStringData((String) entity.getAttribute(Attribute.MAP_NAME),
+                    buffer);
+            break;
+        default:
+            break;
+        }
+    }
+
     public void sendGamestateMessage(final DatagramChannel channel,
             final SocketAddress address, final EntityManager entityManager,
             final ChangeSet changeSet, final int knownClientVersion,
@@ -78,7 +98,12 @@ public class NetworkDataWriter {
             writeStringData(entry.getKey(), buffer);
             // write family of entity
             writeStringData(entry.getValue().toString(), buffer);
+
+            // write family specific data
+            writeFamilySpecificData(entry.getValue(), entityManager.get(entry
+                    .getKey()));
         }
+
         for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
                 .entrySet()) {
             final Entity entity = entityManager.get(entry.getKey());
@@ -154,9 +179,6 @@ public class NetworkDataWriter {
         case ITEM_LIST:
             writeItemsData((List<Entity>) data, buffer);
             break;
-        case TILES:
-            writeTilesData((List<Tile>) data, buffer);
-            break;
         case POSITION:
             writeVector2fData((Vector2f) data, buffer);
             break;
@@ -194,15 +216,6 @@ public class NetworkDataWriter {
     private void writeStringData(final String data, final ByteBuffer buffer) {
         buffer.putInt(data.length());
         buffer.put(data.getBytes());
-    }
-
-    private void writeTilesData(final List<Tile> data, final ByteBuffer buffer) {
-        buffer.putInt(data.size());
-        for (final Tile tile : data) {
-            buffer.putInt(tile.getX());
-            buffer.putInt(tile.getY());
-            buffer.putInt(tile.getType().ordinal());
-        }
     }
 
     private void writeVector2fData(final Vector2f data, final ByteBuffer buffer) {
