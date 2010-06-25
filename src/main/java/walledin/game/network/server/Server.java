@@ -62,6 +62,7 @@ public class Server implements NetworkEventListener {
     private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
 
     private static final String SERVER_NAME = "Cool WalledIn Server!";
+    private static final long CHALLENGE_TIMEOUT = 2000;
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
     private final NetworkDataWriter networkWriter;
@@ -74,6 +75,7 @@ public class Server implements NetworkEventListener {
     private final EntityFactory entityFactory;
     private DatagramChannel masterServerChannel;
     private DatagramChannel channel;
+    private long lastChallenge;
 
     /**
      * Creates a new server. Initializes variables to their default values.
@@ -122,6 +124,8 @@ public class Server implements NetworkEventListener {
         masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
         masterServerChannel.configureBlocking(false);
 
+        lastChallenge = System.currentTimeMillis();
+        
         networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
                 SERVER_NAME, players.size(), Integer.MAX_VALUE);
 
@@ -160,6 +164,11 @@ public class Server implements NetworkEventListener {
         boolean hasMore = networkReader.recieveMessage(channel, entityManager);
         while (hasMore) {
             hasMore = networkReader.recieveMessage(channel, entityManager);
+        }
+        
+        if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
+            LOG.warn("Did not recieve challenge from master server yet!");
+            lastChallenge = System.currentTimeMillis();
         }
 
         double delta = System.nanoTime() - currentTime;
@@ -295,6 +304,7 @@ public class Server implements NetworkEventListener {
     public void receivedChallengeMessage(SocketAddress address,
             long challengeData) {
         try {
+            lastChallenge = System.currentTimeMillis();
             networkWriter.sendChallengeResponse(channel, address, challengeData);
         } catch (IOException e) {
             LOG.error("IOException during challengeResponse", e);
