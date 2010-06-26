@@ -22,29 +22,41 @@ package walledin.game.screens;
 
 import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.TextureManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.MessageType;
 import walledin.game.screens.ScreenManager.ScreenType;
+import walledin.util.Utils;
 
 public class MainMenuScreen extends Screen {
     Screen startButton;
+    Screen quitButton;
 
     public MainMenuScreen() {
         super(null, null);
     }
 
     @Override
-    public void draw(final Renderer renderer) {        
+    public void draw(final Renderer renderer) {
         super.draw(renderer);
+        
+        renderer.drawRect("logo", new Rectangle(250, 50, 256, 128));
+        
         getManager().getCursor().sendMessage(MessageType.RENDER, renderer);
     }
 
     @Override
     public void initialize() {
+        TextureManager.getInstance().loadFromURL(
+                Utils.getClasspathURL("logo.png"), "logo");
+
         startButton = new Button(this, new Rectangle(0, -20, 100, 25),
-                "Start game", new Vector2f(300, 100));
+                "Start game", new Vector2f(330, 200));
+        quitButton = new Button(this, new Rectangle(0, -20, 70, 25),
+                "Quit", new Vector2f(360, 250));
         addChild(startButton);
+        addChild(quitButton);
     }
 
     @Override
@@ -54,6 +66,13 @@ public class MainMenuScreen extends Screen {
         }
 
         super.update(delta);
+        
+        if (quitButton.pointInScreen(Input.getInstance().getMousePos()
+                .asVector2f())) {
+            if (Input.getInstance().getMouseDown()) {
+            getManager().dispose(); // quit application
+            }
+        }
 
         if (startButton.pointInScreen(Input.getInstance().getMousePos()
                 .asVector2f())) {
