@@ -48,4 +48,6 @@ public abstract class Geometry {
     public abstract Circle asInscribedCircle();
 
     public abstract Geometry translate(final Vector2f pos);
+    
+    public abstract boolean containsPoint(final Vector2f point);
 }

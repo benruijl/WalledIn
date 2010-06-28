@@ -20,12 +20,14 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network.client;
 
-import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
+import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -35,46 +37,49 @@ import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
-import walledin.engine.TextureManager;
-import walledin.engine.TexturePartManager;
-import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
-import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.ServerData;
+import walledin.game.screens.GameScreen;
+import walledin.game.screens.MainMenuScreen;
+import walledin.game.screens.Screen;
+import walledin.game.screens.Screen.ScreenState;
+import walledin.game.screens.ScreenManager;
+import walledin.game.screens.ScreenManager.ScreenType;
+import walledin.game.screens.ServerListScreen;
 import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(Client.class);
     private static final int PORT = 1234;
-    private static final int TILE_SIZE = 64;
-    private static final int TILES_PER_LINE = 16;
 
-    private Font font;
     private final Renderer renderer; // current renderer
-    private final EntityManager entityManager;
-    private final EntityFactory entityFactory;
-    private final SocketAddress host;
-    private final String username;
-    private Entity cursor;
+    private final ScreenManager screenManager;
+    private Screen gameScreen;
+    private SocketAddress host;
+    private String username;
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
-    private final DatagramChannel channel;
-    private String playerEntityName;
+    private DatagramChannel channel;
+    private DatagramChannel masterServerChannel;
+    private Set<ServerData> serverList;
     private boolean quitting = false;
+
+    /** Keeps track if the player is connected to a server. */
+    private boolean connected = false;
+    private boolean connectedMasterServer = false;
     private int receivedVersion = 0;
     private long lastLoginTry;
-    // in millisec
-    private long LOGIN_RETRY_TIME = 1000;
+    // in milliseconds
+    private final long LOGIN_RETRY_TIME = 1000;
 
     /**
-     * Create the client
+     * Create the client.
      * 
      * @param renderer
      *            Current renderer
@@ -82,16 +87,15 @@ public class Client implements RenderListener, NetworkEventListener {
      */
     public Client(final Renderer renderer) throws IOException {
         this.renderer = renderer;
-        entityFactory = new EntityFactory();
-        entityManager = new EntityManager(entityFactory);
+        screenManager = new ScreenManager(this, renderer);
+
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
+        serverList = new HashSet<ServerData>();
         quitting = false;
-        lastLoginTry = System.currentTimeMillis();
-        // Hardcode the host and username for now
-        host = new InetSocketAddress("localhost", PORT);
-        username = System.getProperty("user.name");
+
         channel = DatagramChannel.open();
+        masterServerChannel = DatagramChannel.open();
     }
 
     public static void main(final String[] args) {
@@ -100,7 +104,7 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             client = new Client(renderer);
         } catch (final IOException e) {
-            LOG.fatal("IO exception while creation of client", e);
+            LOG.fatal("IO exception while creating client.", e);
             return;
         }
         LOG.info("initializing renderer");
@@ -140,6 +144,26 @@ public class Client implements RenderListener, NetworkEventListener {
         return result;
     }
 
+    public void refreshServerList() {
+        try {
+            networkDataWriter.sendGetServersMessage(masterServerChannel);
+        } catch (IOException e) {
+            LOG.error("IOException", e);
+        }
+    }
+
+    public Set<ServerData> getServerList() {
+        return serverList;
+    }
+
+    @Override
+    public void receivedServersMessage(SocketAddress address,
+            Set<ServerData> servers) {
+        LOG.info("Received server list. " + servers.size()
+                + " servers available.");
+        serverList = servers;
+    }
+
     @Override
     public void receivedLoginMessage(final SocketAddress address,
             final String name) {
@@ -158,6 +182,12 @@ public class Client implements RenderListener, NetworkEventListener {
         // ignore
     }
 
+    @Override
+    public void receivedChallengeMessage(SocketAddress address,
+            long challengeData) {
+        // ignore
+    }
+
     /**
      * Update the current game state
      * 
@@ -168,98 +198,80 @@ public class Client implements RenderListener, NetworkEventListener {
     public void update(final double delta) {
         // network stuff
         try {
-            if (lastLoginTry >= 0
-                    && ((System.currentTimeMillis() - lastLoginTry) > LOGIN_RETRY_TIME)) {
-                lastLoginTry = System.currentTimeMillis();
-                networkDataWriter.sendLoginMessage(channel, username);
+            if (connected) {
+
+                if (lastLoginTry >= 0
+                        && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
+                    lastLoginTry = System.currentTimeMillis();
+                    networkDataWriter.sendLoginMessage(channel, username);
+                }
+                // Read messages.
+                boolean hasMore = networkDataReader.recieveMessage(channel,
+                        screenManager.getEntityManager());
+                while (hasMore) {
+                    hasMore = networkDataReader.recieveMessage(channel,
+                            screenManager.getEntityManager());
+                }
             }
-            // Read messages.
-            boolean hasMore = networkDataReader.recieveMessage(channel,
-                    entityManager);
-            while (hasMore) {
-                hasMore = networkDataReader.recieveMessage(channel,
-                        entityManager);
+            if (connectedMasterServer) {
+                // Read messages.
+                boolean hasMore = networkDataReader.recieveMessage(
+                        masterServerChannel, screenManager.getEntityManager());
+                while (hasMore) {
+                    hasMore = networkDataReader.recieveMessage(
+                            masterServerChannel, screenManager
+                                    .getEntityManager());
+                }
             }
-        } catch (PortUnreachableException e) {
+        } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
             dispose();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        /* Update all entities */
-        entityManager.update(delta);
-
-        /* Center the camera around the player */
-        if (playerEntityName != null) {
-            final Entity player = entityManager.get(playerEntityName);
-            if (player != null) {
-                renderer.centerAround((Vector2f) player
-                        .getAttribute(Attribute.POSITION));
-            }
-        }
-
-        /* Update cursor position */
-        cursor.setAttribute(Attribute.POSITION,
-                renderer.screenToWorld(Input.getInstance().getMousePos()));
-
-        if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
+        } catch (final IOException e) {
+            LOG.fatal("IOException", e);
             dispose();
-            return;
         }
 
-        /* Toggle full screen, current not working correctly */
-        if (Input.getInstance().isKeyDown(KeyEvent.VK_F1)) {
-            renderer.toggleFullScreen();
-            Input.getInstance().setKeyUp(KeyEvent.VK_F1);
-        }
+        screenManager.update(delta);
     }
 
     /**
-     * Render the current game state
+     * Render the current gamestate.
      */
     @Override
     public void draw(final Renderer renderer) {
-        // prevent network from coming in between
-        synchronized (entityManager) {
-            entityManager.draw(renderer); // draw all entities in correct order
-
-            /* Render current FPS */
-            renderer.startHUDRendering();
-            font.renderText(renderer, "FPS: " + renderer.getFPS(),
-                    new Vector2f(600, 20));
-
-            final Entity player = entityManager.get(playerEntityName);
-
-            if (player != null) {
-                font.renderText(renderer,
-                        "HP: " + player.getAttribute(Attribute.HEALTH),
-                        new Vector2f(600, 40));
-            }
-
-            renderer.stopHUDRendering();
-        }
+        screenManager.draw(renderer);
     }
 
     /**
-     * Initialize game
+     * Initialize game.
      */
     @Override
     public void init() {
         LOG.info("initializing client");
-        loadTextures();
-        createTextureParts();
 
-        font = new Font(); // load font
-
+        /* Load standard font */
+        final Font font = new Font();
         font.readFromStream(Utils.getClasspathURL("arial20.font"));
+        screenManager.addFont("arial20", font);
+
+        /* Create game screen and add it to the screen manager. */
+        gameScreen = new GameScreen();
+        screenManager.addScreen(ScreenType.GAME, gameScreen);
+        final Screen menuScreen = new MainMenuScreen();
+        screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
+        menuScreen.initialize();
+        menuScreen.setState(ScreenState.Visible);
+
+        final Screen serverListScreen = new ServerListScreen();
+        screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
+
+        renderer.hideHardwareCursor();
 
         try {
-            entityFactory.loadScript(Utils
-                    .getClasspathURL("entities/entities.groovy"));
-            entityFactory.loadScript(Utils
-                    .getClasspathURL("entities/cliententities.groovy"));
+            screenManager.getEntityFactory().loadScript(
+                    Utils.getClasspathURL("entities/entities.groovy"));
+            screenManager.getEntityFactory().loadScript(
+                    Utils.getClasspathURL("entities/cliententities.groovy"));
         } catch (final CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
             dispose();
@@ -268,122 +280,58 @@ public class Client implements RenderListener, NetworkEventListener {
             dispose();
         }
         // initialize entity manager
-        entityManager.init();
-
-        // Background is not created by server (not yet anyway)
-        entityManager.create(Family.BACKGROUND, "Background");
+        screenManager.getEntityManager().init();
 
         // create cursor
-        cursor = entityManager.create(Family.CURSOR, "cursor");
+        final Entity cursor = screenManager.getEntityManager().create(
+                Family.CURSOR, "cursor");
+        screenManager.setCursor(cursor);
 
-        LOG.info("configure network channel");
+        connectToMasterServer();
+    }
+
+    /**
+     * Connects to a game server.
+     */
+    public final void connectToServer(final ServerData server) {
+        LOG.info("configure network channel and connecting to server");
         try {
+            lastLoginTry = System.currentTimeMillis();
+
+            LOG.info(server.getAddress());
+            host = server.getAddress();
+            username = System.getProperty("user.name");
+
             channel.configureBlocking(false);
             channel.connect(host);
-            playerEntityName = NetworkConstants
-                    .getAddressRepresentation(channel.socket()
-                            .getLocalSocketAddress());
-        } catch (PortUnreachableException e) {
+
+            // the client is connected now
+            connected = true;
+        } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
             dispose();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.fatal("IOException", e);
             dispose();
         }
     }
 
-    private void loadTextures() {
-        final TextureManager manager = TextureManager.getInstance();
-        manager.loadFromURL(Utils.getClasspathURL("tiles.png"), "tiles");
-        manager.loadFromURL(Utils.getClasspathURL("zon.png"), "sun");
-        manager.loadFromURL(Utils.getClasspathURL("player.png"), "player");
-        manager.loadFromURL(Utils.getClasspathURL("wall.png"), "wall");
-    }
-
-    private void createTextureParts() {
-        final TexturePartManager manager = TexturePartManager.getInstance();
-        manager.createTexturePart("player_eyes", "player", new Rectangle(70,
-                96, 20, 32));
-        manager.createTexturePart("player_background", "player", new Rectangle(
-                96, 0, 96, 96));
-        manager.createTexturePart("player_body", "player", new Rectangle(0, 0,
-                96, 96));
-        manager.createTexturePart("player_background_foot", "player",
-                new Rectangle(192, 64, 96, 32));
-        manager.createTexturePart("player_foot", "player", new Rectangle(192,
-                32, 96, 32));
-        manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
-        manager.createTexturePart(
-                "tile_empty",
-                "tiles",
-                createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_filled",
-                "tiles",
-                createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_left",
-                "tiles",
-                createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_right",
-                "tiles",
-                createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass",
-                "tiles",
-                createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_grass",
-                "tiles",
-                createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_mud",
-                "tiles",
-                createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_right_mud",
-                "tiles",
-                createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass",
-                "tiles",
-                createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_left_mud",
-                "tiles",
-                createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_right_mud",
-                "tiles",
-                createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass_end",
-                "tiles",
-                createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_mud",
-                "tiles",
-                createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-    }
-
-    private Rectangle createMapTextureRectangle(final int tileNumber,
-            final int tileNumPerLine, final int tileWidth, final int tileHeight) {
-        return new Rectangle((tileNumber % 16 * tileWidth + 1), (tileNumber
-                / 16 * tileHeight + 1), (tileWidth - 2), (tileHeight - 2));
+    /**
+     * Connects to a master server.
+     */
+    public final void connectToMasterServer() {
+        LOG.info("configure network channel and connecting to master server");
+        try {
+            masterServerChannel.configureBlocking(false);
+            masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
+            connectedMasterServer = true;
+        } catch (final PortUnreachableException e) {
+            LOG.fatal("Could not connect to server. PortUnreachableException");
+            dispose();
+        } catch (final IOException e) {
+            LOG.fatal("IOException", e);
+            dispose();
+        }
     }
 
     @Override
@@ -391,11 +339,21 @@ public class Client implements RenderListener, NetworkEventListener {
         if (!quitting) {
             quitting = true;
             renderer.dispose();
-            try {
-                networkDataWriter.sendLogoutMessage(channel);
-            } catch (IOException e) {
-                LOG.fatal("IOException during logout", e);
+
+            if (connected) {
+                try {
+                    networkDataWriter.sendLogoutMessage(channel);
+                } catch (final IOException e) {
+                    LOG.fatal("IOException during logout", e);
+                }
             }
         }
+    }
+
+    @Override
+    public void receivedLoginReponseMessage(SocketAddress address,
+            String playerEntityName) {
+        screenManager.setPlayerName(playerEntityName);
+        LOG.info("Player entity name received: " + playerEntityName);
     }
 }

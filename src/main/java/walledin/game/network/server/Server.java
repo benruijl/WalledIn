@@ -47,6 +47,7 @@ import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.ServerData;
 import walledin.util.Utils;
 
 /**
@@ -59,6 +60,9 @@ public class Server implements NetworkEventListener {
     private static final int PORT = 1234;
     private static final int UPDATES_PER_SECOND = 60;
     private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
+
+    private static final String SERVER_NAME = "Cool WalledIn Server!";
+    private static final long CHALLENGE_TIMEOUT = 2000;
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
     private final NetworkDataWriter networkWriter;
@@ -69,6 +73,9 @@ public class Server implements NetworkEventListener {
     private final Queue<ChangeSet> changeSets;
     private final Map<Integer, ChangeSet> changeSetLookup;
     private final EntityFactory entityFactory;
+    private DatagramChannel masterServerChannel;
+    private DatagramChannel channel;
+    private long lastChallenge;
 
     /**
      * Creates a new server. Initializes variables to their default values.
@@ -110,9 +117,17 @@ public class Server implements NetworkEventListener {
     public void run() throws IOException {
         LOG.info("initializing");
         init();
-        final DatagramChannel channel = DatagramChannel.open();
+        channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(PORT));
         channel.configureBlocking(false);
+        masterServerChannel = DatagramChannel.open();
+        masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
+        masterServerChannel.configureBlocking(false);
+
+        lastChallenge = System.currentTimeMillis();
+        
+        networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
+                SERVER_NAME, players.size(), Integer.MAX_VALUE);
 
         currentTime = System.nanoTime(); // initialize
         running = true;
@@ -150,6 +165,11 @@ public class Server implements NetworkEventListener {
         while (hasMore) {
             hasMore = networkReader.recieveMessage(channel, entityManager);
         }
+        
+        if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
+            LOG.warn("Did not recieve challenge from master server yet!");
+            lastChallenge = System.currentTimeMillis();
+        }
 
         double delta = System.nanoTime() - currentTime;
         currentTime = System.nanoTime();
@@ -174,7 +194,9 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG.info("Connection lost to client " + connection.getAddress());
+                LOG
+                        .info("Connection lost to client "
+                                + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {
@@ -268,7 +290,31 @@ public class Server implements NetworkEventListener {
             players.put(address, con);
 
             LOG.info("new player " + name + " @ " + address);
+            
+            // send the client the unique entity name of the player
+            try {
+                networkWriter.sendLoginResponseMessage(channel, con.getAddress(), entityName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+    }
+    
+    @Override
+    public void receivedChallengeMessage(SocketAddress address,
+            long challengeData) {
+        try {
+            lastChallenge = System.currentTimeMillis();
+            networkWriter.sendChallengeResponse(channel, address, challengeData);
+        } catch (IOException e) {
+            LOG.error("IOException during challengeResponse", e);
+        }
+    }
+
+    @Override
+    public void receivedServersMessage(SocketAddress address,
+            Set<ServerData> servers) {
+     // ignore .. should not happen
     }
 
     /**
@@ -348,8 +394,17 @@ public class Server implements NetworkEventListener {
         // initialize entity manager
         entityManager.init();
 
-        final GameMapIO mapIO = new GameMapIOXML(entityManager); // choose XML
-        // as format
-        map = mapIO.readFromURL(Utils.getClasspathURL("map.xml"));
+        final GameMapIO mapIO = new GameMapIOXML(); // choose XML as format
+        map = mapIO
+                .readFromURL(entityManager, Utils.getClasspathURL("map.xml"));
+        
+        // this name will be sent to the client
+        map.setAttribute(Attribute.MAP_NAME, "map.xml");
+    }
+
+    @Override
+    public void receivedLoginReponseMessage(SocketAddress address,
+            String playerEntityName) {
+     // ignore .. should not happen
     }
 }

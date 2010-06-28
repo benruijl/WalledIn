@@ -21,11 +21,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.engine;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.MemoryImageSource;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -133,7 +138,7 @@ public class Renderer implements GLEventListener {
 
         mCanvas.addKeyListener(Input.getInstance()); // listen to keys
         mCanvas.addMouseMotionListener(Input.getInstance()); // listen to mouse
-                                                             // moves
+        // moves
         mCanvas.addMouseListener(Input.getInstance());
         lastUpdate = -1;
     }
@@ -143,6 +148,19 @@ public class Renderer implements GLEventListener {
         anim.stop();
         win.dispose();
         quitting = true; // prevent function calls to GL after this
+    }
+
+    /**
+     * Hides the hardware cursor.
+     */
+    public final void hideHardwareCursor() {
+        int[] pixels = new int[16 * 16];
+        Image image = Toolkit.getDefaultToolkit().createImage(
+                new MemoryImageSource(16, 16, pixels, 0, 16));
+        Cursor transparentCursor = Toolkit.getDefaultToolkit()
+                .createCustomCursor(image, new Point(0, 0), "invisibleCursor");
+
+        mCanvas.setCursor(transparentCursor);
     }
 
     /**
@@ -296,6 +314,29 @@ public class Renderer implements GLEventListener {
             texture.bind();
             lastTexture = texture;
         }
+    }
+
+    /**
+     * Draws the outline of a rectangle. Useful for checking and debugging
+     * bounding rectangles.
+     * 
+     * @param rect
+     *            Rectangle to draw
+     */
+    public final void drawRectOutline(final Rectangle rect) {
+        
+        gl.glPushAttrib(GL.GL_ENABLE_BIT);
+        gl.glDisable(GL.GL_TEXTURE_2D);
+        gl.glColor3f(1, 1, 1);
+        
+        gl.glBegin(GL.GL_LINE_LOOP);
+        gl.glVertex2f(rect.getLeft(), rect.getTop());
+        gl.glVertex2f(rect.getLeft(), rect.getBottom());
+        gl.glVertex2f(rect.getRight(), rect.getBottom());
+        gl.glVertex2f(rect.getRight(), rect.getTop());
+        gl.glEnd();
+        
+        gl.glPopAttrib();
     }
 
     /**
@@ -521,6 +562,16 @@ public class Renderer implements GLEventListener {
         gl.glScalef(vec.getX(), vec.getY(), 1);
 
     }
+    
+    /**
+     * Sets the current color.
+     * @param r R
+     * @param g G
+     * @param b B
+     */
+    public void setColorRGB(float r, float g, float b) {
+        gl.glColor3f(r, g, b);
+    }
 
     /**
      * Centers the camera around a specific point.
@@ -529,8 +580,8 @@ public class Renderer implements GLEventListener {
      *            The point the camera will center around
      */
     public void centerAround(final Vector2f vec) {
-        mCam.setPos(new Vector2f(-vec.getX() + mWidth * 0.5f, -vec.getY() + mHeight
-                * 0.5f));
+        mCam.setPos(new Vector2f(-vec.getX() + mWidth * 0.5f, -vec.getY()
+                + mHeight * 0.5f));
     }
 
     /**

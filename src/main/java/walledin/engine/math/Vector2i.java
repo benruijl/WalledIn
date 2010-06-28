@@ -55,4 +55,8 @@ public class Vector2i {
         return dot(this);
     }
 
+    public Vector2f asVector2f() {
+        return new Vector2f((float) x, (float) y);
+    }
+
 }

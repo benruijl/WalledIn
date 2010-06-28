@@ -149,5 +149,14 @@ public final class Input implements KeyListener, MouseListener,
     public boolean getMouseDown() {
         return mouseDown;
     }
+    
+    /**
+     * Set the mouse state to up.
+     * 
+     * FIXME: create a check if mouse clicked instead of this
+     */
+    public void setMouseUp() {
+        mouseDown = false;
+    }
 
 }

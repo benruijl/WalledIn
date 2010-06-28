@@ -35,7 +35,7 @@ public class StandardCollisionResponseBehavior extends Behavior {
     private static final Logger LOG = Logger
             .getLogger(StandardCollisionResponseBehavior.class);
 
-    public StandardCollisionResponseBehavior(Entity owner) {
+    public StandardCollisionResponseBehavior(final Entity owner) {
         super(owner);
         // TODO Auto-generated constructor stub
     }
@@ -140,7 +140,7 @@ public class StandardCollisionResponseBehavior extends Behavior {
     }
 
     @Override
-    public void onMessage(MessageType messageType, Object data) {
+    public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
             doRepsonse((CollisionData) data);
         }
@@ -148,7 +148,7 @@ public class StandardCollisionResponseBehavior extends Behavior {
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
         // TODO Auto-generated method stub
 
     }

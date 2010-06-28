@@ -24,9 +24,13 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 public class NetworkConstants {
+    // TODO: what is max upd size?
     public static final int BUFFER_SIZE = 1024 * 1024;
+    
+    // game protocol constants
     public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
     public static final byte LOGIN_MESSAGE = 0;
+    public static final byte LOGIN_RESPONSE_MESSAGE = 5;
     public static final byte INPUT_MESSAGE = 1;
     public static final byte LOGOUT_MESSAGE = 2;
     public static final byte GAMESTATE_MESSAGE = 4;
@@ -34,6 +38,16 @@ public class NetworkConstants {
     public static final byte GAMESTATE_MESSAGE_REMOVE_ENTITY = 1;
     public static final byte GAMESTATE_MESSAGE_ATTRIBUTES = 2;
     public static final byte GAMESTATE_MESSAGE_END = 3;
+    
+    //Master server protocol constants
+    public static final int MS_DATAGRAM_IDENTIFICATION = 0x174BC126;
+    public static final byte GET_SERVERS_MESSAGE = 0;
+    public static final byte SERVER_NOTIFICATION_MESSAGE = 1;
+    public static final byte SERVERS_MESSAGE = 2;
+    public static final byte CHALLENGE_RESPONSE_MESSAGE = 3;
+    public static final byte CHALLENGE_MESSAGE = 4;
+    
+    public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress("131.174.31.24", 1235);
 
     public static String getAddressRepresentation(final SocketAddress address) {
         final InetSocketAddress inetAddr = (InetSocketAddress) address;

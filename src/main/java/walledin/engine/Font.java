@@ -46,7 +46,7 @@ public class Font {
      * @author Ben Ruijl
      * 
      */
-    private static class Glyph {
+    private class Glyph {
         private final int width;
         private final int height;
         private final int advance;
@@ -75,13 +75,13 @@ public class Font {
 
     private static final Logger LOG = Logger.getLogger(Font.class);
     private String name;
-    private int width;
-    private int height;
+    private int texWidth;
+    private int texHeight;
     private int glyphCount;
     private Map<Character, Glyph> glyphs;
 
     /**
-     * Get font name
+     * Get font name.
      * 
      * @return Font name
      */
@@ -90,7 +90,7 @@ public class Font {
     }
 
     /**
-     * Converts a little endian int to big endian int
+     * Converts a little endian int to big endian int.
      * 
      * @param i
      *            little endian int
@@ -103,13 +103,13 @@ public class Font {
     }
 
     /**
-     * Reads a font from a custom format
+     * Reads a font from a custom format.
      * 
      * @param file
      *            Font file. Custom .font format
      * @return True on success, false on failure
      */
-    public boolean readFromStream(final URL file) {
+    public final boolean readFromStream(final URL file) {
         DataInputStream in;
         try {
             in = new DataInputStream(file.openStream());
@@ -134,14 +134,14 @@ public class Font {
             }
 
             // read texture information
-            width = toBigEndian(in.readInt());
-            height = toBigEndian(in.readInt());
-            final byte[] texBufArray = new byte[width * height * 2];
+            texWidth = toBigEndian(in.readInt());
+            texHeight = toBigEndian(in.readInt());
+            final byte[] texBufArray = new byte[texWidth * texHeight * 2];
             // FIXME: ignores the amount of lines read
-            in.read(texBufArray, 0, width * height * 2);
+            in.read(texBufArray, 0, texWidth * texHeight * 2);
 
-            final TextureData texData = new TextureData(GL.GL_RGBA, width,
-                    height, 0, GL.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE,
+            final TextureData texData = new TextureData(GL.GL_RGBA, texWidth,
+                    texHeight, 0, GL.GL_LUMINANCE_ALPHA, GL.GL_UNSIGNED_BYTE,
                     true, false, false, ByteBuffer.wrap(texBufArray), null); // needs
             // flusher?
 
@@ -173,7 +173,7 @@ public class Font {
      * @param pos
      *            Position to render to
      */
-    public void renderChar(final Renderer renderer, final Character c,
+    public final void renderChar(final Renderer renderer, final Character c,
             final Vector2f pos) {
         if (!glyphs.containsKey(c)) {
             return;
@@ -183,15 +183,14 @@ public class Font {
         final Texture tex = TextureManager.getInstance().get(name);
 
         // FIXME: calculate true texture positions somewhere else
-        renderer.drawRect(name,
-                new Rectangle((glyph.startX + 0.500f) / tex.getWidth(),
-                        (glyph.startY + 0.500f) / tex.getHeight(),
-                        (glyph.width - 1.000f) / tex.getWidth(),
-                        (glyph.height - 1.000f) / tex.getHeight()),
-                new Rectangle(pos.getX()
+        renderer.drawRect(name, new Rectangle((glyph.startX + 0.500f)
+                / tex.getWidth(), (glyph.startY + 0.500f) / tex.getHeight(),
+                (glyph.width - 1.000f) / tex.getWidth(),
+                (glyph.height - 1.000f) / tex.getHeight()), new Rectangle(pos
+                .getX()
 
                 + glyph.bearingX, pos.getY() - glyph.bearingY, glyph.width,
-                        glyph.height));
+                glyph.height));
 
         renderer.translate(new Vector2f(glyph.advance, 0));
     }
@@ -206,7 +205,7 @@ public class Font {
      * @param pos
      *            Position to render to
      */
-    public void renderText(final Renderer renderer, final String text,
+    public final void renderText(final Renderer renderer, final String text,
             final Vector2f pos) {
         renderer.pushMatrix();
 
@@ -215,6 +214,21 @@ public class Font {
         }
 
         renderer.popMatrix();
+    }
+    
+    /**
+     * Gets the width of an untransformed text.
+     * @param text Text
+     * @return Width
+     */
+    public final int getTextWidth(final String text) {
+        int width = 0;
+        
+        for (int i = 0; i < text.length(); i++) {        
+           width += glyphs.get(text.charAt(i)).advance;
+        }
+        
+        return width;
     }
 
 }

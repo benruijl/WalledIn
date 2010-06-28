@@ -139,7 +139,7 @@ public class CollisionManager {
         entArray = entities.toArray(entArray);
 
         for (int i = 0; i < entArray.length - 1; i++) {
-            for (int j = i + 1; j < entArray.length; j++) {               
+            for (int j = i + 1; j < entArray.length; j++) {
                 if (!entArray[i].hasAttribute(Attribute.BOUNDING_GEOMETRY)
                         || !entArray[j]
                                 .hasAttribute(Attribute.BOUNDING_GEOMETRY)) {

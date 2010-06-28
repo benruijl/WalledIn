@@ -21,7 +21,10 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.network;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
@@ -36,8 +39,9 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
-import walledin.game.map.Tile;
-import walledin.game.map.TileType;
+import walledin.game.map.GameMapIO;
+import walledin.game.map.GameMapIOXML;
+import walledin.util.Utils;
 
 /**
  * Reads network messages
@@ -81,8 +85,8 @@ public class NetworkDataReader {
         for (int i = 0; i < numKeys; i++) {
             keys.add((int) buffer.getShort());
         }
-        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
-                buffer.getFloat());
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
+                .getFloat());
         final Boolean mouseDown = buffer.getInt() != 0;
         listener.receivedInputMessage(address, newVersion, keys, mousePos,
                 mouseDown);
@@ -95,16 +99,52 @@ public class NetworkDataReader {
         final String name = new String(nameBytes);
         listener.receivedLoginMessage(address, name);
     }
+    
+    private void processLoginResponseMessage(final SocketAddress address) {
+        final int nameLength = buffer.getInt();
+        final byte[] nameBytes = new byte[nameLength];
+        buffer.get(nameBytes);
+        final String name = new String(nameBytes);
+        listener.receivedLoginReponseMessage(address, name);
+    }
 
     private void processLogoutMessage(final SocketAddress address) {
         listener.receivedLogoutMessage(address);
+    }
+
+    private void processServersMessage(SocketAddress address)
+            throws UnknownHostException {
+        int amount = buffer.getInt();
+        Set<ServerData> servers = new HashSet<ServerData>();
+        for (int i = 0; i < amount; i++) {
+            ServerData server = readServerData();
+            servers.add(server);
+        }
+        listener.receivedServersMessage(address, servers);
+    }
+
+    private void processChallengeMessage(SocketAddress address) {
+        long challengeData = buffer.getLong();
+        listener.receivedChallengeMessage(address, challengeData);
+    }
+
+    private ServerData readServerData() throws UnknownHostException {
+        byte[] ip = new byte[4];
+        buffer.get(ip);
+        final int port = buffer.getInt();
+        final SocketAddress serverAddress = new InetSocketAddress(InetAddress
+                .getByAddress(ip), port);
+        final String name = readStringData(buffer);
+        final int players = buffer.getInt();
+        final int maxPlayers = buffer.getInt();
+        return new ServerData(serverAddress, name, players, maxPlayers);
     }
 
     private void readAttributeData(final Entity entity,
             final ByteBuffer buffer, final EntityManager entityManager) {
         // Write attribute identification
         final short ord = buffer.getShort();
-        // FIXME don't user ordinal
+        // FIXME don't use ordinal
         final Attribute attribute = Attribute.values()[ord];
         Object data = null;
         switch (attribute) {
@@ -125,9 +165,6 @@ public class NetworkDataReader {
             break;
         case ITEM_LIST:
             data = readEntityListData(buffer, entityManager);
-            break;
-        case TILES:
-            data = readTileListData(buffer);
             break;
         case POSITION:
             data = readVector2fData(buffer);
@@ -168,9 +205,10 @@ public class NetworkDataReader {
         switch (type) {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
+            Family family = Enum.valueOf(Family.class, familyName);
 
-            entityManager.create(Enum.valueOf(Family.class, familyName), name);
-
+            entity = entityManager.create(family, name);
+            readFamilySpecificData(family, entity);
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
             entityManager.remove(name);
@@ -181,6 +219,22 @@ public class NetworkDataReader {
             break;
         }
         return true;
+    }
+
+    private void readFamilySpecificData(Family family, Entity entity) {
+        switch (family) {
+        case MAP:
+            String mapName = readStringData(buffer);
+            entity.setAttribute(Attribute.MAP_NAME, mapName);
+
+            // load the tiles
+            GameMapIO mapIO = new GameMapIOXML();
+            entity.setAttribute(Attribute.TILES, mapIO.readTilesFromURL(Utils
+                    .getClasspathURL(mapName)));
+            break;
+        default:
+            break;
+        }
     }
 
     private Object readEntityListData(final ByteBuffer buffer,
@@ -200,20 +254,6 @@ public class NetworkDataReader {
         final byte[] bytes = new byte[size];
         buffer.get(bytes);
         return new String(bytes);
-    }
-
-    private Object readTileListData(final ByteBuffer buffer) {
-        final int size = buffer.getInt();
-        final List<Tile> tiles = new ArrayList<Tile>();
-        for (int i = 0; i < size; i++) {
-            final int x = buffer.getInt();
-            final int y = buffer.getInt();
-            final int ord = buffer.getInt();
-            final TileType type = TileType.values()[ord];
-            final Tile tile = new Tile(type, x, y);
-            tiles.add(tile);
-        }
-        return tiles;
     }
 
     private Object readVector2fData(final ByteBuffer buffer) {
@@ -242,27 +282,44 @@ public class NetworkDataReader {
         }
         buffer.flip();
         ident = buffer.getInt();
-        if (ident != NetworkConstants.DATAGRAM_IDENTIFICATION) {
-            // ignore the datagram, incorrect format
-            return true;
-        }
-        final byte type = buffer.get();
-        switch (type) {
-        case NetworkConstants.GAMESTATE_MESSAGE:
-            processGamestateMessage(entityManager, address);
-            break;
-        case NetworkConstants.LOGIN_MESSAGE:
-            processLoginMessage(address);
-            break;
-        case NetworkConstants.LOGOUT_MESSAGE:
-            processLogoutMessage(address);
-            break;
-        case NetworkConstants.INPUT_MESSAGE:
-            processInputMessage(address);
-            break;
-        default:
-            LOG.warn("Received unhandled message");
-            break;
+        if (ident == NetworkConstants.DATAGRAM_IDENTIFICATION) {
+            final byte type = buffer.get();
+            switch (type) {
+            case NetworkConstants.GAMESTATE_MESSAGE:
+                processGamestateMessage(entityManager, address);
+                break;
+            case NetworkConstants.LOGIN_MESSAGE:
+                processLoginMessage(address);
+                break;
+            case NetworkConstants.LOGIN_RESPONSE_MESSAGE:
+                processLoginResponseMessage(address);
+                break;
+            case NetworkConstants.LOGOUT_MESSAGE:
+                processLogoutMessage(address);
+                break;
+            case NetworkConstants.INPUT_MESSAGE:
+                processInputMessage(address);
+                break;
+            default:
+                LOG.warn("Received unhandled message");
+                break;
+            }
+        } else if (ident == NetworkConstants.MS_DATAGRAM_IDENTIFICATION) {
+            final byte type = buffer.get();
+            switch (type) {
+            case NetworkConstants.CHALLENGE_MESSAGE:
+                processChallengeMessage(address);
+                break;
+            case NetworkConstants.SERVERS_MESSAGE:
+                processServersMessage(address);
+                break;
+            default:
+                LOG.warn("Received unhandled message");
+                break;
+            }
+        } else {
+            LOG.warn("Unknown ident");
+            // else ignore the datagram, incorrect format
         }
         return true;
     }

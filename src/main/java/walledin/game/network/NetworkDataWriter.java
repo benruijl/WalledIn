@@ -26,8 +26,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +36,6 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
-import walledin.game.map.Tile;
 import walledin.game.network.server.ChangeSet;
 
 /**
@@ -55,6 +54,26 @@ public class NetworkDataWriter {
 
     public NetworkDataWriter() {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
+    }
+
+    /**
+     * Sometimes it is required to send extra data on entity creation. This
+     * function takes care of that.
+     * 
+     * @param family
+     *            Family of entity
+     * @param entity
+     *            Entity
+     */
+    private void writeFamilySpecificData(Family family, Entity entity) {
+        switch (family) {
+        case MAP:
+            writeStringData((String) entity.getAttribute(Attribute.MAP_NAME),
+                    buffer);
+            break;
+        default:
+            break;
+        }
     }
 
     public void sendGamestateMessage(final DatagramChannel channel,
@@ -78,7 +97,12 @@ public class NetworkDataWriter {
             writeStringData(entry.getKey(), buffer);
             // write family of entity
             writeStringData(entry.getValue().toString(), buffer);
+
+            // write family specific data
+            writeFamilySpecificData(entry.getValue(), entityManager.get(entry
+                    .getKey()));
         }
+
         for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
                 .entrySet()) {
             final Entity entity = entityManager.get(entry.getKey());
@@ -121,12 +145,52 @@ public class NetworkDataWriter {
         buffer.flip();
         channel.write(buffer);
     }
+    
+    public void sendLoginResponseMessage(final DatagramChannel channel,
+            SocketAddress address, String entityName) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.LOGIN_RESPONSE_MESSAGE);
+        writeStringData(entityName, buffer);
+        buffer.flip();
+        channel.send(buffer, address);
+    }
 
     public void sendLogoutMessage(final DatagramChannel channel)
             throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.LOGOUT_MESSAGE);
+        buffer.flip();
+        channel.write(buffer);
+    }
+    
+    public void sendGetServersMessage(final DatagramChannel channel) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
+        buffer.flip();
+        channel.write(buffer);
+    }
+    
+    public void sendChallengeResponse(final DatagramChannel channel, SocketAddress address, long challengeData) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.CHALLENGE_RESPONSE_MESSAGE);
+        buffer.putLong(challengeData);
+        buffer.flip();
+        channel.send(buffer, address);
+    }
+    
+    public void sendServerNotificationResponse(final DatagramChannel channel,
+            int port, String name, int players, int maxPlayers) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.SERVER_NOTIFICATION_MESSAGE);
+        buffer.putInt(port);
+        writeStringData(name, buffer);
+        buffer.putInt(players);
+        buffer.putInt(maxPlayers);
         buffer.flip();
         channel.write(buffer);
     }
@@ -153,9 +217,6 @@ public class NetworkDataWriter {
             break;
         case ITEM_LIST:
             writeItemsData((List<Entity>) data, buffer);
-            break;
-        case TILES:
-            writeTilesData((List<Tile>) data, buffer);
             break;
         case POSITION:
             writeVector2fData((Vector2f) data, buffer);
@@ -194,15 +255,6 @@ public class NetworkDataWriter {
     private void writeStringData(final String data, final ByteBuffer buffer) {
         buffer.putInt(data.length());
         buffer.put(data.getBytes());
-    }
-
-    private void writeTilesData(final List<Tile> data, final ByteBuffer buffer) {
-        buffer.putInt(data.size());
-        for (final Tile tile : data) {
-            buffer.putInt(tile.getX());
-            buffer.putInt(tile.getY());
-            buffer.putInt(tile.getType().ordinal());
-        }
     }
 
     private void writeVector2fData(final Vector2f data, final ByteBuffer buffer) {

@@ -47,14 +47,14 @@ public class PhysicsBehavior extends Behavior {
             final boolean doGravity, final boolean doFriction) {
         super(owner);
 
-        if (mass == 0)
+        if (mass == 0) {
             LOG
                     .warn("Mass of "
                             + getOwner().getName()
-                            + " is 0. Applying a force will give an infinite acceleration.");
+                            + " is 0. Applying a force will give an infinite acceleration."); 
+        }
 
         this.mass = mass;
-
         setAttribute(Attribute.MASS, mass);
         setAttribute(Attribute.POSITION, new Vector2f());
         setAttribute(Attribute.VELOCITY, new Vector2f());

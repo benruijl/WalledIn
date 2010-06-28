@@ -18,26 +18,33 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.network;
+package walledin.game.screens;
 
-import java.net.SocketAddress;
-import java.util.Set;
-
+import walledin.engine.Renderer;
+import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.entity.MessageType;
 
-public interface NetworkEventListener {
-    boolean receivedGamestateMessage(SocketAddress address, int oldVersion,
-            int newVersion);
+public class ServerListScreen extends Screen {
+    Screen serverListWidget;
 
-    void receivedLoginMessage(SocketAddress address, String name);
-    void receivedLoginReponseMessage(SocketAddress address, String playerEntityName);
+    public ServerListScreen() {
+        super(null, null);
+    }
 
-    void receivedLogoutMessage(SocketAddress address);
+    @Override
+    public void initialize() {
+        serverListWidget = new ServerListWidget(this, new Rectangle(0, 0, 500, 400));
+        serverListWidget.setPosition(new Vector2f(100, 0));
+        addChild(serverListWidget);
+        serverListWidget.initialize(); // initialize after add!
+        
+    }
+    
+    @Override
+    public void draw(Renderer renderer) {
+        super.draw(renderer);
+        getManager().getCursor().sendMessage(MessageType.RENDER, renderer);
+    }
 
-    void receivedInputMessage(SocketAddress address, int newVersion,
-            Set<Integer> keys, Vector2f mousePos, Boolean mouseButtonDown);
-
-    void receivedChallengeMessage(SocketAddress address, long challengeData);
-
-    void receivedServersMessage(SocketAddress address, Set<ServerData> servers);
 }

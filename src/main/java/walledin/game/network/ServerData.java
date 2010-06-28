@@ -18,27 +18,37 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.map;
+package walledin.game.network;
 
-import java.net.URL;
-import java.util.List;
+import java.net.SocketAddress;
 
-import walledin.game.EntityManager;
-import walledin.game.entity.Entity;
+public class ServerData {
+    private final SocketAddress address;
+    private final String name;
+    private final int players;
+    private final int maxPlayers;
 
-/**
- * Reads or writes a map from or to a certain format. The details of the format
- * are taken care of by the classes that implement this interface.
- * 
- * @author ben
- */
-public interface GameMapIO {
-    Entity readFromURL(EntityManager entityManager, URL file);
-    /**
-     * The client only has to read the tiles.
-     * @param file File to read from
-     * @return List of tiles
-     */
-    List<Tile> readTilesFromURL(final URL file);
-    boolean writeToFile(final Entity map, final String filename); 
+    public ServerData(final SocketAddress address, final String name,
+            final int players, final int maxPlayers) {
+        this.address = address;
+        this.name = name;
+        this.players = players;
+        this.maxPlayers = maxPlayers;
+    }
+
+    public SocketAddress getAddress() {
+        return address;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getPlayers() {
+        return players;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
 }
