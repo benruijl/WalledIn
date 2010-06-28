@@ -62,6 +62,8 @@ public class PlayerControlBehaviour extends Behavior {
             case KEYS_DOWN:
                 keysDown = (Set<Integer>) getAttribute(attribute);
                 break;
+            default:
+                break;
             }
         } else if (messageType == MessageType.DROP) {
             if (data == null) { // drop all

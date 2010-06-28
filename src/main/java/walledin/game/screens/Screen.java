@@ -50,7 +50,7 @@ public abstract class Screen {
 
     /** State of this screen. */
     private ScreenState state;
-    
+
     /** Position. */
     private Vector2f position;
 
@@ -58,7 +58,7 @@ public abstract class Screen {
     private final Rectangle rectangle;
 
     /** Active flag. */
-    protected boolean active;
+    protected boolean active = false;
 
     /**
      * Creates a new screen.
@@ -77,8 +77,8 @@ public abstract class Screen {
     }
 
     /**
-     * To be called when screen is added to the list. Do not call on beforehand,
-     * because some functions may require a parent screen manager.
+     * To be called after screen is added to the list. Do not call on
+     * beforehand, because some functions may require a parent screen manager.
      */
     public abstract void initialize();
 
@@ -90,7 +90,9 @@ public abstract class Screen {
      */
     public void update(double delta) {
         for (Screen screen : children) {
-            screen.update(delta);
+            if (screen.isActive()) {
+                screen.update(delta);
+            }
         }
     }
 
@@ -102,12 +104,22 @@ public abstract class Screen {
      */
     public void draw(final Renderer renderer) {
         for (Screen screen : children) {
-            screen.draw(renderer);
+            if (screen.getState() == ScreenState.Visible) {
+                screen.draw(renderer);
+            }
         }
     }
 
     public final boolean isActive() {
         return active;
+    }
+
+    /**
+     * Makes the screen active and visible.
+     */
+    public final void setActiveAndVisible() {
+        active = true;
+        state = ScreenState.Visible;
     }
 
     /**
@@ -152,7 +164,7 @@ public abstract class Screen {
         children.add(sc);
         sc.registerScreenManager(getManager());
     }
-    
+
     public void removeChild(final Screen sc) {
         children.remove(sc);
     }
@@ -160,22 +172,24 @@ public abstract class Screen {
     public Rectangle getRectangle() {
         return rectangle;
     }
-    
+
     public Vector2f getPosition() {
         return position;
     }
-    
+
     public void setPosition(Vector2f position) {
         this.position = position;
     }
-    
+
     public Screen getParent() {
         return parent;
     }
-    
+
     /**
      * Checks if a point is in this window.
-     * @param point Point
+     * 
+     * @param point
+     *            Point
      * @return True if in window, else false.
      */
     public boolean pointInScreen(Vector2f point) {

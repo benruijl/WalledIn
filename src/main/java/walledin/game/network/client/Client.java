@@ -254,18 +254,9 @@ public class Client implements RenderListener, NetworkEventListener {
         font.readFromStream(Utils.getClasspathURL("arial20.font"));
         screenManager.addFont("arial20", font);
 
-        /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen();
-        screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen menuScreen = new MainMenuScreen();
-        screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
-        menuScreen.initialize();
-        menuScreen.setState(ScreenState.Visible);
-
         final Screen serverListScreen = new ServerListScreen();
         screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
 
-        renderer.hideHardwareCursor();
 
         try {
             screenManager.getEntityFactory().loadScript(
@@ -286,6 +277,20 @@ public class Client implements RenderListener, NetworkEventListener {
         final Entity cursor = screenManager.getEntityManager().create(
                 Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
+        renderer.hideHardwareCursor();
+        
+        /* Create game screen and add it to the screen manager. */
+        gameScreen = new GameScreen();
+        screenManager.addScreen(ScreenType.GAME, gameScreen);
+        
+        // this screen has to be active, because it updates the mouse
+        // and receives gamestate changes, even if the menus are opened.
+        gameScreen.setActive(true);
+        final Screen menuScreen = new MainMenuScreen();
+        screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
+        menuScreen.initialize();
+        menuScreen.setActiveAndVisible();
+
 
         connectToMasterServer();
     }

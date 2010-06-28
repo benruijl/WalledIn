@@ -41,6 +41,8 @@ public class ServerListWidget extends Screen {
     public ServerListWidget(final Screen parent, final Rectangle boudingRect) {
         super(parent, boudingRect);
         serverButtons = new ArrayList<Screen>();
+        
+        setActiveAndVisible(); // standard is active and visible
     }
 
     @Override
@@ -93,6 +95,7 @@ public class ServerListWidget extends Screen {
                     getManager().getScreen(ScreenType.GAME).initialize();
                     getManager().getScreen(ScreenType.GAME).setActive(true);
                     getParent().setState(ScreenState.Hidden); // hide main menu
+                    getParent().setActive(false);
                     
                     Input.getInstance().setMouseUp(); // FIXME
                 }

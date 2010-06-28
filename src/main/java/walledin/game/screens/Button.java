@@ -36,6 +36,8 @@ public class Button extends Screen {
         super(parent, boundingRect);
         this.text = text;
         setPosition(pos);
+
+        setActiveAndVisible(); // standard is active and visible
     }
 
     @Override

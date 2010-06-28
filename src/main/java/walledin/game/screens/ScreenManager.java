@@ -32,12 +32,12 @@ import walledin.game.network.client.Client;
 import walledin.game.screens.Screen.ScreenState;
 
 public class ScreenManager {
-    
-    /** Screen types.*/
+
+    /** Screen types. */
     public enum ScreenType {
         MAIN_MENU, GAME, SERVER_LIST
     }
-    
+
     /** List of screens. */
     private final Map<ScreenType, Screen> screens;
     /** Entity list of all screens together. */
@@ -158,7 +158,9 @@ public class ScreenManager {
      */
     public void update(final double delta) {
         for (final Screen screen : screens.values()) {
-            screen.update(delta);
+            if (screen.isActive()) {
+                screen.update(delta);
+            }
         }
 
         // TODO: always update every screen or make selection?
@@ -192,9 +194,10 @@ public class ScreenManager {
     public void dispose() {
         client.dispose();
     }
-    
+
     /**
      * Get the client.
+     * 
      * @return Client that owns this screen manager.
      */
     public Client getClient() {
