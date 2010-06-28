@@ -15,7 +15,7 @@ import walledin.game.entity.behaviors.physics.*
     entity.addBehavior(new PlayerParentBehavior(entity));
     entity.addBehavior(new PhysicsBehavior(entity, 1));
     entity.addBehavior(new PlayerWeaponInventoryBehavior(entity));
-    entity.addBehavior(new StandardCollisionResponseBehavior(entity));
+    //entity.addBehavior(new StandardCollisionResponseBehavior(entity));
 
     // FIXME correct the drawing instead of the hack the bounding box
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY,
@@ -43,7 +43,7 @@ import walledin.game.entity.behaviors.physics.*
 (Family.FOAM_PARTICLE): { Entity entity ->
     def destRect = new Circle(new Vector2f(16, 16), 16)
     entity.addBehavior(new PhysicsBehavior(entity, 2e4, false, false));
-     entity.addBehavior(new StandardCollisionResponseBehavior(entity));
+     entity.addBehavior(new StaticObjectCollisionReponse(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
 } as EntityFunction,
