@@ -62,7 +62,7 @@ public class Server implements NetworkEventListener {
     private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
 
     private static final String SERVER_NAME = "Cool WalledIn Server!";
-    private static final long CHALLENGE_TIMEOUT = 2000;
+    private static final long CHALLENGE_TIMEOUT = 5000;
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
     private final NetworkDataWriter networkWriter;
@@ -167,8 +167,10 @@ public class Server implements NetworkEventListener {
         }
         
         if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
-            LOG.warn("Did not recieve challenge from master server yet!");
+            LOG.warn("Did not recieve challenge from master server yet! Sending new notification.");
             lastChallenge = System.currentTimeMillis();
+            networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
+                    SERVER_NAME, players.size(), Integer.MAX_VALUE);
         }
 
         double delta = System.nanoTime() - currentTime;
