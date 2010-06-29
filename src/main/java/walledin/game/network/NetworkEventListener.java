@@ -24,18 +24,21 @@ import java.net.SocketAddress;
 import java.util.Set;
 
 import walledin.engine.math.Vector2f;
+import walledin.game.PlayerActions;
 
 public interface NetworkEventListener {
     boolean receivedGamestateMessage(SocketAddress address, int oldVersion,
             int newVersion);
 
     void receivedLoginMessage(SocketAddress address, String name);
-    void receivedLoginReponseMessage(SocketAddress address, String playerEntityName);
+
+    void receivedLoginReponseMessage(SocketAddress address,
+            String playerEntityName);
 
     void receivedLogoutMessage(SocketAddress address);
 
     void receivedInputMessage(SocketAddress address, int newVersion,
-            Set<Integer> keys, Vector2f mousePos, Boolean mouseButtonDown);
+            Set<PlayerActions> playerActions, Vector2f cursorPos);
 
     void receivedChallengeMessage(SocketAddress address, long challengeData);
 

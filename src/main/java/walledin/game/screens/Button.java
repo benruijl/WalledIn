@@ -46,27 +46,27 @@ public class Button extends Screen {
     }
 
     @Override
-    public void update(double delta) {
+    public void update(final double delta) {
         selected = pointInScreen(Input.getInstance().getMousePos().asVector2f());
 
         super.update(delta);
     }
 
     @Override
-    public void draw(Renderer renderer) {
+    public void draw(final Renderer renderer) {
 
         final Font font = getManager().getFont("arial20");
-        
+
         if (selected) {
             renderer.setColorRGB(1, 0, 0);
         }
-        
+
         font.renderText(renderer, text, getPosition());
         renderer.setColorRGB(1, 1, 1);
         super.draw(renderer);
     }
 
-    public void setText(String text) {
+    public void setText(final String text) {
         this.text = text;
     }
 }

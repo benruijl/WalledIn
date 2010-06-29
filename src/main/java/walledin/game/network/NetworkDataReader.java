@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -80,16 +81,14 @@ public class NetworkDataReader {
 
     private void processInputMessage(final SocketAddress address) {
         final int newVersion = buffer.getInt();
-        final short numKeys = buffer.getShort();
-        final Set<Integer> keys = new HashSet<Integer>();
-        for (int i = 0; i < numKeys; i++) {
-            keys.add((int) buffer.getShort());
+        final short numActions = buffer.getShort();
+        final Set<PlayerActions> actions = new HashSet<PlayerActions>();
+        for (int i = 0; i < numActions; i++) {
+            actions.add(PlayerActions.values()[buffer.getShort()]);
         }
-        final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
-                .getFloat());
-        final Boolean mouseDown = buffer.getInt() != 0;
-        listener.receivedInputMessage(address, newVersion, keys, mousePos,
-                mouseDown);
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
+                buffer.getFloat());
+        listener.receivedInputMessage(address, newVersion, actions, mousePos);
     }
 
     private void processLoginMessage(final SocketAddress address) {
@@ -99,7 +98,7 @@ public class NetworkDataReader {
         final String name = new String(nameBytes);
         listener.receivedLoginMessage(address, name);
     }
-    
+
     private void processLoginResponseMessage(final SocketAddress address) {
         final int nameLength = buffer.getInt();
         final byte[] nameBytes = new byte[nameLength];
@@ -112,28 +111,28 @@ public class NetworkDataReader {
         listener.receivedLogoutMessage(address);
     }
 
-    private void processServersMessage(SocketAddress address)
+    private void processServersMessage(final SocketAddress address)
             throws UnknownHostException {
-        int amount = buffer.getInt();
-        Set<ServerData> servers = new HashSet<ServerData>();
+        final int amount = buffer.getInt();
+        final Set<ServerData> servers = new HashSet<ServerData>();
         for (int i = 0; i < amount; i++) {
-            ServerData server = readServerData();
+            final ServerData server = readServerData();
             servers.add(server);
         }
         listener.receivedServersMessage(address, servers);
     }
 
-    private void processChallengeMessage(SocketAddress address) {
-        long challengeData = buffer.getLong();
+    private void processChallengeMessage(final SocketAddress address) {
+        final long challengeData = buffer.getLong();
         listener.receivedChallengeMessage(address, challengeData);
     }
 
     private ServerData readServerData() throws UnknownHostException {
-        byte[] ip = new byte[4];
+        final byte[] ip = new byte[4];
         buffer.get(ip);
         final int port = buffer.getInt();
-        final SocketAddress serverAddress = new InetSocketAddress(InetAddress
-                .getByAddress(ip), port);
+        final SocketAddress serverAddress = new InetSocketAddress(
+                InetAddress.getByAddress(ip), port);
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
@@ -205,7 +204,7 @@ public class NetworkDataReader {
         switch (type) {
         case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
             final String familyName = readStringData(buffer);
-            Family family = Enum.valueOf(Family.class, familyName);
+            final Family family = Enum.valueOf(Family.class, familyName);
 
             entity = entityManager.create(family, name);
             readFamilySpecificData(family, entity);
@@ -221,16 +220,16 @@ public class NetworkDataReader {
         return true;
     }
 
-    private void readFamilySpecificData(Family family, Entity entity) {
+    private void readFamilySpecificData(final Family family, final Entity entity) {
         switch (family) {
         case MAP:
-            String mapName = readStringData(buffer);
+            final String mapName = readStringData(buffer);
             entity.setAttribute(Attribute.MAP_NAME, mapName);
 
             // load the tiles
-            GameMapIO mapIO = new GameMapIOXML();
-            entity.setAttribute(Attribute.TILES, mapIO.readTilesFromURL(Utils
-                    .getClasspathURL(mapName)));
+            final GameMapIO mapIO = new GameMapIOXML();
+            entity.setAttribute(Attribute.TILES,
+                    mapIO.readTilesFromURL(Utils.getClasspathURL(mapName)));
             break;
         default:
             break;

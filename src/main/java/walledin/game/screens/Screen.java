@@ -43,7 +43,7 @@ public abstract class Screen {
     private final Screen parent;
 
     /** Child screens of this screen. */
-    private List<Screen> children;
+    private final List<Screen> children;
 
     /** Manager of this screen. */
     private ScreenManager manager;
@@ -73,7 +73,7 @@ public abstract class Screen {
         children = new ArrayList<Screen>();
         position = new Vector2f();
         this.parent = parent;
-        this.rectangle = boudingRect;
+        rectangle = boudingRect;
     }
 
     /**
@@ -88,8 +88,8 @@ public abstract class Screen {
      * @param delta
      *            Delta time since last update
      */
-    public void update(double delta) {
-        for (Screen screen : children) {
+    public void update(final double delta) {
+        for (final Screen screen : children) {
             if (screen.isActive()) {
                 screen.update(delta);
             }
@@ -103,7 +103,7 @@ public abstract class Screen {
      *            Renderer to draw with
      */
     public void draw(final Renderer renderer) {
-        for (Screen screen : children) {
+        for (final Screen screen : children) {
             if (screen.getState() == ScreenState.Visible) {
                 screen.draw(renderer);
             }
@@ -177,7 +177,7 @@ public abstract class Screen {
         return position;
     }
 
-    public void setPosition(Vector2f position) {
+    public void setPosition(final Vector2f position) {
         this.position = position;
     }
 
@@ -192,7 +192,7 @@ public abstract class Screen {
      *            Point
      * @return True if in window, else false.
      */
-    public boolean pointInScreen(Vector2f point) {
+    public boolean pointInScreen(final Vector2f point) {
         return rectangle.translate(position).containsPoint(point);
     }
 

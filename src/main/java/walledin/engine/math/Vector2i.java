@@ -56,7 +56,7 @@ public class Vector2i {
     }
 
     public Vector2f asVector2f() {
-        return new Vector2f((float) x, (float) y);
+        return new Vector2f(x, y);
     }
 
 }
