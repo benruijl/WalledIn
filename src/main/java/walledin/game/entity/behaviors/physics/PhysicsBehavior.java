@@ -97,9 +97,10 @@ public class PhysicsBehavior extends Behavior {
         // add friction
         acceleration = acceleration.add(new Vector2f(-Math.signum(velocity
                 .getX())
-                * velocity.getX() * velocity.getX() * frictionCoefficient,
-                -Math.signum(velocity.getY()) * velocity.getY()
-                        * velocity.getY() * frictionCoefficient));
+                * velocity.getX()
+                * velocity.getX()
+                * frictionCoefficient, -Math.signum(velocity.getY())
+                * velocity.getY() * velocity.getY() * frictionCoefficient));
 
         final Vector2f velNew = velocity.add(acceleration.scale((float) delta));
         final Vector2f posNew = position.add(velNew.scale((float) delta));

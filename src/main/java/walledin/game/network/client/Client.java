@@ -21,10 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.network.client;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.util.HashSet;
@@ -38,6 +35,8 @@ import walledin.engine.Input;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.math.Vector2f;
+import walledin.game.PlayerActionManager;
+import walledin.game.PlayerActions;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
@@ -48,7 +47,6 @@ import walledin.game.network.ServerData;
 import walledin.game.screens.GameScreen;
 import walledin.game.screens.MainMenuScreen;
 import walledin.game.screens.Screen;
-import walledin.game.screens.Screen.ScreenState;
 import walledin.game.screens.ScreenManager;
 import walledin.game.screens.ScreenManager.ScreenType;
 import walledin.game.screens.ServerListScreen;
@@ -65,8 +63,8 @@ public class Client implements RenderListener, NetworkEventListener {
     private String username;
     private final NetworkDataWriter networkDataWriter;
     private final NetworkDataReader networkDataReader;
-    private DatagramChannel channel;
-    private DatagramChannel masterServerChannel;
+    private final DatagramChannel channel;
+    private final DatagramChannel masterServerChannel;
     private Set<ServerData> serverList;
     private boolean quitting = false;
 
@@ -117,7 +115,7 @@ public class Client implements RenderListener, NetworkEventListener {
 
     /**
      * Called when the gamestate has been updated. We only send a new input when
-     * we receive the net game state
+     * we receive the net game state.
      */
     @Override
     public boolean receivedGamestateMessage(final SocketAddress address,
@@ -133,10 +131,13 @@ public class Client implements RenderListener, NetworkEventListener {
             result = true;
         }
         try {
-            networkDataWriter.sendInputMessage(channel, receivedVersion, Input
-                    .getInstance().getKeysDown(), renderer.screenToWorld(Input
-                    .getInstance().getMousePos()), Input.getInstance()
-                    .getMouseDown());
+            // update the player actions
+            // TODO: do somewhere else?
+            PlayerActionManager.getInstance().update();
+
+            networkDataWriter.sendInputMessage(channel, receivedVersion,
+                    PlayerActionManager.getInstance().getPlayerActions(),
+                    renderer.screenToWorld(Input.getInstance().getMousePos()));
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
             dispose();
@@ -147,7 +148,7 @@ public class Client implements RenderListener, NetworkEventListener {
     public void refreshServerList() {
         try {
             networkDataWriter.sendGetServersMessage(masterServerChannel);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("IOException", e);
         }
     }
@@ -157,8 +158,8 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedServersMessage(SocketAddress address,
-            Set<ServerData> servers) {
+    public void receivedServersMessage(final SocketAddress address,
+            final Set<ServerData> servers) {
         LOG.info("Received server list. " + servers.size()
                 + " servers available.");
         serverList = servers;
@@ -177,14 +178,14 @@ public class Client implements RenderListener, NetworkEventListener {
 
     @Override
     public void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<Integer> keys,
-            final Vector2f mousePos, final Boolean mouseDown) {
+            final int newVersion, final Set<PlayerActions> playerActions,
+            final Vector2f cursorPos) {
         // ignore
     }
 
     @Override
-    public void receivedChallengeMessage(SocketAddress address,
-            long challengeData) {
+    public void receivedChallengeMessage(final SocketAddress address,
+            final long challengeData) {
         // ignore
     }
 
@@ -219,8 +220,8 @@ public class Client implements RenderListener, NetworkEventListener {
                         masterServerChannel, screenManager.getEntityManager());
                 while (hasMore) {
                     hasMore = networkDataReader.recieveMessage(
-                            masterServerChannel, screenManager
-                                    .getEntityManager());
+                            masterServerChannel,
+                            screenManager.getEntityManager());
                 }
             }
         } catch (final PortUnreachableException e) {
@@ -254,18 +255,8 @@ public class Client implements RenderListener, NetworkEventListener {
         font.readFromStream(Utils.getClasspathURL("arial20.font"));
         screenManager.addFont("arial20", font);
 
-        /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen();
-        screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen menuScreen = new MainMenuScreen();
-        screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
-        menuScreen.initialize();
-        menuScreen.setState(ScreenState.Visible);
-
         final Screen serverListScreen = new ServerListScreen();
         screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
-
-        renderer.hideHardwareCursor();
 
         try {
             screenManager.getEntityFactory().loadScript(
@@ -286,6 +277,19 @@ public class Client implements RenderListener, NetworkEventListener {
         final Entity cursor = screenManager.getEntityManager().create(
                 Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
+        renderer.hideHardwareCursor();
+
+        /* Create game screen and add it to the screen manager. */
+        gameScreen = new GameScreen();
+        screenManager.addScreen(ScreenType.GAME, gameScreen);
+
+        // this screen has to be active, because it updates the mouse
+        // and receives gamestate changes, even if the menus are opened.
+        gameScreen.setActive(true);
+        final Screen menuScreen = new MainMenuScreen();
+        screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
+        menuScreen.initialize();
+        menuScreen.setActiveAndVisible();
 
         connectToMasterServer();
     }
@@ -351,9 +355,10 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedLoginReponseMessage(SocketAddress address,
-            String playerEntityName) {
+    public void receivedLoginReponseMessage(final SocketAddress address,
+            final String playerEntityName) {
         screenManager.setPlayerName(playerEntityName);
         LOG.info("Player entity name received: " + playerEntityName);
     }
+
 }

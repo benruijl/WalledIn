@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.physics;
 
-import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -39,12 +39,12 @@ public class PlayerControlBehaviour extends Behavior {
     private static final float MOVE_SPEED = 240.0f;
     private static final float JUMP_SPEED = 8000.0f;
     private boolean canJump;
-    private Set<Integer> keysDown;
+    private Set<PlayerActions> playerActions;
 
     public PlayerControlBehaviour(final Entity owner) {
         super(owner);
-        keysDown = new HashSet<Integer>();
-        setAttribute(Attribute.KEYS_DOWN, keysDown);
+        playerActions = new HashSet<PlayerActions>();
+        setAttribute(Attribute.PLAYER_ACTIONS, playerActions);
     }
 
     @Override
@@ -59,8 +59,10 @@ public class PlayerControlBehaviour extends Behavior {
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attribute = (Attribute) data;
             switch (attribute) {
-            case KEYS_DOWN:
-                keysDown = (Set<Integer>) getAttribute(attribute);
+            case PLAYER_ACTIONS:
+                playerActions = (Set<PlayerActions>) getAttribute(attribute);
+                break;
+            default:
                 break;
             }
         } else if (messageType == MessageType.DROP) {
@@ -89,49 +91,36 @@ public class PlayerControlBehaviour extends Behavior {
         float x = 0;
         float y = 0;
 
-        if (keysDown.contains(KeyEvent.VK_RIGHT)
-                || keysDown.contains(KeyEvent.VK_D)) {
+        if (playerActions.contains(PlayerActions.WALK_RIGHT)) {
             x += MOVE_SPEED;
             setAttribute(Attribute.ORIENTATION, 1);
 
         }
-        if (keysDown.contains(KeyEvent.VK_LEFT)
-                || keysDown.contains(KeyEvent.VK_A)) {
+
+        if (playerActions.contains(PlayerActions.WALK_LEFT)) {
             x -= MOVE_SPEED;
             setAttribute(Attribute.ORIENTATION, -1);
         }
-        if (keysDown.contains(KeyEvent.VK_UP)
-                || keysDown.contains(KeyEvent.VK_W)) {
-            y -= MOVE_SPEED;
-        }
 
-        if (keysDown.contains(KeyEvent.VK_DOWN)
-                || keysDown.contains(KeyEvent.VK_S)) {
-            y += MOVE_SPEED;
-        }
-
-        if (canJump && keysDown.contains(KeyEvent.VK_SPACE)) {
+        if (canJump && playerActions.contains(PlayerActions.JUMP)) {
             y -= JUMP_SPEED;
         }
 
-        if (keysDown.contains(KeyEvent.VK_1)) {
+        if (playerActions.contains(PlayerActions.SELECT_WEAPON_1)) {
             getOwner().sendMessage(MessageType.SELECT_WEAPON,
                     Integer.valueOf(1));
-        } else if (keysDown.contains(KeyEvent.VK_2)) {
+        } else if (playerActions.contains(PlayerActions.SELECT_WEAPON_2)) {
             getOwner().sendMessage(MessageType.SELECT_WEAPON,
                     Integer.valueOf(2));
         }
 
         // change orientation if shooting in other directory
-        if (getAttribute(Attribute.LEFTMOUSEBUTTON_DOWN) == Boolean.TRUE) {
+        if (playerActions.contains(PlayerActions.SHOOT_PRIMARY)) {
             setAttribute(
                     Attribute.ORIENTATION,
                     ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))
                             .getX() ? -1 : 1);
-        }
 
-        if (keysDown.contains(KeyEvent.VK_ENTER)
-                || getAttribute(Attribute.LEFTMOUSEBUTTON_DOWN) == Boolean.TRUE) {
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                 final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
 

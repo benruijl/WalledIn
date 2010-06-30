@@ -36,6 +36,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
@@ -125,7 +126,7 @@ public class Server implements NetworkEventListener {
         masterServerChannel.configureBlocking(false);
 
         lastChallenge = System.currentTimeMillis();
-        
+
         networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
                 SERVER_NAME, players.size(), Integer.MAX_VALUE);
 
@@ -165,12 +166,12 @@ public class Server implements NetworkEventListener {
         while (hasMore) {
             hasMore = networkReader.recieveMessage(channel, entityManager);
         }
-        
+
         if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
             LOG.warn("Did not recieve challenge from master server yet! Sending new notification.");
             lastChallenge = System.currentTimeMillis();
-            networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
-                    SERVER_NAME, players.size(), Integer.MAX_VALUE);
+            networkWriter.sendServerNotificationResponse(masterServerChannel,
+                    PORT, SERVER_NAME, players.size(), Integer.MAX_VALUE);
         }
 
         double delta = System.nanoTime() - currentTime;
@@ -196,9 +197,7 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG
-                        .info("Connection lost to client "
-                                + connection.getAddress());
+                LOG.info("Connection lost to client " + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {
@@ -292,31 +291,33 @@ public class Server implements NetworkEventListener {
             players.put(address, con);
 
             LOG.info("new player " + name + " @ " + address);
-            
+
             // send the client the unique entity name of the player
             try {
-                networkWriter.sendLoginResponseMessage(channel, con.getAddress(), entityName);
-            } catch (IOException e) {
+                networkWriter.sendLoginResponseMessage(channel,
+                        con.getAddress(), entityName);
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     @Override
-    public void receivedChallengeMessage(SocketAddress address,
-            long challengeData) {
+    public void receivedChallengeMessage(final SocketAddress address,
+            final long challengeData) {
         try {
             lastChallenge = System.currentTimeMillis();
-            networkWriter.sendChallengeResponse(channel, address, challengeData);
-        } catch (IOException e) {
+            networkWriter
+                    .sendChallengeResponse(channel, address, challengeData);
+        } catch (final IOException e) {
             LOG.error("IOException during challengeResponse", e);
         }
     }
 
     @Override
-    public void receivedServersMessage(SocketAddress address,
-            Set<ServerData> servers) {
-     // ignore .. should not happen
+    public void receivedServersMessage(final SocketAddress address,
+            final Set<ServerData> servers) {
+        // ignore .. should not happen
     }
 
     /**
@@ -328,25 +329,21 @@ public class Server implements NetworkEventListener {
         removePlayer(address);
     }
 
-    /**
-     * Set the new input state
-     */
     @Override
     public void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<Integer> keys,
-            final Vector2f cursorPos, final Boolean mouseDown) {
+            final int newVersion, final Set<PlayerActions> playerActions,
+            final Vector2f cursorPos) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
             connection.setNew();
-            connection.setKeysDown(keys);
+            connection.setPlayerActions(playerActions);
             connection.setMousePos(cursorPos);
 
             // also send the received data to the player
-            connection.getPlayer().setAttribute(Attribute.KEYS_DOWN, keys);
+            connection.getPlayer().setAttribute(Attribute.PLAYER_ACTIONS,
+                    playerActions);
             connection.getPlayer()
                     .setAttribute(Attribute.CURSOR_POS, cursorPos);
-            connection.getPlayer().setAttribute(Attribute.LEFTMOUSEBUTTON_DOWN,
-                    mouseDown);
             connection.setReceivedVersion(newVersion);
         }
     }
@@ -399,14 +396,14 @@ public class Server implements NetworkEventListener {
         final GameMapIO mapIO = new GameMapIOXML(); // choose XML as format
         map = mapIO
                 .readFromURL(entityManager, Utils.getClasspathURL("map.xml"));
-        
+
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, "map.xml");
     }
 
     @Override
-    public void receivedLoginReponseMessage(SocketAddress address,
-            String playerEntityName) {
-     // ignore .. should not happen
+    public void receivedLoginReponseMessage(final SocketAddress address,
+            final String playerEntityName) {
+        // ignore .. should not happen
     }
 }

@@ -26,13 +26,14 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -65,7 +66,8 @@ public class NetworkDataWriter {
      * @param entity
      *            Entity
      */
-    private void writeFamilySpecificData(Family family, Entity entity) {
+    private void writeFamilySpecificData(final Family family,
+            final Entity entity) {
         switch (family) {
         case MAP:
             writeStringData((String) entity.getAttribute(Attribute.MAP_NAME),
@@ -99,8 +101,8 @@ public class NetworkDataWriter {
             writeStringData(entry.getValue().toString(), buffer);
 
             // write family specific data
-            writeFamilySpecificData(entry.getValue(), entityManager.get(entry
-                    .getKey()));
+            writeFamilySpecificData(entry.getValue(),
+                    entityManager.get(entry.getKey()));
         }
 
         for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
@@ -117,20 +119,18 @@ public class NetworkDataWriter {
     }
 
     public void sendInputMessage(final DatagramChannel channel,
-            final int version, final Set<Integer> keysDown,
-            final Vector2f mousePos, final Boolean mouseButtonDown)
-            throws IOException {
+            final int version, final Set<PlayerActions> playerActions,
+            final Vector2f mousePos) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);
         buffer.putInt(version);
-        buffer.putShort((short) keysDown.size());
-        for (final int key : keysDown) {
-            buffer.putShort((short) key);
+        buffer.putShort((short) playerActions.size());
+        for (final PlayerActions actions : playerActions) {
+            buffer.putShort((short) actions.ordinal());
         }
         buffer.putFloat(mousePos.getX());
         buffer.putFloat(mousePos.getY());
-        buffer.putInt(mouseButtonDown ? 1 : 0);
         buffer.flip();
         channel.write(buffer);
     }
@@ -145,9 +145,10 @@ public class NetworkDataWriter {
         buffer.flip();
         channel.write(buffer);
     }
-    
+
     public void sendLoginResponseMessage(final DatagramChannel channel,
-            SocketAddress address, String entityName) throws IOException {
+            final SocketAddress address, final String entityName)
+            throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.LOGIN_RESPONSE_MESSAGE);
@@ -164,16 +165,19 @@ public class NetworkDataWriter {
         buffer.flip();
         channel.write(buffer);
     }
-    
-    public void sendGetServersMessage(final DatagramChannel channel) throws IOException {
+
+    public void sendGetServersMessage(final DatagramChannel channel)
+            throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
         buffer.flip();
         channel.write(buffer);
     }
-    
-    public void sendChallengeResponse(final DatagramChannel channel, SocketAddress address, long challengeData) throws IOException {
+
+    public void sendChallengeResponse(final DatagramChannel channel,
+            final SocketAddress address, final long challengeData)
+            throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.CHALLENGE_RESPONSE_MESSAGE);
@@ -181,9 +185,10 @@ public class NetworkDataWriter {
         buffer.flip();
         channel.send(buffer, address);
     }
-    
+
     public void sendServerNotificationResponse(final DatagramChannel channel,
-            int port, String name, int players, int maxPlayers) throws IOException {
+            final int port, final String name, final int players,
+            final int maxPlayers) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.SERVER_NOTIFICATION_MESSAGE);

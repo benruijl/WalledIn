@@ -64,8 +64,7 @@ public class ItemRenderBehavior extends RenderBehavior {
         if (getOwner().hasAttribute(Attribute.VELOCITY)) {
             final Vector2f velocity = (Vector2f) getOwner().getAttribute(
                     Attribute.VELOCITY);
-            renderer.rotate((float) Math
-                    .atan2(velocity.getY(), velocity.getX()));
+            renderer.rotate((float) Math.atan2(velocity.getY(), velocity.getX()));
         }
 
         renderer.drawTexturePart(texPart, itemRect);

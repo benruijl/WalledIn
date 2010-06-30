@@ -45,11 +45,12 @@ public final class Input implements KeyListener, MouseListener,
     private static final Logger LOG = Logger.getLogger(Input.class);
     private static Input ref = null;
     private final Set<Integer> keysDown;
+    private final Set<Integer> buttonsDown;
     private Vector2i mousePos;
-    private boolean mouseDown;
 
     private Input() {
         keysDown = new HashSet<Integer>();
+        buttonsDown = new HashSet<Integer>();
         mousePos = new Vector2i();
     }
 
@@ -81,7 +82,7 @@ public final class Input implements KeyListener, MouseListener,
     }
 
     /**
-     * Set the key to the up state
+     * Set the key to the up state.
      * 
      * @param key
      */
@@ -90,18 +91,33 @@ public final class Input implements KeyListener, MouseListener,
     }
 
     /**
-     * check if the key is down
+     * Check if a given key is down.
      * 
      * @param key
-     *            keycode of the key
-     * @return if the key is down
+     *            Keycode of the key
+     * @return True if down, else false
      */
     public boolean isKeyDown(final int key) {
         return keysDown.contains(key);
     }
 
+    /**
+     * Check if a given button is down.
+     * 
+     * @param button
+     *            Button number
+     * @return True if down, else false
+     */
+    public boolean isButtonDown(final int button) {
+        return buttonsDown.contains(button);
+    }
+
     public Set<Integer> getKeysDown() {
         return new HashSet<Integer>(keysDown);
+    }
+
+    public Set<Integer> getButtonsDown() {
+        return new HashSet<Integer>(buttonsDown);
     }
 
     @Override
@@ -138,25 +154,21 @@ public final class Input implements KeyListener, MouseListener,
 
     @Override
     public void mousePressed(final MouseEvent e) {
-        mouseDown = true;
+        buttonsDown.add(e.getButton());
     }
 
     @Override
     public void mouseReleased(final MouseEvent e) {
-        mouseDown = false;
+        buttonsDown.remove(e.getButton());
     }
 
-    public boolean getMouseDown() {
-        return mouseDown;
-    }
-    
     /**
      * Set the mouse state to up.
      * 
      * FIXME: create a check if mouse clicked instead of this
      */
-    public void setMouseUp() {
-        mouseDown = false;
+    public void setButtonUp(final int button) {
+        buttonsDown.remove(button);
     }
 
 }

@@ -272,9 +272,9 @@ public class CollisionManager {
                 }
 
                 ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-                ent.setAttribute(Attribute.VELOCITY, new Vector2f(x
-                        - oldPos.getX(), y - oldPos.getY())
-                        .scale((float) (1 / delta)));
+                ent.setAttribute(Attribute.VELOCITY,
+                        new Vector2f(x - oldPos.getX(), y - oldPos.getY())
+                                .scale((float) (1 / delta)));
 
                 // if there is no difference, there has been no collision
                 if (Math.abs(x - curPos.getX()) > eps

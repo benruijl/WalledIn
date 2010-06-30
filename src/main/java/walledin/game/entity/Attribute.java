@@ -27,10 +27,8 @@ import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
 
 public enum Attribute {
-    POSITION(Vector2f.class, true),
-    VELOCITY(Vector2f.class, true),
-    WIDTH(Integer.class, true),
-    HEIGHT(Integer.class, true),
+    POSITION(Vector2f.class, true), VELOCITY(Vector2f.class, true), WIDTH(
+            Integer.class, true), HEIGHT(Integer.class, true),
     /** Tiles will be read locally */
     TILES(List.class, false),
     /** Map name will be sent seperately at entity creation. */
@@ -42,12 +40,11 @@ public enum Attribute {
     ACTIVE_WEAPON(Entity.class),
     COLLECTABLE(Boolean.class),
     CURSOR_POS(Vector2f.class),
-    KEYS_DOWN(Set.class),
+    PLAYER_ACTIONS(Set.class),
     WALK_ANIM_FRAME(Float.class),
     BOUNDING_GEOMETRY(Geometry.class),
     Z_INDEX(Integer.class),
     RENDER_TILE_SIZE(Float.class),
-    LEFTMOUSEBUTTON_DOWN(Boolean.class),
     MASS(Float.class);
 
     public final Class<?> clazz;

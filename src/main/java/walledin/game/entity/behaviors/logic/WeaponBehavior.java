@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
-import walledin.game.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -56,19 +55,17 @@ public class WeaponBehavior extends Behavior {
 
     @Override
     public final void onMessage(final MessageType messageType, final Object data) {
-      /*  if ((Boolean) getAttribute(Attribute.COLLECTABLE)
-                && messageType == MessageType.COLLIDED) {
-            final CollisionData colData = (CollisionData) data;
-            final Entity ent = colData.getCollisionEntity();
-
-            if (!ent.getFamily().equals(Family.PLAYER)) {
-                return;
-            }
-
-            owner = ent;
-
-            setAttribute(Attribute.COLLECTABLE, Boolean.FALSE);
-        }*/
+        /*
+         * if ((Boolean) getAttribute(Attribute.COLLECTABLE) && messageType ==
+         * MessageType.COLLIDED) { final CollisionData colData = (CollisionData)
+         * data; final Entity ent = colData.getCollisionEntity();
+         * 
+         * if (!ent.getFamily().equals(Family.PLAYER)) { return; }
+         * 
+         * owner = ent;
+         * 
+         * setAttribute(Attribute.COLLECTABLE, Boolean.FALSE); }
+         */
 
         if (messageType == MessageType.DROP) // to be called by Player only
         {
@@ -101,8 +98,8 @@ public class WeaponBehavior extends Behavior {
                         .normalize().scale(bulletAccelerationConstant);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily, manager
-                        .generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily,
+                        manager.generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);

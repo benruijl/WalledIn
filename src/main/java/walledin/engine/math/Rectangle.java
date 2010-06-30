@@ -145,8 +145,8 @@ public class Rectangle extends Geometry {
     }
 
     @Override
-    public boolean containsPoint(Vector2f point) {
+    public boolean containsPoint(final Vector2f point) {
         return getRight() > point.getX() && getLeft() < point.getX()
-        && getBottom() > point.getY() && getTop() < point.getY();
+                && getBottom() > point.getY() && getTop() < point.getY();
     }
 }

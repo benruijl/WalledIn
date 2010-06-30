@@ -34,11 +34,15 @@ import walledin.game.entity.Entity;
  */
 public interface GameMapIO {
     Entity readFromURL(EntityManager entityManager, URL file);
+
     /**
      * The client only has to read the tiles.
-     * @param file File to read from
+     * 
+     * @param file
+     *            File to read from
      * @return List of tiles
      */
     List<Tile> readTilesFromURL(final URL file);
-    boolean writeToFile(final Entity map, final String filename); 
+
+    boolean writeToFile(final Entity map, final String filename);
 }
