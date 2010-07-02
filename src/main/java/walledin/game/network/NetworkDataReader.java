@@ -156,8 +156,8 @@ public class NetworkDataReader {
         case HEALTH:
             data = buffer.getInt();
             break;
-        case ORIENTATION:
-            data = buffer.getInt();
+        case ORIENTATION_ANGLE:
+            data = buffer.getFloat();
             break;
         case PLAYER_NAME:
             data = readStringData(buffer);

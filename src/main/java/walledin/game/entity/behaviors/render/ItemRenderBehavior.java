@@ -61,10 +61,8 @@ public class ItemRenderBehavior extends RenderBehavior {
 
         renderer.translate((Vector2f) getAttribute(Attribute.POSITION));
 
-        if (getOwner().hasAttribute(Attribute.VELOCITY)) {
-            final Vector2f velocity = (Vector2f) getOwner().getAttribute(
-                    Attribute.VELOCITY);
-            renderer.rotate((float) Math.atan2(velocity.getY(), velocity.getX()));
+        if (getOwner().hasAttribute(Attribute.ORIENTATION_ANGLE)) {
+            renderer.rotate((Float) getAttribute(Attribute.ORIENTATION_ANGLE));
         }
 
         renderer.drawTexturePart(texPart, itemRect);

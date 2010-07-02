@@ -29,6 +29,7 @@ import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.util.Utils;
 
 public class WeaponBehavior extends Behavior {
     private static final Logger LOG = Logger.getLogger(WeaponBehavior.class);
@@ -50,25 +51,12 @@ public class WeaponBehavior extends Behavior {
 
         // can be picked up, is not owned by any player
         setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
-        setAttribute(Attribute.ORIENTATION, Integer.valueOf(1));
+        setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
     }
 
     @Override
     public final void onMessage(final MessageType messageType, final Object data) {
-        /*
-         * if ((Boolean) getAttribute(Attribute.COLLECTABLE) && messageType ==
-         * MessageType.COLLIDED) { final CollisionData colData = (CollisionData)
-         * data; final Entity ent = colData.getCollisionEntity();
-         * 
-         * if (!ent.getFamily().equals(Family.PLAYER)) { return; }
-         * 
-         * owner = ent;
-         * 
-         * setAttribute(Attribute.COLLECTABLE, Boolean.FALSE); }
-         */
-
-        if (messageType == MessageType.DROP) // to be called by Player only
-        {
+        if (messageType == MessageType.DROP) { // to be called by Player only
             LOG.info("Weapon " + getOwner().getName() + " dropped.");
             setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
             owner = null;
@@ -78,8 +66,8 @@ public class WeaponBehavior extends Behavior {
             if (canShoot) {
                 final Entity player = (Entity) data;
 
-                final int or = (Integer) player
-                        .getAttribute(Attribute.ORIENTATION);
+                final boolean facingRight = Utils.getCircleHalf((Float) player
+                        .getAttribute(Attribute.ORIENTATION_ANGLE)) == 1;
                 final Vector2f playerPos = (Vector2f) player
                         .getAttribute(Attribute.POSITION);
 
@@ -87,7 +75,7 @@ public class WeaponBehavior extends Behavior {
 
                 // slightly more complicated, since the player pos is defined as
                 // the top left
-                if (or > 0) {
+                if (facingRight) {
                     bulletPosition = playerPos.add(new Vector2f(50.0f, 20.0f));
                 } else {
                     bulletPosition = playerPos.add(new Vector2f(-30.0f, 20.0f));

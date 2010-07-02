@@ -22,7 +22,7 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
 
 [
 (Family.PLAYER): { Entity entity ->
-    entity.setAttribute(Attribute.ORIENTATION, 1); // start looking to
+    entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f); // start looking to
     // the right
     entity.addBehavior(new PlayerAnimationBehavior(entity));
     // TODO: we should be able to define player texture here

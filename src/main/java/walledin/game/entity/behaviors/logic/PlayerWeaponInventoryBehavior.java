@@ -78,8 +78,8 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                         setAttribute(Attribute.ACTIVE_WEAPON, weapon);
 
                         // set some attributes for the weapon
-                        weapon.setAttribute(Attribute.ORIENTATION,
-                                getAttribute(Attribute.ORIENTATION));
+                        weapon.setAttribute(Attribute.ORIENTATION_ANGLE,
+                                getAttribute(Attribute.ORIENTATION_ANGLE));
                     } else {
                         // remove weapon if picked up
                         weapon.remove();
@@ -105,8 +105,8 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                 setAttribute(Attribute.ACTIVE_WEAPON, weapon);
 
                 // set some attributes for the weapon
-                weapon.setAttribute(Attribute.ORIENTATION,
-                        getAttribute(Attribute.ORIENTATION));
+                weapon.setAttribute(Attribute.ORIENTATION_ANGLE,
+                        getAttribute(Attribute.ORIENTATION_ANGLE));
             }
         }
     }

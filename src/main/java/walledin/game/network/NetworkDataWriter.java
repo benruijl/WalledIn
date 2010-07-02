@@ -214,8 +214,8 @@ public class NetworkDataWriter {
         case HEALTH:
             writeIntegerData((Integer) data, buffer);
             break;
-        case ORIENTATION:
-            writeIntegerData((Integer) data, buffer);
+        case ORIENTATION_ANGLE:
+            writeFloatData((Float) data, buffer);
             break;
         case PLAYER_NAME:
             writeStringData((String) data, buffer);
@@ -248,6 +248,10 @@ public class NetworkDataWriter {
 
     private void writeIntegerData(final int data, final ByteBuffer buffer) {
         buffer.putInt(data);
+    }
+    
+    private void writeFloatData(final float data, final ByteBuffer buffer) {
+        buffer.putFloat(data);
     }
 
     private void writeItemsData(final List<Entity> data, final ByteBuffer buffer) {

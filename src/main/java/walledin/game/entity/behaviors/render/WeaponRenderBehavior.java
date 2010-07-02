@@ -27,6 +27,7 @@ import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
+import walledin.util.Utils;
 
 public class WeaponRenderBehavior extends RenderBehavior {
     private final String texPart;
@@ -60,7 +61,8 @@ public class WeaponRenderBehavior extends RenderBehavior {
         final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
         renderer.translate(pos);
 
-        if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
+        if (Utils
+                .getCircleHalf((Float) getAttribute(Attribute.ORIENTATION_ANGLE)) == -1) {
             renderer.translate(new Vector2f(-23, 0));
             renderer.scale(new Vector2f(-1, 1));
 

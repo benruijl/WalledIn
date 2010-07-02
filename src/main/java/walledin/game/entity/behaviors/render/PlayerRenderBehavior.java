@@ -27,6 +27,7 @@ import walledin.game.ZValues;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
+import walledin.util.Utils;
 
 public class PlayerRenderBehavior extends RenderBehavior {
     private static final Rectangle EYE_RIGHT_RECT = new Rectangle(55, 30, 20,
@@ -55,7 +56,7 @@ public class PlayerRenderBehavior extends RenderBehavior {
 
         renderer.scale(scale);
 
-        if (((Integer) getAttribute(Attribute.ORIENTATION)).intValue() == -1) {
+        if (Utils.getCircleHalf((Float) getAttribute(Attribute.ORIENTATION_ANGLE)) == -1) {
             renderer.translate(new Vector2f(scale.getX() * 96 * 2, 0));
             renderer.scale(new Vector2f(-1, 1));
         }
