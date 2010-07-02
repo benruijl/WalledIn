@@ -21,6 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.network.client;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
@@ -307,7 +308,8 @@ public class Client implements RenderListener, NetworkEventListener {
             username = System.getProperty("user.name");
 
             channel.configureBlocking(false);
-            channel.connect(host);
+            //channel.connect(host);
+            channel.connect(new InetSocketAddress("localhost", 1234));
 
             // the client is connected now
             connected = true;

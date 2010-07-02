@@ -16,9 +16,9 @@ import walledin.game.entity.MessageType;
  * @author Ben Ruijl
  * 
  */
-public class StaticObjectCollisionReponse extends Behavior {
+public class StaticObjectCollisionResponse extends Behavior {
 
-    public StaticObjectCollisionReponse(Entity owner) {
+    public StaticObjectCollisionResponse(Entity owner) {
         super(owner);
         // TODO Auto-generated constructor stub
     }
@@ -44,11 +44,9 @@ public class StaticObjectCollisionReponse extends Behavior {
 
         boundsA = boundsA
                 .translate((Vector2f) getAttribute(Attribute.POSITION));
-        boundsB = boundsB.translate((Vector2f) data.getCollisionEntity()
-                .getAttribute(Attribute.POSITION));
 
         /* Do a binary search to resolve the collision */
-        int maxDepth = 3;
+        int maxDepth = 4;
         Vector2f left = oldPosB;
         Vector2f right = endPosB;
         int depth = 0;
@@ -66,8 +64,8 @@ public class StaticObjectCollisionReponse extends Behavior {
         Vector2f resolvedPos = left;//.add(right.sub(left).scale(0.5f));
 
         data.getCollisionEntity().setAttribute(Attribute.POSITION, resolvedPos);
-        data.getCollisionEntity().setAttribute(Attribute.VELOCITY,
-                resolvedPos.sub(oldPosB).scale(1 / (float) data.getDelta()));
+        data.getCollisionEntity().setAttribute(Attribute.VELOCITY, new Vector2f(0, 0));
+             //   resolvedPos.sub(oldPosB).scale(1 / (float) data.getDelta()));
 
     }
 
