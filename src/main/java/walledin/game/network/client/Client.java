@@ -308,8 +308,7 @@ public class Client implements RenderListener, NetworkEventListener {
             username = System.getProperty("user.name");
 
             channel.configureBlocking(false);
-            //channel.connect(host);
-            channel.connect(new InetSocketAddress("localhost", 1234));
+            channel.connect(host);
 
             // the client is connected now
             connected = true;
