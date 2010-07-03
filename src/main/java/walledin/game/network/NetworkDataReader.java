@@ -162,9 +162,6 @@ public class NetworkDataReader {
         case PLAYER_NAME:
             data = readStringData(buffer);
             break;
-        case ITEM_LIST:
-            data = readEntityListData(buffer, entityManager);
-            break;
         case POSITION:
             data = readVector2fData(buffer);
             break;

@@ -50,7 +50,7 @@ public class WeaponBehavior extends Behavior {
         this.bulletFamily = bulletFamily;
 
         // can be picked up, is not owned by any player
-        setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
+        setAttribute(Attribute.NOT_PICKED_UP, Boolean.TRUE);
         setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
     }
 
@@ -58,7 +58,7 @@ public class WeaponBehavior extends Behavior {
     public final void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.DROP) { // to be called by Player only
             LOG.info("Weapon " + getOwner().getName() + " dropped.");
-            setAttribute(Attribute.COLLECTABLE, Boolean.TRUE);
+            setAttribute(Attribute.NOT_PICKED_UP, Boolean.TRUE);
             owner = null;
         }
 

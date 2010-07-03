@@ -35,13 +35,12 @@ public enum Attribute {
     TILES(List.class, false),
     /** Map name will be sent seperately at entity creation. */
     MAP_NAME(String.class, false),
-    ITEM_LIST(List.class, true),
     HEALTH(Integer.class, true),
     PLAYER_NAME(String.class, true),
     /** Orientation angle */
     ORIENTATION_ANGLE(Float.class, true),
     ACTIVE_WEAPON(Entity.class),
-    COLLECTABLE(Boolean.class),
+    NOT_PICKED_UP(Boolean.class),
     CURSOR_POS(Vector2f.class),
     PLAYER_ACTIONS(Set.class),
     WALK_ANIM_FRAME(Float.class),

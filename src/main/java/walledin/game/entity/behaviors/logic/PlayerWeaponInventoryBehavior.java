@@ -60,7 +60,7 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                         || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
 
                     // is weapon already owned?
-                    if ((Boolean) weapon.getAttribute(Attribute.COLLECTABLE) == Boolean.FALSE) {
+                    if ((Boolean) weapon.getAttribute(Attribute.NOT_PICKED_UP) == Boolean.FALSE) {
                         return;
                     }
 
@@ -68,7 +68,7 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                         return;
                     }
 
-                    weapon.setAttribute(Attribute.COLLECTABLE, false);
+                    weapon.setAttribute(Attribute.NOT_PICKED_UP, false);
 
                     weapons.put(weapon.getFamily(), weapon);
                     LOG.info("Adding weapon of family "

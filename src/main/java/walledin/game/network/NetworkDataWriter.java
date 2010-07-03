@@ -220,9 +220,6 @@ public class NetworkDataWriter {
         case PLAYER_NAME:
             writeStringData((String) data, buffer);
             break;
-        case ITEM_LIST:
-            writeItemsData((List<Entity>) data, buffer);
-            break;
         case POSITION:
             writeVector2fData((Vector2f) data, buffer);
             break;
@@ -252,13 +249,6 @@ public class NetworkDataWriter {
     
     private void writeFloatData(final float data, final ByteBuffer buffer) {
         buffer.putFloat(data);
-    }
-
-    private void writeItemsData(final List<Entity> data, final ByteBuffer buffer) {
-        buffer.putInt(data.size());
-        for (final Entity item : data) {
-            writeStringData(item.getName(), buffer);
-        }
     }
 
     private void writeStringData(final String data, final ByteBuffer buffer) {

@@ -22,15 +22,19 @@ package walledin.game.map;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.w3c.dom.Element;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.ItemInfo;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
+import walledin.game.entity.behaviors.logic.ItemManagementBevahior;
 import walledin.util.XMLReader;
 
 /**
@@ -76,21 +80,22 @@ public class GameMapIOXML implements GameMapIO {
         return result;
     }
 
-    private List<Entity> parseItems(final EntityManager entityManager,
+    private Set<ItemInfo> parseItems(final EntityManager entityManager,
             final Element element) {
-        final List<Entity> itList = new ArrayList<Entity>();
+        final Set<ItemInfo> itList = new HashSet<ItemInfo>();
         final Element itemsNode = XMLReader.getFirstElement(element, "items");
         final List<Element> items = XMLReader.getElements(itemsNode, "item");
 
         for (final Element el : items) {
-            final String name = el.getAttribute("name");
+            final String name = el.getAttribute("name"); // TODO: use name?
             final String type = el.getAttribute("type");
             final int x = Integer.parseInt(el.getAttribute("x"));
             final int y = Integer.parseInt(el.getAttribute("y"));
-            final Entity item = entityManager.create(
-                    Enum.valueOf(Family.class, type), name);
-
-            item.setAttribute(Attribute.POSITION, new Vector2f(x, y));
+            final int respawnTime = Integer.parseInt(el.getAttribute("respawn"));
+            
+            final ItemInfo item = new ItemInfo(Enum.valueOf(Family.class, type), 
+                    new Vector2f(x, y), respawnTime);
+       
             itList.add(item);
         }
 
@@ -98,10 +103,12 @@ public class GameMapIOXML implements GameMapIO {
     }
 
     /**
-     * Reads map data from an XML file
+     * Reads map data from an XML file.
      * 
-     * @param filename
-     *            Filename of XML data
+     * @param entityManager
+     *            Used for creating entities
+     * @param file
+     *            URL of XML resource
      * @return Returns true on success and false on failure
      */
     @Override
@@ -112,14 +119,14 @@ public class GameMapIOXML implements GameMapIO {
             final Element mapElement = reader.getRootElement();
 
             final String name = XMLReader.getTextValue(mapElement, "name");
-            final List<Entity> items = parseItems(entityManager, mapElement);
+            final Set<ItemInfo> items = parseItems(entityManager, mapElement);
             final List<Tile> tiles = parseTiles(mapElement);
             final Entity map = entityManager.create(Family.MAP, name);
-
+            
+            map.addBehavior(new ItemManagementBevahior(map, items));
             map.setAttribute(Attribute.WIDTH, width);
             map.setAttribute(Attribute.HEIGHT, height);
             map.setAttribute(Attribute.TILES, tiles);
-            map.setAttribute(Attribute.ITEM_LIST, items);
 
             return map;
         } else {

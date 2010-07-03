@@ -2,10 +2,10 @@
 <map>
 	<name>Default</name>
 	<items>
-		<item name="hk01" type="HEALTHKIT" x="300" y="420" />
-		<item name="ak01" type="ARMOURKIT" x="360" y="420" />
-		<item name="hg01" type="HANDGUN" x ="420" y="420" respawn="yes" />
-		<item name="fm01" type="FOAMGUN" x ="480" y="420" respawn="yes" />
+		<item name="hk01" type="HEALTHKIT" x="300" y="420" respawn="5" />
+		<item name="ak01" type="ARMOURKIT" x="360" y="420" respawn="5" />
+		<item name="hg01" type="HANDGUN" x ="420" y="420" respawn="5" />
+		<item name="fm01" type="FOAMGUN" x ="480" y="420" respawn="5" />
 	</items>
 	<tiles>
 		################################################################
