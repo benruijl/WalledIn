@@ -33,14 +33,14 @@ public enum Attribute {
     HEIGHT(Integer.class, true),
     /** Tiles will be read locally */
     TILES(List.class, false),
-    /** Map name will be sent seperately at entity creation. */
+    /** Map name will be sent separately at entity creation. */
     MAP_NAME(String.class, false),
     HEALTH(Integer.class, true),
     PLAYER_NAME(String.class, true),
     /** Orientation angle */
     ORIENTATION_ANGLE(Float.class, true),
     ACTIVE_WEAPON(Entity.class),
-    NOT_PICKED_UP(Boolean.class),
+    PICKED_UP(Boolean.class),
     CURSOR_POS(Vector2f.class),
     PLAYER_ACTIONS(Set.class),
     WALK_ANIM_FRAME(Float.class),

@@ -53,7 +53,7 @@ public class HealthKitBehavior extends Behavior {
             colData.getCollisionEntity().sendMessage(
                     MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
 
-            setAttribute(Attribute.NOT_PICKED_UP, false);
+            setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
             getOwner().remove(); // remove after usage
         }
     }
