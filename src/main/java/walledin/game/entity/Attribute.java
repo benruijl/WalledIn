@@ -40,7 +40,7 @@ public enum Attribute {
     /** Orientation angle */
     ORIENTATION_ANGLE(Float.class, true),
     ACTIVE_WEAPON(Entity.class),
-    NOT_PICKED_UP(Boolean.class),
+    PICKED_UP(Boolean.class),
     CURSOR_POS(Vector2f.class),
     PLAYER_ACTIONS(Set.class),
     WALK_ANIM_FRAME(Float.class),

@@ -43,7 +43,7 @@ public class ItemInfo {
     public void update(double delta, EntityManager entityManager) {
         /* Check if removed */
         removed = associatedEntity == null
-                || Boolean.FALSE.equals(associatedEntity.getAttribute(Attribute.NOT_PICKED_UP));
+                || Boolean.TRUE.equals(associatedEntity.getAttribute(Attribute.PICKED_UP));
 
         if (removed) {
             waitTime += delta;
@@ -55,7 +55,7 @@ public class ItemInfo {
                 LOG.info("Respawned item of family " + family);
 
                 associatedEntity.setAttribute(Attribute.POSITION, position);
-                associatedEntity.setAttribute(Attribute.NOT_PICKED_UP, Boolean.TRUE);
+                associatedEntity.setAttribute(Attribute.PICKED_UP, Boolean.FALSE);
 
                 removed = false;
                 waitTime = 0.0f;

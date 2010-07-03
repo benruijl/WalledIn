@@ -50,7 +50,7 @@ import walledin.game.entity.behaviors.physics.*
 
 (Family.ITEM): { Entity entity ->
     entity.addBehavior(new PhysicsBehavior(entity, 10)); // every item weighs the same
-    entity.setAttribute(Attribute.NOT_PICKED_UP, true);
+    entity.setAttribute(Attribute.PICKED_UP, false);
 } as EntityFunction,
 
 (Family.ARMOURKIT): { Entity entity ->
