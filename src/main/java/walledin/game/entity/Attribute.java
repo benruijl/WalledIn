@@ -33,7 +33,7 @@ public enum Attribute {
     HEIGHT(Integer.class, true),
     /** Tiles will be read locally */
     TILES(List.class, false),
-    /** Map name will be sent seperately at entity creation. */
+    /** Map name will be sent separately at entity creation. */
     MAP_NAME(String.class, false),
     HEALTH(Integer.class, true),
     PLAYER_NAME(String.class, true),
