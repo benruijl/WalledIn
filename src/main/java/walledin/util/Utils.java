@@ -22,20 +22,46 @@ package walledin.util;
 
 import java.net.URL;
 
-public class Utils {
-    /** A small value to prevent rounding errors */
+/**
+ * A helper library for WalledIn.
+ * @author Ben Ruijl, Wouter Smeenk
+ *
+ */
+public final class Utils {
+    
+    /** Private constructor. Never called. */
+    private Utils() {
+        
+    }
+    
+    /** A small value to prevent rounding errors. */
     private static final float EPSILON = 0.00001f;
 
-    public static URL getClasspathURL(final String filename) {
-        return ClassLoader.getSystemResource(filename);
+    /**
+     * Gets the class path of a resource.
+     * @param name Name of resource
+     * @return The <code>URL</code> of the resource
+     */
+    public static URL getClasspathURL(final String name) {
+        return ClassLoader.getSystemResource(name);
     }
 
+    /**
+     * Safe float comparison. Uses a small error, defined by
+     * <code>EPSILON</code>.
+     * 
+     * @param a
+     *            First float
+     * @param b
+     *            Second float
+     * @return Returns true if equal within the error, else false.
+     */
     public static boolean equals(final float a, final float b) {
         return a == b ? true : Math.abs(a - b) < EPSILON;
     }
 
     /**
-     * Clamps an integer to a range
+     * Clamps an integer to a range.
      * 
      * @param x
      *            Integer to clamp
@@ -47,5 +73,17 @@ public class Utils {
      */
     public static float clamp(final float x, final float min, final float max) {
         return x < min ? min : x > max ? max : x;
+    }
+
+    /**
+     * Returns the half of the circle in which the angle lies.
+     * 
+     * @param angle
+     *            Angle
+     * @return Returns -1 if in the left half of the circle and 1 if in the
+     *         right half
+     */
+    public static int getCircleHalf(final float angle) {
+        return (angle > 0.5 * Math.PI && angle < 1.5 * Math.PI) ? -1 : 1;
     }
 }

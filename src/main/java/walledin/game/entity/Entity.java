@@ -40,9 +40,10 @@ public class Entity {
     private final EntityManager entityManager;
 
     /**
-     * 
-     * @param name
-     *            Name of the component
+     * Creates a new entity.
+     * @param entityManager Manager that created this entity
+     * @param family Family of this entity
+     * @param name Name of this entity
      */
     public Entity(final EntityManager entityManager, final Family family,
             final String name) {
@@ -56,7 +57,7 @@ public class Entity {
     }
 
     /**
-     * Get the name of the entity
+     * Get the name of the entity.
      * 
      * @return Name of the entity
      */
@@ -65,7 +66,7 @@ public class Entity {
     }
 
     /**
-     * Get the family
+     * Get the family.
      * 
      * @return Family
      */
@@ -74,14 +75,14 @@ public class Entity {
     }
 
     /**
-     * Set the name of the entity
+     * Set the name of the entity.
      */
     public void setName(final String name) {
         this.name = name;
     }
 
     /**
-     * Adds a behavior to this class
+     * Adds a behavior to this class.
      * 
      * @param behavior
      *            The behavior instance to be added
@@ -195,7 +196,7 @@ public class Entity {
 
     /**
      * Get attributes that can be send over the network that have been changed
-     * since the last call
+     * since the last call.
      * 
      * @return The changed attributes
      */
@@ -216,7 +217,7 @@ public class Entity {
     }
 
     /**
-     * Removes a behavior from this entity
+     * Removes a behavior from this entity.
      * 
      * @param clazz
      *            Class of the behavior to be removed
@@ -228,7 +229,7 @@ public class Entity {
     }
 
     /**
-     * Calls onMessage on all the behaviors of this entity
+     * Calls onMessage on all the behaviors of this entity.
      */
     public void sendMessage(final MessageType messageType, final Object data) {
         for (final Behavior behavior : behaviors.values()) {
@@ -237,7 +238,7 @@ public class Entity {
     }
 
     /**
-     * Calls onUpdate on all the behaviors of this entity
+     * Calls onUpdate on all the behaviors of this entity.
      */
     public void sendUpdate(final double delta) {
         for (final Behavior behavior : behaviors.values()) {
@@ -246,7 +247,7 @@ public class Entity {
     }
 
     /**
-     * Mark this entity for removal
+     * Mark this entity for removal.
      */
     public void remove() {
         markedRemoved = true;

@@ -7,7 +7,7 @@ import walledin.game.entity.behaviors.physics.*
 
 [
 (Family.PLAYER): { Entity entity ->
-    entity.setAttribute(Attribute.ORIENTATION, 1); // start looking to
+    entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f); // start looking to
     // the right
 
     entity.addBehavior(new HealthBehavior(entity, 100, 100));
@@ -50,6 +50,7 @@ import walledin.game.entity.behaviors.physics.*
 
 (Family.ITEM): { Entity entity ->
     entity.addBehavior(new PhysicsBehavior(entity, 10)); // every item weighs the same
+    entity.setAttribute(Attribute.NOT_PICKED_UP, true);
 } as EntityFunction,
 
 (Family.ARMOURKIT): { Entity entity ->

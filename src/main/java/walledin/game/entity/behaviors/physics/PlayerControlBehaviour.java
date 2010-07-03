@@ -93,13 +93,13 @@ public class PlayerControlBehaviour extends Behavior {
 
         if (playerActions.contains(PlayerActions.WALK_RIGHT)) {
             x += MOVE_SPEED;
-            setAttribute(Attribute.ORIENTATION, 1);
+            setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
 
         }
 
         if (playerActions.contains(PlayerActions.WALK_LEFT)) {
             x -= MOVE_SPEED;
-            setAttribute(Attribute.ORIENTATION, -1);
+            setAttribute(Attribute.ORIENTATION_ANGLE, (float) Math.PI);
         }
 
         if (canJump && playerActions.contains(PlayerActions.JUMP)) {
@@ -117,9 +117,9 @@ public class PlayerControlBehaviour extends Behavior {
         // change orientation if shooting in other directory
         if (playerActions.contains(PlayerActions.SHOOT_PRIMARY)) {
             setAttribute(
-                    Attribute.ORIENTATION,
+                    Attribute.ORIENTATION_ANGLE,
                     ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))
-                            .getX() ? -1 : 1);
+                            .getX() ? (float)Math.PI : 0.0f);
 
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                 final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);

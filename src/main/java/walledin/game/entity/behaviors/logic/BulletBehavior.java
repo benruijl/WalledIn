@@ -20,7 +20,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
+import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -51,6 +53,17 @@ public class BulletBehavior extends Behavior {
                         MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
 
                 getOwner().remove();
+            }
+        }
+        
+        if (messageType == MessageType.ATTRIBUTE_SET) {
+            final Attribute attrib = (Attribute) data;
+            
+            /* If the velocity is changed, change the angle of the bullet */
+            if (attrib == Attribute.VELOCITY) {
+                Vector2f velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
+               setAttribute(Attribute.ORIENTATION_ANGLE, 
+                       (float) Math.atan2(velocity.getY(), velocity.getX()));
             }
         }
 

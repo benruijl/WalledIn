@@ -23,6 +23,7 @@ package walledin.game.entity.behaviors.logic;
 import org.apache.log4j.Logger;
 
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -52,6 +53,7 @@ public class HealthKitBehavior extends Behavior {
             colData.getCollisionEntity().sendMessage(
                     MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
 
+            setAttribute(Attribute.NOT_PICKED_UP, false);
             getOwner().remove(); // remove after usage
         }
     }

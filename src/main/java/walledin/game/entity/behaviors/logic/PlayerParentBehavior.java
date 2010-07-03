@@ -37,7 +37,7 @@ public class PlayerParentBehavior extends Behavior {
      * the current player position, orientation etc.
      */
     @Override
-    public void onMessage(final MessageType messageType, final Object data) {
+    public final void onMessage(final MessageType messageType, final Object data) {
         if (messageType != MessageType.ATTRIBUTE_SET) {
             return;
         }
@@ -48,7 +48,7 @@ public class PlayerParentBehavior extends Behavior {
 
         final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
         final Attribute attrib = (Attribute) data;
-        final int or = (Integer) getAttribute(Attribute.ORIENTATION);
+        final float or = (Float) getAttribute(Attribute.ORIENTATION_ANGLE);
         final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
         final Vector2f vel = (Vector2f) getAttribute(Attribute.VELOCITY);
         final Vector2f cursorPos = (Vector2f) getAttribute(Attribute.CURSOR_POS);
@@ -64,8 +64,8 @@ public class PlayerParentBehavior extends Behavior {
         case VELOCITY:
             weapon.setAttribute(Attribute.VELOCITY, vel);
             break;
-        case ORIENTATION:
-            weapon.setAttribute(Attribute.ORIENTATION, or);
+        case ORIENTATION_ANGLE:
+            weapon.setAttribute(Attribute.ORIENTATION_ANGLE, or);
             break;
         default:
             break;
