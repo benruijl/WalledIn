@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -246,7 +245,7 @@ public class NetworkDataWriter {
     private void writeIntegerData(final int data, final ByteBuffer buffer) {
         buffer.putInt(data);
     }
-    
+
     private void writeFloatData(final float data, final ByteBuffer buffer) {
         buffer.putFloat(data);
     }

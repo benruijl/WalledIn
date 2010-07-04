@@ -17,7 +17,7 @@ public class PlayerActionManager {
     private static PlayerActionManager ref = null;
     private final Map<Integer, PlayerActions> keyMap;
     private final Map<Integer, PlayerActions> buttonMap;
-    private Set<PlayerActions> playerActions;
+    private final Set<PlayerActions> playerActions;
 
     private PlayerActionManager() {
         keyMap = new HashMap<Integer, PlayerActions>();

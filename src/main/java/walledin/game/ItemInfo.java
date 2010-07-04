@@ -17,7 +17,8 @@ public class ItemInfo {
     Entity associatedEntity;
     boolean removed;
 
-    public ItemInfo(Family family, Vector2f position, float respawnTime) {
+    public ItemInfo(final Family family, final Vector2f position,
+            final float respawnTime) {
         super();
         this.family = family;
         this.position = position;
@@ -40,10 +41,11 @@ public class ItemInfo {
         return respawnTime;
     }
 
-    public void update(double delta, EntityManager entityManager) {
+    public void update(final double delta, final EntityManager entityManager) {
         /* Check if removed */
         removed = associatedEntity == null
-                || Boolean.TRUE.equals(associatedEntity.getAttribute(Attribute.PICKED_UP));
+                || Boolean.TRUE.equals(associatedEntity
+                        .getAttribute(Attribute.PICKED_UP));
 
         if (removed) {
             waitTime += delta;
@@ -55,7 +57,8 @@ public class ItemInfo {
                 LOG.info("Respawned item of family " + family);
 
                 associatedEntity.setAttribute(Attribute.POSITION, position);
-                associatedEntity.setAttribute(Attribute.PICKED_UP, Boolean.FALSE);
+                associatedEntity.setAttribute(Attribute.PICKED_UP,
+                        Boolean.FALSE);
 
                 removed = false;
                 waitTime = 0.0f;

@@ -41,9 +41,13 @@ public class Entity {
 
     /**
      * Creates a new entity.
-     * @param entityManager Manager that created this entity
-     * @param family Family of this entity
-     * @param name Name of this entity
+     * 
+     * @param entityManager
+     *            Manager that created this entity
+     * @param family
+     *            Family of this entity
+     * @param name
+     *            Name of this entity
      */
     public Entity(final EntityManager entityManager, final Family family,
             final String name) {
