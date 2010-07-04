@@ -24,22 +24,25 @@ import java.net.URL;
 
 /**
  * A helper library for WalledIn.
+ * 
  * @author Ben Ruijl, Wouter Smeenk
- *
+ * 
  */
 public final class Utils {
-    
+
     /** Private constructor. Never called. */
     private Utils() {
-        
+
     }
-    
+
     /** A small value to prevent rounding errors. */
     private static final float EPSILON = 0.00001f;
 
     /**
      * Gets the class path of a resource.
-     * @param name Name of resource
+     * 
+     * @param name
+     *            Name of resource
      * @return The <code>URL</code> of the resource
      */
     public static URL getClasspathURL(final String name) {
@@ -84,6 +87,6 @@ public final class Utils {
      *         right half
      */
     public static int getCircleHalf(final float angle) {
-        return (angle > 0.5 * Math.PI && angle < 1.5 * Math.PI) ? -1 : 1;
+        return angle > 0.5 * Math.PI && angle < 1.5 * Math.PI ? -1 : 1;
     }
 }

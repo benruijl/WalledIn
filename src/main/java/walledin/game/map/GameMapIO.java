@@ -35,8 +35,11 @@ import walledin.game.entity.Entity;
 public interface GameMapIO {
     /**
      * Reads a map from a file. Called by the server.
-     * @param entityManager Entity manager
-     * @param file URL of map file
+     * 
+     * @param entityManager
+     *            Entity manager
+     * @param file
+     *            URL of map file
      * @return Map entity
      */
     Entity readFromURL(EntityManager entityManager, URL file);

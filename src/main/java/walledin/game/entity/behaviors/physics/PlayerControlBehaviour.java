@@ -119,7 +119,7 @@ public class PlayerControlBehaviour extends Behavior {
             setAttribute(
                     Attribute.ORIENTATION_ANGLE,
                     ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))
-                            .getX() ? (float)Math.PI : 0.0f);
+                            .getX() ? (float) Math.PI : 0.0f);
 
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                 final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);

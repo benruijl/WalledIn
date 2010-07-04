@@ -55,15 +55,15 @@ public class BulletBehavior extends Behavior {
                 getOwner().remove();
             }
         }
-        
+
         if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attrib = (Attribute) data;
-            
+
             /* If the velocity is changed, change the angle of the bullet */
             if (attrib == Attribute.VELOCITY) {
-                Vector2f velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
-               setAttribute(Attribute.ORIENTATION_ANGLE, 
-                       (float) Math.atan2(velocity.getY(), velocity.getX()));
+                final Vector2f velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
+                setAttribute(Attribute.ORIENTATION_ANGLE,
+                        (float) Math.atan2(velocity.getY(), velocity.getX()));
             }
         }
 

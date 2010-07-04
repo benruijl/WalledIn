@@ -111,7 +111,7 @@ public class Vector2f {
 
         return true;
     }
-    
+
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";

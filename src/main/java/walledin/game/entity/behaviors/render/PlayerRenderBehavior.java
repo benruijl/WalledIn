@@ -56,7 +56,8 @@ public class PlayerRenderBehavior extends RenderBehavior {
 
         renderer.scale(scale);
 
-        if (Utils.getCircleHalf((Float) getAttribute(Attribute.ORIENTATION_ANGLE)) == -1) {
+        if (Utils
+                .getCircleHalf((Float) getAttribute(Attribute.ORIENTATION_ANGLE)) == -1) {
             renderer.translate(new Vector2f(scale.getX() * 96 * 2, 0));
             renderer.scale(new Vector2f(-1, 1));
         }
