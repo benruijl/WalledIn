@@ -115,7 +115,7 @@ public class CollisionManager {
         final int x = (int) (pos.getX() / tileSize);
         final int y = (int) (pos.getY() / tileSize);
 
-        if (x < 0 || x < 0 || x >= width || y >= height) {
+        if (x < 0 || y < 0 || x >= width || y >= height) {
             LOG.fatal("Illegal tile requested! "
                     + "Tried to access tile at coordinates (" + x + "," + y
                     + "), but the boundaries are (0,0) - (" + width + ","
