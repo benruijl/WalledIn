@@ -50,6 +50,7 @@ import walledin.game.screens.Screen;
 import walledin.game.screens.ScreenManager;
 import walledin.game.screens.ScreenManager.ScreenType;
 import walledin.game.screens.ServerListScreen;
+import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener {
@@ -97,7 +98,16 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     public static void main(final String[] args) {
+        /* Load configuration */
+        try {
+            SettingsManager.getInstance().loadSettings(
+                    Utils.getClasspathURL("settings.ini"));
+        } catch (IOException e) {
+            LOG.error("Could not read configuration file.", e);
+        }
+
         final Renderer renderer = new Renderer();
+
         Client client;
         try {
             client = new Client(renderer);
@@ -106,7 +116,13 @@ public class Client implements RenderListener, NetworkEventListener {
             return;
         }
         LOG.info("initializing renderer");
-        renderer.initialize("WalledIn", 800, 600, false);
+
+        SettingsManager settings = SettingsManager.getInstance();
+
+        renderer.initialize("WalledIn",
+                settings.getInteger("engine.windowWidth"),
+                settings.getInteger("engine.windowHeight"),
+                settings.getBoolean("engine.fullScreen"));
         renderer.addListener(client);
         // Start renderer
         LOG.info("starting renderer");
