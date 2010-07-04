@@ -48,10 +48,9 @@ public class PhysicsBehavior extends Behavior {
         super(owner);
 
         if (mass == 0) {
-            LOG
-                    .warn("Mass of "
-                            + getOwner().getName()
-                            + " is 0. Applying a force will give an infinite acceleration."); 
+            LOG.warn("Mass of "
+                    + getOwner().getName()
+                    + " is 0. Applying a force will give an infinite acceleration.");
         }
 
         this.mass = mass;

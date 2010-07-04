@@ -58,14 +58,15 @@ public class CollisionManager {
          * @param theorPos
          *            The theoretical position after the velocity update but
          *            before the collision check
-         * @param delta 
+         * @param delta
          *            Delta time
          * @param collisionEntity
          *            The entity the entity that receives the message collided
          *            with
          */
         public CollisionData(final Vector2f newPos, final Vector2f oldPos,
-                final Vector2f theorPos, final double delta, final Entity collisionEntity) {
+                final Vector2f theorPos, final double delta,
+                final Entity collisionEntity) {
             super();
             this.newPos = newPos;
             this.oldPos = oldPos;
@@ -85,7 +86,7 @@ public class CollisionManager {
         public final Vector2f getTheorPos() {
             return theorPos;
         }
-        
+
         public final double getDelta() {
             return delta;
         }
@@ -181,9 +182,11 @@ public class CollisionManager {
                 final Vector2f oldPosB = posB.sub(velB);
 
                 entArray[i].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posA, oldPosA, posA, delta, entArray[j]));
+                        new CollisionData(posA, oldPosA, posA, delta,
+                                entArray[j]));
                 entArray[j].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posB, oldPosB, posB, delta, entArray[i]));
+                        new CollisionData(posB, oldPosB, posB, delta,
+                                entArray[i]));
             }
         }
     }

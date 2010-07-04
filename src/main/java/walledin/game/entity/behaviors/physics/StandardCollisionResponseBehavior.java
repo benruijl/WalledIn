@@ -54,11 +54,13 @@ public class StandardCollisionResponseBehavior extends Behavior {
             return;
         }
 
-        if (data.getCollisionEntity().getFamily() == Family.MAP)
+        if (data.getCollisionEntity().getFamily() == Family.MAP) {
             return; // do not check against map
+        }
 
-        if (data.getCollisionEntity().getFamily().getParent() == Family.WEAPON)
+        if (data.getCollisionEntity().getFamily().getParent() == Family.WEAPON) {
             return; // FIXME: nasty hack
+        }
 
         // transform to a system in which object A stands still
         final Vector2f velA = data.getTheorPos().sub(data.getOldPos());
@@ -72,13 +74,13 @@ public class StandardCollisionResponseBehavior extends Behavior {
         final Vector2f vel = velB.sub(velA); // velocity of particle B in new
                                              // system
 
-        float dx, dy; // position
+        final float dx, dy; // position
 
         // do very basic collision response
-        Geometry boundsA = (Geometry) getOwner().getAttribute(
+        final Geometry boundsA = (Geometry) getOwner().getAttribute(
                 Attribute.BOUNDING_GEOMETRY);
-        Geometry boundsB = (Geometry) data.getCollisionEntity().getAttribute(
-                Attribute.BOUNDING_GEOMETRY);
+        final Geometry boundsB = (Geometry) data.getCollisionEntity()
+                .getAttribute(Attribute.BOUNDING_GEOMETRY);
 
         /*
          * if (boundsB.translate( new Vector2f(oldPosB.getX() + vel.getX(),
@@ -100,21 +102,23 @@ public class StandardCollisionResponseBehavior extends Behavior {
 
         // LOG.info("I was here: " + dx + " " + dy);
 
-        Float massA = (Float) getAttribute(Attribute.MASS);
-        Float massB = (Float) data.getCollisionEntity().getAttribute(
+        final Float massA = (Float) getAttribute(Attribute.MASS);
+        final Float massB = (Float) data.getCollisionEntity().getAttribute(
                 Attribute.MASS);
 
         if (massA == null || massB == null) {
             return;
         }
 
-        Vector2f finalVelA = velA.scale((massA - massB) / (massA + massB)).add(
-                velB.scale(2 * massB / (massA + massB)));
-        Vector2f finalVelB = velB.scale((massB - massA) / (massA + massB)).add(
-                velA.scale(2 * massA / (massA + massB)));
+        final Vector2f finalVelA = velA
+                .scale((massA - massB) / (massA + massB)).add(
+                        velB.scale(2 * massB / (massA + massB)));
+        final Vector2f finalVelB = velB
+                .scale((massB - massA) / (massA + massB)).add(
+                        velA.scale(2 * massA / (massA + massB)));
 
-        setAttribute(Attribute.VELOCITY, finalVelA.scale((float) (1 / data
-                .getDelta())));
+        setAttribute(Attribute.VELOCITY,
+                finalVelA.scale((float) (1 / data.getDelta())));
         setAttribute(Attribute.POSITION,
                 ((Vector2f) getAttribute(Attribute.POSITION)).add(finalVelA));
         data.getCollisionEntity().setAttribute(Attribute.VELOCITY,

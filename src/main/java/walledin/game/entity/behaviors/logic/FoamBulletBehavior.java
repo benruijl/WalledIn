@@ -55,7 +55,7 @@ public class FoamBulletBehavior extends BulletBehavior {
                     partical.setAttribute(Attribute.POSITION,
                             getAttribute(Attribute.POSITION));
                     blownUp = true;
-                    
+
                     getOwner().remove(); // remove the foam bullet
                 }
             }
