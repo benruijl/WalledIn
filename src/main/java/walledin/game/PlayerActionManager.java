@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Input;
+import walledin.util.SettingsManager;
 
 public class PlayerActionManager {
     private static final Logger LOG = Logger
@@ -44,14 +45,39 @@ public class PlayerActionManager {
         buttonMap = new HashMap<Integer, PlayerActions>();
         playerActions = new HashSet<PlayerActions>();
 
-        /* Add standard mapping */
-        keyMap.put(KeyEvent.VK_A, PlayerActions.WALK_LEFT);
-        keyMap.put(KeyEvent.VK_D, PlayerActions.WALK_RIGHT);
-        keyMap.put(KeyEvent.VK_SPACE, PlayerActions.JUMP);
-        keyMap.put(KeyEvent.VK_1, PlayerActions.SELECT_WEAPON_1);
-        keyMap.put(KeyEvent.VK_2, PlayerActions.SELECT_WEAPON_2);
-        buttonMap.put(MouseEvent.BUTTON1, PlayerActions.SHOOT_PRIMARY);
-        buttonMap.put(MouseEvent.BUTTON2, PlayerActions.SHOOT_SECUNDARY);
+        /* Load the mapping from the configuration file */
+        for (final PlayerActions action : PlayerActions.values()) {
+            final String inputName = SettingsManager.getInstance().getString(
+                    action.toString());
+
+            if (inputName == null) {
+                LOG.warn("Warning: action " + action + " is unassigned.");
+                continue;
+            }
+
+            try {
+                final int key = KeyEvent.class.getField(inputName).getInt(
+                        KeyEvent.class);
+                keyMap.put(key, action);
+            }
+            /* Not in key list, check the mouse button list */
+            catch (final NoSuchFieldException e) {
+
+                try {
+                    final int button = MouseEvent.class.getField(inputName)
+                            .getInt(KeyEvent.class);
+                    buttonMap.put(button, action);
+                }
+                /* If not in any of the lists, print a warning */
+                catch (final NoSuchFieldException e1) {
+                    LOG.warn("Warning: action " + action + " is unassigned.");
+                } catch (final Exception e1) {
+                    e.printStackTrace();
+                }
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

@@ -62,6 +62,11 @@ public class ItemInfo {
     }
 
     public void update(final double delta, final EntityManager entityManager) {
+        /* Check if item should respawn */
+        if (respawnTime < 0) {
+            return;
+        }
+        
         /* Check if removed */
         removed = associatedEntity == null
                 || Boolean.TRUE.equals(associatedEntity
