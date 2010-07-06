@@ -21,5 +21,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.screens;
 
 public interface ScreenMouseEventListener {
+    /**
+     * Called when the mouse is pressed above the screen.
+     * @param e Mouse event information
+     */
     public void onMouseDown(ScreenMouseEvent e);
+    
+    /**
+     * Called when mouse hovers over screen.
+     * @param e Mouse event information
+     */
+    public void onMouseHover(ScreenMouseEvent e);
 }

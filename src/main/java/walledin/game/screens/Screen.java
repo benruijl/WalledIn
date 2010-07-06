@@ -23,6 +23,7 @@ package walledin.game.screens;
 import java.util.ArrayList;
 import java.util.List;
 
+import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
@@ -57,6 +58,9 @@ public abstract class Screen {
 
     /** Bounding rectangle. */
     private final Rectangle rectangle;
+    
+    /** Font. */
+    private Font font;
 
     /** Active flag. */
     protected boolean active = false;
@@ -117,16 +121,20 @@ public abstract class Screen {
      *            Delta time since last update
      */
     public void update(final double delta) {
-        /* Check if mouse pressed */
-        if (Input.getInstance().isButtonDown(1)) {
             Screen s = getSmallestScreenContainingCursor();
 
-            // send mouse event message
+            
             if (s != null) {
-                s.sendMouseEventMessage(new ScreenMouseEvent(s, Input
+                /* Send mouse hover event */
+                s.sendMouseHoverMessage(new ScreenMouseEvent(s, Input
                         .getInstance().getMousePos().asVector2f()));
+                
+                /* Check if mouse pressed */
+                if (Input.getInstance().isButtonDown(1)) {
+                    s.sendMouseDownMessage(new ScreenMouseEvent(s, Input
+                            .getInstance().getMousePos().asVector2f()));
+                }
             }
-        }
 
         for (final Screen screen : children) {
             if (screen.isActive()) {
@@ -243,10 +251,23 @@ public abstract class Screen {
         mouseListeners.add(listener);
     }
 
-    private void sendMouseEventMessage(ScreenMouseEvent e) {
+    private void sendMouseHoverMessage(ScreenMouseEvent e) {
+        for (ScreenMouseEventListener listener : mouseListeners) {
+            listener.onMouseHover(e);
+        }
+    }
+    
+    private void sendMouseDownMessage(ScreenMouseEvent e) {
         for (ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
         }
     }
-
+    
+    public Font getFont() {
+        return font;
+    }
+    
+    public void setFont(Font font) {
+        this.font = font;
+    }
 }

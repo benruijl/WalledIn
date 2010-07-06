@@ -26,17 +26,19 @@ import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
-public class Button extends Screen {
+public class Button extends Screen implements ScreenMouseEventListener {
     /** Button text. */
     private String text;
-    private boolean selected; // mouse hovering over button?
 
-    public Button(final Screen parent, final Rectangle boundingRect,
-            final String text, final Vector2f pos) {
-        super(parent, boundingRect);
+    /** Keeps track if move is hovering over button. */
+    private boolean selected;
+
+    public Button(final Screen parent, final String text, final Vector2f pos) {
+        super(parent, parent.getManager().getFont("arial20")
+                .getBoundingRect(text));
         this.text = text;
         setPosition(pos);
-
+        addMouseEventListener(this);
         setActiveAndVisible(); // standard is active and visible
     }
 
@@ -47,7 +49,7 @@ public class Button extends Screen {
 
     @Override
     public void update(final double delta) {
-        selected = pointInScreen(Input.getInstance().getMousePos().asVector2f());
+        selected = false;
 
         super.update(delta);
     }
@@ -68,5 +70,16 @@ public class Button extends Screen {
 
     public void setText(final String text) {
         this.text = text;
+    }
+
+    @Override
+    public void onMouseDown(ScreenMouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onMouseHover(ScreenMouseEvent e) {
+        selected = true;
     }
 }

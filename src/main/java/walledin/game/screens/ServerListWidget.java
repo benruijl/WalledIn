@@ -46,8 +46,8 @@ public class ServerListWidget extends Screen implements
 
     @Override
     public void initialize() {
-        refreshButton = new Button(this, new Rectangle(0, -20, 100, 25),
-                "Refresh", getPosition().add(new Vector2f(400, 40)));
+        refreshButton = new Button(this, "Refresh", getPosition().add(
+                new Vector2f(400, 40)));
         refreshButton.addMouseEventListener(this);
         addChild(refreshButton);
 
@@ -63,10 +63,9 @@ public class ServerListWidget extends Screen implements
         serverButtons.clear();
 
         for (int i = 0; i < serverList.size(); i++) {
-            final Screen server = new Button(this, new Rectangle(0, -20, 300,
-                    25), serverList.get(i).getName() + " ("
-                    + serverList.get(i).getAddress() + ")", getPosition().add(
-                    new Vector2f(10, 65 + i * 20)));
+            final Screen server = new Button(this, serverList.get(i).getName()
+                    + " (" + serverList.get(i).getAddress() + ")",
+                    getPosition().add(new Vector2f(10, 65 + i * 20)));
             server.registerScreenManager(getManager());
             server.addMouseEventListener(this);
             serverButtons.add(server);
@@ -120,6 +119,10 @@ public class ServerListWidget extends Screen implements
             }
         }
 
+    }
+
+    @Override
+    public void onMouseHover(ScreenMouseEvent e) {
     }
 
 }

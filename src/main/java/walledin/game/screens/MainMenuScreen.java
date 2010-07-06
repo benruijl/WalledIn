@@ -51,11 +51,9 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
         TextureManager.getInstance().loadFromURL(
                 Utils.getClasspathURL("logo.png"), "logo");
 
-        startButton = new Button(this, new Rectangle(0, -20, 100, 25),
-                "Start game", new Vector2f(330, 200));
+        startButton = new Button(this, "Start game", new Vector2f(330, 200));
         startButton.addMouseEventListener(this);
-        quitButton = new Button(this, new Rectangle(0, -20, 70, 25), "Quit",
-                new Vector2f(360, 250));
+        quitButton = new Button(this, "Quit", new Vector2f(360, 250));
         quitButton.addMouseEventListener(this);
         addChild(startButton);
         addChild(quitButton);
@@ -71,7 +69,7 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
     }
 
     @Override
-    public void onMouseDown(ScreenMouseEvent e) {
+    public void onMouseDown(final ScreenMouseEvent e) {
         if (e.getScreen() == startButton) {
             getManager().getScreen(ScreenType.SERVER_LIST).initialize();
             getManager().getScreen(ScreenType.SERVER_LIST).setActive(true);
@@ -79,11 +77,15 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
             setActive(false);
             Input.getInstance().setButtonUp(1); // FIXME
         }
-        
+
         if (e.getScreen() == quitButton) {
             getManager().dispose(); // quit application
         }
-        
+
+    }
+
+    @Override
+    public void onMouseHover(final ScreenMouseEvent e) {
     }
 
 }
