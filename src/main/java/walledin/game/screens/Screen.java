@@ -23,6 +23,7 @@ package walledin.game.screens;
 import java.util.ArrayList;
 import java.util.List;
 
+import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -60,6 +61,9 @@ public abstract class Screen {
     /** Active flag. */
     protected boolean active = false;
 
+    /** List of mouse event listeners. */
+    private List<ScreenMouseEventListener> mouseListeners;
+
     /**
      * Creates a new screen.
      * 
@@ -72,6 +76,7 @@ public abstract class Screen {
     public Screen(final Screen parent, final Rectangle boudingRect) {
         children = new ArrayList<Screen>();
         position = new Vector2f();
+        mouseListeners = new ArrayList<ScreenMouseEventListener>();
         this.parent = parent;
         rectangle = boudingRect;
     }
@@ -83,12 +88,46 @@ public abstract class Screen {
     public abstract void initialize();
 
     /**
-     * Updates the screen.
+     * Finds the smallest screen containing the mouse cursor.
+     * 
+     * @return Returns a Screen on success and null on failure.
+     */
+    private Screen getSmallestScreenContainingCursor() {
+        if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
+            for (final Screen screen : children) {
+                if (screen.isActive()) {
+                    Screen b = screen.getSmallestScreenContainingCursor();
+
+                    if (b != null) {
+                        return b;
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        return null;
+    }
+
+    /**
+     * Updates the screen and its active children.
      * 
      * @param delta
      *            Delta time since last update
      */
     public void update(final double delta) {
+        /* Check if mouse pressed */
+        if (Input.getInstance().isButtonDown(1)) {
+            Screen s = getSmallestScreenContainingCursor();
+
+            // send mouse event message
+            if (s != null) {
+                s.sendMouseEventMessage(new ScreenMouseEvent(s, Input
+                        .getInstance().getMousePos().asVector2f()));
+            }
+        }
+
         for (final Screen screen : children) {
             if (screen.isActive()) {
                 screen.update(delta);
@@ -186,14 +225,28 @@ public abstract class Screen {
     }
 
     /**
-     * Checks if a point is in this window.
+     * Checks if a point is in this window. This will always return true if this
+     * Screen is a root screen.
      * 
      * @param point
      *            Point
      * @return True if in window, else false.
      */
     public boolean pointInScreen(final Vector2f point) {
+        if (rectangle == null)
+            return true;
+
         return rectangle.translate(position).containsPoint(point);
+    }
+
+    public void addMouseEventListener(ScreenMouseEventListener listener) {
+        mouseListeners.add(listener);
+    }
+
+    private void sendMouseEventMessage(ScreenMouseEvent e) {
+        for (ScreenMouseEventListener listener : mouseListeners) {
+            listener.onMouseDown(e);
+        }
     }
 
 }

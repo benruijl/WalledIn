@@ -29,7 +29,7 @@ import walledin.game.entity.MessageType;
 import walledin.game.screens.ScreenManager.ScreenType;
 import walledin.util.Utils;
 
-public class MainMenuScreen extends Screen {
+public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
     Screen startButton;
     Screen quitButton;
 
@@ -53,8 +53,10 @@ public class MainMenuScreen extends Screen {
 
         startButton = new Button(this, new Rectangle(0, -20, 100, 25),
                 "Start game", new Vector2f(330, 200));
+        startButton.addMouseEventListener(this);
         quitButton = new Button(this, new Rectangle(0, -20, 70, 25), "Quit",
                 new Vector2f(360, 250));
+        quitButton.addMouseEventListener(this);
         addChild(startButton);
         addChild(quitButton);
     }
@@ -66,25 +68,22 @@ public class MainMenuScreen extends Screen {
         }
 
         super.update(delta);
+    }
 
-        if (quitButton.pointInScreen(Input.getInstance().getMousePos()
-                .asVector2f())) {
-            if (Input.getInstance().isButtonDown(0)) {
-                getManager().dispose(); // quit application
-            }
+    @Override
+    public void onMouseDown(ScreenMouseEvent e) {
+        if (e.getScreen() == startButton) {
+            getManager().getScreen(ScreenType.SERVER_LIST).initialize();
+            getManager().getScreen(ScreenType.SERVER_LIST).setActive(true);
+            setState(ScreenState.Hidden); // hide main menu
+            setActive(false);
+            Input.getInstance().setButtonUp(1); // FIXME
         }
-
-        if (startButton.pointInScreen(Input.getInstance().getMousePos()
-                .asVector2f())) {
-            if (Input.getInstance().isButtonDown(1)) {
-                getManager().getScreen(ScreenType.SERVER_LIST).initialize();
-                getManager().getScreen(ScreenType.SERVER_LIST).setActive(true);
-                setState(ScreenState.Hidden); // hide main menu
-                setActive(false);
-                Input.getInstance().setButtonUp(1); // FIXME
-            }
+        
+        if (e.getScreen() == quitButton) {
+            getManager().dispose(); // quit application
         }
-
+        
     }
 
 }
