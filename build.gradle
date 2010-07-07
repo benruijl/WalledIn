@@ -23,9 +23,12 @@ repositories {
   }
 }
 
-//doesn't seem to work :(
 task buildDist(type:Zip, dependsOn: jar) {
-  include "lib/*"
-  include "dist/*"
-  include "build/lib/*"
+  from "README"
+  from "LICENSE"
+  from "dist/"
+  from "build/libs/"
+  from (".") {
+    include "lib/**"
+  }
 }
