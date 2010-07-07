@@ -98,7 +98,12 @@ public class ServerListWidget extends Screen implements
         /* If clicked on refresh button, get server list */
         if (e.getScreen() == refreshButton) {
             serverButtons.clear();
-
+            
+            PopupDialog dialog = new PopupDialog(this, "Refreshing server list");
+            getManager().addScreen(ScreenType.DIALOG, dialog);
+            dialog.initialize();
+            dialog.popUp();
+            
             // request a refresh
             getManager().getClient().refreshServerList();
             Input.getInstance().setButtonUp(1); // FIXME

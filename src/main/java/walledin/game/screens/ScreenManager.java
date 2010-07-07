@@ -22,9 +22,9 @@ package walledin.game.screens;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.game.EntityManager;
 import walledin.game.entity.Entity;
@@ -36,7 +36,7 @@ public class ScreenManager {
 
     /** Screen types. */
     public enum ScreenType {
-        MAIN_MENU, GAME, SERVER_LIST
+        MAIN_MENU, GAME, SERVER_LIST, DIALOG
     }
 
     /** List of screens. */
@@ -65,7 +65,7 @@ public class ScreenManager {
      *            Renderer used by screen manager
      */
     public ScreenManager(final Client client, final Renderer renderer) {
-        screens = new HashMap<ScreenType, Screen>();
+        screens = new ConcurrentHashMap<ScreenType, Screen>();
         fonts = new HashMap<String, Font>();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);

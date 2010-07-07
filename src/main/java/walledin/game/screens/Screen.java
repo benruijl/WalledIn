@@ -211,6 +211,10 @@ public abstract class Screen {
     public final void setState(final ScreenState state) {
         this.state = state;
     }
+    
+    public void hide() {
+        this.state = ScreenState.Hidden;
+    }
 
     /**
      * Links the screen manager to this screen. This function is usually called
