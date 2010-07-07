@@ -69,7 +69,7 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
-    private final DatagramChannel broadcastChannel;
+    private final DatagramChannel notifyChannel;
     private Set<ServerData> internetServerList;
     private final Set<ServerData> lanServerList;
     private boolean quitting = false;
@@ -101,7 +101,7 @@ public class Client implements RenderListener, NetworkEventListener {
 
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
-        broadcastChannel = DatagramChannel.open();
+        notifyChannel = DatagramChannel.open();
     }
 
     public static void main(final String[] args) {
@@ -140,7 +140,6 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             networkDataWriter.sendGetServersMessage(masterServerChannel);
             lanServerList.clear();
-            networkDataWriter.broadcastGetServersMessage(broadcastChannel);
         } catch (final IOException e) {
             LOG.error("IOException", e);
         }
@@ -224,11 +223,6 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedGetServersMessage(SocketAddress address) {
-        // ignore
-    }
-
-    @Override
     public void receivedServerNotificationMessage(SocketAddress address,
             ServerData server) {
         lanServerList.add(server);
@@ -268,6 +262,12 @@ public class Client implements RenderListener, NetworkEventListener {
                             masterServerChannel,
                             screenManager.getEntityManager());
                 }
+            }
+            boolean hasMore = networkDataReader.recieveMessage(
+                    notifyChannel, screenManager.getEntityManager());
+            while (hasMore) {
+                hasMore = networkDataReader.recieveMessage(notifyChannel,
+                        screenManager.getEntityManager());
             }
         } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
@@ -337,16 +337,13 @@ public class Client implements RenderListener, NetworkEventListener {
         menuScreen.setActiveAndVisible();
 
         connectToMasterServer();
-        bindBroadcastChannel();
+        setupNotifyChannel();
     }
 
-    private void bindBroadcastChannel() {
+    private void setupNotifyChannel() {
         try {
-            broadcastChannel.socket()
-                    .bind(new InetSocketAddress(
-                            NetworkConstants.MASTER_PROTOCOL_PORT));
-            broadcastChannel.socket().setBroadcast(true);
-            broadcastChannel.configureBlocking(false);
+            notifyChannel.socket().bind(new InetSocketAddress(NetworkConstants.MASTER_PROTOCOL_PORT));
+            notifyChannel.configureBlocking(false);
         } catch (SocketException e) {
             LOG.fatal("SocketException", e);
             dispose();
@@ -367,7 +364,6 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.info(server.getAddress());
             host = server.getAddress();
             username = System.getProperty("user.name");
-
             channel.configureBlocking(false);
             channel.connect(host);
 

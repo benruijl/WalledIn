@@ -143,10 +143,6 @@ public class NetworkDataReader {
         listener.receivedServerNotificationMessage(address, server);
     }
 
-    private void processGetServersMessage(final SocketAddress address) {
-        listener.receivedGetServersMessage(address);
-    }
-
     private ServerData readServerData() throws UnknownHostException {
         final byte[] ip = new byte[4];
         buffer.get(ip);
@@ -328,9 +324,6 @@ public class NetworkDataReader {
                 break;
             case NetworkConstants.SERVERS_MESSAGE:
                 processServersMessage(address);
-                break;
-            case NetworkConstants.GET_SERVERS_MESSAGE:
-                processGetServersMessage(address);
                 break;
             case NetworkConstants.SERVER_NOTIFICATION_MESSAGE:
                 processServerNotificationMessage(address);

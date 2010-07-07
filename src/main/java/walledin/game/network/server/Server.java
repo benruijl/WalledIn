@@ -58,12 +58,14 @@ import walledin.util.Utils;
  */
 public class Server implements NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(Server.class);
-    private static final int PORT = 1234;
+    private static final int PORT = 1236;
     private static final int UPDATES_PER_SECOND = 60;
     private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
 
     private static final String SERVER_NAME = "Cool WalledIn Server!";
     private static final long CHALLENGE_TIMEOUT = 5000;
+    private static final long BROADCAST_INTERVAL = 1000;
+
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
     private final NetworkDataWriter networkWriter;
@@ -78,6 +80,7 @@ public class Server implements NetworkEventListener {
     private DatagramChannel channel;
     private DatagramChannel broadcastChannel;
     private long lastChallenge;
+    private long lastBroadcast;
 
     /**
      * Creates a new server. Initializes variables to their default values.
@@ -124,13 +127,13 @@ public class Server implements NetworkEventListener {
         channel.configureBlocking(false);
         broadcastChannel = DatagramChannel.open();
         broadcastChannel.socket().setBroadcast(true);
-        broadcastChannel.connect(NetworkConstants.BROADCAST_ADDRESS);
         broadcastChannel.configureBlocking(false);
         masterServerChannel = DatagramChannel.open();
         masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
         masterServerChannel.configureBlocking(false);
 
         lastChallenge = System.currentTimeMillis();
+        lastBroadcast = System.currentTimeMillis();
 
         networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
                 SERVER_NAME, players.size(), Integer.MAX_VALUE);
@@ -169,12 +172,6 @@ public class Server implements NetworkEventListener {
         while (hasMore) {
             hasMore = networkReader.recieveMessage(channel, entityManager);
         }
-        // Read get server requests from broadcast
-        hasMore = networkReader.recieveMessage(broadcastChannel, entityManager);
-        while (hasMore) {
-            hasMore = networkReader.recieveMessage(broadcastChannel,
-                    entityManager);
-        }
 
         if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
             LOG.warn("Did not recieve challenge from master server yet! "
@@ -182,6 +179,14 @@ public class Server implements NetworkEventListener {
             lastChallenge = System.currentTimeMillis();
             networkWriter.sendServerNotificationResponse(masterServerChannel,
                     PORT, SERVER_NAME, players.size(), Integer.MAX_VALUE);
+
+        }
+        
+        if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
+            networkWriter.sendServerNotificationResponse(broadcastChannel,
+                    NetworkConstants.BROADCAST_ADDRESS, PORT, SERVER_NAME,
+                    players.size(), Integer.MAX_VALUE);
+            lastBroadcast = System.currentTimeMillis();
         }
 
         double delta = System.nanoTime() - currentTime;
@@ -362,16 +367,6 @@ public class Server implements NetworkEventListener {
     public void receivedLoginReponseMessage(final SocketAddress address,
             final String playerEntityName) {
         // ignore .. should not happen
-    }
-    
-    @Override
-    public void receivedGetServersMessage(SocketAddress address) {
-        try {
-            networkWriter.sendServerNotificationResponse(broadcastChannel,address, PORT,
-                    SERVER_NAME, players.size(), Integer.MAX_VALUE);
-        } catch (IOException e) {
-            LOG.warn("IOException during send of server notification", e);
-        }
     }
 
     @Override

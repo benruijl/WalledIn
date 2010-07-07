@@ -207,16 +207,6 @@ public class NetworkDataWriter {
         } else {
             channel.send(buffer, address);
         }
-
-    }
-    
-
-    public void broadcastGetServersMessage(DatagramChannel channel) throws IOException {
-        buffer.clear();
-        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
-        buffer.flip();
-        channel.send(buffer, NetworkConstants.BROADCAST_ADDRESS);
     }
 
     private void writeAttributeData(final Attribute attribute,

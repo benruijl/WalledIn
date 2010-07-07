@@ -44,8 +44,6 @@ public interface NetworkEventListener {
 
     void receivedServersMessage(SocketAddress address, Set<ServerData> servers);
     
-    void receivedGetServersMessage(SocketAddress address);
-
     void receivedServerNotificationMessage(SocketAddress address,
             ServerData server);
 }
