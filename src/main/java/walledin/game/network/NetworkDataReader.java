@@ -126,6 +126,26 @@ public class NetworkDataReader {
         final long challengeData = buffer.getLong();
         listener.receivedChallengeMessage(address, challengeData);
     }
+    
+    private void processServerNotificationMessage(final SocketAddress address)
+            throws UnknownHostException {
+        final InetSocketAddress inetAddress = (InetSocketAddress) address;
+        // only read port. ip is derived from connection
+        final int port = buffer.getInt();
+        final SocketAddress serverAddress = new InetSocketAddress(
+                InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
+                port);
+        final String name = readStringData(buffer);
+        final int players = buffer.getInt();
+        final int maxPlayers = buffer.getInt();
+        final ServerData server = new ServerData(serverAddress, name, players,
+                maxPlayers);
+        listener.receivedServerNotificationMessage(address, server);
+    }
+
+    private void processGetServersMessage(final SocketAddress address) {
+        listener.receivedGetServersMessage(address);
+    }
 
     private ServerData readServerData() throws UnknownHostException {
         final byte[] ip = new byte[4];
@@ -308,6 +328,12 @@ public class NetworkDataReader {
                 break;
             case NetworkConstants.SERVERS_MESSAGE:
                 processServersMessage(address);
+                break;
+            case NetworkConstants.GET_SERVERS_MESSAGE:
+                processGetServersMessage(address);
+                break;
+            case NetworkConstants.SERVER_NOTIFICATION_MESSAGE:
+                processServerNotificationMessage(address);
                 break;
             default:
                 LOG.warn("Received unhandled message");

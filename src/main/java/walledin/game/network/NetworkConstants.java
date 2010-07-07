@@ -47,9 +47,12 @@ public class NetworkConstants {
     public static final byte CHALLENGE_RESPONSE_MESSAGE = 3;
     public static final byte CHALLENGE_MESSAGE = 4;
 
+    public static final int MASTER_PROTOCOL_PORT = 1235;
     public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress(
-            "131.174.31.24", 1235);
-
+            "131.174.31.24", MASTER_PROTOCOL_PORT);
+    public static final SocketAddress BROADCAST_ADDRESS = new InetSocketAddress(
+            "255.255.255.255", MASTER_PROTOCOL_PORT);
+    
     public static String getAddressRepresentation(final SocketAddress address) {
         final InetSocketAddress inetAddr = (InetSocketAddress) address;
         return inetAddr.getAddress().getHostAddress() + "@"

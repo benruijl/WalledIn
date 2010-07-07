@@ -184,10 +184,16 @@ public class NetworkDataWriter {
         buffer.flip();
         channel.send(buffer, address);
     }
-
+    
     public void sendServerNotificationResponse(final DatagramChannel channel,
             final int port, final String name, final int players,
             final int maxPlayers) throws IOException {
+        sendServerNotificationResponse(channel, null, port, name, players, maxPlayers);
+    }
+
+    public void sendServerNotificationResponse(final DatagramChannel channel,
+            SocketAddress address, final int port, final String name,
+            final int players, final int maxPlayers) throws IOException {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.SERVER_NOTIFICATION_MESSAGE);
@@ -196,7 +202,21 @@ public class NetworkDataWriter {
         buffer.putInt(players);
         buffer.putInt(maxPlayers);
         buffer.flip();
-        channel.write(buffer);
+        if (address == null) {
+            channel.write(buffer);
+        } else {
+            channel.send(buffer, address);
+        }
+
+    }
+    
+
+    public void broadcastGetServersMessage(DatagramChannel channel) throws IOException {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
+        buffer.flip();
+        channel.send(buffer, NetworkConstants.BROADCAST_ADDRESS);
     }
 
     private void writeAttributeData(final Attribute attribute,

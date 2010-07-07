@@ -76,6 +76,7 @@ public class Server implements NetworkEventListener {
     private final EntityFactory entityFactory;
     private DatagramChannel masterServerChannel;
     private DatagramChannel channel;
+    private DatagramChannel broadcastChannel;
     private long lastChallenge;
 
     /**
@@ -121,6 +122,10 @@ public class Server implements NetworkEventListener {
         channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(PORT));
         channel.configureBlocking(false);
+        broadcastChannel = DatagramChannel.open();
+        broadcastChannel.socket().setBroadcast(true);
+        broadcastChannel.connect(NetworkConstants.BROADCAST_ADDRESS);
+        broadcastChannel.configureBlocking(false);
         masterServerChannel = DatagramChannel.open();
         masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
         masterServerChannel.configureBlocking(false);
@@ -135,7 +140,7 @@ public class Server implements NetworkEventListener {
         LOG.info("starting main loop");
         while (running) {
             final long time = System.nanoTime();
-            doLoop(channel);
+            doLoop();
             double delta = System.nanoTime() - time;
             // convert to sec
             delta /= 1000000000;
@@ -156,19 +161,24 @@ public class Server implements NetworkEventListener {
      * Main loop of the server. Takes care of reading messages, updating
      * gamestate, and sending messages.
      * 
-     * @param channel
-     *            The channel to read from / send to
      * @throws IOException
      */
-    private void doLoop(final DatagramChannel channel) throws IOException {
+    private void doLoop() throws IOException {
         // Read input messages and login messages
         boolean hasMore = networkReader.recieveMessage(channel, entityManager);
         while (hasMore) {
             hasMore = networkReader.recieveMessage(channel, entityManager);
         }
+        // Read get server requests from broadcast
+        hasMore = networkReader.recieveMessage(broadcastChannel, entityManager);
+        while (hasMore) {
+            hasMore = networkReader.recieveMessage(broadcastChannel,
+                    entityManager);
+        }
 
         if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
-            LOG.warn("Did not recieve challenge from master server yet! Sending new notification.");
+            LOG.warn("Did not recieve challenge from master server yet! "
+                    + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
             networkWriter.sendServerNotificationResponse(masterServerChannel,
                     PORT, SERVER_NAME, players.size(), Integer.MAX_VALUE);
@@ -347,6 +357,28 @@ public class Server implements NetworkEventListener {
             connection.setReceivedVersion(newVersion);
         }
     }
+    
+    @Override
+    public void receivedLoginReponseMessage(final SocketAddress address,
+            final String playerEntityName) {
+        // ignore .. should not happen
+    }
+    
+    @Override
+    public void receivedGetServersMessage(SocketAddress address) {
+        try {
+            networkWriter.sendServerNotificationResponse(broadcastChannel,address, PORT,
+                    SERVER_NAME, players.size(), Integer.MAX_VALUE);
+        } catch (IOException e) {
+            LOG.warn("IOException during send of server notification", e);
+        }
+    }
+
+    @Override
+    public void receivedServerNotificationMessage(SocketAddress address,
+            ServerData server) {
+        //ignore
+    }
 
     /**
      * Update the gamestate, removes disconnected players and does collision
@@ -399,11 +431,5 @@ public class Server implements NetworkEventListener {
 
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, "map.xml");
-    }
-
-    @Override
-    public void receivedLoginReponseMessage(final SocketAddress address,
-            final String playerEntityName) {
-        // ignore .. should not happen
     }
 }

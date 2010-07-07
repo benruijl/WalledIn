@@ -57,8 +57,7 @@ public class ServerListWidget extends Screen implements
 
     @Override
     public void update(final double delta) {
-        serverList = new ArrayList<ServerData>(getManager().getClient()
-                .getServerList());
+        serverList = getManager().getClient().getServerList();
 
         serverButtons.clear();
 
