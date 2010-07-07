@@ -79,7 +79,7 @@ public class EntityManager {
      *            Name of the item's family
      * @return Unique entity name
      */
-    public String generateUniqueName(final Family family) {
+    public final String generateUniqueName(final Family family) {
         uniqueNameCount++;
         return "ENT_" + family.toString() + "_"
                 + Integer.toString(uniqueNameCount);

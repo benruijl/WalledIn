@@ -234,4 +234,41 @@ public class Font {
         return width;
     }
 
+    /**
+     * Returns the height of the text.
+     * 
+     * @param text
+     *            Text
+     * @return Height of largest character
+     */
+    public final int getTextHeight(final String text) {
+        int height = 0;
+
+        for (int i = 0; i < text.length(); i++) {
+            // TODO: check if height has to be corrected with bearing
+            height = Math.max(glyphs.get(text.charAt(i)).height, height);
+        }
+
+        return height;
+    }
+
+    /**
+     * Returns a bounding rectangle of the text.
+     * 
+     * @param text
+     *            Text
+     * @return Bounding rectangle
+     */
+    public final Rectangle getBoundingRect(final String text) {
+        // find starting Y
+        int bearingY = 0;
+        for (int i = 0; i < text.length(); i++) {
+            bearingY = Math.max(glyphs.get(text.charAt(i)).bearingY, bearingY);
+        }
+        
+        // TODO: check if correct
+        return new Rectangle(0, -bearingY, getTextWidth(text),
+                getTextHeight(text));
+    }
+
 }

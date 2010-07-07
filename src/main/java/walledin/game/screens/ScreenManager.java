@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import walledin.engine.Font;
+import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.game.EntityManager;
 import walledin.game.entity.Entity;
@@ -156,7 +157,7 @@ public class ScreenManager {
      * @param delta
      *            Delta time
      */
-    public void update(final double delta) {
+    public void update(final double delta) {       
         for (final Screen screen : screens.values()) {
             if (screen.isActive()) {
                 screen.update(delta);

@@ -31,7 +31,8 @@ import walledin.engine.math.Vector2f;
 import walledin.game.network.ServerData;
 import walledin.game.screens.ScreenManager.ScreenType;
 
-public class ServerListWidget extends Screen {
+public class ServerListWidget extends Screen implements
+        ScreenMouseEventListener {
     Screen refreshButton;
     List<ServerData> serverList; // list of servers
     List<Screen> serverButtons; // list of buttons
@@ -45,59 +46,33 @@ public class ServerListWidget extends Screen {
 
     @Override
     public void initialize() {
-        refreshButton = new Button(this, new Rectangle(0, -20, 100, 25),
-                "Refresh", getPosition().add(new Vector2f(400, 40)));
+        refreshButton = new Button(this, "Refresh", getPosition().add(
+                new Vector2f(400, 40)));
+        refreshButton.addMouseEventListener(this);
         addChild(refreshButton);
+
+        // request a refresh of the server list
+        getManager().getClient().refreshServerList();
     }
 
     @Override
     public void update(final double delta) {
-
-        /** If clicked on refresh button, get server list */
-        if (refreshButton.pointInScreen(Input.getInstance().getMousePos()
-                .asVector2f())) {
-            if (Input.getInstance().isButtonDown(1)) {
-                serverButtons.clear();
-
-                // request a refresh
-                getManager().getClient().refreshServerList();
-                Input.getInstance().setButtonUp(1); // FIXME
-            }
-        }
-
         serverList = new ArrayList<ServerData>(getManager().getClient()
                 .getServerList());
 
         serverButtons.clear();
 
         for (int i = 0; i < serverList.size(); i++) {
-            final Screen server = new Button(this, new Rectangle(0, -20, 300,
-                    25), serverList.get(i).getName(), getPosition().add(
-                    new Vector2f(10, 65 + i * 20)));
+            final Screen server = new Button(this, serverList.get(i).getName()
+                    + " (" + serverList.get(i).getAddress() + ")",
+                    getPosition().add(new Vector2f(10, 65 + i * 20)));
             server.registerScreenManager(getManager());
+            server.addMouseEventListener(this);
             serverButtons.add(server);
         }
 
         for (int i = 0; i < serverButtons.size(); i++) {
             serverButtons.get(i).update(delta);
-        }
-
-        // if clicked on server, load the game
-        for (int i = 0; i < serverButtons.size(); i++) {
-            if (serverButtons.get(i).pointInScreen(
-                    Input.getInstance().getMousePos().asVector2f())) {
-                if (Input.getInstance().isButtonDown(1)) {
-                    // connect to server
-                    getManager().getClient().connectToServer(serverList.get(i));
-
-                    getManager().getScreen(ScreenType.GAME).initialize();
-                    getManager().getScreen(ScreenType.GAME).setActive(true);
-                    getParent().setState(ScreenState.Hidden); // hide main menu
-                    getParent().setActive(false);
-
-                    Input.getInstance().setButtonUp(1); // FIXME
-                }
-            }
         }
 
         super.update(delta);
@@ -116,6 +91,38 @@ public class ServerListWidget extends Screen {
         // TODO Auto-generated method stub
         renderer.drawRectOutline(getRectangle().translate(getPosition()));
         super.draw(renderer);
+    }
+
+    @Override
+    public void onMouseDown(ScreenMouseEvent e) {
+        /* If clicked on refresh button, get server list */
+        if (e.getScreen() == refreshButton) {
+            serverButtons.clear();
+
+            // request a refresh
+            getManager().getClient().refreshServerList();
+            Input.getInstance().setButtonUp(1); // FIXME
+        }
+
+        /* If clicked on server, load the game */
+        for (int i = 0; i < serverButtons.size(); i++) {
+            if (e.getScreen() == serverButtons.get(i)) {
+                // connect to server
+                getManager().getClient().connectToServer(serverList.get(i));
+
+                getManager().getScreen(ScreenType.GAME).initialize();
+                getManager().getScreen(ScreenType.GAME).setActive(true);
+                getParent().setState(ScreenState.Hidden); // hide main menu
+                getParent().setActive(false);
+
+                Input.getInstance().setButtonUp(1); // FIXME
+            }
+        }
+
+    }
+
+    @Override
+    public void onMouseHover(ScreenMouseEvent e) {
     }
 
 }

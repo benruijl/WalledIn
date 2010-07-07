@@ -121,9 +121,9 @@ public class Client implements RenderListener, NetworkEventListener {
         SettingsManager settings = SettingsManager.getInstance();
 
         renderer.initialize("WalledIn",
-                settings.getInteger("engine.windowWidth"),
-                settings.getInteger("engine.windowHeight"),
-                settings.getBoolean("engine.fullScreen"));
+                settings.getInteger("engine.window.width"),
+                settings.getInteger("engine.window.height"),
+                settings.getBoolean("engine.window.fullScreen"));
         renderer.addListener(client);
         // Start renderer
         LOG.info("starting renderer");
