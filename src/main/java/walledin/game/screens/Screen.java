@@ -58,7 +58,7 @@ public abstract class Screen {
 
     /** Bounding rectangle. */
     private final Rectangle rectangle;
-    
+
     /** Font. */
     private Font font;
 
@@ -115,26 +115,46 @@ public abstract class Screen {
     }
 
     /**
+     * Checks if the current screen is the smallest one that contains the
+     * cursor. It checks if the current window contains the cursor and if so, if
+     * none of its children do.
+     * 
+     * @return True if smallest, else false.
+     */
+    private boolean isSmallestScreenContainingCursor() {
+        if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
+            for (final Screen screen : children) {
+                if (screen.isActive()) {
+                    if (screen.isSmallestScreenContainingCursor()) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Updates the screen and its active children.
      * 
      * @param delta
      *            Delta time since last update
      */
     public void update(final double delta) {
-            Screen s = getSmallestScreenContainingCursor();
+        if (isSmallestScreenContainingCursor()) {
+            /* Send mouse hover event */
+            sendMouseHoverMessage(new ScreenMouseEvent(this, Input
+                    .getInstance().getMousePos().asVector2f()));
 
-            
-            if (s != null) {
-                /* Send mouse hover event */
-                s.sendMouseHoverMessage(new ScreenMouseEvent(s, Input
+            /* Check if mouse pressed */
+            if (Input.getInstance().isButtonDown(1)) {
+                sendMouseDownMessage(new ScreenMouseEvent(this, Input
                         .getInstance().getMousePos().asVector2f()));
-                
-                /* Check if mouse pressed */
-                if (Input.getInstance().isButtonDown(1)) {
-                    s.sendMouseDownMessage(new ScreenMouseEvent(s, Input
-                            .getInstance().getMousePos().asVector2f()));
-                }
             }
+        }
 
         for (final Screen screen : children) {
             if (screen.isActive()) {
@@ -256,17 +276,17 @@ public abstract class Screen {
             listener.onMouseHover(e);
         }
     }
-    
+
     private void sendMouseDownMessage(ScreenMouseEvent e) {
         for (ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
         }
     }
-    
+
     public Font getFont() {
         return font;
     }
-    
+
     public void setFont(Font font) {
         this.font = font;
     }
