@@ -17,8 +17,11 @@ public class PopupDialog extends Screen implements ScreenMouseEventListener {
     }
 
     @Override
-    public final void draw(final Renderer renderer) {
-        renderer.drawRectOutline(getRectangle().translate(getPosition()));
+    public final void draw(final Renderer renderer) {       
+        renderer.setColorRGB(0.4f, 0.4f, 0.4f);
+        renderer.drawFilledRect(getRectangle().translate(getPosition()));
+        renderer.setColorRGB(1.0f, 1.0f, 1.0f);
+        
         getManager().getFont("arial20").renderText(renderer, text,
                 new Vector2f(300, 250));
 

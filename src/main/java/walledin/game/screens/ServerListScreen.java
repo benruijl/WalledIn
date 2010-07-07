@@ -45,7 +45,6 @@ public class ServerListScreen extends Screen {
     @Override
     public void draw(final Renderer renderer) {
         super.draw(renderer);
-        getManager().getCursor().sendMessage(MessageType.RENDER, renderer);
     }
 
 }

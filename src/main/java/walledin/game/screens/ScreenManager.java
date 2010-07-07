@@ -29,6 +29,7 @@ import walledin.engine.Renderer;
 import walledin.game.EntityManager;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
+import walledin.game.entity.MessageType;
 import walledin.game.network.client.Client;
 import walledin.game.screens.Screen.ScreenState;
 
@@ -57,6 +58,7 @@ public class ScreenManager {
      * Client using this screen manager. Useful for quitting the application.
      */
     private final Client client;
+    private boolean drawCursor;
 
     /**
      * Creates a screen manager.
@@ -179,6 +181,18 @@ public class ScreenManager {
                 screen.draw(renderer);
             }
         }
+        
+        if (cursor != null && drawCursor) {
+            getCursor().sendMessage(MessageType.RENDER, renderer);
+        }
+    }
+    
+    public void setDrawCursor(boolean drawCursor) {
+        this.drawCursor = drawCursor;
+    }
+    
+    public boolean isDrawCursor() {
+        return drawCursor;
     }
 
     public Entity getCursor() {

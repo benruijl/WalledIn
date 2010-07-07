@@ -42,8 +42,6 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
         super.draw(renderer);
 
         renderer.drawRect("logo", new Rectangle(250, 50, 256, 128));
-
-        getManager().getCursor().sendMessage(MessageType.RENDER, renderer);
     }
 
     @Override
