@@ -24,8 +24,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * 
  * @author ben
@@ -136,7 +134,7 @@ public class Rectangle extends Geometry {
 
     @Override
     public Circle asInscribedCircle() {
-        throw new NotImplementedException();
+        throw new IllegalStateException("Not yet implemented");
     }
 
     @Override
