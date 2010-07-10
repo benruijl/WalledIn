@@ -49,6 +49,7 @@ import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
+import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
 /**
@@ -57,13 +58,20 @@ import walledin.util.Utils;
  * 
  */
 public class Server implements NetworkEventListener {
+    /** Logger. */
     private static final Logger LOG = Logger.getLogger(Server.class);
-    private static final int PORT = 1234;
-    private static final int UPDATES_PER_SECOND = 60;
-    private static final int STORED_CHANGESETS = UPDATES_PER_SECOND * 2;
 
-    private static final String SERVER_NAME = "Cool WalledIn Server!";
-    private static final long CHALLENGE_TIMEOUT = 5000;
+    /** Server port. */
+    private final int PORT;
+
+    /** Updates per second. */
+    private final int UPDATES_PER_SECOND;
+
+    /** The maximum number of frames stored in memory. */
+    private final int STORED_CHANGESETS;
+
+    private static final String SERVER_NAME = "WalledIn Server";
+    private final long CHALLENGE_TIMEOUT;
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
     private final NetworkDataWriter networkWriter;
@@ -90,6 +98,16 @@ public class Server implements NetworkEventListener {
         entityManager = new EntityManager(entityFactory);
         changeSetLookup = new HashMap<Integer, ChangeSet>();
         changeSets = new LinkedList<ChangeSet>();
+
+        /* Load settings */
+        UPDATES_PER_SECOND = SettingsManager.getInstance().getInteger(
+                "general.updatesPerSecond");
+        STORED_CHANGESETS = SettingsManager.getInstance().getInteger(
+                "general.storageCapacity");
+        PORT = SettingsManager.getInstance().getInteger("network.port");
+        CHALLENGE_TIMEOUT = SettingsManager.getInstance().getInteger(
+                "network.challengeTimeOut");
+
         // Store the first version so we can give it new players
         final ChangeSet firstChangeSet = entityManager.getChangeSet();
         changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
@@ -103,6 +121,14 @@ public class Server implements NetworkEventListener {
      * @throws IOException
      */
     public static void main(final String[] args) {
+        /* First load the settings file */
+        try {
+            SettingsManager.getInstance().loadSettings(
+                    Utils.getClasspathURL("server_settings.ini"));
+        } catch (IOException e) {
+            LOG.error("Could not read configuration file.", e);
+        }
+
         try {
             new Server().run();
         } catch (final IOException e) {
@@ -115,7 +141,7 @@ public class Server implements NetworkEventListener {
      * 
      * @throws IOException
      */
-    public void run() throws IOException {
+    public final void run() throws IOException {
         LOG.info("initializing");
         init();
         channel = DatagramChannel.open();
@@ -258,7 +284,7 @@ public class Server implements NetworkEventListener {
     }
 
     @Override
-    public boolean receivedGamestateMessage(final SocketAddress address,
+    public final boolean receivedGamestateMessage(final SocketAddress address,
             final int oldVersion, final int newVersion) {
         // ignore .. should not happen
         return false;
@@ -273,7 +299,7 @@ public class Server implements NetworkEventListener {
      *            Player socket address
      */
     @Override
-    public void receivedLoginMessage(final SocketAddress address,
+    public final void receivedLoginMessage(final SocketAddress address,
             final String name) {
         // Check if this player already logged in
         if (!players.containsKey(address)) {
@@ -303,7 +329,7 @@ public class Server implements NetworkEventListener {
     }
 
     @Override
-    public void receivedChallengeMessage(final SocketAddress address,
+    public final void receivedChallengeMessage(final SocketAddress address,
             final long challengeData) {
         try {
             lastChallenge = System.currentTimeMillis();
@@ -321,16 +347,16 @@ public class Server implements NetworkEventListener {
     }
 
     /**
-     * Log the player out
+     * Log the player out.
      */
     @Override
-    public void receivedLogoutMessage(final SocketAddress address) {
+    public final void receivedLogoutMessage(final SocketAddress address) {
         LOG.info("Player " + address.toString() + " left the game.");
         removePlayer(address);
     }
 
     @Override
-    public void receivedInputMessage(final SocketAddress address,
+    public final void receivedInputMessage(final SocketAddress address,
             final int newVersion, final Set<PlayerActions> playerActions,
             final Vector2f cursorPos) {
         final PlayerConnection connection = players.get(address);
@@ -355,7 +381,7 @@ public class Server implements NetworkEventListener {
      * @param delta
      *            Time elapsed since last update
      */
-    public void update(final double delta) {
+    public final void update(final double delta) {
         /* Update all entities */
         entityManager.update(delta);
 
@@ -372,7 +398,7 @@ public class Server implements NetworkEventListener {
      * Initializes the game. It reads the default map and initializes the entity
      * manager.
      */
-    public void init() {
+    public final void init() {
         // Fill the change set queue
         for (int i = 0; i < STORED_CHANGESETS; i++) {
             final ChangeSet changeSet = entityManager.getChangeSet();

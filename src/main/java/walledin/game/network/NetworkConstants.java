@@ -23,6 +23,8 @@ package walledin.game.network;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import walledin.util.SettingsManager;
+
 public class NetworkConstants {
     // TODO: what is max upd size?
     public static final int BUFFER_SIZE = 1024 * 1024;
@@ -48,7 +50,8 @@ public class NetworkConstants {
     public static final byte CHALLENGE_MESSAGE = 4;
 
     public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress(
-            "131.174.31.24", 1235);
+            SettingsManager.getInstance().getString("network.masterServerAddress"), 
+            SettingsManager.getInstance().getInteger("network.masterServerPort"));
 
     public static String getAddressRepresentation(final SocketAddress address) {
         final InetSocketAddress inetAddr = (InetSocketAddress) address;
