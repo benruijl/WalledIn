@@ -183,15 +183,14 @@ public class Font {
         final Texture tex = TextureManager.getInstance().get(name);
 
         // FIXME: calculate true texture positions somewhere else
-        renderer.drawRect(name,
-                new Rectangle((glyph.startX + 0.500f) / tex.getWidth(),
-                        (glyph.startY + 0.500f) / tex.getHeight(),
-                        (glyph.width - 1.000f) / tex.getWidth(),
-                        (glyph.height - 1.000f) / tex.getHeight()),
-                new Rectangle(pos.getX()
+        renderer.drawRect(name, new Rectangle((glyph.startX + 0.500f)
+                / tex.getWidth(), (glyph.startY + 0.500f) / tex.getHeight(),
+                (glyph.width - 1.000f) / tex.getWidth(),
+                (glyph.height - 1.000f) / tex.getHeight()), new Rectangle(pos
+                .getX()
 
                 + glyph.bearingX, pos.getY() - glyph.bearingY, glyph.width,
-                        glyph.height));
+                glyph.height));
 
         renderer.translate(new Vector2f(glyph.advance, 0));
     }
@@ -265,7 +264,7 @@ public class Font {
         for (int i = 0; i < text.length(); i++) {
             bearingY = Math.max(glyphs.get(text.charAt(i)).bearingY, bearingY);
         }
-        
+
         // TODO: check if correct
         return new Rectangle(0, -bearingY, getTextWidth(text),
                 getTextHeight(text));

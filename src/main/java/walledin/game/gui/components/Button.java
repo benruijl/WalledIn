@@ -18,13 +18,14 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui.components;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
-import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.gui.Screen;
+import walledin.game.gui.ScreenMouseEvent;
+import walledin.game.gui.ScreenMouseEventListener;
 
 public class Button extends Screen implements ScreenMouseEventListener {
     /** Button text. */
@@ -34,12 +35,12 @@ public class Button extends Screen implements ScreenMouseEventListener {
     private boolean selected;
 
     public Button(final Screen parent, final String text, final Vector2f pos) {
-        super(parent, parent.getManager().getFont("arial20")
-                .getBoundingRect(text));
+        super(parent, parent.getManager().getFont("arial20").getBoundingRect(
+                text));
         this.text = text;
         setPosition(pos);
         addMouseEventListener(this);
-        setActiveAndVisible(); // standard is active and visible
+        show();
     }
 
     @Override
@@ -73,13 +74,13 @@ public class Button extends Screen implements ScreenMouseEventListener {
     }
 
     @Override
-    public void onMouseDown(ScreenMouseEvent e) {
+    public void onMouseDown(final ScreenMouseEvent e) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void onMouseHover(ScreenMouseEvent e) {
+    public void onMouseHover(final ScreenMouseEvent e) {
         selected = true;
     }
 }

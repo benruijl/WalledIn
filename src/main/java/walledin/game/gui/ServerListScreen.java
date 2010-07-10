@@ -18,12 +18,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui;
 
+import java.awt.event.KeyEvent;
+
+import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.entity.MessageType;
+import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.gui.components.ServerList;
 
 public class ServerListScreen extends Screen {
     Screen serverListWidget;
@@ -34,12 +38,32 @@ public class ServerListScreen extends Screen {
 
     @Override
     public void initialize() {
-        serverListWidget = new ServerListWidget(this, new Rectangle(0, 0, 500,
-                400));
+        serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400));
         serverListWidget.setPosition(new Vector2f(100, 0));
         addChild(serverListWidget);
         serverListWidget.initialize(); // initialize after add!
 
+    }
+
+    @Override
+    public void update(final double delta) {
+        if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
+            Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
+
+            /*
+             * If playing a game, return to it when pressing escape. Otherwise,
+             * return to main menu.
+             */
+            if (getManager().getClient().connectedToServer()) {
+                getManager().getScreen(ScreenType.GAME).show();
+            } else {
+                getManager().getScreen(ScreenType.MAIN_MENU).show();
+            }
+
+            hide();
+        }
+
+        super.update(delta);
     }
 
     @Override

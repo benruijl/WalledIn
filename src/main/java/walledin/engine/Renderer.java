@@ -399,10 +399,12 @@ public class Renderer implements GLEventListener {
                 texturePartID);
         drawRect(part.getTexture(), part.getRectangle(), destination);
     }
-    
+
     /**
      * Draws a rectangle filled with a color.
-     * @param rect Rectangle
+     * 
+     * @param rect
+     *            Rectangle
      */
     public void drawFilledRect(final Rectangle rect) {
         gl.glDisable(GL.GL_TEXTURE_2D);

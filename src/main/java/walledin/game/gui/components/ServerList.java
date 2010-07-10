@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui.components;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,20 +28,22 @@ import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.gui.Screen;
+import walledin.game.gui.ScreenMouseEvent;
+import walledin.game.gui.ScreenMouseEventListener;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.ServerData;
-import walledin.game.screens.ScreenManager.ScreenType;
 
-public class ServerListWidget extends Screen implements
-        ScreenMouseEventListener {
+public class ServerList extends Screen implements ScreenMouseEventListener {
     Screen refreshButton;
     List<ServerData> serverList; // list of servers
     List<Screen> serverButtons; // list of buttons
 
-    public ServerListWidget(final Screen parent, final Rectangle boudingRect) {
+    public ServerList(final Screen parent, final Rectangle boudingRect) {
         super(parent, boudingRect);
         serverButtons = new ArrayList<Screen>();
 
-        setActiveAndVisible(); // standard is active and visible
+        show(); // standard is active and visible
     }
 
     @Override
@@ -81,8 +83,8 @@ public class ServerListWidget extends Screen implements
     @Override
     public void draw(final Renderer renderer) {
         final Font font = getManager().getFont("arial20");
-        font.renderText(renderer, "Server Name",
-                getPosition().add(new Vector2f(10, 40)));
+        font.renderText(renderer, "Server Name", getPosition().add(
+                new Vector2f(10, 40)));
 
         for (int i = 0; i < serverButtons.size(); i++) {
             serverButtons.get(i).draw(renderer);
@@ -94,16 +96,18 @@ public class ServerListWidget extends Screen implements
     }
 
     @Override
-    public void onMouseDown(ScreenMouseEvent e) {
+    public void onMouseDown(final ScreenMouseEvent e) {
         /* If clicked on refresh button, get server list */
         if (e.getScreen() == refreshButton) {
             serverButtons.clear();
 
             getManager().createDialog("Refreshing server list.");
-          /*  PopupDialog dialog = new PopupDialog(this, "Refreshing server list");
-            getManager().addScreen(ScreenType.DIALOG, dialog);
-            dialog.initialize();
-            dialog.popUp();*/
+            /*
+             * PopupDialog dialog = new PopupDialog(this,
+             * "Refreshing server list");
+             * getManager().addScreen(ScreenType.DIALOG, dialog);
+             * dialog.initialize(); dialog.popUp();
+             */
 
             // request a refresh
             getManager().getClient().refreshServerList();
@@ -130,7 +134,7 @@ public class ServerListWidget extends Screen implements
     }
 
     @Override
-    public void onMouseHover(ScreenMouseEvent e) {
+    public void onMouseHover(final ScreenMouseEvent e) {
     }
 
 }

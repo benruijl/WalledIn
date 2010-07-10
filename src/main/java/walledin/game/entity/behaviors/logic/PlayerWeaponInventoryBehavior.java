@@ -60,7 +60,8 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                         || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
 
                     // is weapon already owned?
-                    Boolean hasWeapon = (Boolean) weapon.getAttribute(Attribute.PICKED_UP);
+                    final Boolean hasWeapon = (Boolean) weapon
+                            .getAttribute(Attribute.PICKED_UP);
                     if (hasWeapon != null && hasWeapon == true) {
                         return;
                     }

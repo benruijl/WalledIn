@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public abstract class Screen {
     private ScreenManager manager;
 
     /** State of this screen. */
-    private ScreenState state;
+    private ScreenState state = ScreenState.Hidden;
 
     /** Position. */
     private Vector2f position;
@@ -66,7 +66,7 @@ public abstract class Screen {
     protected boolean active = false;
 
     /** List of mouse event listeners. */
-    private List<ScreenMouseEventListener> mouseListeners;
+    private final List<ScreenMouseEventListener> mouseListeners;
 
     /**
      * Creates a new screen.
@@ -100,7 +100,7 @@ public abstract class Screen {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
             for (final Screen screen : children) {
                 if (screen.isActive()) {
-                    Screen b = screen.getSmallestScreenContainingCursor();
+                    final Screen b = screen.getSmallestScreenContainingCursor();
 
                     if (b != null) {
                         return b;
@@ -182,14 +182,6 @@ public abstract class Screen {
     }
 
     /**
-     * Makes the screen active and visible.
-     */
-    public final void setActiveAndVisible() {
-        active = true;
-        state = ScreenState.Visible;
-    }
-
-    /**
      * Flag the screen as active/inactive. If activated, it will also make the
      * screen visible.
      * 
@@ -211,9 +203,21 @@ public abstract class Screen {
     public final void setState(final ScreenState state) {
         this.state = state;
     }
-    
+
+    /**
+     * Shows the window and makes it active.
+     */
+    public void show() {
+        active = true;
+        state = ScreenState.Visible;
+    }
+
+    /**
+     * Hides the window and makes it inactive.
+     */
     public void hide() {
-        this.state = ScreenState.Hidden;
+        active = false;
+        state = ScreenState.Hidden;
     }
 
     /**
@@ -265,24 +269,25 @@ public abstract class Screen {
      * @return True if in window, else false.
      */
     public boolean pointInScreen(final Vector2f point) {
-        if (rectangle == null)
+        if (rectangle == null) {
             return true;
+        }
 
         return rectangle.translate(position).containsPoint(point);
     }
 
-    public void addMouseEventListener(ScreenMouseEventListener listener) {
+    public void addMouseEventListener(final ScreenMouseEventListener listener) {
         mouseListeners.add(listener);
     }
 
-    private void sendMouseHoverMessage(ScreenMouseEvent e) {
-        for (ScreenMouseEventListener listener : mouseListeners) {
+    private void sendMouseHoverMessage(final ScreenMouseEvent e) {
+        for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseHover(e);
         }
     }
 
-    private void sendMouseDownMessage(ScreenMouseEvent e) {
-        for (ScreenMouseEventListener listener : mouseListeners) {
+    private void sendMouseDownMessage(final ScreenMouseEvent e) {
+        for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
         }
     }
@@ -291,7 +296,7 @@ public abstract class Screen {
         return font;
     }
 
-    public void setFont(Font font) {
+    public void setFont(final Font font) {
         this.font = font;
     }
 }

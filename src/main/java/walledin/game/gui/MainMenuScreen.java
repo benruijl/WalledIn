@@ -18,15 +18,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui;
 
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.entity.MessageType;
-import walledin.game.screens.ScreenManager.ScreenType;
+import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.gui.components.Button;
 import walledin.util.Utils;
 
 public class MainMenuScreen extends Screen implements ScreenMouseEventListener {

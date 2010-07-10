@@ -82,8 +82,8 @@ public class StandardCollisionResponseBehavior extends Behavior {
             dy = vel.getY();
         }
 
-        setAttribute(Attribute.POSITION,
-                data.getOldPos().sub(new Vector2f(dx, dy)));
+        setAttribute(Attribute.POSITION, data.getOldPos().sub(
+                new Vector2f(dx, dy)));
         // data.getCollisionEntity().setAttribute(Attribute.POSITION,
         // oldPosB.
     }

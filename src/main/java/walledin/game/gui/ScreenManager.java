@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,14 +34,14 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.MessageType;
+import walledin.game.gui.Screen.ScreenState;
 import walledin.game.network.client.Client;
-import walledin.game.screens.Screen.ScreenState;
 
 public class ScreenManager {
 
     /** Screen types. */
     public enum ScreenType {
-        MAIN_MENU, GAME, SERVER_LIST, DIALOG
+        MAIN_MENU, GAME, SERVER_LIST
     }
 
     /** List of typed screens. */
@@ -84,7 +84,7 @@ public class ScreenManager {
 
         this.client = client;
         this.renderer = renderer;
-        this.drawCursor = true;
+        drawCursor = true;
     }
 
     public final EntityManager getEntityManager() {
@@ -154,7 +154,7 @@ public class ScreenManager {
         typedScreens.put(type, screen);
         screen.registerScreenManager(this);
     }
-    
+
     /**
      * Adds screen to the list.
      * 
@@ -189,8 +189,8 @@ public class ScreenManager {
 
         /* Update cursor position */
         if (cursor != null) {
-            cursor.setAttribute(Attribute.POSITION,
-                    renderer.screenToWorld(Input.getInstance().getMousePos()));
+            cursor.setAttribute(Attribute.POSITION, renderer
+                    .screenToWorld(Input.getInstance().getMousePos()));
         }
 
         for (final Screen screen : typedScreens.values()) {
@@ -198,7 +198,7 @@ public class ScreenManager {
                 screen.update(delta);
             }
         }
-        
+
         for (final Screen screen : screens) {
             if (screen.isActive()) {
                 screen.update(delta);
@@ -218,7 +218,7 @@ public class ScreenManager {
                 screen.draw(renderer);
             }
         }
-        
+
         for (final Screen screen : screens) {
             if (screen.getState() == ScreenState.Visible) {
                 screen.draw(renderer);
@@ -261,11 +261,11 @@ public class ScreenManager {
     public final Client getClient() {
         return client;
     }
-    
-    public final void createDialog(String text) {
-        PopupDialog diag = new PopupDialog(this, text);
+
+    public final void createDialog(final String text) {
+        final PopupDialog diag = new PopupDialog(this, text);
         addScreen(diag);
         diag.initialize();
-        diag.popUp();
+        diag.show();
     }
 }

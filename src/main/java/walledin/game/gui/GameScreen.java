@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui;
 
 import java.awt.event.KeyEvent;
 
@@ -35,6 +35,7 @@ import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.util.Utils;
 
 public class GameScreen extends Screen {
@@ -66,9 +67,9 @@ public class GameScreen extends Screen {
                     .getPlayerName());
 
             if (player != null) {
-                font.renderText(renderer,
-                        "HP: " + player.getAttribute(Attribute.HEALTH),
-                        new Vector2f(600, 40));
+                font.renderText(renderer, "HP: "
+                        + player.getAttribute(Attribute.HEALTH), new Vector2f(
+                        600, 40));
             }
 
             renderer.stopHUDRendering();
@@ -81,7 +82,7 @@ public class GameScreen extends Screen {
     @Override
     public void update(final double delta) {
         super.update(delta);
-        
+
         /* Center the camera around the player */
         if (getManager().getPlayerName() != null) {
             final Entity player = getManager().getEntityManager().get(
@@ -92,10 +93,10 @@ public class GameScreen extends Screen {
             }
         }
 
-        /* Close the application */
         if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
-            getManager().dispose();
-            return;
+            Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
+            getManager().getScreen(ScreenType.SERVER_LIST).show();
+            hide();
         }
     }
 
@@ -128,69 +129,43 @@ public class GameScreen extends Screen {
         manager.createTexturePart("player_foot", "player", new Rectangle(192,
                 32, 96, 32));
         manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
-        manager.createTexturePart(
-                "tile_empty",
-                "tiles",
+        manager.createTexturePart("tile_empty", "tiles",
                 createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_filled",
-                "tiles",
+        manager.createTexturePart("tile_filled", "tiles",
                 createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_left",
-                "tiles",
+        manager.createTexturePart("tile_top_grass_end_left", "tiles",
                 createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_right",
-                "tiles",
+        manager.createTexturePart("tile_top_grass_end_right", "tiles",
                 createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass",
-                "tiles",
+        manager.createTexturePart("tile_top_grass", "tiles",
                 createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_grass",
-                "tiles",
+        manager.createTexturePart("tile_left_grass", "tiles",
                 createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_mud",
-                "tiles",
+        manager.createTexturePart("tile_left_mud", "tiles",
                 createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_right_mud",
-                "tiles",
+        manager.createTexturePart("tile_right_mud", "tiles",
                 createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass",
-                "tiles",
+        manager.createTexturePart("tile_top_left_grass", "tiles",
                 createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_left_mud",
-                "tiles",
+        manager.createTexturePart("tile_bottom_left_mud", "tiles",
                 createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_right_mud",
-                "tiles",
+        manager.createTexturePart("tile_bottom_right_mud", "tiles",
                 createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass_end",
-                "tiles",
+        manager.createTexturePart("tile_top_left_grass_end", "tiles",
                 createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_mud",
-                "tiles",
+        manager.createTexturePart("tile_bottom_mud", "tiles",
                 createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
     }
