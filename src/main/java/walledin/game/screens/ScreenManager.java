@@ -20,7 +20,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.screens;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -42,8 +44,10 @@ public class ScreenManager {
         MAIN_MENU, GAME, SERVER_LIST, DIALOG
     }
 
-    /** List of screens. */
-    private final Map<ScreenType, Screen> screens;
+    /** List of typed screens. */
+    private final Map<ScreenType, Screen> typedScreens;
+    /** List of untyped screens. */
+    private final List<Screen> screens;
     /** Entity list of all screens together. */
     private final EntityManager entityManager;
     /** Client entity factory. */
@@ -62,6 +66,8 @@ public class ScreenManager {
     private final Client client;
     /** Keeps track is the cursor has to be drawn. */
     private boolean drawCursor;
+    /** Active screen. Only one screen can be active. */
+    private Screen activeScreen;
 
     /**
      * Creates a screen manager.
@@ -70,7 +76,8 @@ public class ScreenManager {
      *            Renderer used by screen manager
      */
     public ScreenManager(final Client client, final Renderer renderer) {
-        screens = new ConcurrentHashMap<ScreenType, Screen>();
+        typedScreens = new ConcurrentHashMap<ScreenType, Screen>();
+        screens = new ArrayList<Screen>();
         fonts = new HashMap<String, Font>();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
@@ -144,7 +151,18 @@ public class ScreenManager {
      *            Screen to add
      */
     public final void addScreen(final ScreenType type, final Screen screen) {
-        screens.put(type, screen);
+        typedScreens.put(type, screen);
+        screen.registerScreenManager(this);
+    }
+    
+    /**
+     * Adds screen to the list.
+     * 
+     * @param screen
+     *            Screen to add
+     */
+    public final void addScreen(final Screen screen) {
+        screens.add(screen);
         screen.registerScreenManager(this);
     }
 
@@ -156,7 +174,7 @@ public class ScreenManager {
      * @return Screen if exists, else null
      */
     public final Screen getScreen(final ScreenType type) {
-        return screens.get(type);
+        return typedScreens.get(type);
     }
 
     /**
@@ -175,7 +193,13 @@ public class ScreenManager {
                     renderer.screenToWorld(Input.getInstance().getMousePos()));
         }
 
-        for (final Screen screen : screens.values()) {
+        for (final Screen screen : typedScreens.values()) {
+            if (screen.isActive()) {
+                screen.update(delta);
+            }
+        }
+        
+        for (final Screen screen : screens) {
             if (screen.isActive()) {
                 screen.update(delta);
             }
@@ -189,7 +213,13 @@ public class ScreenManager {
      *            Renderer to draw with
      */
     public final void draw(final Renderer renderer) {
-        for (final Screen screen : screens.values()) {
+        for (final Screen screen : typedScreens.values()) {
+            if (screen.getState() == ScreenState.Visible) {
+                screen.draw(renderer);
+            }
+        }
+        
+        for (final Screen screen : screens) {
             if (screen.getState() == ScreenState.Visible) {
                 screen.draw(renderer);
             }
@@ -230,5 +260,12 @@ public class ScreenManager {
      */
     public final Client getClient() {
         return client;
+    }
+    
+    public final void createDialog(String text) {
+        PopupDialog diag = new PopupDialog(this, text);
+        addScreen(diag);
+        diag.initialize();
+        diag.popUp();
     }
 }

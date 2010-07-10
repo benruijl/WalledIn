@@ -7,6 +7,14 @@ import walledin.engine.math.Vector2f;
 public class PopupDialog extends Screen implements ScreenMouseEventListener {
     private String text;
     private Button okButton;
+    
+    public PopupDialog(final ScreenManager manager, final String text) {
+        super(null, new Rectangle(-10, -20, manager
+                .getFont("arial20").getTextWidth(text) + 20, 70));
+        setPosition(new Vector2f(300, 250));
+        this.text = text;
+        System.out.print(this.getParent());
+    }
 
     public PopupDialog(final Screen parent, final String text) {
         super(parent, new Rectangle(-10, -20, parent.getManager()

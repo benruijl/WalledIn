@@ -46,6 +46,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
 import walledin.game.screens.GameScreen;
 import walledin.game.screens.MainMenuScreen;
+import walledin.game.screens.PopupDialog;
 import walledin.game.screens.Screen;
 import walledin.game.screens.ScreenManager;
 import walledin.game.screens.ScreenManager.ScreenType;
@@ -241,11 +242,13 @@ public class Client implements RenderListener, NetworkEventListener {
                 }
             }
         } catch (final PortUnreachableException e) {
-            LOG.fatal("Could not connect to server. PortUnreachableException");
-            dispose();
+            screenManager.createDialog("Connection to server lost.");
+            LOG.fatal("Connection to server lost. The port is unreachable.");
+            connected = false;
         } catch (final IOException e) {
+            screenManager.createDialog("Connection to server lost.");
             LOG.fatal("IOException", e);
-            dispose();
+            connected = false;
         }
         
         screenManager.update(delta);
@@ -311,11 +314,11 @@ public class Client implements RenderListener, NetworkEventListener {
      * Connects to a game server.
      */
     public final void connectToServer(final ServerData server) {
-        LOG.info("configure network channel and connecting to server");
+        
         try {
             lastLoginTry = System.currentTimeMillis();
 
-            LOG.info(server.getAddress());
+            LOG.info("Connecting to server " + server.getAddress());
             host = server.getAddress();
             username = System.getProperty("user.name");
 
@@ -324,13 +327,14 @@ public class Client implements RenderListener, NetworkEventListener {
 
             // the client is connected now
             connected = true;
-        } catch (final PortUnreachableException e) {
-            LOG.fatal("Could not connect to server. PortUnreachableException");
-            dispose();
         } catch (final IOException e) {
             LOG.fatal("IOException", e);
-            dispose();
+            screenManager.createDialog("Could not connect to server.");
         }
+    }
+    
+    public final boolean connectedToServer() {
+        return connected;
     }
 
     /**
@@ -360,6 +364,7 @@ public class Client implements RenderListener, NetworkEventListener {
             if (connected) {
                 try {
                     networkDataWriter.sendLogoutMessage(channel);
+                    connected = false;
                 } catch (final IOException e) {
                     LOG.fatal("IOException during logout", e);
                 }
