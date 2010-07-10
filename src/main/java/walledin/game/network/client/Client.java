@@ -247,7 +247,7 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.fatal("IOException", e);
             dispose();
         }
-
+        
         screenManager.update(delta);
     }
 
@@ -263,7 +263,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * Initialize game.
      */
     @Override
-    public void init() {
+    public final void init() {
         LOG.info("initializing client");
 
         /* Load standard font */
@@ -298,10 +298,7 @@ public class Client implements RenderListener, NetworkEventListener {
         /* Create game screen and add it to the screen manager. */
         gameScreen = new GameScreen();
         screenManager.addScreen(ScreenType.GAME, gameScreen);
-
-        // this screen has to be active, because it updates the mouse
-        // and receives gamestate changes, even if the menus are opened.
-        gameScreen.setActive(true);
+       // gameScreen.setActive(true);
         final Screen menuScreen = new MainMenuScreen();
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();

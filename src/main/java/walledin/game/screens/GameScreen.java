@@ -81,41 +81,22 @@ public class GameScreen extends Screen {
     @Override
     public void update(final double delta) {
         super.update(delta);
-
-        // prevent network from coming in between
-        synchronized (getManager().getEntityManager()) {
-            /* Update all entities */
-            getManager().getEntityManager().update(delta);
-
-            /* Center the camera around the player */
-            if (getManager().getPlayerName() != null) {
-                final Entity player = getManager().getEntityManager().get(
-                        getManager().getPlayerName());
-                if (player != null) {
-                    getManager().getRenderer().centerAround(
-                            (Vector2f) player.getAttribute(Attribute.POSITION));
-                }
+        
+        /* Center the camera around the player */
+        if (getManager().getPlayerName() != null) {
+            final Entity player = getManager().getEntityManager().get(
+                    getManager().getPlayerName());
+            if (player != null) {
+                getManager().getRenderer().centerAround(
+                        (Vector2f) player.getAttribute(Attribute.POSITION));
             }
         }
-
-        /* Update cursor position */
-        getManager().getCursor().setAttribute(
-                Attribute.POSITION,
-                getManager().getRenderer().screenToWorld(
-                        Input.getInstance().getMousePos()));
 
         /* Close the application */
         if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
             getManager().dispose();
             return;
         }
-
-        /* Toggle full screen, current not working correctly */
-        if (Input.getInstance().isKeyDown(KeyEvent.VK_F1)) {
-            // renderer.toggleFullScreen();
-            Input.getInstance().setKeyUp(KeyEvent.VK_F1);
-        }
-
     }
 
     @Override
