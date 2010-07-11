@@ -43,17 +43,17 @@ import walledin.game.PlayerActionManager;
 import walledin.game.PlayerActions;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
+import walledin.game.gui.GameScreen;
+import walledin.game.gui.MainMenuScreen;
+import walledin.game.gui.Screen;
+import walledin.game.gui.ScreenManager;
+import walledin.game.gui.ServerListScreen;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
-import walledin.game.screens.GameScreen;
-import walledin.game.screens.MainMenuScreen;
-import walledin.game.screens.Screen;
-import walledin.game.screens.ScreenManager;
-import walledin.game.screens.ScreenManager.ScreenType;
-import walledin.game.screens.ServerListScreen;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
@@ -109,7 +109,7 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             SettingsManager.getInstance().loadSettings(
                     Utils.getClasspathURL("settings.ini"));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("Could not read configuration file.", e);
         }
 
@@ -124,12 +124,12 @@ public class Client implements RenderListener, NetworkEventListener {
         }
         LOG.info("initializing renderer");
 
-        SettingsManager settings = SettingsManager.getInstance();
+        final SettingsManager settings = SettingsManager.getInstance();
 
-        renderer.initialize("WalledIn",
-                settings.getInteger("engine.window.width"),
-                settings.getInteger("engine.window.height"),
-                settings.getBoolean("engine.window.fullScreen"));
+        renderer.initialize("WalledIn", settings
+                .getInteger("engine.window.width"), settings
+                .getInteger("engine.window.height"), settings
+                .getBoolean("engine.window.fullScreen"));
         renderer.addListener(client);
         // Start renderer
         LOG.info("starting renderer");
@@ -259,8 +259,8 @@ public class Client implements RenderListener, NetworkEventListener {
                         masterServerChannel, screenManager.getEntityManager());
                 while (hasMore) {
                     hasMore = networkDataReader.recieveMessage(
-                            masterServerChannel,
-                            screenManager.getEntityManager());
+                            masterServerChannel, screenManager
+                                    .getEntityManager());
                 }
             }
             boolean hasMore = networkDataReader.recieveMessage(
@@ -270,11 +270,13 @@ public class Client implements RenderListener, NetworkEventListener {
                         screenManager.getEntityManager());
             }
         } catch (final PortUnreachableException e) {
-            LOG.fatal("Could not connect to server. PortUnreachableException");
-            dispose();
+            screenManager.createDialog("Connection to server lost.");
+            LOG.fatal("Connection to server lost. The port is unreachable.");
+            connected = false;
         } catch (final IOException e) {
+            screenManager.createDialog("Connection to server lost.");
             LOG.fatal("IOException", e);
-            dispose();
+            connected = false;
         }
 
         screenManager.update(delta);
@@ -292,7 +294,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * Initialize game.
      */
     @Override
-    public void init() {
+    public final void init() {
         LOG.info("initializing client");
 
         /* Load standard font */
@@ -327,14 +329,10 @@ public class Client implements RenderListener, NetworkEventListener {
         /* Create game screen and add it to the screen manager. */
         gameScreen = new GameScreen();
         screenManager.addScreen(ScreenType.GAME, gameScreen);
-
-        // this screen has to be active, because it updates the mouse
-        // and receives gamestate changes, even if the menus are opened.
-        gameScreen.setActive(true);
         final Screen menuScreen = new MainMenuScreen();
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
-        menuScreen.setActiveAndVisible();
+        menuScreen.show();
 
         connectToMasterServer();
         setupNotifyChannel();
@@ -354,28 +352,39 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     /**
-     * Connects to a game server.
+     * Connects to a game server. If already connected to a server, it will
+     * disconnect if the server is a different one. If the server is the same,
+     * it will do nothing.
      */
     public final void connectToServer(final ServerData server) {
-        LOG.info("configure network channel and connecting to server");
+        if (channel.socket().getRemoteSocketAddress() == server.getAddress()) {
+            return;
+        }
+
         try {
             lastLoginTry = System.currentTimeMillis();
 
-            LOG.info(server.getAddress());
+            LOG.info("Connecting to server " + server.getAddress());
             host = server.getAddress();
             username = System.getProperty("user.name");
+
+            if (connected) {
+                channel.disconnect();
+            }
+
             channel.configureBlocking(false);
             channel.connect(host);
 
             // the client is connected now
             connected = true;
-        } catch (final PortUnreachableException e) {
-            LOG.fatal("Could not connect to server. PortUnreachableException");
-            dispose();
         } catch (final IOException e) {
             LOG.fatal("IOException", e);
-            dispose();
+            screenManager.createDialog("Could not connect to server.");
         }
+    }
+
+    public final boolean connectedToServer() {
+        return connected;
     }
 
     /**
@@ -405,6 +414,7 @@ public class Client implements RenderListener, NetworkEventListener {
             if (connected) {
                 try {
                     networkDataWriter.sendLogoutMessage(channel);
+                    connected = false;
                 } catch (final IOException e) {
                     LOG.fatal("IOException during logout", e);
                 }

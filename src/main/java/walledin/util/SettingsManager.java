@@ -29,28 +29,28 @@ public class SettingsManager {
 
         return ref;
     }
-    
-    public Object get(String setting) {
+
+    public Object get(final String setting) {
         return config.get(setting);
     }
-    
-    public Integer getInteger(String setting) {
+
+    public Integer getInteger(final String setting) {
         return Integer.valueOf(config.getProperty(setting));
     }
-    
-    public String getString(String setting) {
+
+    public String getString(final String setting) {
         return config.getProperty(setting);
     }
-    
-    public Float getFloat(String setting) {
+
+    public Float getFloat(final String setting) {
         return Float.valueOf(config.getProperty(setting));
     }
-    
-    public Boolean getBoolean(String setting) {
+
+    public Boolean getBoolean(final String setting) {
         return Boolean.valueOf(config.getProperty(setting));
     }
-    
-    public void loadSettings(final URL scriptURL) throws IOException {     
+
+    public void loadSettings(final URL scriptURL) throws IOException {
         final Reader reader = new InputStreamReader(scriptURL.openStream());
         config.load(reader);
     }

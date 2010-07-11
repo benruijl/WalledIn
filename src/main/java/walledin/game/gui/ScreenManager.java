@@ -18,19 +18,24 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.game.EntityManager;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
+import walledin.game.entity.MessageType;
+import walledin.game.gui.Screen.ScreenState;
 import walledin.game.network.client.Client;
-import walledin.game.screens.Screen.ScreenState;
 
 public class ScreenManager {
 
@@ -39,8 +44,10 @@ public class ScreenManager {
         MAIN_MENU, GAME, SERVER_LIST
     }
 
-    /** List of screens. */
-    private final Map<ScreenType, Screen> screens;
+    /** List of typed screens. */
+    private final Map<ScreenType, Screen> typedScreens;
+    /** List of untyped screens. */
+    private final List<Screen> screens;
     /** Entity list of all screens together. */
     private final EntityManager entityManager;
     /** Client entity factory. */
@@ -57,6 +64,10 @@ public class ScreenManager {
      * Client using this screen manager. Useful for quitting the application.
      */
     private final Client client;
+    /** Keeps track is the cursor has to be drawn. */
+    private boolean drawCursor;
+    /** Active screen. Only one screen can be active. */
+    private Screen activeScreen;
 
     /**
      * Creates a screen manager.
@@ -65,20 +76,22 @@ public class ScreenManager {
      *            Renderer used by screen manager
      */
     public ScreenManager(final Client client, final Renderer renderer) {
-        screens = new HashMap<ScreenType, Screen>();
+        typedScreens = new ConcurrentHashMap<ScreenType, Screen>();
+        screens = new ArrayList<Screen>();
         fonts = new HashMap<String, Font>();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
 
         this.client = client;
         this.renderer = renderer;
+        drawCursor = true;
     }
 
-    public EntityManager getEntityManager() {
+    public final EntityManager getEntityManager() {
         return entityManager;
     }
 
-    public EntityFactory getEntityFactory() {
+    public final EntityFactory getEntityFactory() {
         return entityFactory;
     }
 
@@ -87,7 +100,7 @@ public class ScreenManager {
      * 
      * @return Renderer
      */
-    public Renderer getRenderer() {
+    public final Renderer getRenderer() {
         return renderer;
     }
 
@@ -98,11 +111,11 @@ public class ScreenManager {
      * @param name
      *            Name of player
      */
-    public void setPlayerName(final String name) {
+    public final void setPlayerName(final String name) {
         playerName = name;
     }
 
-    public String getPlayerName() {
+    public final String getPlayerName() {
         return playerName;
     }
 
@@ -114,7 +127,7 @@ public class ScreenManager {
      * @param font
      *            Font object
      */
-    public void addFont(final String name, final Font font) {
+    public final void addFont(final String name, final Font font) {
         fonts.put(name, font);
     }
 
@@ -125,8 +138,21 @@ public class ScreenManager {
      *            Name of the font
      * @return Font object if in list, else null.
      */
-    public Font getFont(final String name) {
+    public final Font getFont(final String name) {
         return fonts.get(name);
+    }
+
+    /**
+     * Adds screen to the list.
+     * 
+     * @param type
+     *            Type of screen
+     * @param screen
+     *            Screen to add
+     */
+    public final void addScreen(final ScreenType type, final Screen screen) {
+        typedScreens.put(type, screen);
+        screen.registerScreenManager(this);
     }
 
     /**
@@ -135,8 +161,8 @@ public class ScreenManager {
      * @param screen
      *            Screen to add
      */
-    public void addScreen(final ScreenType type, final Screen screen) {
-        screens.put(type, screen);
+    public final void addScreen(final Screen screen) {
+        screens.add(screen);
         screen.registerScreenManager(this);
     }
 
@@ -147,24 +173,37 @@ public class ScreenManager {
      *            Type of requested screen
      * @return Screen if exists, else null
      */
-    public Screen getScreen(final ScreenType type) {
-        return screens.get(type);
+    public final Screen getScreen(final ScreenType type) {
+        return typedScreens.get(type);
     }
 
     /**
-     * Updates every screen.
+     * Updates every screen, the cursor position and the entity manager.
      * 
      * @param delta
      *            Delta time
      */
-    public void update(final double delta) {       
-        for (final Screen screen : screens.values()) {
+    public final void update(final double delta) {
+        /* Update all entities */
+        getEntityManager().update(delta);
+
+        /* Update cursor position */
+        if (cursor != null) {
+            cursor.setAttribute(Attribute.POSITION, renderer
+                    .screenToWorld(Input.getInstance().getMousePos()));
+        }
+
+        for (final Screen screen : typedScreens.values()) {
             if (screen.isActive()) {
                 screen.update(delta);
             }
         }
 
-        // TODO: always update every screen or make selection?
+        for (final Screen screen : screens) {
+            if (screen.isActive()) {
+                screen.update(delta);
+            }
+        }
     }
 
     /**
@@ -173,26 +212,44 @@ public class ScreenManager {
      * @param renderer
      *            Renderer to draw with
      */
-    public void draw(final Renderer renderer) {
-        for (final Screen screen : screens.values()) {
+    public final void draw(final Renderer renderer) {
+        for (final Screen screen : typedScreens.values()) {
             if (screen.getState() == ScreenState.Visible) {
                 screen.draw(renderer);
             }
         }
+
+        for (final Screen screen : screens) {
+            if (screen.getState() == ScreenState.Visible) {
+                screen.draw(renderer);
+            }
+        }
+
+        if (cursor != null && drawCursor) {
+            getCursor().sendMessage(MessageType.RENDER, renderer);
+        }
     }
 
-    public Entity getCursor() {
+    public final void setDrawCursor(final boolean drawCursor) {
+        this.drawCursor = drawCursor;
+    }
+
+    public final boolean isDrawCursor() {
+        return drawCursor;
+    }
+
+    public final Entity getCursor() {
         return cursor;
     }
 
-    public void setCursor(final Entity cursor) {
+    public final void setCursor(final Entity cursor) {
         this.cursor = cursor;
     }
 
     /**
      * Kill the application. Sends the dispose message to the client.
      */
-    public void dispose() {
+    public final void dispose() {
         client.dispose();
     }
 
@@ -201,7 +258,14 @@ public class ScreenManager {
      * 
      * @return Client that owns this screen manager.
      */
-    public Client getClient() {
+    public final Client getClient() {
         return client;
+    }
+
+    public final void createDialog(final String text) {
+        final PopupDialog diag = new PopupDialog(this, text);
+        addScreen(diag);
+        diag.initialize();
+        diag.show();
     }
 }
