@@ -64,9 +64,9 @@ public class Renderer implements GLEventListener {
     private GL gl;
     private RenderListener mEvListener;
     private GLAutoDrawable mCurDrawable;
-    private int mWidth;
-    private int mHeight;
-    private Camera mCam;
+    private int width;
+    private int height;
+    private Camera camera;
     private boolean isFullScreen;
     private Animator anim;
     private long lastUpdate;
@@ -426,9 +426,9 @@ public class Renderer implements GLEventListener {
         gl.glLoadIdentity();
 
         /* apply the camera transformations */
-        translate(mCam.getPos());
-        rotate(mCam.getRot());
-        scale(mCam.getScale());
+        translate(camera.getPos());
+        rotate(camera.getRot());
+        scale(camera.getScale());
     }
 
     /**
@@ -455,7 +455,7 @@ public class Renderer implements GLEventListener {
 
         mEvListener.init();
 
-        mCam = new Camera();
+        camera = new Camera();
     }
 
     /**
@@ -479,12 +479,12 @@ public class Renderer implements GLEventListener {
         mCurDrawable = glDrawable;
         gl = glDrawable.getGL();
 
-        mWidth = width;
-        mHeight = height;
+        this.width = width;
+        this.height = height;
 
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
-        gl.glOrtho(0, mWidth, mHeight, 0, -1, 1);
+        gl.glOrtho(0, width, height, 0, -1, 1);
 
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();
@@ -601,8 +601,8 @@ public class Renderer implements GLEventListener {
      *            The point the camera will center around
      */
     public void centerAround(final Vector2f vec) {
-        mCam.setPos(new Vector2f(-vec.getX() + mWidth * 0.5f, -vec.getY()
-                + mHeight * 0.5f));
+        camera.setPos(new Vector2f(-vec.getX() + width * 0.5f, -vec.getY()
+                + height * 0.5f));
     }
 
     /**
@@ -622,9 +622,9 @@ public class Renderer implements GLEventListener {
         final Vector2f leftTop = mat.apply(rect.getLeftTop());
         final Vector2f rightBottom = mat.apply(rect.getRightBottom());
 
-        return mvmat[12] + leftTop.getX() < mWidth
+        return mvmat[12] + leftTop.getX() < width
                 && mvmat[12] + rightBottom.getX() > 0
-                && mvmat[13] + leftTop.getY() < mHeight
+                && mvmat[13] + leftTop.getY() < height
                 && mvmat[13] + rightBottom.getY() > 0;
     }
 
@@ -641,10 +641,10 @@ public class Renderer implements GLEventListener {
 
         // Create a rotation matrix, calculate its inverse and apply the camera
         // translation
-        final Matrix2f invRot = new Matrix2f(mCam.getRot()).transpose();
-        Vector2f vRes = invRot.apply(fp.sub(mCam.getPos()));
-        final float fSXZ = mCam.getScale().getX();
-        final float fSXY = fSXZ * mCam.getScale().getY();
+        final Matrix2f invRot = new Matrix2f(camera.getRot()).transpose();
+        Vector2f vRes = invRot.apply(fp.sub(camera.getPos()));
+        final float fSXZ = camera.getScale().getX();
+        final float fSXY = fSXZ * camera.getScale().getY();
         final float fSYZ = 1.0f;
         final float fInvDet = 1.0f / (fSXY * fSXZ);
 
@@ -674,4 +674,14 @@ public class Renderer implements GLEventListener {
     public void loadIdentity() {
         gl.glLoadIdentity();
     }
+
+    /**
+     * Gets the current camera.
+     * 
+     * @return Current camera
+     */
+    public Camera getCamera() {
+        return camera;
+    }
+
 }
