@@ -401,6 +401,23 @@ public class Renderer implements GLEventListener {
     }
 
     /**
+     * Draws a rectangle filled with a color.
+     * 
+     * @param rect
+     *            Rectangle
+     */
+    public void drawFilledRect(final Rectangle rect) {
+        gl.glDisable(GL.GL_TEXTURE_2D);
+        gl.glBegin(GL.GL_QUADS);
+        gl.glVertex2f(rect.getLeft(), rect.getTop());
+        gl.glVertex2f(rect.getLeft(), rect.getBottom());
+        gl.glVertex2f(rect.getRight(), rect.getBottom());
+        gl.glVertex2f(rect.getRight(), rect.getTop());
+        gl.glEnd();
+        gl.glEnable(GL.GL_TEXTURE_2D);
+    }
+
+    /**
      * To be called when the rendering of the current frame starts. It clears
      * the buffers, and applies the camera transformations.
      */

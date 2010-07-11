@@ -62,8 +62,8 @@ public class BulletBehavior extends Behavior {
             /* If the velocity is changed, change the angle of the bullet */
             if (attrib == Attribute.VELOCITY) {
                 final Vector2f velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
-                setAttribute(Attribute.ORIENTATION_ANGLE,
-                        (float) Math.atan2(velocity.getY(), velocity.getX()));
+                setAttribute(Attribute.ORIENTATION_ANGLE, (float) Math.atan2(
+                        velocity.getY(), velocity.getX()));
             }
         }
 

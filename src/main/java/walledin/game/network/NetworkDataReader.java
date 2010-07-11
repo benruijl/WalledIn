@@ -86,8 +86,8 @@ public class NetworkDataReader {
         for (int i = 0; i < numActions; i++) {
             actions.add(PlayerActions.values()[buffer.getShort()]);
         }
-        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
-                buffer.getFloat());
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(), buffer
+                .getFloat());
         listener.receivedInputMessage(address, newVersion, actions, mousePos);
     }
 
@@ -131,8 +131,8 @@ public class NetworkDataReader {
         final byte[] ip = new byte[4];
         buffer.get(ip);
         final int port = buffer.getInt();
-        final SocketAddress serverAddress = new InetSocketAddress(
-                InetAddress.getByAddress(ip), port);
+        final SocketAddress serverAddress = new InetSocketAddress(InetAddress
+                .getByAddress(ip), port);
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
@@ -225,8 +225,8 @@ public class NetworkDataReader {
 
             // load the tiles
             final GameMapIO mapIO = new GameMapIOXML();
-            entity.setAttribute(Attribute.TILES,
-                    mapIO.readTilesFromURL(Utils.getClasspathURL(mapName)));
+            entity.setAttribute(Attribute.TILES, mapIO.readTilesFromURL(Utils
+                    .getClasspathURL(mapName)));
             break;
         default:
             break;

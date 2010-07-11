@@ -50,8 +50,9 @@ public class NetworkConstants {
     public static final byte CHALLENGE_MESSAGE = 4;
 
     public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress(
-            SettingsManager.getInstance().getString("network.masterServerAddress"), 
-            SettingsManager.getInstance().getInteger("network.masterServerPort"));
+            SettingsManager.getInstance().getString(
+                    "network.masterServerAddress"), SettingsManager
+                    .getInstance().getInteger("network.masterServerPort"));
 
     public static String getAddressRepresentation(final SocketAddress address) {
         final InetSocketAddress inetAddr = (InetSocketAddress) address;

@@ -125,7 +125,7 @@ public class Server implements NetworkEventListener {
         try {
             SettingsManager.getInstance().loadSettings(
                     Utils.getClasspathURL("server_settings.ini"));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("Could not read configuration file.", e);
         }
 
@@ -194,7 +194,8 @@ public class Server implements NetworkEventListener {
         }
 
         if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
-            LOG.warn("Did not recieve challenge from master server yet! Sending new notification.");
+            LOG
+                    .warn("Did not recieve challenge from master server yet! Sending new notification.");
             lastChallenge = System.currentTimeMillis();
             networkWriter.sendServerNotificationResponse(masterServerChannel,
                     PORT, SERVER_NAME, players.size(), Integer.MAX_VALUE);
@@ -223,7 +224,9 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG.info("Connection lost to client " + connection.getAddress());
+                LOG
+                        .info("Connection lost to client "
+                                + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {
@@ -320,8 +323,8 @@ public class Server implements NetworkEventListener {
 
             // send the client the unique entity name of the player
             try {
-                networkWriter.sendLoginResponseMessage(channel,
-                        con.getAddress(), entityName);
+                networkWriter.sendLoginResponseMessage(channel, con
+                        .getAddress(), entityName);
             } catch (final IOException e) {
                 e.printStackTrace();
             }

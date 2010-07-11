@@ -18,68 +18,57 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.screens;
+package walledin.game.gui;
 
-import walledin.engine.Font;
+import java.awt.event.KeyEvent;
+
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.gui.components.ServerList;
 
-public class Button extends Screen implements ScreenMouseEventListener {
-    /** Button text. */
-    private String text;
+public class ServerListScreen extends Screen {
+    Screen serverListWidget;
 
-    /** Keeps track if move is hovering over button. */
-    private boolean selected;
-
-    public Button(final Screen parent, final String text, final Vector2f pos) {
-        super(parent, parent.getManager().getFont("arial20")
-                .getBoundingRect(text));
-        this.text = text;
-        setPosition(pos);
-        addMouseEventListener(this);
-        setActiveAndVisible(); // standard is active and visible
+    public ServerListScreen() {
+        super(null, null);
     }
 
     @Override
     public void initialize() {
+        serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400));
+        serverListWidget.setPosition(new Vector2f(100, 0));
+        addChild(serverListWidget);
+        serverListWidget.initialize(); // initialize after add!
 
     }
 
     @Override
     public void update(final double delta) {
-        selected = false;
+        if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
+            Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
+
+            /*
+             * If playing a game, return to it when pressing escape. Otherwise,
+             * return to main menu.
+             */
+            if (getManager().getClient().connectedToServer()) {
+                getManager().getScreen(ScreenType.GAME).show();
+            } else {
+                getManager().getScreen(ScreenType.MAIN_MENU).show();
+            }
+
+            hide();
+        }
 
         super.update(delta);
     }
 
     @Override
     public void draw(final Renderer renderer) {
-
-        final Font font = getManager().getFont("arial20");
-
-        if (selected) {
-            renderer.setColorRGB(1, 0, 0);
-        }
-
-        font.renderText(renderer, text, getPosition());
-        renderer.setColorRGB(1, 1, 1);
         super.draw(renderer);
     }
 
-    public void setText(final String text) {
-        this.text = text;
-    }
-
-    @Override
-    public void onMouseDown(ScreenMouseEvent e) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void onMouseHover(ScreenMouseEvent e) {
-        selected = true;
-    }
 }

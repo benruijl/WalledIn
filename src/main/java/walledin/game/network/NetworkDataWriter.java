@@ -25,8 +25,8 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -100,8 +100,8 @@ public class NetworkDataWriter {
             writeStringData(entry.getValue().toString(), buffer);
 
             // write family specific data
-            writeFamilySpecificData(entry.getValue(),
-                    entityManager.get(entry.getKey()));
+            writeFamilySpecificData(entry.getValue(), entityManager.get(entry
+                    .getKey()));
         }
 
         for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()

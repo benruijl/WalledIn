@@ -48,9 +48,10 @@ public class PhysicsBehavior extends Behavior {
         super(owner);
 
         if (mass == 0) {
-            LOG.warn("Mass of "
-                    + getOwner().getName()
-                    + " is 0. Applying a force will give an infinite acceleration.");
+            LOG
+                    .warn("Mass of "
+                            + getOwner().getName()
+                            + " is 0. Applying a force will give an infinite acceleration.");
         }
 
         this.mass = mass;
@@ -96,10 +97,9 @@ public class PhysicsBehavior extends Behavior {
         // add friction
         acceleration = acceleration.add(new Vector2f(-Math.signum(velocity
                 .getX())
-                * velocity.getX()
-                * velocity.getX()
-                * frictionCoefficient, -Math.signum(velocity.getY())
-                * velocity.getY() * velocity.getY() * frictionCoefficient));
+                * velocity.getX() * velocity.getX() * frictionCoefficient,
+                -Math.signum(velocity.getY()) * velocity.getY()
+                        * velocity.getY() * frictionCoefficient));
 
         final Vector2f velNew = velocity.add(acceleration.scale((float) delta));
         final Vector2f posNew = position.add(velNew.scale((float) delta));

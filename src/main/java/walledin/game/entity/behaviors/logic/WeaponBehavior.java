@@ -85,8 +85,8 @@ public class WeaponBehavior extends Behavior {
                         .normalize().scale(bulletAccelerationConstant);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily,
-                        manager.generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily, manager
+                        .generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
