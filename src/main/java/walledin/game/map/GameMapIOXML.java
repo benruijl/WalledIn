@@ -48,7 +48,7 @@ public class GameMapIOXML implements GameMapIO {
     private int height;
 
     /**
-     * Reads tile information
+     * Reads tile information.
      * 
      * @param reader
      *            XML reader
@@ -105,6 +105,28 @@ public class GameMapIOXML implements GameMapIO {
     }
 
     /**
+     * Reads spawn points from the map file.
+     * 
+     * @param element
+     *            Current element
+     * @return List of spawn points
+     */
+    private List<SpawnPoint> readSpawnPoints(final Element element) {
+        List<SpawnPoint> points = new ArrayList<SpawnPoint>();
+
+        final Element node = XMLReader.getFirstElement(element, "spawnpoints");
+        final List<Element> spawnElems = XMLReader.getElements(node, "spawn");
+
+        for (final Element el : spawnElems) {
+            final int x = Integer.parseInt(el.getAttribute("x"));
+            final int y = Integer.parseInt(el.getAttribute("y"));
+            points.add(new SpawnPoint(new Vector2f(x, y)));
+        }
+
+        return points;
+    }
+
+    /**
      * Reads map data from an XML file.
      * 
      * @param entityManager
@@ -114,7 +136,8 @@ public class GameMapIOXML implements GameMapIO {
      * @return Returns true on success and false on failure
      */
     @Override
-    public Entity readFromURL(final EntityManager entityManager, final URL file) {
+    public final Entity readFromURL(final EntityManager entityManager,
+            final URL file) {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(file)) {
@@ -122,12 +145,15 @@ public class GameMapIOXML implements GameMapIO {
 
             final String name = XMLReader.getTextValue(mapElement, "name");
             final Set<ItemInfo> items = parseItems(entityManager, mapElement);
+            final List<SpawnPoint> points = readSpawnPoints(mapElement);
             final List<Tile> tiles = parseTiles(mapElement);
             final Entity map = entityManager.create(Family.MAP, name);
+            
 
             map.addBehavior(new ItemManagementBevahior(map, items));
             map.setAttribute(Attribute.WIDTH, width);
             map.setAttribute(Attribute.HEIGHT, height);
+            map.setAttribute(Attribute.SPAWN_POINTS, points);
             map.setAttribute(Attribute.TILES, tiles);
 
             return map;

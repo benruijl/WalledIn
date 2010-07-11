@@ -35,6 +35,8 @@ public enum Attribute {
     TILES(List.class, false),
     /** Map name will be sent separately at entity creation. */
     MAP_NAME(String.class, false),
+    /** Spawn points of a map. */
+    SPAWN_POINTS(List.class, false),
     HEALTH(Integer.class, true),
     PLAYER_NAME(String.class, true),
     /** Orientation angle */
