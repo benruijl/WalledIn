@@ -98,12 +98,15 @@ public class EntityManager {
             return;
         }
         if (removed.contains(entity)) {
-            // If the entity is already removed in this update, remove it
-            // because
-            // it also created in this update
+            /*
+             * If the entity is already removed in this update, remove it
+             * because it also created in this update
+             */
             removed.remove(entity);
-            // Dont add it to created because it was never removed so we cannot
-            // create it
+            /*
+             * Don't add it to created because it was never removed so we cannot
+             * create it.
+             */
         } else {
             created.add(entity);
         }
