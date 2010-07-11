@@ -95,6 +95,10 @@ public class GameScreen extends Screen {
 
         if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
             Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
+            
+            //reset camera when returning to menu
+            getManager().getRenderer().getCamera().setPos(new Vector2f());
+            
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
         }

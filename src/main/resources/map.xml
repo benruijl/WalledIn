@@ -1,60 +1,66 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <map>
-	<name>Default</name>
-	<items>
-		<item name="hk01" type="HEALTHKIT" x="300" y="420" respawn="5" />
-		<item name="ak01" type="ARMOURKIT" x="360" y="420" respawn="5" />
-		<item name="hg01" type="HANDGUN" x ="420" y="420" respawn="5" />
-		<item name="fm01" type="FOAMGUN" x ="480" y="420" respawn="5" />
-	</items>
-	<tiles>
-		################################################################
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                       CEEEEEEEED             #
-		#                                       G########H             #
-		#                                       JMMMMMMMMK             #
-		#                                                              #
-		#       CEEEEEEEED                                             #
-		#       G########H                                             #
-		#       G########H     CEEEEEED                                #
-		#       G########H     G######H                        IEED    #
-		#       G########H     G######H                        F##H    #
-		#       JMMMMMMMMK     G######H                       CL##H    #
-		#                      JMMMMMMK                       G###H    #
-		#                                  CEEEEEEEEEEEEEEEED JMMMK    #
-		#                                  G################H          #
-		#         CEEEEEEEEEED             G################H          #
-		#         G##########H             G################H          #
-		#         JMMMMMMMMMMK             G################H          #
-		#                                  G################H          #
-		#                                  G################H          #
-		#                                  G################H          #
-		#       CEEEEEEEEEEEEEEEEEED       G################H          #
-		#       G##################H       JMMMMMMMMMMMMMMMMK          #
-		#       G##################H                                   #
-		#       G##################H                                   #
-		#       G##################H                                   #
-		#       JMMMMMMMMMMMMMMMMMMK                                   #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		#                                                              #
-		################################################################
-	</tiles>
+    <name>Default</name>
+    <items>
+        <item name="hk01" type="HEALTHKIT" x="300" y="420" respawn="5" />
+        <item name="ak01" type="ARMOURKIT" x="360" y="420" respawn="5" />
+        <item name="hg01" type="HANDGUN" x ="420" y="420" respawn="5" />
+        <item name="fm01" type="FOAMGUN" x ="480" y="420" respawn="5" />
+    </items>
+
+    <spawnpoints>
+        <spawn x="400" y="300" />
+        <spawn x="800" y="200" />
+    </spawnpoints>
+
+    <tiles>
+        ################################################################
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                       CEEEEEEEED             #
+        #                                       G########H             #
+        #                                       JMMMMMMMMK             #
+        #                                                              #
+        #       CEEEEEEEED                                             #
+        #       G########H                                             #
+        #       G########H     CEEEEEED                                #
+        #       G########H     G######H                        IEED    #
+        #       G########H     G######H                        F##H    #
+        #       JMMMMMMMMK     G######H                       CL##H    #
+        #                      JMMMMMMK                       G###H    #
+        #                                  CEEEEEEEEEEEEEEEED JMMMK    #
+        #                                  G################H          #
+        #         CEEEEEEEEEED             G################H          #
+        #         G##########H             G################H          #
+        #         JMMMMMMMMMMK             G################H          #
+        #                                  G################H          #
+        #                                  G################H          #
+        #                                  G################H          #
+        #       CEEEEEEEEEEEEEEEEEED       G################H          #
+        #       G##################H       JMMMMMMMMMMMMMMMMK          #
+        #       G##################H                                   #
+        #       G##################H                                   #
+        #       G##################H                                   #
+        #       JMMMMMMMMMMMMMMMMMMK                                   #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        #                                                              #
+        ################################################################
+    </tiles>
 </map>
