@@ -65,7 +65,7 @@ public class NetworkDataReader {
     }
 
     private void processGamestateMessage(final EntityManager entityManager,
-            final SocketAddress address) throws IOException {
+            final SocketAddress address) {
         final int oldVersion = buffer.getInt();
         final int newVersion = buffer.getInt();
         // Ask the client if the we should process this gamestate
@@ -273,26 +273,34 @@ public class NetworkDataReader {
         final float y = buffer.getFloat();
         return new Vector2f(x, y);
     }
-
+    
     /**
      * Reads a datagram from the channel if there is one
      * 
      * @param channel
      *            The channel to read from
-     * @param entityManager
-     *            the entity manager to process the changes in
-     * @return true if a datagram was present on the channel, else false
+     * @return the source address if a datagram was present on the channel, else
+     *         null
      * @throws IOException
      */
-    public boolean recieveMessage(final DatagramChannel channel,
-            final EntityManager entityManager) throws IOException {
-        int ident = -1;
+    public SocketAddress readMessage(final DatagramChannel channel)
+            throws IOException {
         buffer.clear();
         final SocketAddress address = channel.receive(buffer);
-        if (address == null) {
-            return false;
-        }
         buffer.flip();
+        return address;
+    }
+
+    /**
+     * Processes the message in the buffer
+     * 
+     * @param entityManager
+     *            the entity manager to process the changes in
+     * @throws UnknownHostException 
+     */
+    public void processMessage(final SocketAddress address,
+            final EntityManager entityManager) throws UnknownHostException {
+        int ident = -1;
         ident = buffer.getInt();
         if (ident == NetworkConstants.DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
@@ -336,6 +344,5 @@ public class NetworkDataReader {
             LOG.warn("Unknown ident");
             // else ignore the datagram, incorrect format
         }
-        return true;
     }
 }

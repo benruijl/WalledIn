@@ -86,7 +86,7 @@ public class Server implements NetworkEventListener {
     private final EntityFactory entityFactory;
     private DatagramChannel masterServerChannel;
     private DatagramChannel channel;
-    private DatagramChannel broadcastChannel;
+    private DatagramChannel serverNotifySocket;
     private long lastChallenge;
     private long lastBroadcast;
 
@@ -151,9 +151,9 @@ public class Server implements NetworkEventListener {
         channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(PORT));
         channel.configureBlocking(false);
-        broadcastChannel = DatagramChannel.open();
-        broadcastChannel.socket().setBroadcast(true);
-        broadcastChannel.configureBlocking(false);
+        serverNotifySocket = DatagramChannel.open();
+        serverNotifySocket.socket().setBroadcast(true);
+        serverNotifySocket.configureBlocking(false);
         masterServerChannel = DatagramChannel.open();
         masterServerChannel.connect(NetworkConstants.MASTERSERVER_ADDRESS);
         masterServerChannel.configureBlocking(false);
@@ -161,8 +161,9 @@ public class Server implements NetworkEventListener {
         lastChallenge = System.currentTimeMillis();
         lastBroadcast = System.currentTimeMillis();
 
-        networkWriter.sendServerNotificationResponse(masterServerChannel, PORT,
+        networkWriter.prepareServerNotificationResponse(PORT,
                 SERVER_NAME, players.size(), Integer.MAX_VALUE);
+        networkWriter.sendBuffer(masterServerChannel);
 
         currentTime = System.nanoTime(); // initialize
         running = true;
@@ -194,24 +195,26 @@ public class Server implements NetworkEventListener {
      */
     private void doLoop() throws IOException {
         // Read input messages and login messages
-        boolean hasMore = networkReader.recieveMessage(channel, entityManager);
-        while (hasMore) {
-            hasMore = networkReader.recieveMessage(channel, entityManager);
+        SocketAddress address = networkReader.readMessage(channel);
+        while (address != null) {
+            networkReader.processMessage(address, entityManager);
+            address = networkReader.readMessage(channel);
         }
 
         if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
             LOG.warn("Did not recieve challenge from master server yet! "
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
-            networkWriter.sendServerNotificationResponse(masterServerChannel,
-                    PORT, SERVER_NAME, players.size(), Integer.MAX_VALUE);
+            networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
+                    players.size(), Integer.MAX_VALUE);
+            networkWriter.sendBuffer(masterServerChannel);
 
         }
         
         if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
-            networkWriter.sendServerNotificationResponse(broadcastChannel,
-                    NetworkConstants.BROADCAST_ADDRESS, PORT, SERVER_NAME,
+            networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
                     players.size(), Integer.MAX_VALUE);
+            networkWriter.sendBuffer(serverNotifySocket);
             lastBroadcast = System.currentTimeMillis();
         }
 
@@ -283,9 +286,9 @@ public class Server implements NetworkEventListener {
                         + " " + changeSet.getRemoved() + " "
                         + changeSet.getUpdated());
             }
-            networkWriter.sendGamestateMessage(channel,
-                    connection.getAddress(), entityManager, changeSet,
+            networkWriter.prepareGamestateMessage(entityManager, changeSet,
                     changeSet.getVersion(), currentVersion);
+            networkWriter.sendBuffer(channel, connection.getAddress());
         }
     }
 
@@ -337,8 +340,8 @@ public class Server implements NetworkEventListener {
 
             // send the client the unique entity name of the player
             try {
-                networkWriter.sendLoginResponseMessage(channel, con
-                        .getAddress(), entityName);
+                networkWriter.prepareLoginResponseMessage(entityName);
+                networkWriter.sendBuffer(channel, con.getAddress());
             } catch (final IOException e) {
                 e.printStackTrace();
             }
@@ -350,8 +353,8 @@ public class Server implements NetworkEventListener {
             final long challengeData) {
         try {
             lastChallenge = System.currentTimeMillis();
-            networkWriter
-                    .sendChallengeResponse(channel, address, challengeData);
+            networkWriter.prepareChallengeResponse(challengeData);
+            networkWriter.sendBuffer(channel, address);
         } catch (final IOException e) {
             LOG.error("IOException during challengeResponse", e);
         }

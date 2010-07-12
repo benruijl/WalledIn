@@ -47,8 +47,8 @@ import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.Screen;
 import walledin.game.gui.ScreenManager;
-import walledin.game.gui.ServerListScreen;
 import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.gui.ServerListScreen;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
@@ -69,7 +69,7 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
-    private final DatagramChannel notifyChannel;
+    private final DatagramChannel serverNotifySocket;
     private Set<ServerData> internetServerList;
     private final Set<ServerData> lanServerList;
     private boolean quitting = false;
@@ -101,7 +101,7 @@ public class Client implements RenderListener, NetworkEventListener {
 
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
-        notifyChannel = DatagramChannel.open();
+        serverNotifySocket = DatagramChannel.open();
     }
 
     public static void main(final String[] args) {
@@ -138,7 +138,8 @@ public class Client implements RenderListener, NetworkEventListener {
 
     public void refreshServerList() {
         try {
-            networkDataWriter.sendGetServersMessage(masterServerChannel);
+            networkDataWriter.prepareGetServersMessage();
+            networkDataWriter.sendBuffer(masterServerChannel);
             lanServerList.clear();
         } catch (final IOException e) {
             LOG.error("IOException", e);
@@ -173,9 +174,10 @@ public class Client implements RenderListener, NetworkEventListener {
             // TODO: do somewhere else?
             PlayerActionManager.getInstance().update();
 
-            networkDataWriter.sendInputMessage(channel, receivedVersion,
+            networkDataWriter.prepareInputMessage(receivedVersion,
                     PlayerActionManager.getInstance().getPlayerActions(),
                     renderer.screenToWorld(Input.getInstance().getMousePos()));
+            networkDataWriter.sendBuffer(channel);
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
             dispose();
@@ -243,31 +245,34 @@ public class Client implements RenderListener, NetworkEventListener {
                 if (lastLoginTry >= 0
                         && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
                     lastLoginTry = System.currentTimeMillis();
-                    networkDataWriter.sendLoginMessage(channel, username);
+                    networkDataWriter.prepareLoginMessage(username);
+                    networkDataWriter.sendBuffer(channel);
                 }
                 // Read messages.
-                boolean hasMore = networkDataReader.recieveMessage(channel,
-                        screenManager.getEntityManager());
-                while (hasMore) {
-                    hasMore = networkDataReader.recieveMessage(channel,
+                SocketAddress address = networkDataReader.readMessage(channel);
+                while (address != null) {
+                    networkDataReader.processMessage(address,
                             screenManager.getEntityManager());
+                    address = networkDataReader.readMessage(channel);
                 }
             }
             if (connectedMasterServer) {
                 // Read messages.
-                boolean hasMore = networkDataReader.recieveMessage(
-                        masterServerChannel, screenManager.getEntityManager());
-                while (hasMore) {
-                    hasMore = networkDataReader.recieveMessage(
-                            masterServerChannel, screenManager
-                                    .getEntityManager());
+                SocketAddress address = networkDataReader
+                        .readMessage(masterServerChannel);
+                while (address != null) {
+                    networkDataReader.processMessage(address,
+                            screenManager.getEntityManager());
+                    address = networkDataReader
+                            .readMessage(masterServerChannel);
                 }
             }
-            boolean hasMore = networkDataReader.recieveMessage(
-                    notifyChannel, screenManager.getEntityManager());
-            while (hasMore) {
-                hasMore = networkDataReader.recieveMessage(notifyChannel,
+            SocketAddress address = networkDataReader
+                    .readMessage(serverNotifySocket);
+            while (address != null) {
+                networkDataReader.processMessage(address,
                         screenManager.getEntityManager());
+                address = networkDataReader.readMessage(serverNotifySocket);
             }
         } catch (final PortUnreachableException e) {
             screenManager.createDialog("Connection to server lost.");
@@ -340,8 +345,8 @@ public class Client implements RenderListener, NetworkEventListener {
 
     private void setupNotifyChannel() {
         try {
-            notifyChannel.socket().bind(new InetSocketAddress(NetworkConstants.MASTER_PROTOCOL_PORT));
-            notifyChannel.configureBlocking(false);
+            serverNotifySocket.socket().bind(new InetSocketAddress(NetworkConstants.MASTER_PROTOCOL_PORT));
+            serverNotifySocket.configureBlocking(false);
         } catch (SocketException e) {
             LOG.fatal("SocketException", e);
             dispose();
@@ -413,7 +418,8 @@ public class Client implements RenderListener, NetworkEventListener {
 
             if (connected) {
                 try {
-                    networkDataWriter.sendLogoutMessage(channel);
+                    networkDataWriter.prepareLogoutMessage();
+                    networkDataWriter.sendBuffer(channel);
                     connected = false;
                 } catch (final IOException e) {
                     LOG.fatal("IOException during logout", e);
