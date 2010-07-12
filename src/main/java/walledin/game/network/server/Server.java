@@ -78,12 +78,11 @@ public class Server implements NetworkEventListener {
     private boolean running;
     private final NetworkDataWriter networkWriter;
     private final NetworkDataReader networkReader;
-    private Entity map;
     private long currentTime;
-    private final EntityManager entityManager;
+    private GameLogicManager gameLogicManager;
     private final Queue<ChangeSet> changeSets;
     private final Map<Integer, ChangeSet> changeSetLookup;
-    private final EntityFactory entityFactory;
+    
     private DatagramChannel masterServerChannel;
     private DatagramChannel channel;
     private DatagramChannel serverNotifySocket;
@@ -98,10 +97,9 @@ public class Server implements NetworkEventListener {
         running = false;
         networkWriter = new NetworkDataWriter();
         networkReader = new NetworkDataReader(this);
-        entityFactory = new EntityFactory();
-        entityManager = new EntityManager(entityFactory);
         changeSetLookup = new HashMap<Integer, ChangeSet>();
         changeSets = new LinkedList<ChangeSet>();
+        gameLogicManager = new GameLogicManager(this);
 
         /* Load settings */
         UPDATES_PER_SECOND = SettingsManager.getInstance().getInteger(
@@ -113,7 +111,7 @@ public class Server implements NetworkEventListener {
                 "network.challengeTimeOut");
 
         // Store the first version so we can give it new players
-        final ChangeSet firstChangeSet = entityManager.getChangeSet();
+        final ChangeSet firstChangeSet = gameLogicManager.getEntityManager().getChangeSet();
         changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
     }
 
@@ -197,7 +195,7 @@ public class Server implements NetworkEventListener {
         // Read input messages and login messages
         SocketAddress address = networkReader.readMessage(channel);
         while (address != null) {
-            networkReader.processMessage(address, entityManager);
+            networkReader.processMessage(address,  gameLogicManager.getEntityManager());
             address = networkReader.readMessage(channel);
         }
 
@@ -224,7 +222,7 @@ public class Server implements NetworkEventListener {
         delta /= 1000000000;
 
         // Update game state
-        update(delta);
+        gameLogicManager.update(delta);
         // Process the changes
         processChanges();
         // Write to all the clients
@@ -251,7 +249,7 @@ public class Server implements NetworkEventListener {
         }
         // Get current change set from entity manager and merge it with all the
         // save versions
-        final ChangeSet currentChangeSet = entityManager.getChangeSet();
+        final ChangeSet currentChangeSet = gameLogicManager.getEntityManager().getChangeSet();
         for (final ChangeSet changeSet : changeSetLookup.values()) {
             changeSet.merge(currentChangeSet);
         }
@@ -270,7 +268,7 @@ public class Server implements NetworkEventListener {
      */
     private void sendGamestate(final DatagramChannel channel)
             throws IOException {
-        final int currentVersion = entityManager.getCurrentVersion();
+        final int currentVersion = gameLogicManager.getEntityManager().getCurrentVersion();
         for (final PlayerConnection connection : players.values()) {
             int sendVersion = connection.getReceivedVersion();
             if (connection.isNew()) {
@@ -286,7 +284,7 @@ public class Server implements NetworkEventListener {
                         + " " + changeSet.getRemoved() + " "
                         + changeSet.getUpdated());
             }
-            networkWriter.prepareGamestateMessage(entityManager, changeSet,
+            networkWriter.prepareGamestateMessage(gameLogicManager.getEntityManager(), changeSet,
                     changeSet.getVersion(), currentVersion);
             networkWriter.sendBuffer(channel, connection.getAddress());
         }
@@ -300,7 +298,7 @@ public class Server implements NetworkEventListener {
     private void removePlayer(final SocketAddress address) {
         final PlayerConnection connection = players.remove(address);
         connection.getPlayer().sendMessage(MessageType.DROP, null);
-        entityManager.remove(connection.getPlayer().getName());
+        gameLogicManager.removePlayer(connection.getPlayer().getName());
     }
 
     @Override
@@ -321,19 +319,16 @@ public class Server implements NetworkEventListener {
     @Override
     public final void receivedLoginMessage(final SocketAddress address,
             final String name) {
-        // Check if this player already logged in
+        // Check if this player is already logged in
         if (!players.containsKey(address)) {
 
             final String entityName = NetworkConstants
                     .getAddressRepresentation(address);
-
-            final Entity player = entityManager.create(Family.PLAYER,
-                    entityName);
-            player.setAttribute(Attribute.POSITION, new Vector2f(400, 300));
-            player.setAttribute(Attribute.PLAYER_NAME, name);
+            
+            Entity player = gameLogicManager.createPlayer(entityName, name);
 
             final PlayerConnection con = new PlayerConnection(address, player,
-                    entityManager.getCurrentVersion());
+                    gameLogicManager.getEntityManager().getCurrentVersion());
             players.put(address, con);
 
             LOG.info("new player " + name + " @ " + address);
@@ -407,55 +402,17 @@ public class Server implements NetworkEventListener {
     }
 
     /**
-     * Update the gamestate, removes disconnected players and does collision
-     * detection.
-     * 
-     * @param delta
-     *            Time elapsed since last update
-     */
-    public final void update(final double delta) {
-        /* Update all entities */
-        entityManager.update(delta);
-
-        /* Update client specific data, like mouse position */
-        for (final PlayerConnection con : players.values()) {
-            con.update(delta);
-        }
-
-        /* Do collision detection */
-        entityManager.doCollisionDetection(map, delta);
-    }
-
-    /**
      * Initializes the game. It reads the default map and initializes the entity
      * manager.
      */
     public final void init() {
         // Fill the change set queue
         for (int i = 0; i < STORED_CHANGESETS; i++) {
-            final ChangeSet changeSet = entityManager.getChangeSet();
+            final ChangeSet changeSet = gameLogicManager.getEntityManager().getChangeSet();
             changeSets.add(changeSet);
             changeSetLookup.put(changeSet.getVersion(), changeSet);
         }
-
-        try {
-            entityFactory.loadScript(Utils
-                    .getClasspathURL("entities/entities.groovy"));
-            entityFactory.loadScript(Utils
-                    .getClasspathURL("entities/serverentities.groovy"));
-        } catch (final CompilationFailedException e) {
-            LOG.fatal("Could not compile script", e);
-        } catch (final IOException e) {
-            LOG.fatal("IOException during loading of scripts", e);
-        }
-        // initialize entity manager
-        entityManager.init();
-
-        final GameMapIO mapIO = new GameMapIOXML(); // choose XML as format
-        map = mapIO
-                .readFromURL(entityManager, Utils.getClasspathURL("map.xml"));
-
-        // this name will be sent to the client
-        map.setAttribute(Attribute.MAP_NAME, "map.xml");
+        
+        gameLogicManager.initialize();
     }
 }
