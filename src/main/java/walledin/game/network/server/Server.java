@@ -84,7 +84,7 @@ public class Server implements NetworkEventListener {
     private DatagramChannel masterServerChannel;
     private DatagramChannel channel;
     private long lastChallenge;
-
+   
     /**
      * Creates a new server. Initializes variables to their default values.
      */
@@ -281,7 +281,7 @@ public class Server implements NetworkEventListener {
     private void removePlayer(final SocketAddress address) {
         final PlayerConnection connection = players.remove(address);
         connection.getPlayer().sendMessage(MessageType.DROP, null);
-        gameLogicManager.getEntityManager().remove(connection.getPlayer().getName());
+        gameLogicManager.removePlayer(connection.getPlayer().getName());
     }
 
     @Override

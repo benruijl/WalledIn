@@ -92,9 +92,18 @@ public class EntityManager {
      *            Entity to add
      */
     public void add(final Entity entity) {
+        /*
+         * If entity already exists, check if the removed flag is set. If so,
+         * unset that.
+         */
         if (entities.containsKey(entity.getName())) {
             LOG.warn("Trying to add entity " + entity.getName()
                     + " , but entity already exists.");
+
+            if (entity.isMarkedRemoved()) {
+                entity.resetMarkedRemoved();
+            }
+
             return;
         }
         if (removed.contains(entity)) {
@@ -135,6 +144,12 @@ public class EntityManager {
      */
     public Entity remove(final String name) {
         final Entity entity = entities.get(name);
+
+        if (entity == null) {
+            LOG.warn("Entity with name " + name + " is already removed.");
+            return null;
+        }
+
         if (created.contains(entity)) {
             // If the entity is already created in this update, remove it
             // because
