@@ -187,7 +187,7 @@ public class NetworkDataWriter {
 
     public void sendBuffer(DatagramChannel channel, SocketAddress address)
             throws IOException {
-        channel.write(buffer);
+        channel.send(buffer, address);
     }
 
     private void writeAttributeData(final Attribute attribute,

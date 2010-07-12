@@ -212,7 +212,7 @@ public class Server implements NetworkEventListener {
         if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
                     players.size(), Integer.MAX_VALUE);
-            networkWriter.sendBuffer(serverNotifySocket);
+            networkWriter.sendBuffer(serverNotifySocket, NetworkConstants.BROADCAST_ADDRESS);
             lastBroadcast = System.currentTimeMillis();
         }
 
