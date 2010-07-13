@@ -32,18 +32,12 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
 import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.EntityFactory;
-import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
-import walledin.game.map.GameMapIO;
-import walledin.game.map.GameMapIOXML;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
@@ -61,7 +55,7 @@ public class Server implements NetworkEventListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(Server.class);
 
-    private static final long BROADCAST_INTERVAL = 1000;
+    private final long BROADCAST_INTERVAL;
 
     /** Server port. */
     private final int PORT;
@@ -109,6 +103,8 @@ public class Server implements NetworkEventListener {
         PORT = SettingsManager.getInstance().getInteger("network.port");
         CHALLENGE_TIMEOUT = SettingsManager.getInstance().getInteger(
                 "network.challengeTimeOut");
+        BROADCAST_INTERVAL = SettingsManager.getInstance().getInteger(
+                "network.lanBroadcastInterval");
 
         // Store the first version so we can give it new players
         final ChangeSet firstChangeSet = gameLogicManager.getEntityManager().getChangeSet();
