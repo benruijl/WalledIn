@@ -44,8 +44,8 @@ public class GameScreen extends Screen {
     private static final int TILE_SIZE = 64;
     private static final int TILES_PER_LINE = 16;
 
-    public GameScreen() {
-        super(null, null);
+    public GameScreen(final ScreenManager manager) {
+        super(manager, null);
     }
 
     @Override
@@ -95,10 +95,10 @@ public class GameScreen extends Screen {
 
         if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
             Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
-            
-            //reset camera when returning to menu
+
+            // reset camera when returning to menu
             getManager().getRenderer().getCamera().setPos(new Vector2f());
-            
+
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
         }

@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
@@ -34,19 +36,20 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.MessageType;
-import walledin.game.gui.Screen.ScreenState;
 import walledin.game.network.client.Client;
 
 public class ScreenManager {
+    /** Logger */
+    private static final Logger LOG = Logger.getLogger(ScreenManager.class);
 
     /** Screen types. */
     public enum ScreenType {
         MAIN_MENU, GAME, SERVER_LIST
     }
 
-    /** List of typed screens. */
+    /** Map of typed screens. */
     private final Map<ScreenType, Screen> typedScreens;
-    /** List of untyped screens. */
+    /** List of screens. */
     private final List<Screen> screens;
     /** Entity list of all screens together. */
     private final EntityManager entityManager;
@@ -60,14 +63,12 @@ public class ScreenManager {
     private final Renderer renderer;
     /** Player name. */
     private String playerName;
-    /**
-     * Client using this screen manager. Useful for quitting the application.
-     */
+    /** Client using this screen manager. */
     private final Client client;
     /** Keeps track is the cursor has to be drawn. */
     private boolean drawCursor;
-    /** Active screen. Only one screen can be active. */
-    private Screen activeScreen;
+    /** Focused screen. Only one screen can be focused. */
+    private Screen focusedScreen;
 
     /**
      * Creates a screen manager.
@@ -143,7 +144,7 @@ public class ScreenManager {
     }
 
     /**
-     * Adds screen to the list.
+     * Adds a screen with a predefined type to the list.
      * 
      * @param type
      *            Type of screen
@@ -152,6 +153,7 @@ public class ScreenManager {
      */
     public final void addScreen(final ScreenType type, final Screen screen) {
         typedScreens.put(type, screen);
+        screens.add(screen);
         screen.registerScreenManager(this);
     }
 
@@ -164,6 +166,15 @@ public class ScreenManager {
     public final void addScreen(final Screen screen) {
         screens.add(screen);
         screen.registerScreenManager(this);
+    }
+
+    public final void removeScreen(final Screen screen) {
+        if (!screens.remove(screen)) {
+            LOG.warn("Tried to remove screen that is not in the list");
+        }
+
+        /* If it is a typed screen, remove the map */
+        typedScreens.remove(screen);
     }
 
     /**
@@ -193,15 +204,9 @@ public class ScreenManager {
                     .screenToWorld(Input.getInstance().getMousePos()));
         }
 
-        for (final Screen screen : typedScreens.values()) {
-            if (screen.isActive()) {
-                screen.update(delta);
-            }
-        }
-
-        for (final Screen screen : screens) {
-            if (screen.isActive()) {
-                screen.update(delta);
+        for (int i = 0; i < screens.size(); i++) {
+            if (screens.get(i).isVisible()) {
+                screens.get(i).update(delta);
             }
         }
     }
@@ -213,15 +218,9 @@ public class ScreenManager {
      *            Renderer to draw with
      */
     public final void draw(final Renderer renderer) {
-        for (final Screen screen : typedScreens.values()) {
-            if (screen.getState() == ScreenState.Visible) {
-                screen.draw(renderer);
-            }
-        }
-
-        for (final Screen screen : screens) {
-            if (screen.getState() == ScreenState.Visible) {
-                screen.draw(renderer);
+        for (int i = 0; i < screens.size(); i++) {
+            if (screens.get(i).isVisible()) {
+                screens.get(i).draw(renderer);
             }
         }
 
@@ -244,6 +243,17 @@ public class ScreenManager {
 
     public final void setCursor(final Entity cursor) {
         this.cursor = cursor;
+    }
+
+    /**
+     * The given screen will have the focus. This means that it is the only
+     * screen receiving input.
+     * 
+     * @param screen
+     *            Screen. Can be null.
+     */
+    public void focusScreen(final Screen screen) {
+        focusedScreen = screen;
     }
 
     /**

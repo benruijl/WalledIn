@@ -62,9 +62,6 @@ public abstract class Screen {
     /** Font. */
     private Font font;
 
-    /** Active flag. */
-    private boolean active = false;
-
     /** List of mouse event listeners. */
     private final List<ScreenMouseEventListener> mouseListeners;
 
@@ -72,7 +69,8 @@ public abstract class Screen {
      * Creates a new screen.
      * 
      * @param parent
-     *            Parent of the screen or null of there is no parent.
+     *            Parent of the screen. If there is no parent, use the other
+     *            constructor.
      * @param boudingRect
      *            Bounding rectangle of this screen. null is allowed for root
      *            screens only.
@@ -82,6 +80,25 @@ public abstract class Screen {
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
         this.parent = parent;
+        manager = parent.getManager();
+        rectangle = boudingRect;
+    }
+
+    /**
+     * Creates a new screen.
+     * 
+     * @param manager
+     *            Screen manager.
+     * @param boudingRect
+     *            Bounding rectangle of this screen. null is allowed for root
+     *            screens only.
+     */
+    public Screen(final ScreenManager manager, final Rectangle boudingRect) {
+        children = new ArrayList<Screen>();
+        position = new Vector2f();
+        mouseListeners = new ArrayList<ScreenMouseEventListener>();
+        parent = null;
+        this.manager = manager;
         rectangle = boudingRect;
     }
 
@@ -99,7 +116,7 @@ public abstract class Screen {
     private Screen getSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
             for (final Screen screen : children) {
-                if (screen.isActive()) {
+                if (screen.isVisible()) {
                     final Screen b = screen.getSmallestScreenContainingCursor();
 
                     if (b != null) {
@@ -124,7 +141,7 @@ public abstract class Screen {
     private boolean isSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
             for (final Screen screen : children) {
-                if (screen.isActive()) {
+                if (screen.isVisible()) {
                     if (screen.isSmallestScreenContainingCursor()) {
                         return false;
                     }
@@ -135,6 +152,17 @@ public abstract class Screen {
         }
 
         return false;
+    }
+
+    /**
+     * Disposes of a screen.
+     */
+    public void dispose() {
+        if (parent == null) {
+            getManager().removeScreen(this);
+        } else {
+            getParent().removeChild(this);
+        }
     }
 
     /**
@@ -157,10 +185,14 @@ public abstract class Screen {
         }
 
         for (final Screen screen : children) {
-            if (screen.isActive()) {
+            if (screen.getState() == ScreenState.Visible) {
                 screen.update(delta);
             }
         }
+    }
+
+    public boolean isVisible() {
+        return state == ScreenState.Visible;
     }
 
     /**
@@ -177,59 +209,33 @@ public abstract class Screen {
         }
     }
 
-    public final boolean isActive() {
-        return active;
-    }
-
     /**
-     * Flag the screen as active/inactive. If activated, it will also make the
-     * screen visible.
+     * Called when the visibility flag of this screen is changed.
      * 
-     * @param active
-     *            Activate or deactivate
-     */
-    public final void setActive(final boolean active) {
-        if (active != this.active) {
-            this.active = active;
-            activeChanged(active);
-        }
-
-        if (active) {
-            state = ScreenState.Visible;
-        }
-    }
-
-    /**
-     * Called when the active flag of this screen is changed.
-     * 
-     * @param active
+     * @param visible
      *            current value of the flag
      */
-    protected void activeChanged(final boolean active) {
+    protected void onVisibilityChanged(final boolean visible) {
     }
 
     public final ScreenState getState() {
         return state;
     }
 
-    public final void setState(final ScreenState state) {
-        this.state = state;
-    }
-
     /**
      * Shows the window and makes it active.
      */
     public void show() {
-        setActive(true);
         state = ScreenState.Visible;
+        onVisibilityChanged(true);
     }
 
     /**
      * Hides the window and makes it inactive.
      */
     public void hide() {
-        setActive(false);
         state = ScreenState.Hidden;
+        onVisibilityChanged(false);
     }
 
     /**

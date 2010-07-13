@@ -126,15 +126,14 @@ public class NetworkDataReader {
         final long challengeData = buffer.getLong();
         listener.receivedChallengeMessage(address, challengeData);
     }
-    
+
     private void processServerNotificationMessage(final SocketAddress address)
             throws UnknownHostException {
         final InetSocketAddress inetAddress = (InetSocketAddress) address;
         // only read port. ip is derived from connection
         final int port = buffer.getInt();
-        final SocketAddress serverAddress = new InetSocketAddress(
-                InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
-                port);
+        final SocketAddress serverAddress = new InetSocketAddress(InetAddress
+                .getByAddress(inetAddress.getAddress().getAddress()), port);
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
@@ -273,7 +272,7 @@ public class NetworkDataReader {
         final float y = buffer.getFloat();
         return new Vector2f(x, y);
     }
-    
+
     /**
      * Reads a datagram from the channel if there is one
      * 
@@ -296,7 +295,7 @@ public class NetworkDataReader {
      * 
      * @param entityManager
      *            the entity manager to process the changes in
-     * @throws UnknownHostException 
+     * @throws UnknownHostException
      */
     public void processMessage(final SocketAddress address,
             final EntityManager entityManager) throws UnknownHostException {

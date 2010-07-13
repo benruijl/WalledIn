@@ -58,11 +58,11 @@ public class PlayerConnection {
     public Entity getPlayer() {
         return player;
     }
-    
-    public void setPlayerActive(boolean isPlayerActive) {
+
+    public void setPlayerActive(final boolean isPlayerActive) {
         this.isPlayerActive = isPlayerActive;
     }
-    
+
     public boolean isPlayerActive() {
         return isPlayerActive;
     }

@@ -99,8 +99,8 @@ public class NetworkDataWriter {
             writeStringData(entry.getValue().toString(), buffer);
 
             // write family specific data
-            writeFamilySpecificData(entry.getValue(),
-                    entityManager.get(entry.getKey()));
+            writeFamilySpecificData(entry.getValue(), entityManager.get(entry
+                    .getKey()));
         }
 
         for (final Entry<String, Set<Attribute>> entry : changeSet.getUpdated()
@@ -181,12 +181,12 @@ public class NetworkDataWriter {
         buffer.flip();
     }
 
-    public void sendBuffer(DatagramChannel channel) throws IOException {
+    public void sendBuffer(final DatagramChannel channel) throws IOException {
         channel.write(buffer);
     }
 
-    public void sendBuffer(DatagramChannel channel, SocketAddress address)
-            throws IOException {
+    public void sendBuffer(final DatagramChannel channel,
+            final SocketAddress address) throws IOException {
         channel.send(buffer, address);
     }
 

@@ -35,8 +35,8 @@ public class ServerListScreen extends Screen {
     private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
     Screen serverListWidget;
 
-    public ServerListScreen() {
-        super(null, null);
+    public ServerListScreen(final ScreenManager manager) {
+        super(manager, null);
     }
 
     @Override
@@ -67,18 +67,16 @@ public class ServerListScreen extends Screen {
 
         super.update(delta);
     }
-    
+
     @Override
-    protected void activeChanged(boolean active) {
-        LOG.info("active changed: " + active);
-        super.activeChanged(active);
-        if (active) {
+    protected void onVisibilityChanged(final boolean visible) {
+        if (visible) {
             getManager().getClient().bindServerNotifyChannel();
         } else {
             getManager().getClient().unbindServerNotifyChannel();
         }
+        super.onVisibilityChanged(visible);
     }
-
 
     @Override
     public void draw(final Renderer renderer) {

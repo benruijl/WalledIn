@@ -10,7 +10,7 @@ public class PopupDialog extends Screen implements ScreenMouseEventListener {
     private Button okButton;
 
     public PopupDialog(final ScreenManager manager, final String text) {
-        super(null, new Rectangle(-10, -20, manager.getFont("arial20")
+        super(manager, new Rectangle(-10, -20, manager.getFont("arial20")
                 .getTextWidth(text) + 20, 70));
         setPosition(new Vector2f(300, 250));
         this.text = text;
@@ -52,8 +52,7 @@ public class PopupDialog extends Screen implements ScreenMouseEventListener {
     @Override
     public final void onMouseDown(final ScreenMouseEvent e) {
         if (e.getScreen() == okButton) {
-            hide();
-            setActive(false);
+            dispose();
         }
 
     }

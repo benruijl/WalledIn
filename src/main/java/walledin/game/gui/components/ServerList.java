@@ -23,17 +23,15 @@ package walledin.game.gui.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.gui.Screen;
-import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.ScreenMouseEvent;
 import walledin.game.gui.ScreenMouseEventListener;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.ServerData;
 
 public class ServerList extends Screen implements ScreenMouseEventListener {
@@ -90,7 +88,6 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
             serverButtons.get(i).draw(renderer);
         }
 
-        // TODO Auto-generated method stub
         renderer.drawRectOutline(getRectangle().translate(getPosition()));
         super.draw(renderer);
     }
@@ -102,12 +99,6 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
             serverButtons.clear();
 
             getManager().createDialog("Refreshing server list.");
-            /*
-             * PopupDialog dialog = new PopupDialog(this,
-             * "Refreshing server list");
-             * getManager().addScreen(ScreenType.DIALOG, dialog);
-             * dialog.initialize(); dialog.popUp();
-             */
 
             // request a refresh
             getManager().getClient().refreshServerList();
@@ -122,9 +113,8 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
 
                 if (getManager().getClient().connectedToServer()) {
                     getManager().getScreen(ScreenType.GAME).initialize();
-                    getManager().getScreen(ScreenType.GAME).setActive(true);
-                    getParent().setState(ScreenState.Hidden); // hide main menu
-                    getParent().setActive(false);
+                    getManager().getScreen(ScreenType.GAME).show();
+                    getParent().hide();
                 }
 
                 Input.getInstance().setButtonUp(1); // FIXME
