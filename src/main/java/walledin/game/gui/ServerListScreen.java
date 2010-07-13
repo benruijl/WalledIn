@@ -22,6 +22,8 @@ package walledin.game.gui;
 
 import java.awt.event.KeyEvent;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
@@ -30,6 +32,7 @@ import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.components.ServerList;
 
 public class ServerListScreen extends Screen {
+    private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
     Screen serverListWidget;
 
     public ServerListScreen() {
@@ -42,7 +45,6 @@ public class ServerListScreen extends Screen {
         serverListWidget.setPosition(new Vector2f(100, 0));
         addChild(serverListWidget);
         serverListWidget.initialize(); // initialize after add!
-
     }
 
     @Override
@@ -65,6 +67,18 @@ public class ServerListScreen extends Screen {
 
         super.update(delta);
     }
+    
+    @Override
+    protected void activeChanged(boolean active) {
+        LOG.info("active changed: " + active);
+        super.activeChanged(active);
+        if (active) {
+            getManager().getClient().bindServerNotifyChannel();
+        } else {
+            getManager().getClient().unbindServerNotifyChannel();
+        }
+    }
+
 
     @Override
     public void draw(final Renderer renderer) {

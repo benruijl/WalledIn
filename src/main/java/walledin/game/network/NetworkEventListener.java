@@ -43,4 +43,7 @@ public interface NetworkEventListener {
     void receivedChallengeMessage(SocketAddress address, long challengeData);
 
     void receivedServersMessage(SocketAddress address, Set<ServerData> servers);
+    
+    void receivedServerNotificationMessage(SocketAddress address,
+            ServerData server);
 }

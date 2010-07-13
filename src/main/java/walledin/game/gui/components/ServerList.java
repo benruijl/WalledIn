@@ -23,15 +23,17 @@ package walledin.game.gui.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.gui.Screen;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.ScreenMouseEvent;
 import walledin.game.gui.ScreenMouseEventListener;
-import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.ServerData;
 
 public class ServerList extends Screen implements ScreenMouseEventListener {
@@ -42,8 +44,6 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
     public ServerList(final Screen parent, final Rectangle boudingRect) {
         super(parent, boudingRect);
         serverButtons = new ArrayList<Screen>();
-
-        show(); // standard is active and visible
     }
 
     @Override
@@ -52,6 +52,7 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
                 new Vector2f(400, 40)));
         refreshButton.addMouseEventListener(this);
         addChild(refreshButton);
+        show(); // standard is active and visible
 
         // request a refresh of the server list
         getManager().getClient().refreshServerList();
@@ -59,8 +60,7 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
 
     @Override
     public void update(final double delta) {
-        serverList = new ArrayList<ServerData>(getManager().getClient()
-                .getServerList());
+        serverList = getManager().getClient().getServerList();
 
         serverButtons.clear();
 

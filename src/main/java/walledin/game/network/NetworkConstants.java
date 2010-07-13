@@ -49,10 +49,13 @@ public class NetworkConstants {
     public static final byte CHALLENGE_RESPONSE_MESSAGE = 3;
     public static final byte CHALLENGE_MESSAGE = 4;
 
+    public static final int MASTER_PROTOCOL_PORT = SettingsManager
+                    .getInstance().getInteger("network.masterServerPort");
     public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress(
             SettingsManager.getInstance().getString(
-                    "network.masterServerAddress"), SettingsManager
-                    .getInstance().getInteger("network.masterServerPort"));
+                    "network.masterServerAddress"), MASTER_PROTOCOL_PORT);
+    public static final SocketAddress BROADCAST_ADDRESS = new InetSocketAddress(
+            "255.255.255.255", MASTER_PROTOCOL_PORT);
 
     public static String getAddressRepresentation(final SocketAddress address) {
         final InetSocketAddress inetAddr = (InetSocketAddress) address;

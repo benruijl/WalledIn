@@ -40,6 +40,7 @@ public class PlayerConnection {
     private final SocketAddress address;
     private int receivedVersion;
     private boolean isNew;
+    private boolean isPlayerActive;
 
     public PlayerConnection(final SocketAddress address, final Entity player,
             final int currentVersion) {
@@ -54,11 +55,16 @@ public class PlayerConnection {
         isNew = true;
     }
 
-    public void update(final double delta) {
-    }
-
     public Entity getPlayer() {
         return player;
+    }
+    
+    public void setPlayerActive(boolean isPlayerActive) {
+        this.isPlayerActive = isPlayerActive;
+    }
+    
+    public boolean isPlayerActive() {
+        return isPlayerActive;
     }
 
     public SocketAddress getAddress() {

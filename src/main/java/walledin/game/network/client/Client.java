@@ -24,8 +24,11 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -44,8 +47,8 @@ import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.Screen;
 import walledin.game.gui.ScreenManager;
-import walledin.game.gui.ServerListScreen;
 import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.gui.ServerListScreen;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
@@ -56,7 +59,6 @@ import walledin.util.Utils;
 
 public class Client implements RenderListener, NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(Client.class);
-    private static final int PORT = 1234;
 
     private final Renderer renderer; // current renderer
     private final ScreenManager screenManager;
@@ -67,16 +69,21 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
-    private Set<ServerData> serverList;
+    private DatagramChannel serverNotifyChannel;
+    private Set<ServerData> internetServerList;
+    private final Set<ServerData> lanServerList;
     private boolean quitting = false;
 
     /** Keeps track if the player is connected to a server. */
     private boolean connected = false;
     private boolean connectedMasterServer = false;
+    private boolean boundServerNotifyChannel = false;
     private int receivedVersion = 0;
     private long lastLoginTry;
     // in milliseconds
     private final long LOGIN_RETRY_TIME = 1000;
+
+
 
     /**
      * Create the client.
@@ -91,7 +98,8 @@ public class Client implements RenderListener, NetworkEventListener {
 
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
-        serverList = new HashSet<ServerData>();
+        internetServerList = new HashSet<ServerData>();
+        lanServerList = new HashSet<ServerData>();
         quitting = false;
 
         channel = DatagramChannel.open();
@@ -130,6 +138,22 @@ public class Client implements RenderListener, NetworkEventListener {
         renderer.beginLoop();
     }
 
+    public void refreshServerList() {
+        try {
+            networkDataWriter.prepareGetServersMessage();
+            networkDataWriter.sendBuffer(masterServerChannel);
+            lanServerList.clear();
+        } catch (final IOException e) {
+            LOG.error("IOException", e);
+        }
+    }
+
+    public List<ServerData> getServerList() {
+        List<ServerData> servers = new ArrayList<ServerData>(lanServerList);
+        servers.addAll(internetServerList);
+        return servers;
+    }
+
     /**
      * Called when the gamestate has been updated. We only send a new input when
      * we receive the net game state.
@@ -152,9 +176,10 @@ public class Client implements RenderListener, NetworkEventListener {
             // TODO: do somewhere else?
             PlayerActionManager.getInstance().update();
 
-            networkDataWriter.sendInputMessage(channel, receivedVersion,
+            networkDataWriter.prepareInputMessage(receivedVersion,
                     PlayerActionManager.getInstance().getPlayerActions(),
                     renderer.screenToWorld(Input.getInstance().getMousePos()));
+            networkDataWriter.sendBuffer(channel);
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
             dispose();
@@ -162,24 +187,12 @@ public class Client implements RenderListener, NetworkEventListener {
         return result;
     }
 
-    public void refreshServerList() {
-        try {
-            networkDataWriter.sendGetServersMessage(masterServerChannel);
-        } catch (final IOException e) {
-            LOG.error("IOException", e);
-        }
-    }
-
-    public Set<ServerData> getServerList() {
-        return serverList;
-    }
-
     @Override
     public void receivedServersMessage(final SocketAddress address,
             final Set<ServerData> servers) {
         LOG.info("Received server list. " + servers.size()
                 + " servers available.");
-        serverList = servers;
+        internetServerList = servers;
     }
 
     @Override
@@ -206,6 +219,19 @@ public class Client implements RenderListener, NetworkEventListener {
         // ignore
     }
 
+    @Override
+    public void receivedLoginReponseMessage(final SocketAddress address,
+            final String playerEntityName) {
+        screenManager.setPlayerName(playerEntityName);
+        LOG.info("Player entity name received: " + playerEntityName);
+    }
+
+    @Override
+    public void receivedServerNotificationMessage(SocketAddress address,
+            ServerData server) {
+        lanServerList.add(server);
+    }
+
     /**
      * Update the current game state
      * 
@@ -221,24 +247,36 @@ public class Client implements RenderListener, NetworkEventListener {
                 if (lastLoginTry >= 0
                         && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
                     lastLoginTry = System.currentTimeMillis();
-                    networkDataWriter.sendLoginMessage(channel, username);
+                    networkDataWriter.prepareLoginMessage(username);
+                    networkDataWriter.sendBuffer(channel);
                 }
                 // Read messages.
-                boolean hasMore = networkDataReader.recieveMessage(channel,
-                        screenManager.getEntityManager());
-                while (hasMore) {
-                    hasMore = networkDataReader.recieveMessage(channel,
+                SocketAddress address = networkDataReader.readMessage(channel);
+                while (address != null) {
+                    networkDataReader.processMessage(address,
                             screenManager.getEntityManager());
+                    address = networkDataReader.readMessage(channel);
                 }
             }
             if (connectedMasterServer) {
                 // Read messages.
-                boolean hasMore = networkDataReader.recieveMessage(
-                        masterServerChannel, screenManager.getEntityManager());
-                while (hasMore) {
-                    hasMore = networkDataReader.recieveMessage(
-                            masterServerChannel, screenManager
-                                    .getEntityManager());
+                SocketAddress address = networkDataReader
+                        .readMessage(masterServerChannel);
+                while (address != null) {
+                    networkDataReader.processMessage(address,
+                            screenManager.getEntityManager());
+                    address = networkDataReader
+                            .readMessage(masterServerChannel);
+                }
+            }
+            if (boundServerNotifyChannel) {
+                SocketAddress address = networkDataReader
+                        .readMessage(serverNotifyChannel);
+                while (address != null) {
+                    networkDataReader.processMessage(address,
+                            screenManager.getEntityManager());
+                    address = networkDataReader
+                            .readMessage(serverNotifyChannel);
                 }
             }
         } catch (final PortUnreachableException e) {
@@ -310,6 +348,32 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     /**
+     * Bind the server notify channel so we can recieve lan broadcasts
+     */
+    public void bindServerNotifyChannel() {
+        try {
+            serverNotifyChannel = DatagramChannel.open();
+            serverNotifyChannel.socket().bind(new InetSocketAddress(NetworkConstants.MASTER_PROTOCOL_PORT));
+            serverNotifyChannel.configureBlocking(false);
+            boundServerNotifyChannel = true;
+        } catch (IOException e) {
+            LOG.warn("IOException", e);
+        }
+    }
+    
+    /**
+     * Unbind the server notify channel.
+     */
+    public void unbindServerNotifyChannel() {
+        try {
+            serverNotifyChannel.close();
+            boundServerNotifyChannel = false;
+        } catch (IOException e) {
+            LOG.warn("IOException", e);
+        }
+    }
+
+    /**
      * Connects to a game server. If already connected to a server, it will
      * disconnect if the server is a different one. If the server is the same,
      * it will do nothing.
@@ -372,7 +436,8 @@ public class Client implements RenderListener, NetworkEventListener {
 
             if (connected) {
                 try {
-                    networkDataWriter.sendLogoutMessage(channel);
+                    networkDataWriter.prepareLogoutMessage();
+                    networkDataWriter.sendBuffer(channel);
                     connected = false;
                 } catch (final IOException e) {
                     LOG.fatal("IOException during logout", e);
@@ -380,12 +445,4 @@ public class Client implements RenderListener, NetworkEventListener {
             }
         }
     }
-
-    @Override
-    public void receivedLoginReponseMessage(final SocketAddress address,
-            final String playerEntityName) {
-        screenManager.setPlayerName(playerEntityName);
-        LOG.info("Player entity name received: " + playerEntityName);
-    }
-
 }

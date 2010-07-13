@@ -63,7 +63,7 @@ public abstract class Screen {
     private Font font;
 
     /** Active flag. */
-    protected boolean active = false;
+    private boolean active = false;
 
     /** List of mouse event listeners. */
     private final List<ScreenMouseEventListener> mouseListeners;
@@ -189,11 +189,23 @@ public abstract class Screen {
      *            Activate or deactivate
      */
     public final void setActive(final boolean active) {
-        this.active = active;
+        if (active != this.active) {
+            this.active = active;
+            activeChanged(active);
+        }
 
         if (active) {
             state = ScreenState.Visible;
         }
+    }
+
+    /**
+     * Called when the active flag of this screen is changed.
+     * 
+     * @param active
+     *            current value of the flag
+     */
+    protected void activeChanged(final boolean active) {
     }
 
     public final ScreenState getState() {
@@ -208,7 +220,7 @@ public abstract class Screen {
      * Shows the window and makes it active.
      */
     public void show() {
-        active = true;
+        setActive(true);
         state = ScreenState.Visible;
     }
 
@@ -216,7 +228,7 @@ public abstract class Screen {
      * Hides the window and makes it inactive.
      */
     public void hide() {
-        active = false;
+        setActive(false);
         state = ScreenState.Hidden;
     }
 

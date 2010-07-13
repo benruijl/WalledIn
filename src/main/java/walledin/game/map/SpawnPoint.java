@@ -10,5 +10,9 @@ public class SpawnPoint {
         this.pos = pos;
     }
     
+    public Vector2f getPos() {
+        return pos;
+    }
+    
 
 }

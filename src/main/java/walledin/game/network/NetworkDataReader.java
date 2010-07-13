@@ -65,7 +65,7 @@ public class NetworkDataReader {
     }
 
     private void processGamestateMessage(final EntityManager entityManager,
-            final SocketAddress address) throws IOException {
+            final SocketAddress address) {
         final int oldVersion = buffer.getInt();
         final int newVersion = buffer.getInt();
         // Ask the client if the we should process this gamestate
@@ -125,6 +125,22 @@ public class NetworkDataReader {
     private void processChallengeMessage(final SocketAddress address) {
         final long challengeData = buffer.getLong();
         listener.receivedChallengeMessage(address, challengeData);
+    }
+    
+    private void processServerNotificationMessage(final SocketAddress address)
+            throws UnknownHostException {
+        final InetSocketAddress inetAddress = (InetSocketAddress) address;
+        // only read port. ip is derived from connection
+        final int port = buffer.getInt();
+        final SocketAddress serverAddress = new InetSocketAddress(
+                InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
+                port);
+        final String name = readStringData(buffer);
+        final int players = buffer.getInt();
+        final int maxPlayers = buffer.getInt();
+        final ServerData server = new ServerData(serverAddress, name, players,
+                maxPlayers);
+        listener.receivedServerNotificationMessage(address, server);
     }
 
     private ServerData readServerData() throws UnknownHostException {
@@ -257,26 +273,34 @@ public class NetworkDataReader {
         final float y = buffer.getFloat();
         return new Vector2f(x, y);
     }
-
+    
     /**
      * Reads a datagram from the channel if there is one
      * 
      * @param channel
      *            The channel to read from
-     * @param entityManager
-     *            the entity manager to process the changes in
-     * @return true if a datagram was present on the channel, else false
+     * @return the source address if a datagram was present on the channel, else
+     *         null
      * @throws IOException
      */
-    public boolean recieveMessage(final DatagramChannel channel,
-            final EntityManager entityManager) throws IOException {
-        int ident = -1;
+    public SocketAddress readMessage(final DatagramChannel channel)
+            throws IOException {
         buffer.clear();
         final SocketAddress address = channel.receive(buffer);
-        if (address == null) {
-            return false;
-        }
         buffer.flip();
+        return address;
+    }
+
+    /**
+     * Processes the message in the buffer
+     * 
+     * @param entityManager
+     *            the entity manager to process the changes in
+     * @throws UnknownHostException 
+     */
+    public void processMessage(final SocketAddress address,
+            final EntityManager entityManager) throws UnknownHostException {
+        int ident = -1;
         ident = buffer.getInt();
         if (ident == NetworkConstants.DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
@@ -309,6 +333,9 @@ public class NetworkDataReader {
             case NetworkConstants.SERVERS_MESSAGE:
                 processServersMessage(address);
                 break;
+            case NetworkConstants.SERVER_NOTIFICATION_MESSAGE:
+                processServerNotificationMessage(address);
+                break;
             default:
                 LOG.warn("Received unhandled message");
                 break;
@@ -317,6 +344,5 @@ public class NetworkDataReader {
             LOG.warn("Unknown ident");
             // else ignore the datagram, incorrect format
         }
-        return true;
     }
 }
