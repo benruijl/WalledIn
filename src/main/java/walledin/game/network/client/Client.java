@@ -69,7 +69,7 @@ public class Client implements RenderListener, NetworkEventListener {
     private final NetworkDataReader networkDataReader;
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
-    private final DatagramChannel serverNotifySocket;
+    private DatagramChannel serverNotifyChannel;
     private Set<ServerData> internetServerList;
     private final Set<ServerData> lanServerList;
     private boolean quitting = false;
@@ -77,10 +77,13 @@ public class Client implements RenderListener, NetworkEventListener {
     /** Keeps track if the player is connected to a server. */
     private boolean connected = false;
     private boolean connectedMasterServer = false;
+    private boolean boundServerNotifyChannel = false;
     private int receivedVersion = 0;
     private long lastLoginTry;
     // in milliseconds
     private final long LOGIN_RETRY_TIME = 1000;
+
+
 
     /**
      * Create the client.
@@ -101,7 +104,6 @@ public class Client implements RenderListener, NetworkEventListener {
 
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
-        serverNotifySocket = DatagramChannel.open();
     }
 
     public static void main(final String[] args) {
@@ -267,12 +269,15 @@ public class Client implements RenderListener, NetworkEventListener {
                             .readMessage(masterServerChannel);
                 }
             }
-            SocketAddress address = networkDataReader
-                    .readMessage(serverNotifySocket);
-            while (address != null) {
-                networkDataReader.processMessage(address,
-                        screenManager.getEntityManager());
-                address = networkDataReader.readMessage(serverNotifySocket);
+            if (boundServerNotifyChannel) {
+                SocketAddress address = networkDataReader
+                        .readMessage(serverNotifyChannel);
+                while (address != null) {
+                    networkDataReader.processMessage(address,
+                            screenManager.getEntityManager());
+                    address = networkDataReader
+                            .readMessage(serverNotifyChannel);
+                }
             }
         } catch (final PortUnreachableException e) {
             screenManager.createDialog("Connection to server lost.");
@@ -340,19 +345,31 @@ public class Client implements RenderListener, NetworkEventListener {
         menuScreen.show();
 
         connectToMasterServer();
-        setupNotifyChannel();
     }
 
-    private void setupNotifyChannel() {
+    /**
+     * Bind the server notify channel so we can recieve lan broadcasts
+     */
+    public void bindServerNotifyChannel() {
         try {
-            serverNotifySocket.socket().bind(new InetSocketAddress(NetworkConstants.MASTER_PROTOCOL_PORT));
-            serverNotifySocket.configureBlocking(false);
-        } catch (SocketException e) {
-            LOG.fatal("SocketException", e);
-            dispose();
+            serverNotifyChannel = DatagramChannel.open();
+            serverNotifyChannel.socket().bind(new InetSocketAddress(NetworkConstants.MASTER_PROTOCOL_PORT));
+            serverNotifyChannel.configureBlocking(false);
+            boundServerNotifyChannel = true;
         } catch (IOException e) {
-            LOG.fatal("IOException", e);
-            dispose();
+            LOG.warn("IOException", e);
+        }
+    }
+    
+    /**
+     * Unbind the server notify channel.
+     */
+    public void unbindServerNotifyChannel() {
+        try {
+            serverNotifyChannel.close();
+            boundServerNotifyChannel = false;
+        } catch (IOException e) {
+            LOG.warn("IOException", e);
         }
     }
 
