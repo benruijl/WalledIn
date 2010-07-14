@@ -42,20 +42,14 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
     public ServerList(final Screen parent, final Rectangle boudingRect) {
         super(parent, boudingRect);
         serverButtons = new ArrayList<Screen>();
-    }
-
-    @Override
-    public void initialize() {
+        
         refreshButton = new Button(this, "Refresh", getPosition().add(
                 new Vector2f(400, 40)));
         refreshButton.addMouseEventListener(this);
         addChild(refreshButton);
         show(); // standard is active and visible
-
-        // request a refresh of the server list
-        getManager().getClient().refreshServerList();
     }
-
+    
     @Override
     public void update(final double delta) {
         serverList = getManager().getClient().getServerList();
@@ -125,6 +119,12 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
 
     @Override
     public void onMouseHover(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void initialize() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

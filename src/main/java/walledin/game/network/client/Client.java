@@ -136,6 +136,11 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     public void refreshServerList() {
+        
+        if (!connectedMasterServer) {
+            return;
+        }
+        
         try {
             networkDataWriter.prepareGetServersMessage();
             networkDataWriter.sendBuffer(masterServerChannel);
@@ -172,7 +177,14 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             // update the player actions
             // TODO: do somewhere else?
-            PlayerActionManager.getInstance().update();
+
+            /* Only register actions when the game screen has the focus. */
+            if (screenManager.getFocusedScreen() != screenManager
+                    .getScreen(ScreenType.GAME)) {
+                PlayerActionManager.getInstance().clear();
+            } else {
+                PlayerActionManager.getInstance().update();
+            }
 
             networkDataWriter.prepareInputMessage(receivedVersion,
                     PlayerActionManager.getInstance().getPlayerActions(),
@@ -414,6 +426,12 @@ public class Client implements RenderListener, NetworkEventListener {
      * Connects to a master server.
      */
     public final void connectToMasterServer() {
+        
+        /* Connect once */
+        if (connectedMasterServer) {
+            return;
+        }
+        
         LOG.info("configure network channel and connecting to master server");
         try {
             masterServerChannel.configureBlocking(false);
@@ -421,10 +439,10 @@ public class Client implements RenderListener, NetworkEventListener {
             connectedMasterServer = true;
         } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
-            dispose();
+            screenManager.createDialog("Could not connect to master server.");
         } catch (final IOException e) {
             LOG.fatal("IOException", e);
-            dispose();
+            screenManager.createDialog("Could not connect to master server.");
         }
     }
 

@@ -65,6 +65,9 @@ public abstract class Screen {
     /** List of mouse event listeners. */
     private final List<ScreenMouseEventListener> mouseListeners;
 
+    /** List of key event listeners. */
+    private final List<ScreenKeyEventListener> keyListeners;
+
     /**
      * Creates a new screen.
      * 
@@ -79,6 +82,7 @@ public abstract class Screen {
         children = new ArrayList<Screen>();
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
+        keyListeners = new ArrayList<ScreenKeyEventListener>();
         this.parent = parent;
         manager = parent.getManager();
         rectangle = boudingRect;
@@ -97,6 +101,7 @@ public abstract class Screen {
         children = new ArrayList<Screen>();
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
+        keyListeners = new ArrayList<ScreenKeyEventListener>();
         parent = null;
         this.manager = manager;
         rectangle = boudingRect;
@@ -113,7 +118,7 @@ public abstract class Screen {
      * 
      * @return Returns a Screen on success and null on failure.
      */
-    private Screen getSmallestScreenContainingCursor() {
+    public Screen getSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
             for (final Screen screen : children) {
                 if (screen.isVisible()) {
@@ -172,16 +177,20 @@ public abstract class Screen {
      *            Delta time since last update
      */
     public void update(final double delta) {
-        if (isSmallestScreenContainingCursor()) {
-            /* Send mouse hover event */
-            sendMouseHoverMessage(new ScreenMouseEvent(this, Input
-                    .getInstance().getMousePos().asVector2f()));
-
-            /* Check if mouse pressed */
-            if (Input.getInstance().isButtonDown(1)) {
-                sendMouseDownMessage(new ScreenMouseEvent(this, Input
+        /* If there is no focused screen, send the events */
+        if (getManager().getFocusedScreen() == null) {
+            if (isSmallestScreenContainingCursor()) {
+                /* Send mouse hover event */
+                sendMouseHoverMessage(new ScreenMouseEvent(this, Input
                         .getInstance().getMousePos().asVector2f()));
+
+                /* Check if mouse pressed */
+                if (Input.getInstance().isButtonDown(1)) {
+                    sendMouseDownMessage(new ScreenMouseEvent(this, Input
+                            .getInstance().getMousePos().asVector2f()));
+                }
             }
+            
         }
 
         for (final Screen screen : children) {
@@ -210,6 +219,13 @@ public abstract class Screen {
     }
 
     /**
+     * Sets the focus to this screen.
+     */
+    public void setFocus() {
+        getManager().setFocusedScreen(this);
+    }
+
+    /**
      * Called when the visibility flag of this screen is changed.
      * 
      * @param visible
@@ -235,6 +251,11 @@ public abstract class Screen {
      */
     public void hide() {
         state = ScreenState.Hidden;
+
+        if (getManager().getFocusedScreen() == this) {
+            getManager().setFocusedScreen(null);
+        }
+
         onVisibilityChanged(false);
     }
 
@@ -255,7 +276,6 @@ public abstract class Screen {
 
     public void addChild(final Screen sc) {
         children.add(sc);
-        sc.registerScreenManager(getManager());
     }
 
     public void removeChild(final Screen sc) {
@@ -297,16 +317,26 @@ public abstract class Screen {
     public void addMouseEventListener(final ScreenMouseEventListener listener) {
         mouseListeners.add(listener);
     }
-
-    private void sendMouseHoverMessage(final ScreenMouseEvent e) {
+    
+    public void sendMouseHoverMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseHover(e);
         }
     }
 
-    private void sendMouseDownMessage(final ScreenMouseEvent e) {
+    public void sendMouseDownMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
+        }
+    }
+    
+    public void addKeyEventListener(final ScreenKeyEventListener listener) {
+        keyListeners.add(listener);
+    }
+
+    public void sendKeyDownMessage(final ScreenKeyEvent e) {
+        for (final ScreenKeyEventListener listener : keyListeners) {
+            listener.onKeyDown(e);
         }
     }
 

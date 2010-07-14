@@ -30,6 +30,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Input;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.util.SettingsManager;
 
 public class PlayerActionManager {
@@ -98,7 +99,7 @@ public class PlayerActionManager {
         final Set<Integer> buttonsDown = Input.getInstance().getButtonsDown();
 
         playerActions.clear();
-
+        
         for (final Integer key : keysDown) {
             if (keyMap.containsKey(key)) {
                 playerActions.add(keyMap.get(key));
@@ -110,6 +111,13 @@ public class PlayerActionManager {
                 playerActions.add(buttonMap.get(button));
             }
         }
+    }
+    
+    /**
+     * Clears the player action list.
+     */
+    public void clear() {
+        playerActions.clear();
     }
 
     public Set<PlayerActions> getPlayerActions() {

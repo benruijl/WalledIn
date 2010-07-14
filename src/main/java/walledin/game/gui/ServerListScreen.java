@@ -31,25 +31,45 @@ import walledin.engine.math.Vector2f;
 import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.components.ServerList;
 
-public class ServerListScreen extends Screen {
+public class ServerListScreen extends Screen implements ScreenKeyEventListener {
     private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
     Screen serverListWidget;
 
     public ServerListScreen(final ScreenManager manager) {
         super(manager, null);
-    }
+        addKeyEventListener(this);
 
-    @Override
-    public void initialize() {
         serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400));
         serverListWidget.setPosition(new Vector2f(100, 0));
         addChild(serverListWidget);
-        serverListWidget.initialize(); // initialize after add!
     }
 
     @Override
     public void update(final double delta) {
-        if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
+        super.update(delta);
+    }
+
+    @Override
+    protected void onVisibilityChanged(final boolean visible) {
+        if (visible) {
+            getManager().getClient().bindServerNotifyChannel();
+            
+            // request a refresh of the server list
+            getManager().getClient().refreshServerList();
+        } else {
+            getManager().getClient().unbindServerNotifyChannel();
+        }
+        super.onVisibilityChanged(visible);
+    }
+
+    @Override
+    public void draw(final Renderer renderer) {
+        super.draw(renderer);
+    }
+
+    @Override
+    public void onKeyDown(ScreenKeyEvent e) {
+        if (e.getKeys().contains(KeyEvent.VK_ESCAPE)) {
             Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
 
             /*
@@ -64,23 +84,10 @@ public class ServerListScreen extends Screen {
 
             hide();
         }
-
-        super.update(delta);
     }
 
     @Override
-    protected void onVisibilityChanged(final boolean visible) {
-        if (visible) {
-            getManager().getClient().bindServerNotifyChannel();
-        } else {
-            getManager().getClient().unbindServerNotifyChannel();
-        }
-        super.onVisibilityChanged(visible);
-    }
-
-    @Override
-    public void draw(final Renderer renderer) {
-        super.draw(renderer);
+    public void initialize() {
     }
 
 }
