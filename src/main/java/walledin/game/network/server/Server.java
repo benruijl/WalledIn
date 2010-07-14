@@ -66,7 +66,7 @@ public class Server implements NetworkEventListener {
     /** The maximum number of frames stored in memory. */
     private final int STORED_CHANGESETS;
 
-    private static final String SERVER_NAME = "WalledIn Server";
+    private final String SERVER_NAME;
     private final long CHALLENGE_TIMEOUT;
     private final Map<SocketAddress, PlayerConnection> players;
     private boolean running;
@@ -105,6 +105,8 @@ public class Server implements NetworkEventListener {
                 "network.challengeTimeOut");
         BROADCAST_INTERVAL = SettingsManager.getInstance().getInteger(
                 "network.lanBroadcastInterval");
+        SERVER_NAME = SettingsManager.getInstance()
+                .getString("game.serverName");
 
         // Store the first version so we can give it new players
         final ChangeSet firstChangeSet = gameLogicManager.getEntityManager()

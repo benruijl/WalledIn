@@ -80,7 +80,7 @@ public class Client implements RenderListener, NetworkEventListener {
     private int receivedVersion = 0;
     private long lastLoginTry;
     // in milliseconds
-    private final long LOGIN_RETRY_TIME = 1000;
+    private final long LOGIN_RETRY_TIME;
 
     /**
      * Create the client.
@@ -101,6 +101,9 @@ public class Client implements RenderListener, NetworkEventListener {
 
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
+
+        LOGIN_RETRY_TIME = SettingsManager.getInstance().getInteger(
+                "network.loginRetryTime");
     }
 
     public static void main(final String[] args) {
@@ -136,11 +139,11 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     public void refreshServerList() {
-        
+
         if (!connectedMasterServer) {
             return;
         }
-        
+
         try {
             networkDataWriter.prepareGetServersMessage();
             networkDataWriter.sendBuffer(masterServerChannel);
@@ -319,8 +322,9 @@ public class Client implements RenderListener, NetworkEventListener {
 
         /* Load standard font */
         final Font font = new Font();
-        font.readFromStream(Utils.getClasspathURL("arial20.font"));
-        screenManager.addFont("arial20", font);
+        final String fontName = SettingsManager.getInstance().getString("game.font");
+        font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
+        screenManager.addFont(fontName, font);
 
         final Screen serverListScreen = new ServerListScreen(screenManager);
         screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
@@ -426,12 +430,12 @@ public class Client implements RenderListener, NetworkEventListener {
      * Connects to a master server.
      */
     public final void connectToMasterServer() {
-        
+
         /* Connect once */
         if (connectedMasterServer) {
             return;
         }
-        
+
         LOG.info("configure network channel and connecting to master server");
         try {
             masterServerChannel.configureBlocking(false);

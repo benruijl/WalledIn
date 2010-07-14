@@ -59,8 +59,8 @@ public class EntityManager {
     /**
      * Creates a new Entity and adds it to the entities list.
      * 
-     * @param familyName
-     * @param name
+     * @param familyName Family name
+     * @param entityName Name of the entity
      * @return The created entity or null on failure
      */
     public Entity create(final Family familyName, final String entityName) {
