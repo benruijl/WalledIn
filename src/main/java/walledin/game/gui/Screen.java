@@ -56,6 +56,9 @@ public abstract class Screen {
     /** Position. */
     private Vector2f position;
 
+    /** Absolute position. */
+    private Vector2f absolutePosition;
+
     /** Bounding rectangle. */
     private final Rectangle rectangle;
 
@@ -86,6 +89,7 @@ public abstract class Screen {
         this.parent = parent;
         manager = parent.getManager();
         rectangle = boudingRect;
+        absolutePosition = parent.getAbsolutePosition();
     }
 
     /**
@@ -105,6 +109,7 @@ public abstract class Screen {
         parent = null;
         this.manager = manager;
         rectangle = boudingRect;
+        absolutePosition = new Vector2f();
     }
 
     /**
@@ -118,7 +123,7 @@ public abstract class Screen {
      * 
      * @return Returns a Screen on success and null on failure.
      */
-    public Screen getSmallestScreenContainingCursor() {
+    public final Screen getSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
             for (final Screen screen : children) {
                 if (screen.isVisible()) {
@@ -162,7 +167,7 @@ public abstract class Screen {
     /**
      * Disposes of a screen.
      */
-    public void dispose() {
+    public final void dispose() {
         if (parent == null) {
             getManager().removeScreen(this);
         } else {
@@ -190,7 +195,7 @@ public abstract class Screen {
                             .getInstance().getMousePos().asVector2f()));
                 }
             }
-            
+
         }
 
         for (final Screen screen : children) {
@@ -200,12 +205,18 @@ public abstract class Screen {
         }
     }
 
-    public boolean isVisible() {
+    /**
+     * Checks if the screen is visible locally. It does not check if its parent
+     * is visible.
+     * 
+     * @return True if visible, else false
+     */
+    public final boolean isVisible() {
         return state == ScreenState.Visible;
     }
 
     /**
-     * Draws the screen.
+     * Draws the screen and its children.
      * 
      * @param renderer
      *            Renderer to draw with
@@ -213,7 +224,10 @@ public abstract class Screen {
     public void draw(final Renderer renderer) {
         for (final Screen screen : children) {
             if (screen.getState() == ScreenState.Visible) {
+                renderer.pushMatrix();
+                renderer.translate(screen.getPosition());
                 screen.draw(renderer);
+                renderer.popMatrix();
             }
         }
     }
@@ -221,7 +235,7 @@ public abstract class Screen {
     /**
      * Sets the focus to this screen.
      */
-    public void setFocus() {
+    public final void setFocus() {
         getManager().setFocusedScreen(this);
     }
 
@@ -241,7 +255,7 @@ public abstract class Screen {
     /**
      * Shows the window and makes it active.
      */
-    public void show() {
+    public final void show() {
         state = ScreenState.Visible;
         onVisibilityChanged(true);
     }
@@ -249,7 +263,7 @@ public abstract class Screen {
     /**
      * Hides the window and makes it inactive.
      */
-    public void hide() {
+    public final void hide() {
         state = ScreenState.Hidden;
 
         if (getManager().getFocusedScreen() == this) {
@@ -274,27 +288,63 @@ public abstract class Screen {
         return manager;
     }
 
-    public void addChild(final Screen sc) {
+    public final void addChild(final Screen sc) {
         children.add(sc);
     }
 
-    public void removeChild(final Screen sc) {
+    public final void removeChild(final Screen sc) {
         children.remove(sc);
     }
 
-    public Rectangle getRectangle() {
+    /**
+     * Returns the bounding rectangle.
+     * 
+     * @return Bounding rectangle
+     */
+    public final Rectangle getRectangle() {
         return rectangle;
     }
 
-    public Vector2f getPosition() {
+    /**
+     * Returns the position in relative coordinates.
+     * 
+     * @return Position
+     */
+    public final Vector2f getPosition() {
         return position;
     }
 
-    public void setPosition(final Vector2f position) {
-        this.position = position;
+    /**
+     * Returns the position in relative coordinates.
+     * 
+     * @return Position
+     */
+    public final Vector2f getAbsolutePosition() {
+        return absolutePosition;
     }
 
-    public Screen getParent() {
+    /**
+     * Updates the position and the absolute position.
+     * 
+     * @param position
+     *            The new relative position
+     */
+    public final void setPosition(final Vector2f position) {
+        this.position = position;
+
+        if (parent != null) {
+            absolutePosition = parent.getAbsolutePosition().add(position);
+        } else {
+            absolutePosition = position;
+        }
+    }
+
+    /**
+     * Gets the parent of this screen.
+     * 
+     * @return Parent screen or null
+     */
+    public final Screen getParent() {
         return parent;
     }
 
@@ -306,45 +356,46 @@ public abstract class Screen {
      *            Point
      * @return True if in window, else false.
      */
-    public boolean pointInScreen(final Vector2f point) {
+    public final boolean pointInScreen(final Vector2f point) {
         if (rectangle == null) {
             return true;
         }
 
-        return rectangle.translate(position).containsPoint(point);
+        return rectangle.translate(absolutePosition).containsPoint(point);
     }
 
-    public void addMouseEventListener(final ScreenMouseEventListener listener) {
+    public final void addMouseEventListener(
+            final ScreenMouseEventListener listener) {
         mouseListeners.add(listener);
     }
-    
-    public void sendMouseHoverMessage(final ScreenMouseEvent e) {
+
+    public final void sendMouseHoverMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseHover(e);
         }
     }
 
-    public void sendMouseDownMessage(final ScreenMouseEvent e) {
+    public final void sendMouseDownMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
         }
     }
-    
-    public void addKeyEventListener(final ScreenKeyEventListener listener) {
+
+    public final void addKeyEventListener(final ScreenKeyEventListener listener) {
         keyListeners.add(listener);
     }
 
-    public void sendKeyDownMessage(final ScreenKeyEvent e) {
+    public final void sendKeyDownMessage(final ScreenKeyEvent e) {
         for (final ScreenKeyEventListener listener : keyListeners) {
             listener.onKeyDown(e);
         }
     }
 
-    public Font getFont() {
+    public final Font getFont() {
         return font;
     }
 
-    public void setFont(final Font font) {
+    public final void setFont(final Font font) {
         this.font = font;
     }
 }

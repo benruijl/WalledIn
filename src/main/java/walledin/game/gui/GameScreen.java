@@ -58,20 +58,15 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
 
             entityManager.draw(renderer); // draw all entities in correct order
 
-            /* Render current FPS */
             renderer.startHUDRendering();
-
             final Font font = getManager().getFont("arial20");
-            font.renderText(renderer, "FPS: " + renderer.getFPS(),
-                    new Vector2f(600, 20));
-
             final Entity player = entityManager.get(getManager()
                     .getPlayerName());
 
             if (player != null) {
                 font.renderText(renderer, "HP: "
                         + player.getAttribute(Attribute.HEALTH), new Vector2f(
-                        600, 40));
+                        630, 40));
             }
 
             renderer.stopHUDRendering();

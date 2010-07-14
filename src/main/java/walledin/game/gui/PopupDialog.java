@@ -14,27 +14,26 @@ public class PopupDialog extends Screen implements ScreenMouseEventListener {
                 .getTextWidth(text) + 20, 70));
         setPosition(new Vector2f(300, 250));
         this.text = text;
-        
+
         okButton = new Button(this, "OK", new Vector2f(getRectangle()
                 .getWidth()
                 / 2.0f
-                + getPosition().getX()
                 - manager.getFont("arial20").getTextWidth("OK") / 2.0f,
-                getPosition().getY() + getRectangle().getHeight() - 25));
+                + getRectangle().getHeight() - 25));
         okButton.addMouseEventListener(this);
         addChild(okButton);
-      
+
     }
 
     @Override
     public final void draw(final Renderer renderer) {
         renderer.setColorRGB(0.4f, 0.4f, 0.4f);
-        renderer.drawFilledRect(getRectangle().translate(getPosition()));
+        renderer.drawFilledRect(getRectangle());
         renderer.setColorRGB(1.0f, 1.0f, 1.0f);
 
         getManager().getFont("arial20").renderText(renderer, text,
-                new Vector2f(300, 250));
-
+                new Vector2f(0,0)); 
+        
         super.draw(renderer);
     }
 

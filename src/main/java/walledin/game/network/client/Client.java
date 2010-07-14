@@ -138,7 +138,7 @@ public class Client implements RenderListener, NetworkEventListener {
         renderer.beginLoop();
     }
 
-    public void refreshServerList() {
+    public final void refreshServerList() {
 
         if (!connectedMasterServer) {
             return;
@@ -153,7 +153,7 @@ public class Client implements RenderListener, NetworkEventListener {
         }
     }
 
-    public List<ServerData> getServerList() {
+    public final List<ServerData> getServerList() {
         final List<ServerData> servers = new ArrayList<ServerData>(
                 lanServerList);
         servers.addAll(internetServerList);
@@ -165,7 +165,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * we receive the net game state.
      */
     @Override
-    public boolean receivedGamestateMessage(final SocketAddress address,
+    public final boolean receivedGamestateMessage(final SocketAddress address,
             final int oldVersion, final int newVersion) {
         lastLoginTry = -1;
         boolean result = false;
@@ -201,7 +201,7 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedServersMessage(final SocketAddress address,
+    public final void receivedServersMessage(final SocketAddress address,
             final Set<ServerData> servers) {
         LOG.info("Received server list. " + servers.size()
                 + " servers available.");
@@ -233,26 +233,26 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedLoginReponseMessage(final SocketAddress address,
+    public final void receivedLoginReponseMessage(final SocketAddress address,
             final String playerEntityName) {
         screenManager.setPlayerName(playerEntityName);
         LOG.info("Player entity name received: " + playerEntityName);
     }
 
     @Override
-    public void receivedServerNotificationMessage(final SocketAddress address,
+    public final void receivedServerNotificationMessage(final SocketAddress address,
             final ServerData server) {
         lanServerList.add(server);
     }
 
     /**
-     * Update the current game state
+     * Update the current game state.
      * 
      * @param delta
      *            time since last update in seconds
      */
     @Override
-    public void update(final double delta) {
+    public final void update(final double delta) {
         // network stuff
         try {
             if (connected) {
@@ -309,7 +309,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * Render the current gamestate.
      */
     @Override
-    public void draw(final Renderer renderer) {
+    public final void draw(final Renderer renderer) {
         screenManager.draw(renderer);
     }
 
@@ -364,7 +364,7 @@ public class Client implements RenderListener, NetworkEventListener {
     /**
      * Bind the server notify channel so we can recieve lan broadcasts
      */
-    public void bindServerNotifyChannel() {
+    public final void bindServerNotifyChannel() {
         try {
             serverNotifyChannel = DatagramChannel.open();
             serverNotifyChannel.socket()
@@ -381,7 +381,7 @@ public class Client implements RenderListener, NetworkEventListener {
     /**
      * Unbind the server notify channel.
      */
-    public void unbindServerNotifyChannel() {
+    public final void unbindServerNotifyChannel() {
         try {
             serverNotifyChannel.close();
             boundServerNotifyChannel = false;
@@ -451,7 +451,7 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void dispose() {
+    public final void dispose() {
         if (!quitting) {
             quitting = true;
             renderer.dispose();

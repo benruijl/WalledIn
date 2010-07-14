@@ -43,8 +43,7 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
         super(parent, boudingRect);
         serverButtons = new ArrayList<Screen>();
         
-        refreshButton = new Button(this, "Refresh", getPosition().add(
-                new Vector2f(400, 40)));
+        refreshButton = new Button(this, "Refresh", new Vector2f(400, 40));
         refreshButton.addMouseEventListener(this);
         addChild(refreshButton);
         show(); // standard is active and visible
@@ -53,16 +52,21 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
     @Override
     public void update(final double delta) {
         serverList = getManager().getClient().getServerList();
+        
+        for (int i = 0; i < serverButtons.size(); i++) {
+            removeChild(serverButtons.get(i));
+        }
 
         serverButtons.clear();
 
         for (int i = 0; i < serverList.size(); i++) {
             final Screen server = new Button(this, serverList.get(i).getName()
                     + " (" + serverList.get(i).getAddress() + ")",
-                    getPosition().add(new Vector2f(10, 65 + i * 20)));
+                    new Vector2f(10, 65 + i * 20));
             server.registerScreenManager(getManager());
             server.addMouseEventListener(this);
             serverButtons.add(server);
+            addChild(server);
         }
 
         for (int i = 0; i < serverButtons.size(); i++) {
@@ -75,14 +79,9 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
     @Override
     public void draw(final Renderer renderer) {
         final Font font = getManager().getFont("arial20");
-        font.renderText(renderer, "Server Name", getPosition().add(
-                new Vector2f(10, 40)));
+        font.renderText(renderer, "Server Name", new Vector2f(10, 40));
 
-        for (int i = 0; i < serverButtons.size(); i++) {
-            serverButtons.get(i).draw(renderer);
-        }
-
-        renderer.drawRectOutline(getRectangle().translate(getPosition()));
+        renderer.drawRectOutline(getRectangle());
         super.draw(renderer);
     }
 
