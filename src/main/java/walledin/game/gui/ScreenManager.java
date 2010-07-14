@@ -24,7 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.log4j.Logger;
 
 import walledin.engine.Font;
 import walledin.engine.Input;
@@ -34,19 +37,20 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.MessageType;
-import walledin.game.gui.Screen.ScreenState;
 import walledin.game.network.client.Client;
 
 public class ScreenManager {
+    /** Logger */
+    private static final Logger LOG = Logger.getLogger(ScreenManager.class);
 
     /** Screen types. */
     public enum ScreenType {
         MAIN_MENU, GAME, SERVER_LIST
     }
 
-    /** List of typed screens. */
+    /** Map of typed screens. */
     private final Map<ScreenType, Screen> typedScreens;
-    /** List of untyped screens. */
+    /** List of screens. */
     private final List<Screen> screens;
     /** Entity list of all screens together. */
     private final EntityManager entityManager;
@@ -60,14 +64,12 @@ public class ScreenManager {
     private final Renderer renderer;
     /** Player name. */
     private String playerName;
-    /**
-     * Client using this screen manager. Useful for quitting the application.
-     */
+    /** Client using this screen manager. */
     private final Client client;
     /** Keeps track is the cursor has to be drawn. */
     private boolean drawCursor;
-    /** Active screen. Only one screen can be active. */
-    private Screen activeScreen;
+    /** Focused screen. Only one screen can be focused. */
+    private Screen focusedScreen;
 
     /**
      * Creates a screen manager.
@@ -143,7 +145,7 @@ public class ScreenManager {
     }
 
     /**
-     * Adds screen to the list.
+     * Adds a screen with a predefined type to the list.
      * 
      * @param type
      *            Type of screen
@@ -152,6 +154,7 @@ public class ScreenManager {
      */
     public final void addScreen(final ScreenType type, final Screen screen) {
         typedScreens.put(type, screen);
+        screens.add(screen);
         screen.registerScreenManager(this);
     }
 
@@ -166,6 +169,19 @@ public class ScreenManager {
         screen.registerScreenManager(this);
     }
 
+    public final void removeScreen(final Screen screen) {
+        if (!screens.remove(screen)) {
+            LOG.warn("Tried to remove screen that is not in the list");
+        }
+
+        if (focusedScreen == screen) {
+            focusedScreen = null;
+        }
+
+        /* If it is a typed screen, remove the map */
+        typedScreens.remove(screen);
+    }
+
     /**
      * Fetch a screen from the list.
      * 
@@ -178,7 +194,9 @@ public class ScreenManager {
     }
 
     /**
-     * Updates every screen, the cursor position and the entity manager.
+     * Updates every screen, the cursor position and the entity manager. It also
+     * send the correct events to the screens. Rule: update first, then send
+     * event.
      * 
      * @param delta
      *            Delta time
@@ -193,15 +211,45 @@ public class ScreenManager {
                     .screenToWorld(Input.getInstance().getMousePos()));
         }
 
-        for (final Screen screen : typedScreens.values()) {
-            if (screen.isActive()) {
-                screen.update(delta);
+        Set<Integer> keysDown = Input.getInstance().getKeysDown();
+
+        for (int i = 0; i < screens.size(); i++) {
+            if (screens.get(i).isVisible()) {
+                screens.get(i).update(delta);
+
+                if (getFocusedScreen() == null && keysDown.size() > 0) {
+                    screens.get(i).sendKeyDownMessage(
+                            new ScreenKeyEvent(keysDown));
+                }
             }
         }
 
-        for (final Screen screen : screens) {
-            if (screen.isActive()) {
-                screen.update(delta);
+        if (getFocusedScreen() != null) {
+            /* If there is a focused window, send the keys to that window. */
+            if (keysDown.size() > 0) {
+                getFocusedScreen().sendKeyDownMessage(
+                        new ScreenKeyEvent(Input.getInstance().getKeysDown()));
+            }
+        }
+
+        /*
+         * Do the check again, because the key event response could change the
+         * focused screen.
+         */
+        if (getFocusedScreen() != null) {
+            Screen screen = getFocusedScreen()
+                    .getSmallestScreenContainingCursor();
+
+            if (screen != null) {
+                /* Send mouse hover event */
+                screen.sendMouseHoverMessage(new ScreenMouseEvent(screen, Input
+                        .getInstance().getMousePos().asVector2f()));
+
+                /* Check if mouse pressed */
+                if (Input.getInstance().isButtonDown(1)) {
+                    screen.sendMouseDownMessage(new ScreenMouseEvent(screen,
+                            Input.getInstance().getMousePos().asVector2f()));
+                }
             }
         }
     }
@@ -213,15 +261,9 @@ public class ScreenManager {
      *            Renderer to draw with
      */
     public final void draw(final Renderer renderer) {
-        for (final Screen screen : typedScreens.values()) {
-            if (screen.getState() == ScreenState.Visible) {
-                screen.draw(renderer);
-            }
-        }
-
-        for (final Screen screen : screens) {
-            if (screen.getState() == ScreenState.Visible) {
-                screen.draw(renderer);
+        for (int i = 0; i < screens.size(); i++) {
+            if (screens.get(i).isVisible()) {
+                screens.get(i).draw(renderer);
             }
         }
 
@@ -247,6 +289,27 @@ public class ScreenManager {
     }
 
     /**
+     * The given screen will have the focus. This means that it is the only
+     * screen receiving input.
+     * 
+     * @param screen
+     *            Screen. Can be null.
+     */
+    public void setFocusedScreen(final Screen screen) {
+        focusedScreen = screen;
+    }
+
+    /**
+     * Returns the screen that currently has the focus or null if no screen has
+     * the focus.
+     * 
+     * @return Focused screen
+     */
+    public Screen getFocusedScreen() {
+        return focusedScreen;
+    }
+
+    /**
      * Kill the application. Sends the dispose message to the client.
      */
     public final void dispose() {
@@ -262,10 +325,16 @@ public class ScreenManager {
         return client;
     }
 
+    /**
+     * Creates a pop-up dialog.
+     * 
+     * @param text
+     *            Text in the dialog.
+     */
     public final void createDialog(final String text) {
         final PopupDialog diag = new PopupDialog(this, text);
         addScreen(diag);
-        diag.initialize();
         diag.show();
+        diag.setFocus();
     }
 }

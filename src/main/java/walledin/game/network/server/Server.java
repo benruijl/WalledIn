@@ -73,10 +73,10 @@ public class Server implements NetworkEventListener {
     private final NetworkDataWriter networkWriter;
     private final NetworkDataReader networkReader;
     private long currentTime;
-    private GameLogicManager gameLogicManager;
+    private final GameLogicManager gameLogicManager;
     private final Queue<ChangeSet> changeSets;
     private final Map<Integer, ChangeSet> changeSetLookup;
-    
+
     private DatagramChannel masterServerChannel;
     private DatagramChannel channel;
     private DatagramChannel serverNotifySocket;
@@ -107,7 +107,8 @@ public class Server implements NetworkEventListener {
                 "network.lanBroadcastInterval");
 
         // Store the first version so we can give it new players
-        final ChangeSet firstChangeSet = gameLogicManager.getEntityManager().getChangeSet();
+        final ChangeSet firstChangeSet = gameLogicManager.getEntityManager()
+                .getChangeSet();
         changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
     }
 
@@ -155,8 +156,8 @@ public class Server implements NetworkEventListener {
         lastChallenge = System.currentTimeMillis();
         lastBroadcast = System.currentTimeMillis();
 
-        networkWriter.prepareServerNotificationResponse(PORT,
-                SERVER_NAME, players.size(), Integer.MAX_VALUE);
+        networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
+                players.size(), Integer.MAX_VALUE);
         networkWriter.sendBuffer(masterServerChannel);
 
         currentTime = System.nanoTime(); // initialize
@@ -191,7 +192,8 @@ public class Server implements NetworkEventListener {
         // Read input messages and login messages
         SocketAddress address = networkReader.readMessage(channel);
         while (address != null) {
-            networkReader.processMessage(address,  gameLogicManager.getEntityManager());
+            networkReader.processMessage(address, gameLogicManager
+                    .getEntityManager());
             address = networkReader.readMessage(channel);
         }
 
@@ -204,11 +206,12 @@ public class Server implements NetworkEventListener {
             networkWriter.sendBuffer(masterServerChannel);
 
         }
-        
+
         if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
                     players.size(), Integer.MAX_VALUE);
-            networkWriter.sendBuffer(serverNotifySocket, NetworkConstants.BROADCAST_ADDRESS);
+            networkWriter.sendBuffer(serverNotifySocket,
+                    NetworkConstants.BROADCAST_ADDRESS);
             lastBroadcast = System.currentTimeMillis();
         }
 
@@ -245,7 +248,8 @@ public class Server implements NetworkEventListener {
         }
         // Get current change set from entity manager and merge it with all the
         // save versions
-        final ChangeSet currentChangeSet = gameLogicManager.getEntityManager().getChangeSet();
+        final ChangeSet currentChangeSet = gameLogicManager.getEntityManager()
+                .getChangeSet();
         for (final ChangeSet changeSet : changeSetLookup.values()) {
             changeSet.merge(currentChangeSet);
         }
@@ -264,7 +268,8 @@ public class Server implements NetworkEventListener {
      */
     private void sendGamestate(final DatagramChannel channel)
             throws IOException {
-        final int currentVersion = gameLogicManager.getEntityManager().getCurrentVersion();
+        final int currentVersion = gameLogicManager.getEntityManager()
+                .getCurrentVersion();
         for (final PlayerConnection connection : players.values()) {
             int sendVersion = connection.getReceivedVersion();
             if (connection.isNew()) {
@@ -280,8 +285,9 @@ public class Server implements NetworkEventListener {
                         + " " + changeSet.getRemoved() + " "
                         + changeSet.getUpdated());
             }
-            networkWriter.prepareGamestateMessage(gameLogicManager.getEntityManager(), changeSet,
-                    changeSet.getVersion(), currentVersion);
+            networkWriter.prepareGamestateMessage(gameLogicManager
+                    .getEntityManager(), changeSet, changeSet.getVersion(),
+                    currentVersion);
             networkWriter.sendBuffer(channel, connection.getAddress());
         }
     }
@@ -320,8 +326,9 @@ public class Server implements NetworkEventListener {
 
             final String entityName = NetworkConstants
                     .getAddressRepresentation(address);
-            
-            Entity player = gameLogicManager.createPlayer(entityName, name);
+
+            final Entity player = gameLogicManager.createPlayer(entityName,
+                    name);
 
             final PlayerConnection con = new PlayerConnection(address, player,
                     gameLogicManager.getEntityManager().getCurrentVersion());
@@ -384,7 +391,7 @@ public class Server implements NetworkEventListener {
             connection.setReceivedVersion(newVersion);
         }
     }
-    
+
     @Override
     public void receivedLoginReponseMessage(final SocketAddress address,
             final String playerEntityName) {
@@ -392,9 +399,9 @@ public class Server implements NetworkEventListener {
     }
 
     @Override
-    public void receivedServerNotificationMessage(SocketAddress address,
-            ServerData server) {
-        //ignore
+    public void receivedServerNotificationMessage(final SocketAddress address,
+            final ServerData server) {
+        // ignore
     }
 
     /**
@@ -404,11 +411,12 @@ public class Server implements NetworkEventListener {
     public final void init() {
         // Fill the change set queue
         for (int i = 0; i < STORED_CHANGESETS; i++) {
-            final ChangeSet changeSet = gameLogicManager.getEntityManager().getChangeSet();
+            final ChangeSet changeSet = gameLogicManager.getEntityManager()
+                    .getChangeSet();
             changeSets.add(changeSet);
             changeSetLookup.put(changeSet.getVersion(), changeSet);
         }
-        
+
         gameLogicManager.initialize();
     }
 }

@@ -62,17 +62,18 @@ public abstract class Screen {
     /** Font. */
     private Font font;
 
-    /** Active flag. */
-    private boolean active = false;
-
     /** List of mouse event listeners. */
     private final List<ScreenMouseEventListener> mouseListeners;
+
+    /** List of key event listeners. */
+    private final List<ScreenKeyEventListener> keyListeners;
 
     /**
      * Creates a new screen.
      * 
      * @param parent
-     *            Parent of the screen or null of there is no parent.
+     *            Parent of the screen. If there is no parent, use the other
+     *            constructor.
      * @param boudingRect
      *            Bounding rectangle of this screen. null is allowed for root
      *            screens only.
@@ -81,7 +82,28 @@ public abstract class Screen {
         children = new ArrayList<Screen>();
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
+        keyListeners = new ArrayList<ScreenKeyEventListener>();
         this.parent = parent;
+        manager = parent.getManager();
+        rectangle = boudingRect;
+    }
+
+    /**
+     * Creates a new screen.
+     * 
+     * @param manager
+     *            Screen manager.
+     * @param boudingRect
+     *            Bounding rectangle of this screen. null is allowed for root
+     *            screens only.
+     */
+    public Screen(final ScreenManager manager, final Rectangle boudingRect) {
+        children = new ArrayList<Screen>();
+        position = new Vector2f();
+        mouseListeners = new ArrayList<ScreenMouseEventListener>();
+        keyListeners = new ArrayList<ScreenKeyEventListener>();
+        parent = null;
+        this.manager = manager;
         rectangle = boudingRect;
     }
 
@@ -96,10 +118,10 @@ public abstract class Screen {
      * 
      * @return Returns a Screen on success and null on failure.
      */
-    private Screen getSmallestScreenContainingCursor() {
+    public Screen getSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
             for (final Screen screen : children) {
-                if (screen.isActive()) {
+                if (screen.isVisible()) {
                     final Screen b = screen.getSmallestScreenContainingCursor();
 
                     if (b != null) {
@@ -124,7 +146,7 @@ public abstract class Screen {
     private boolean isSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
             for (final Screen screen : children) {
-                if (screen.isActive()) {
+                if (screen.isVisible()) {
                     if (screen.isSmallestScreenContainingCursor()) {
                         return false;
                     }
@@ -138,29 +160,48 @@ public abstract class Screen {
     }
 
     /**
+     * Disposes of a screen.
+     */
+    public void dispose() {
+        if (parent == null) {
+            getManager().removeScreen(this);
+        } else {
+            getParent().removeChild(this);
+        }
+    }
+
+    /**
      * Updates the screen and its active children.
      * 
      * @param delta
      *            Delta time since last update
      */
     public void update(final double delta) {
-        if (isSmallestScreenContainingCursor()) {
-            /* Send mouse hover event */
-            sendMouseHoverMessage(new ScreenMouseEvent(this, Input
-                    .getInstance().getMousePos().asVector2f()));
-
-            /* Check if mouse pressed */
-            if (Input.getInstance().isButtonDown(1)) {
-                sendMouseDownMessage(new ScreenMouseEvent(this, Input
+        /* If there is no focused screen, send the events */
+        if (getManager().getFocusedScreen() == null) {
+            if (isSmallestScreenContainingCursor()) {
+                /* Send mouse hover event */
+                sendMouseHoverMessage(new ScreenMouseEvent(this, Input
                         .getInstance().getMousePos().asVector2f()));
+
+                /* Check if mouse pressed */
+                if (Input.getInstance().isButtonDown(1)) {
+                    sendMouseDownMessage(new ScreenMouseEvent(this, Input
+                            .getInstance().getMousePos().asVector2f()));
+                }
             }
+            
         }
 
         for (final Screen screen : children) {
-            if (screen.isActive()) {
+            if (screen.getState() == ScreenState.Visible) {
                 screen.update(delta);
             }
         }
+    }
+
+    public boolean isVisible() {
+        return state == ScreenState.Visible;
     }
 
     /**
@@ -177,59 +218,45 @@ public abstract class Screen {
         }
     }
 
-    public final boolean isActive() {
-        return active;
-    }
-
     /**
-     * Flag the screen as active/inactive. If activated, it will also make the
-     * screen visible.
-     * 
-     * @param active
-     *            Activate or deactivate
+     * Sets the focus to this screen.
      */
-    public final void setActive(final boolean active) {
-        if (active != this.active) {
-            this.active = active;
-            activeChanged(active);
-        }
-
-        if (active) {
-            state = ScreenState.Visible;
-        }
+    public void setFocus() {
+        getManager().setFocusedScreen(this);
     }
 
     /**
-     * Called when the active flag of this screen is changed.
+     * Called when the visibility flag of this screen is changed.
      * 
-     * @param active
+     * @param visible
      *            current value of the flag
      */
-    protected void activeChanged(final boolean active) {
+    protected void onVisibilityChanged(final boolean visible) {
     }
 
     public final ScreenState getState() {
         return state;
     }
 
-    public final void setState(final ScreenState state) {
-        this.state = state;
-    }
-
     /**
      * Shows the window and makes it active.
      */
     public void show() {
-        setActive(true);
         state = ScreenState.Visible;
+        onVisibilityChanged(true);
     }
 
     /**
      * Hides the window and makes it inactive.
      */
     public void hide() {
-        setActive(false);
         state = ScreenState.Hidden;
+
+        if (getManager().getFocusedScreen() == this) {
+            getManager().setFocusedScreen(null);
+        }
+
+        onVisibilityChanged(false);
     }
 
     /**
@@ -249,7 +276,6 @@ public abstract class Screen {
 
     public void addChild(final Screen sc) {
         children.add(sc);
-        sc.registerScreenManager(getManager());
     }
 
     public void removeChild(final Screen sc) {
@@ -291,16 +317,26 @@ public abstract class Screen {
     public void addMouseEventListener(final ScreenMouseEventListener listener) {
         mouseListeners.add(listener);
     }
-
-    private void sendMouseHoverMessage(final ScreenMouseEvent e) {
+    
+    public void sendMouseHoverMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseHover(e);
         }
     }
 
-    private void sendMouseDownMessage(final ScreenMouseEvent e) {
+    public void sendMouseDownMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
+        }
+    }
+    
+    public void addKeyEventListener(final ScreenKeyEventListener listener) {
+        keyListeners.add(listener);
+    }
+
+    public void sendKeyDownMessage(final ScreenKeyEvent e) {
+        for (final ScreenKeyEventListener listener : keyListeners) {
+            listener.onKeyDown(e);
         }
     }
 

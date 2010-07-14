@@ -33,8 +33,8 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
     Screen startButton;
     Screen quitButton;
 
-    public MainMenuScreen() {
-        super(null, null);
+    public MainMenuScreen(final ScreenManager manager) {
+        super(manager, null);
     }
 
     @Override
@@ -70,9 +70,8 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
     public void onMouseDown(final ScreenMouseEvent e) {
         if (e.getScreen() == startButton) {
             getManager().getScreen(ScreenType.SERVER_LIST).initialize();
-            getManager().getScreen(ScreenType.SERVER_LIST).setActive(true);
-            setState(ScreenState.Hidden); // hide main menu
-            setActive(false);
+            getManager().getScreen(ScreenType.SERVER_LIST).show();
+            hide();
             Input.getInstance().setButtonUp(1); // FIXME
         }
 

@@ -38,14 +38,16 @@ import walledin.game.entity.Family;
 import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.util.Utils;
 
-public class GameScreen extends Screen {
+public class GameScreen extends Screen implements ScreenKeyEventListener {
     private static final Logger LOG = Logger.getLogger(GameScreen.class);
 
+    private boolean assetsLoaded = false;
     private static final int TILE_SIZE = 64;
     private static final int TILES_PER_LINE = 16;
 
-    public GameScreen() {
-        super(null, null);
+    public GameScreen(final ScreenManager manager) {
+        super(manager, null);
+        addKeyEventListener(this);
     }
 
     @Override
@@ -83,6 +85,14 @@ public class GameScreen extends Screen {
     public void update(final double delta) {
         super.update(delta);
 
+        /*
+         * If no other screen has the focus and this window is visible, take the
+         * focus.
+         */
+        if (getManager().getFocusedScreen() == null) {
+            getManager().setFocusedScreen(this);
+        }
+
         /* Center the camera around the player */
         if (getManager().getPlayerName() != null) {
             final Entity player = getManager().getEntityManager().get(
@@ -92,24 +102,19 @@ public class GameScreen extends Screen {
                         (Vector2f) player.getAttribute(Attribute.POSITION));
             }
         }
-
-        if (Input.getInstance().isKeyDown(KeyEvent.VK_ESCAPE)) {
-            Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
-            
-            //reset camera when returning to menu
-            getManager().getRenderer().getCamera().setPos(new Vector2f());
-            
-            getManager().getScreen(ScreenType.SERVER_LIST).show();
-            hide();
-        }
     }
 
     @Override
     public void initialize() {
-        loadTextures();
-        createTextureParts();
+        /* Prevent loading assets twice. */
+        if (!assetsLoaded) {
+            assetsLoaded = true;
+            loadTextures();
+            createTextureParts();
 
-        getManager().getEntityManager().create(Family.BACKGROUND, "Background");
+            getManager().getEntityManager().create(Family.BACKGROUND,
+                    "Background");
+        }
     }
 
     private void loadTextures() {
@@ -178,6 +183,20 @@ public class GameScreen extends Screen {
             final int tileNumPerLine, final int tileWidth, final int tileHeight) {
         return new Rectangle((tileNumber % 16 * tileWidth + 1), (tileNumber
                 / 16 * tileHeight + 1), (tileWidth - 2), (tileHeight - 2));
+    }
+
+    @Override
+    public void onKeyDown(ScreenKeyEvent e) {
+        if (e.getKeys().contains(KeyEvent.VK_ESCAPE)) {
+            Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
+
+            // reset camera when returning to menu
+            getManager().getRenderer().getCamera().setPos(new Vector2f());
+
+            getManager().getScreen(ScreenType.SERVER_LIST).show();
+            hide();
+        }
+
     }
 
 }

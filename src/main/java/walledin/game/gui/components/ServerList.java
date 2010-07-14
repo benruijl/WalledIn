@@ -23,17 +23,15 @@ package walledin.game.gui.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.gui.Screen;
-import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.ScreenMouseEvent;
 import walledin.game.gui.ScreenMouseEventListener;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.ServerData;
 
 public class ServerList extends Screen implements ScreenMouseEventListener {
@@ -44,20 +42,14 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
     public ServerList(final Screen parent, final Rectangle boudingRect) {
         super(parent, boudingRect);
         serverButtons = new ArrayList<Screen>();
-    }
-
-    @Override
-    public void initialize() {
+        
         refreshButton = new Button(this, "Refresh", getPosition().add(
                 new Vector2f(400, 40)));
         refreshButton.addMouseEventListener(this);
         addChild(refreshButton);
         show(); // standard is active and visible
-
-        // request a refresh of the server list
-        getManager().getClient().refreshServerList();
     }
-
+    
     @Override
     public void update(final double delta) {
         serverList = getManager().getClient().getServerList();
@@ -90,7 +82,6 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
             serverButtons.get(i).draw(renderer);
         }
 
-        // TODO Auto-generated method stub
         renderer.drawRectOutline(getRectangle().translate(getPosition()));
         super.draw(renderer);
     }
@@ -102,12 +93,6 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
             serverButtons.clear();
 
             getManager().createDialog("Refreshing server list.");
-            /*
-             * PopupDialog dialog = new PopupDialog(this,
-             * "Refreshing server list");
-             * getManager().addScreen(ScreenType.DIALOG, dialog);
-             * dialog.initialize(); dialog.popUp();
-             */
 
             // request a refresh
             getManager().getClient().refreshServerList();
@@ -122,9 +107,8 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
 
                 if (getManager().getClient().connectedToServer()) {
                     getManager().getScreen(ScreenType.GAME).initialize();
-                    getManager().getScreen(ScreenType.GAME).setActive(true);
-                    getParent().setState(ScreenState.Hidden); // hide main menu
-                    getParent().setActive(false);
+                    getManager().getScreen(ScreenType.GAME).show();
+                    getParent().hide();
                 }
 
                 Input.getInstance().setButtonUp(1); // FIXME
@@ -135,6 +119,12 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
 
     @Override
     public void onMouseHover(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void initialize() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.PortUnreachableException;
 import java.net.SocketAddress;
-import java.net.SocketException;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,8 +46,8 @@ import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.Screen;
 import walledin.game.gui.ScreenManager;
-import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.ServerListScreen;
+import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
@@ -82,8 +81,6 @@ public class Client implements RenderListener, NetworkEventListener {
     private long lastLoginTry;
     // in milliseconds
     private final long LOGIN_RETRY_TIME = 1000;
-
-
 
     /**
      * Create the client.
@@ -139,6 +136,11 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     public void refreshServerList() {
+        
+        if (!connectedMasterServer) {
+            return;
+        }
+        
         try {
             networkDataWriter.prepareGetServersMessage();
             networkDataWriter.sendBuffer(masterServerChannel);
@@ -149,7 +151,8 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     public List<ServerData> getServerList() {
-        List<ServerData> servers = new ArrayList<ServerData>(lanServerList);
+        final List<ServerData> servers = new ArrayList<ServerData>(
+                lanServerList);
         servers.addAll(internetServerList);
         return servers;
     }
@@ -174,7 +177,14 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             // update the player actions
             // TODO: do somewhere else?
-            PlayerActionManager.getInstance().update();
+
+            /* Only register actions when the game screen has the focus. */
+            if (screenManager.getFocusedScreen() != screenManager
+                    .getScreen(ScreenType.GAME)) {
+                PlayerActionManager.getInstance().clear();
+            } else {
+                PlayerActionManager.getInstance().update();
+            }
 
             networkDataWriter.prepareInputMessage(receivedVersion,
                     PlayerActionManager.getInstance().getPlayerActions(),
@@ -227,8 +237,8 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedServerNotificationMessage(SocketAddress address,
-            ServerData server) {
+    public void receivedServerNotificationMessage(final SocketAddress address,
+            final ServerData server) {
         lanServerList.add(server);
     }
 
@@ -253,8 +263,8 @@ public class Client implements RenderListener, NetworkEventListener {
                 // Read messages.
                 SocketAddress address = networkDataReader.readMessage(channel);
                 while (address != null) {
-                    networkDataReader.processMessage(address,
-                            screenManager.getEntityManager());
+                    networkDataReader.processMessage(address, screenManager
+                            .getEntityManager());
                     address = networkDataReader.readMessage(channel);
                 }
             }
@@ -263,8 +273,8 @@ public class Client implements RenderListener, NetworkEventListener {
                 SocketAddress address = networkDataReader
                         .readMessage(masterServerChannel);
                 while (address != null) {
-                    networkDataReader.processMessage(address,
-                            screenManager.getEntityManager());
+                    networkDataReader.processMessage(address, screenManager
+                            .getEntityManager());
                     address = networkDataReader
                             .readMessage(masterServerChannel);
                 }
@@ -273,8 +283,8 @@ public class Client implements RenderListener, NetworkEventListener {
                 SocketAddress address = networkDataReader
                         .readMessage(serverNotifyChannel);
                 while (address != null) {
-                    networkDataReader.processMessage(address,
-                            screenManager.getEntityManager());
+                    networkDataReader.processMessage(address, screenManager
+                            .getEntityManager());
                     address = networkDataReader
                             .readMessage(serverNotifyChannel);
                 }
@@ -312,7 +322,7 @@ public class Client implements RenderListener, NetworkEventListener {
         font.readFromStream(Utils.getClasspathURL("arial20.font"));
         screenManager.addFont("arial20", font);
 
-        final Screen serverListScreen = new ServerListScreen();
+        final Screen serverListScreen = new ServerListScreen(screenManager);
         screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
 
         try {
@@ -337,9 +347,9 @@ public class Client implements RenderListener, NetworkEventListener {
         renderer.hideHardwareCursor();
 
         /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen();
+        gameScreen = new GameScreen(screenManager);
         screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen menuScreen = new MainMenuScreen();
+        final Screen menuScreen = new MainMenuScreen(screenManager);
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.show();
@@ -353,14 +363,17 @@ public class Client implements RenderListener, NetworkEventListener {
     public void bindServerNotifyChannel() {
         try {
             serverNotifyChannel = DatagramChannel.open();
-            serverNotifyChannel.socket().bind(new InetSocketAddress(NetworkConstants.MASTER_PROTOCOL_PORT));
+            serverNotifyChannel.socket()
+                    .bind(
+                            new InetSocketAddress(
+                                    NetworkConstants.MASTER_PROTOCOL_PORT));
             serverNotifyChannel.configureBlocking(false);
             boundServerNotifyChannel = true;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.warn("IOException", e);
         }
     }
-    
+
     /**
      * Unbind the server notify channel.
      */
@@ -368,7 +381,7 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             serverNotifyChannel.close();
             boundServerNotifyChannel = false;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.warn("IOException", e);
         }
     }
@@ -414,6 +427,12 @@ public class Client implements RenderListener, NetworkEventListener {
      * Connects to a master server.
      */
     public final void connectToMasterServer() {
+        
+        /* Connect once */
+        if (connectedMasterServer) {
+            return;
+        }
+        
         LOG.info("configure network channel and connecting to master server");
         try {
             masterServerChannel.configureBlocking(false);
@@ -421,10 +440,10 @@ public class Client implements RenderListener, NetworkEventListener {
             connectedMasterServer = true;
         } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
-            dispose();
+            screenManager.createDialog("Could not connect to master server.");
         } catch (final IOException e) {
             LOG.fatal("IOException", e);
-            dispose();
+            screenManager.createDialog("Could not connect to master server.");
         }
     }
 

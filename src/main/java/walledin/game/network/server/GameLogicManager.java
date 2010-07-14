@@ -27,21 +27,21 @@ public class GameLogicManager {
 
     private final Server server;
     /** Random number generator. */
-    private Random rng;
+    private final Random rng;
     private final EntityManager entityManager;
     private final EntityFactory entityFactory;
 
     public class PlayerInfo {
         private float currentRespawnTime;
-        private Entity player;
+        private final Entity player;
         private boolean dead;
         private boolean respawn;
 
-        public PlayerInfo(Entity player) {
+        public PlayerInfo(final Entity player) {
             super();
             this.player = player;
-            this.dead = false;
-            this.respawn = false;
+            dead = false;
+            respawn = false;
         }
 
         public Entity getPlayer() {
@@ -67,7 +67,7 @@ public class GameLogicManager {
          * @param delta
          *            Delta time since last update
          */
-        public void update(double delta) {
+        public void update(final double delta) {
             /* Check if the player died */
             if (!dead && (Integer) player.getAttribute(Attribute.HEALTH) == 0) {
                 dead = true;
@@ -93,16 +93,16 @@ public class GameLogicManager {
 
     /* Special entities */
     private Entity map;
-    private Map<String, PlayerInfo> players;
+    private final Map<String, PlayerInfo> players;
     /** Respawn time in seconds */
-    private float respawnTime;
+    private final float respawnTime;
 
-    public GameLogicManager(Server server) {
+    public GameLogicManager(final Server server) {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
         this.server = server;
-        this.rng = new Random();
+        rng = new Random();
 
         LOG.info(SettingsManager.getInstance().getString("game.respawnTime"));
         respawnTime = SettingsManager.getInstance()
@@ -128,12 +128,12 @@ public class GameLogicManager {
      * @param player
      *            Player
      */
-    public void spawnPlayer(Entity player) {
-        List<SpawnPoint> points = (List<SpawnPoint>) map
+    public void spawnPlayer(final Entity player) {
+        final List<SpawnPoint> points = (List<SpawnPoint>) map
                 .getAttribute(Attribute.SPAWN_POINTS);
 
         // randomly choose a point to spawn the player
-        SpawnPoint p = points.get(rng.nextInt(points.size()));
+        final SpawnPoint p = points.get(rng.nextInt(points.size()));
         player.setAttribute(Attribute.POSITION, p.getPos());
         player.sendMessage(MessageType.RESTORE_HEALTH, 100); // FIXME
     }
@@ -183,7 +183,7 @@ public class GameLogicManager {
         entityManager.update(delta);
 
         /* Update the players */
-        for (PlayerInfo info : players.values()) {
+        for (final PlayerInfo info : players.values()) {
             info.update(delta);
 
             if (info.shouldRespawn()) {

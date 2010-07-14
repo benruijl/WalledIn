@@ -50,7 +50,7 @@ public class NetworkConstants {
     public static final byte CHALLENGE_MESSAGE = 4;
 
     public static final int MASTER_PROTOCOL_PORT = SettingsManager
-                    .getInstance().getInteger("network.masterServerPort");
+            .getInstance().getInteger("network.masterServerPort");
     public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress(
             SettingsManager.getInstance().getString(
                     "network.masterServerAddress"), MASTER_PROTOCOL_PORT);

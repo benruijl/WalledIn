@@ -112,7 +112,7 @@ public class GameMapIOXML implements GameMapIO {
      * @return List of spawn points
      */
     private List<SpawnPoint> readSpawnPoints(final Element element) {
-        List<SpawnPoint> points = new ArrayList<SpawnPoint>();
+        final List<SpawnPoint> points = new ArrayList<SpawnPoint>();
 
         final Element node = XMLReader.getFirstElement(element, "spawnpoints");
         final List<Element> spawnElems = XMLReader.getElements(node, "spawn");
@@ -148,7 +148,6 @@ public class GameMapIOXML implements GameMapIO {
             final List<SpawnPoint> points = readSpawnPoints(mapElement);
             final List<Tile> tiles = parseTiles(mapElement);
             final Entity map = entityManager.create(Family.MAP, name);
-            
 
             map.addBehavior(new ItemManagementBevahior(map, items));
             map.setAttribute(Attribute.WIDTH, width);
