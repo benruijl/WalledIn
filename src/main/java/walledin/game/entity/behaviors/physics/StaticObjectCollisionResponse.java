@@ -43,6 +43,25 @@ public class StaticObjectCollisionResponse extends Behavior {
         // TODO Auto-generated constructor stub
     }
 
+    Vector2f doBinarySearch(Vector2f left, Vector2f right, Geometry boundsA,
+            Geometry boundsB) {
+        /* Do a binary search to resolve the collision */
+        final int maxDepth = 4;
+        int depth = 0;
+        while (depth < maxDepth) {
+            final Vector2f mid = left.add(right.sub(left).scale(0.5f));
+
+            if (boundsB.translate(mid).intersects(boundsA)) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+            depth++;
+        }
+
+        return left;//.add(right.sub(left).scale(0.5f));
+    }
+
     void doResponse(final CollisionData data) {
 
         if (data.getCollisionEntity().getFamily() == Family.MAP) {
@@ -65,27 +84,16 @@ public class StaticObjectCollisionResponse extends Behavior {
         boundsA = boundsA
                 .translate((Vector2f) getAttribute(Attribute.POSITION));
 
-        /* Do a binary search to resolve the collision */
-        final int maxDepth = 4;
-        Vector2f left = oldPosB;
-        Vector2f right = endPosB;
-        int depth = 0;
-        while (depth < maxDepth) {
-            final Vector2f mid = left.add(right.sub(left).scale(0.5f));
-
-            if (boundsB.translate(mid).intersects(boundsA)) {
-                right = mid;
-            } else {
-                left = mid;
-            }
-            depth++;
-        }
-
-        final Vector2f resolvedPos = left;// .add(right.sub(left).scale(0.5f));
+        /* Do a binary search in each direction */
+        Vector2f resolvedPosX = doBinarySearch(oldPosB, oldPosB.getYVector()
+                .add(endPosB.getXVector()), boundsA, boundsB);
+        Vector2f resolvedPos = doBinarySearch(resolvedPosX, resolvedPosX
+                .getXVector().add(endPosB.getYVector()), boundsA, boundsB);
 
         data.getCollisionEntity().setAttribute(Attribute.POSITION, resolvedPos);
-        data.getCollisionEntity().setAttribute(Attribute.VELOCITY,
-                new Vector2f(0, 0));
+       // data.getCollisionEntity().sendMessage(MessageType.APPLY_FORCE,resolvedPos.sub(endPosB));
+      //  data.getCollisionEntity().setAttribute(Attribute.VELOCITY,
+       //         new Vector2f(0, 0));
         // resolvedPos.sub(oldPosB).scale(1 / (float) data.getDelta()));
 
     }

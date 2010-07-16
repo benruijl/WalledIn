@@ -54,6 +54,22 @@ public class Vector2f {
     public float getY() {
         return y;
     }
+    
+    /** 
+     * Returns a vector with only the x component.
+     * @return Vector
+     */
+    public final Vector2f getXVector() {
+        return new Vector2f(x, 0);
+    }
+    
+    /** 
+     * Returns a vector with only the y component.
+     * @return Vector
+     */
+    public final Vector2f getYVector() {
+        return new Vector2f(0, y);
+    }
 
     public Vector2f add(final Vector2f vec) {
         return new Vector2f(x + vec.x, y + vec.y);
