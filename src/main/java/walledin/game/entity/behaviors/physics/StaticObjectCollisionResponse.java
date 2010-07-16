@@ -91,15 +91,15 @@ public class StaticObjectCollisionResponse extends Behavior {
                 .getXVector().add(endPosB.getYVector()), boundsA, boundsB);
 
         data.getCollisionEntity().setAttribute(Attribute.POSITION, resolvedPos);
+        
+        /* Notify the object of this collision reponse */
         data.getCollisionEntity().sendMessage(
                 MessageType.COLLIDED,
                 new CollisionData(resolvedPos, oldPosB, endPosB, data
                         .getDelta(), getOwner()));
+        
+        // apply some sort of normal force?
         // data.getCollisionEntity().sendMessage(MessageType.APPLY_FORCE,resolvedPos.sub(endPosB));
-        // data.getCollisionEntity().setAttribute(Attribute.VELOCITY,
-        // new Vector2f(0, 0));
-        // resolvedPos.sub(oldPosB).scale(1 / (float) data.getDelta()));
-
     }
 
     @Override

@@ -93,14 +93,12 @@ public class PlayerControlBehaviour extends Behavior {
 
         if (playerActions.contains(PlayerActions.WALK_RIGHT)) {
             x += MOVE_SPEED;
-           // y -= 10;
             setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
 
         }
 
         if (playerActions.contains(PlayerActions.WALK_LEFT)) {
             x -= MOVE_SPEED;
-            //y -= 10;
             setAttribute(Attribute.ORIENTATION_ANGLE, (float) Math.PI);
         }
 
