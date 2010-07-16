@@ -49,7 +49,8 @@ public enum Attribute {
     BOUNDING_GEOMETRY(Geometry.class),
     Z_INDEX(Integer.class),
     RENDER_TILE_SIZE(Float.class),
-    MASS(Float.class);
+    MASS(Float.class),
+    TARGET(Vector2f.class);
 
     public final Class<?> clazz;
     public final boolean sendOverNetwork;

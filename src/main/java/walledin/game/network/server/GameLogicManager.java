@@ -213,11 +213,12 @@ public class GameLogicManager {
         entityManager.init();
 
         final GameMapIO mapIO = new GameMapIOXML(); // choose XML as format
-        map = mapIO
-                .readFromURL(entityManager, Utils.getClasspathURL("map.xml"));
+        final String mapName = SettingsManager.getInstance().getString(
+                "game.mapName");
+        map = mapIO.readFromURL(entityManager, Utils.getClasspathURL(mapName));
 
         // this name will be sent to the client
-        map.setAttribute(Attribute.MAP_NAME, "map.xml");
+        map.setAttribute(Attribute.MAP_NAME, mapName);
     }
 
 }

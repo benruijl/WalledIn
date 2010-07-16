@@ -64,7 +64,7 @@ public class Button extends Screen implements ScreenMouseEventListener {
             renderer.setColorRGB(1, 0, 0);
         }
 
-        font.renderText(renderer, text, getPosition());
+        font.renderText(renderer, text, new Vector2f());
         renderer.setColorRGB(1, 1, 1);
         super.draw(renderer);
     }

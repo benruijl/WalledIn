@@ -20,45 +20,71 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
-import walledin.game.EntityManager;
+import org.apache.log4j.Logger;
+
+import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
-public class FoamBulletBehavior extends BulletBehavior {
+/**
+ * This foam bullet will stick to the cursor position.
+ * 
+ * @author Ben Ruijl
+ * 
+ */
+public class StickyFoamBulletBehavior extends BulletBehavior {
+    private static final Logger LOG = Logger
+            .getLogger(StickyFoamBulletBehavior.class);
     private boolean blownUp;
+    private final float allowedRadius = 100;
 
-    public FoamBulletBehavior(final Entity owner) {
+    public StickyFoamBulletBehavior(final Entity owner) {
         super(owner, 0);
         blownUp = false;
+    }
+
+    public void spawnBullet() {
+        final EntityManager manager = getEntityManager();
+        final Entity particle = manager.create(Family.FOAM_PARTICLE,
+                manager.generateUniqueName(Family.FOAM_PARTICLE));
+
+        particle.setAttribute(Attribute.POSITION,
+                getAttribute(Attribute.POSITION));
+        blownUp = true;
+        getOwner().remove();
     }
 
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         super.onMessage(messageType, data);
+
         if (messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
             if (!blownUp) {
 
-                // if collided with map or other foam particle create a
-                // foam particle
                 if (colData.getCollisionEntity().getFamily() == Family.MAP
-                        || colData.getCollisionEntity().getFamily().equals(
-                                Family.FOAM_PARTICLE)) {
-                    final EntityManager manager = getEntityManager();
-                    final Entity particle = manager.create(
-                            Family.FOAM_PARTICLE, manager
-                                    .generateUniqueName(Family.FOAM_PARTICLE));
-
-                    particle.setAttribute(Attribute.POSITION,
-                            getAttribute(Attribute.POSITION));
-                    blownUp = true;
-
-                    getOwner().remove(); // remove the foam bullet
+                       /* || colData.getCollisionEntity().getFamily()
+                                .equals(Family.FOAM_PARTICLE)*/) {
+                    spawnBullet();
                 }
             }
         }
+
+    }
+
+    @Override
+    public void onUpdate(double delta) {
+        if (!blownUp) {
+            if (((Vector2f) getAttribute(Attribute.POSITION)).sub(
+                    (Vector2f) getAttribute(Attribute.TARGET)).lengthSquared() < allowedRadius) {
+                spawnBullet();
+            }
+        }
+
+        super.onUpdate(delta);
     }
 }

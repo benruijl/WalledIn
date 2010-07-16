@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -207,8 +208,8 @@ public class ScreenManager {
 
         /* Update cursor position */
         if (cursor != null) {
-            cursor.setAttribute(Attribute.POSITION, renderer
-                    .screenToWorld(Input.getInstance().getMousePos()));
+            cursor.setAttribute(Attribute.POSITION,
+                    renderer.screenToWorld(Input.getInstance().getMousePos()));
         }
 
         Set<Integer> keysDown = Input.getInstance().getKeysDown();
@@ -263,13 +264,23 @@ public class ScreenManager {
     public final void draw(final Renderer renderer) {
         for (int i = 0; i < screens.size(); i++) {
             if (screens.get(i).isVisible()) {
+                renderer.pushMatrix();
+                renderer.translate(screens.get(i).getPosition());
                 screens.get(i).draw(renderer);
+                renderer.popMatrix();
             }
         }
 
         if (cursor != null && drawCursor) {
             getCursor().sendMessage(MessageType.RENDER, renderer);
         }
+
+        /* Show FPS for debugging */
+        renderer.startHUDRendering();
+        final Font font = getFont("arial20");
+        font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
+                630, 20));
+        renderer.stopHUDRendering();
     }
 
     public final void setDrawCursor(final boolean drawCursor) {
