@@ -80,7 +80,7 @@ public class WeaponBehavior extends Behavior {
                     bulletPosition = playerPos.add(new Vector2f(-30.0f, 20.0f));
                 }
 
-                final Vector2f target = (Vector2f) getAttribute(Attribute.CURSOR_POS);
+                final Vector2f target = (Vector2f) getAttribute(Attribute.CURSOR_POS);                
                 final Vector2f bulletAcceleration = target.sub(bulletPosition)
                         .normalize().scale(bulletAccelerationConstant);
 
@@ -89,7 +89,9 @@ public class WeaponBehavior extends Behavior {
                         .generateUniqueName(bulletFamily));
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
+                bullet.setAttribute(Attribute.TARGET, target);
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
+                
 
                 canShoot = false;
                 lastShot = fireLag;

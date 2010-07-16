@@ -48,7 +48,8 @@ public enum Attribute {
     WALK_ANIM_FRAME(Float.class),
     BOUNDING_GEOMETRY(Geometry.class),
     Z_INDEX(Integer.class),
-    RENDER_TILE_SIZE(Float.class);
+    RENDER_TILE_SIZE(Float.class), 
+    TARGET(Vector2f.class);
 
     public final Class<?> clazz;
     public final boolean sendOverNetwork;
