@@ -47,7 +47,7 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
         blownUp = false;
     }
 
-    public void spawnBullet() {
+    public final void spawnBullet() {
         final EntityManager manager = getEntityManager();
         final Entity particle = manager.create(Family.FOAM_PARTICLE,
                 manager.generateUniqueName(Family.FOAM_PARTICLE));
@@ -59,7 +59,7 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
     }
 
     @Override
-    public void onMessage(final MessageType messageType, final Object data) {
+    public final void onMessage(final MessageType messageType, final Object data) {
         super.onMessage(messageType, data);
 
         if (messageType == MessageType.COLLIDED) {
@@ -79,7 +79,7 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
     }
 
     @Override
-    public void onUpdate(final double delta) {
+    public final void onUpdate(final double delta) {
         if (!blownUp) {
             if (((Vector2f) getAttribute(Attribute.POSITION)).sub(
                     (Vector2f) getAttribute(Attribute.TARGET)).lengthSquared() < allowedRadius) {

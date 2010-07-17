@@ -28,6 +28,7 @@ import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.util.SettingsManager;
 
 /**
  * This is handles the collision response for objects that are immovable. Other
@@ -37,16 +38,41 @@ import walledin.game.entity.MessageType;
  * 
  */
 public class StaticObjectCollisionResponse extends Behavior {
+    /** The maximum depth of a collision resolving search. */
+    private final int maxCollisionSearchDepth;
 
+    /**
+     * Creates a new StaticObjectCollisionResponse behavior.
+     * 
+     * @param owner
+     *            Owner of this behavior
+     */
     public StaticObjectCollisionResponse(final Entity owner) {
         super(owner);
-        // TODO Auto-generated constructor stub
+
+        maxCollisionSearchDepth = SettingsManager.getInstance().getInteger(
+                "game.maxCollisionSearchDepth");
     }
 
-    Vector2f doBinarySearch(Vector2f left, Vector2f right,
-            final Geometry boundsA, final Geometry boundsB) {
-        /* Do a binary search to resolve the collision */
-        final int maxDepth = 4;
+    /**
+     * Does a binary search to resolve a collision between a static and a moving
+     * object.
+     * 
+     * @param maxDepth
+     *            The maximum search depth
+     * @param left
+     *            Left bound
+     * @param right
+     *            Right bound
+     * @param boundsA
+     *            Bounding geometry of static object
+     * @param boundsB
+     *            Bounding geometry of moving object
+     * @return The optimal position at which no collision occurs, given the
+     *         maximum search depth.
+     */
+    final Vector2f doBinarySearch(final int maxDepth, Vector2f left,
+            Vector2f right, final Geometry boundsA, final Geometry boundsB) {
         int depth = 0;
         while (depth < maxDepth) {
             final Vector2f mid = left.add(right.sub(left).scale(0.5f));
@@ -59,12 +85,23 @@ public class StaticObjectCollisionResponse extends Behavior {
             depth++;
         }
 
-        return left;// .add(right.sub(left).scale(0.5f));
+        return left;
     }
 
-    void doResponse(final CollisionData data) {
+    /**
+     * Responds to a collision.
+     * 
+     * @param data
+     *            Collision data
+     */
+    final void doResponse(final CollisionData data) {
 
         if (data.getCollisionEntity().getFamily() == Family.MAP) {
+            return;
+        }
+
+        // FIXME: this is a hack, this has to be resolved in some other way
+        if (data.getCollisionEntity().getFamily() == Family.FOAMGUN_BULLET) {
             return;
         }
 
@@ -85,25 +122,31 @@ public class StaticObjectCollisionResponse extends Behavior {
                 .translate((Vector2f) getAttribute(Attribute.POSITION));
 
         /* Do a binary search in each direction */
-        final Vector2f resolvedPosX = doBinarySearch(oldPosB, oldPosB
-                .getYVector().add(endPosB.getXVector()), boundsA, boundsB);
-        final Vector2f resolvedPos = doBinarySearch(resolvedPosX, resolvedPosX
-                .getXVector().add(endPosB.getYVector()), boundsA, boundsB);
+        final Vector2f resolvedPosX = doBinarySearch(maxCollisionSearchDepth,
+                oldPosB, oldPosB.getYVector().add(endPosB.getXVector()),
+                boundsA, boundsB);
+        final Vector2f resolvedPos = doBinarySearch(maxCollisionSearchDepth,
+                resolvedPosX,
+                resolvedPosX.getXVector().add(endPosB.getYVector()), boundsA,
+                boundsB);
 
         data.getCollisionEntity().setAttribute(Attribute.POSITION, resolvedPos);
 
-        /* Notify the object of this collision reponse */
+        /* Notify the object of this collision response */
         data.getCollisionEntity().sendMessage(
                 MessageType.COLLIDED,
                 new CollisionData(resolvedPos, oldPosB, endPosB, data
                         .getDelta(), getOwner()));
 
         // apply some sort of normal force?
-        // data.getCollisionEntity().sendMessage(MessageType.APPLY_FORCE,resolvedPos.sub(endPosB));
+        /*
+         * data.getCollisionEntity().sendMessage(MessageType.APPLY_FORCE,
+         * resolvedPos.sub(endPosB).scale(20000.0f));
+         */
     }
 
     @Override
-    public void onMessage(final MessageType messageType, final Object data) {
+    public final void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
             doResponse((CollisionData) data);
         }
