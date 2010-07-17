@@ -38,7 +38,10 @@ import walledin.engine.math.Vector2f;
 public abstract class Screen {
     /** Screen states. */
     public enum ScreenState {
-        Visible, Hidden
+        /** The screen is visible. */
+        Visible,
+        /** The screen is hidden. */
+        Hidden
     }
 
     /** Parent of this screen. */
@@ -248,6 +251,11 @@ public abstract class Screen {
     protected void onVisibilityChanged(final boolean visible) {
     }
 
+    /**
+     * Returns the current state.
+     * 
+     * @return Current state
+     */
     public final ScreenState getState() {
         return state;
     }
@@ -284,16 +292,35 @@ public abstract class Screen {
         this.manager = manager;
     }
 
+    /**
+     * Gets the screen manager. The screen manager is inherited from the parent
+     * or is set directly.
+     * 
+     * @return Screen manager
+     */
     public final ScreenManager getManager() {
         return manager;
     }
 
-    public final void addChild(final Screen sc) {
-        children.add(sc);
+    /**
+     * Adds a child to the list. This child will be updated and drawn
+     * automatically, if visible.
+     * 
+     * @param childScreen
+     *            Child screen
+     */
+    public final void addChild(final Screen childScreen) {
+        children.add(childScreen);
     }
 
-    public final void removeChild(final Screen sc) {
-        children.remove(sc);
+    /**
+     * Removes a child from this parent class.
+     * 
+     * @param childScreen
+     *            Child screen
+     */
+    public final void removeChild(final Screen childScreen) {
+        children.remove(childScreen);
     }
 
     /**
@@ -364,37 +391,80 @@ public abstract class Screen {
         return rectangle.translate(absolutePosition).containsPoint(point);
     }
 
+    /**
+     * Adds a mouse event listener to this screen.
+     * 
+     * @param listener
+     *            Mouse event listener
+     */
     public final void addMouseEventListener(
             final ScreenMouseEventListener listener) {
         mouseListeners.add(listener);
     }
 
+    /**
+     * Sends the mouse hover message when the mouse hovers over this screen.
+     * 
+     * @param e
+     *            Event message
+     */
     public final void sendMouseHoverMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseHover(e);
         }
     }
 
+    /**
+     * Send the mouse button down message when a button is down and the mouse
+     * hovers over this screen.
+     * 
+     * @param e
+     *            Event message
+     */
     public final void sendMouseDownMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
         }
     }
 
+    /**
+     * Adds a key event listener to this screen.
+     * 
+     * @param listener
+     *            Key event listener
+     */
     public final void addKeyEventListener(final ScreenKeyEventListener listener) {
         keyListeners.add(listener);
     }
 
+    /**
+     * Sends the key down message when a key is pressed and this screen has the
+     * focus.
+     * 
+     * @param e
+     *            Event message
+     */
     public final void sendKeyDownMessage(final ScreenKeyEvent e) {
         for (final ScreenKeyEventListener listener : keyListeners) {
             listener.onKeyDown(e);
         }
     }
 
+    /**
+     * Returns the current active font.
+     * 
+     * @return Active font or null if none is set.
+     */
     public final Font getFont() {
         return font;
     }
 
+    /**
+     * Sets the active font.
+     * 
+     * @param font
+     *            Font
+     */
     public final void setFont(final Font font) {
         this.font = font;
     }

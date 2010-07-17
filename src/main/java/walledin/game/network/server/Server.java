@@ -194,8 +194,8 @@ public class Server implements NetworkEventListener {
         // Read input messages and login messages
         SocketAddress address = networkReader.readMessage(channel);
         while (address != null) {
-            networkReader.processMessage(address, gameLogicManager
-                    .getEntityManager());
+            networkReader.processMessage(address,
+                    gameLogicManager.getEntityManager());
             address = networkReader.readMessage(channel);
         }
 
@@ -240,9 +240,7 @@ public class Server implements NetworkEventListener {
         for (final PlayerConnection connection : players.values()) {
             if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
                 removedPlayers.add(connection.getAddress());
-                LOG
-                        .info("Connection lost to client "
-                                + connection.getAddress());
+                LOG.info("Connection lost to client " + connection.getAddress());
             }
         }
         for (final SocketAddress address : removedPlayers) {
@@ -287,9 +285,9 @@ public class Server implements NetworkEventListener {
                         + " " + changeSet.getRemoved() + " "
                         + changeSet.getUpdated());
             }
-            networkWriter.prepareGamestateMessage(gameLogicManager
-                    .getEntityManager(), changeSet, changeSet.getVersion(),
-                    currentVersion);
+            networkWriter.prepareGamestateMessage(
+                    gameLogicManager.getEntityManager(), changeSet,
+                    changeSet.getVersion(), currentVersion);
             networkWriter.sendBuffer(channel, connection.getAddress());
         }
     }

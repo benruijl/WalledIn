@@ -93,7 +93,7 @@ public class Renderer implements GLEventListener {
      * @param fs
      *            Set full screen
      */
-    public void initialize(final String strTitle, final int width,
+    public final void initialize(final String strTitle, final int width,
             final int height, final boolean fs) {
         win = new Frame(strTitle);
         win.setSize(width, height);
@@ -143,7 +143,7 @@ public class Renderer implements GLEventListener {
         lastUpdate = -1;
     }
 
-    public void dispose() {
+    public final void dispose() {
         LOG.info("Disposing window...");
         anim.stop();
         win.dispose();
@@ -170,7 +170,7 @@ public class Renderer implements GLEventListener {
      * dispose() and so is the GLcanvas. This means the init function is called
      * again, so resources are loaded again.
      */
-    public void toggleFullScreen() {
+    public final void toggleFullScreen() {
         final GraphicsDevice gd = GraphicsEnvironment
                 .getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
@@ -200,7 +200,7 @@ public class Renderer implements GLEventListener {
      * Begin the render loop by starting an animator. The animator is set to run
      * at 60 FPS.
      */
-    public void beginLoop() {
+    public final void beginLoop() {
         // setup the animator
         anim = new FPSAnimator(mCanvas, 60);
         anim.start();
@@ -212,11 +212,11 @@ public class Renderer implements GLEventListener {
      * 
      * @return Current FPS
      */
-    public float getFPS() {
+    public final float getFPS() {
         return curFPS;
     }
 
-    public void setCurFPS(final float curFPS) {
+    public final void setCurFPS(final float curFPS) {
         this.curFPS = curFPS;
     }
 
@@ -231,7 +231,7 @@ public class Renderer implements GLEventListener {
      *            The current GL context
      */
     @Override
-    public void display(final GLAutoDrawable glDrawable) {
+    public final void display(final GLAutoDrawable glDrawable) {
         mCurDrawable = glDrawable;
         gl = mCurDrawable.getGL();
 
@@ -273,7 +273,7 @@ public class Renderer implements GLEventListener {
      * @param strTex
      *            Texture name
      */
-    public void drawRect(final String strTex) {
+    public final void drawRect(final String strTex) {
         final Texture tex = TextureManager.getInstance().get(strTex);
         drawRect(strTex, new Rectangle(0, 0, tex.getWidth(), tex.getHeight()));
     }
@@ -287,7 +287,7 @@ public class Renderer implements GLEventListener {
      * @param destRect
      *            Destination rectangle
      */
-    public void drawRect(final String strTex, final Rectangle destRect) {
+    public final void drawRect(final String strTex, final Rectangle destRect) {
         final Texture texture = TextureManager.getInstance().get(strTex);
         bindTexture(texture);
 
@@ -350,7 +350,7 @@ public class Renderer implements GLEventListener {
      *            Specifies the destination on the screen. It can be used to
      *            scale and translate the image.
      */
-    public void drawRect(final String strTex, final Rectangle texRect,
+    public final void drawRect(final String strTex, final Rectangle texRect,
             final Rectangle destRect) {
 
         final Texture texture = TextureManager.getInstance().get(strTex);
@@ -368,7 +368,7 @@ public class Renderer implements GLEventListener {
      *            Specifies the destination on the screen. It can be used to
      *            scale and translate the image.
      */
-    public void drawRect(final Texture texture, final Rectangle texRect,
+    public final void drawRect(final Texture texture, final Rectangle texRect,
             final Rectangle destRect) {
         bindTexture(texture);
 
@@ -393,7 +393,7 @@ public class Renderer implements GLEventListener {
      *            Specifies the destination on the screen. It can be used to
      *            scale and translate the image.
      */
-    public void drawTexturePart(final String texturePartID,
+    public final void drawTexturePart(final String texturePartID,
             final Rectangle destination) {
         final TexturePart part = TexturePartManager.getInstance().get(
                 texturePartID);
@@ -406,7 +406,7 @@ public class Renderer implements GLEventListener {
      * @param rect
      *            Rectangle
      */
-    public void drawFilledRect(final Rectangle rect) {
+    public final void drawFilledRect(final Rectangle rect) {
         gl.glDisable(GL.GL_TEXTURE_2D);
         gl.glBegin(GL.GL_QUADS);
         gl.glVertex2f(rect.getLeft(), rect.getTop());
@@ -436,7 +436,7 @@ public class Renderer implements GLEventListener {
      * basic OpenGL settings and creates the camera.
      */
     @Override
-    public void init(final GLAutoDrawable glDrawable) {
+    public final void init(final GLAutoDrawable glDrawable) {
         mCurDrawable = glDrawable;
         gl = mCurDrawable.getGL();
 
@@ -474,7 +474,7 @@ public class Renderer implements GLEventListener {
      *            New height of the window
      */
     @Override
-    public void reshape(final GLAutoDrawable glDrawable, final int x,
+    public final void reshape(final GLAutoDrawable glDrawable, final int x,
             final int y, final int width, final int height) {
         mCurDrawable = glDrawable;
         gl = glDrawable.getGL();
@@ -504,9 +504,9 @@ public class Renderer implements GLEventListener {
      * <br/>
      * TODO: make the fixed width and height depend on the aspect ratio
      * 
-     * @see stopHudRendering
+     * @see Renderer#stopHUDRendering()
      */
-    public void startHUDRendering() {
+    public final void startHUDRendering() {
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glPushMatrix(); // push the current projection matrix
         gl.glLoadIdentity();
@@ -522,9 +522,9 @@ public class Renderer implements GLEventListener {
      * just before the call to <code>startHUDRendering</code>. It is
      * <u>mandatory</u> to call this function after a call to startHudRendering.
      * 
-     * @see startHUDRendering
+     * @see Renderer#startHUDRendering()
      */
-    public void stopHUDRendering() {
+    public final void stopHUDRendering() {
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glPopMatrix();
         gl.glMatrixMode(GL.GL_MODELVIEW);
@@ -544,7 +544,7 @@ public class Renderer implements GLEventListener {
      * 
      * @param listener
      */
-    public void addListener(final RenderListener listener) {
+    public final void addListener(final RenderListener listener) {
         mEvListener = listener;
     }
 
@@ -554,7 +554,7 @@ public class Renderer implements GLEventListener {
      * @param vec
      *            Translation vector
      */
-    public void translate(final Vector2f vec) {
+    public final void translate(final Vector2f vec) {
         gl.glTranslatef(vec.getX(), vec.getY(), 0);
     }
 
@@ -564,7 +564,7 @@ public class Renderer implements GLEventListener {
      * @param rad
      *            Angle in <b>radians</b>
      */
-    public void rotate(final float rad) {
+    public final void rotate(final float rad) {
         gl.glRotatef((float) (rad * 180.0f / Math.PI), 0, 0, 1);
 
     }
@@ -575,7 +575,7 @@ public class Renderer implements GLEventListener {
      * @param vec
      *            Scale vector. For mirroring, use negative numbers
      */
-    public void scale(final Vector2f vec) {
+    public final void scale(final Vector2f vec) {
         gl.glScalef(vec.getX(), vec.getY(), 1);
 
     }
@@ -590,7 +590,7 @@ public class Renderer implements GLEventListener {
      * @param b
      *            B
      */
-    public void setColorRGB(final float r, final float g, final float b) {
+    public final void setColorRGB(final float r, final float g, final float b) {
         gl.glColor3f(r, g, b);
     }
 
@@ -600,7 +600,7 @@ public class Renderer implements GLEventListener {
      * @param vec
      *            The point the camera will center around
      */
-    public void centerAround(final Vector2f vec) {
+    public final void centerAround(final Vector2f vec) {
         camera.setPos(new Vector2f(-vec.getX() + width * 0.5f, -vec.getY()
                 + height * 0.5f));
     }
@@ -613,7 +613,7 @@ public class Renderer implements GLEventListener {
      * @return Returns true if the rectangle is fully or partially in the
      *         frustum.
      */
-    public boolean inFrustum(final Rectangle rect) {
+    public final boolean inFrustum(final Rectangle rect) {
         final float[] mvmat = new float[16];
         gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, mvmat, 0);
 
@@ -636,7 +636,7 @@ public class Renderer implements GLEventListener {
      *            Screen position in pixels
      * @return Returns world position
      */
-    public Vector2f screenToWorld(final Vector2i p) {
+    public final Vector2f screenToWorld(final Vector2i p) {
         final Vector2f fp = new Vector2f(p.x, p.y);
 
         // Create a rotation matrix, calculate its inverse and apply the camera
@@ -656,14 +656,14 @@ public class Renderer implements GLEventListener {
     /**
      * Save the current matrix. Useful if doing transformations.
      */
-    public void pushMatrix() {
+    public final void pushMatrix() {
         gl.glPushMatrix();
     }
 
     /**
      * Restore the previous matrix.
      */
-    public void popMatrix() {
+    public final void popMatrix() {
         gl.glPopMatrix();
     }
 
@@ -671,7 +671,7 @@ public class Renderer implements GLEventListener {
      * Resets the current matrix (modelview, projection etc.) to its identity.
      * The identity is a 4 dimensional unit matrix.
      */
-    public void loadIdentity() {
+    public final void loadIdentity() {
         gl.glLoadIdentity();
     }
 
@@ -680,7 +680,7 @@ public class Renderer implements GLEventListener {
      * 
      * @return Current camera
      */
-    public Camera getCamera() {
+    public final Camera getCamera() {
         return camera;
     }
 

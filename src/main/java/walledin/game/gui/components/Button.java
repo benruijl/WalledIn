@@ -35,8 +35,8 @@ public class Button extends Screen implements ScreenMouseEventListener {
     private boolean selected;
 
     public Button(final Screen parent, final String text, final Vector2f pos) {
-        super(parent, parent.getManager().getFont("arial20").getBoundingRect(
-                text));
+        super(parent, parent.getManager().getFont("arial20")
+                .getBoundingRect(text));
         this.text = text;
         setPosition(pos);
         addMouseEventListener(this);

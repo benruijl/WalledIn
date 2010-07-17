@@ -1,3 +1,23 @@
+/*  Copyright 2010 Ben Ruijl, Wouter Smeenk
+
+This file is part of Walled In.
+
+Walled In is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3, or (at your option)
+any later version.
+
+Walled In is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Walled In; see the file LICENSE.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+ */
 package walledin.game.gui;
 
 import walledin.engine.Renderer;
@@ -7,7 +27,7 @@ import walledin.game.gui.components.Button;
 
 public class PopupDialog extends Screen implements ScreenMouseEventListener {
     private final String text;
-    private Button okButton;
+    private final Button okButton;
 
     public PopupDialog(final ScreenManager manager, final String text) {
         super(manager, new Rectangle(-10, -20, manager.getFont("arial20")
@@ -19,7 +39,7 @@ public class PopupDialog extends Screen implements ScreenMouseEventListener {
                 .getWidth()
                 / 2.0f
                 - manager.getFont("arial20").getTextWidth("OK") / 2.0f,
-                + getRectangle().getHeight() - 25));
+                +getRectangle().getHeight() - 25));
         okButton.addMouseEventListener(this);
         addChild(okButton);
 
@@ -32,8 +52,8 @@ public class PopupDialog extends Screen implements ScreenMouseEventListener {
         renderer.setColorRGB(1.0f, 1.0f, 1.0f);
 
         getManager().getFont("arial20").renderText(renderer, text,
-                new Vector2f(0,0)); 
-        
+                new Vector2f(0, 0));
+
         super.draw(renderer);
     }
 

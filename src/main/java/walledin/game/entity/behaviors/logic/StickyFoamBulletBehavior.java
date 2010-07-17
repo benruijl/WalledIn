@@ -67,8 +67,10 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
             if (!blownUp) {
 
                 if (colData.getCollisionEntity().getFamily() == Family.MAP
-                       /* || colData.getCollisionEntity().getFamily()
-                                .equals(Family.FOAM_PARTICLE)*/) {
+                /*
+                 * || colData.getCollisionEntity().getFamily()
+                 * .equals(Family.FOAM_PARTICLE)
+                 */) {
                     spawnBullet();
                 }
             }
@@ -77,7 +79,7 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
         if (!blownUp) {
             if (((Vector2f) getAttribute(Attribute.POSITION)).sub(
                     (Vector2f) getAttribute(Attribute.TARGET)).lengthSquared() < allowedRadius) {

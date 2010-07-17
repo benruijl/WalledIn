@@ -43,8 +43,8 @@ public class StaticObjectCollisionResponse extends Behavior {
         // TODO Auto-generated constructor stub
     }
 
-    Vector2f doBinarySearch(Vector2f left, Vector2f right, Geometry boundsA,
-            Geometry boundsB) {
+    Vector2f doBinarySearch(Vector2f left, Vector2f right,
+            final Geometry boundsA, final Geometry boundsB) {
         /* Do a binary search to resolve the collision */
         final int maxDepth = 4;
         int depth = 0;
@@ -85,19 +85,19 @@ public class StaticObjectCollisionResponse extends Behavior {
                 .translate((Vector2f) getAttribute(Attribute.POSITION));
 
         /* Do a binary search in each direction */
-        Vector2f resolvedPosX = doBinarySearch(oldPosB, oldPosB.getYVector()
-                .add(endPosB.getXVector()), boundsA, boundsB);
-        Vector2f resolvedPos = doBinarySearch(resolvedPosX, resolvedPosX
+        final Vector2f resolvedPosX = doBinarySearch(oldPosB, oldPosB
+                .getYVector().add(endPosB.getXVector()), boundsA, boundsB);
+        final Vector2f resolvedPos = doBinarySearch(resolvedPosX, resolvedPosX
                 .getXVector().add(endPosB.getYVector()), boundsA, boundsB);
 
         data.getCollisionEntity().setAttribute(Attribute.POSITION, resolvedPos);
-        
+
         /* Notify the object of this collision reponse */
         data.getCollisionEntity().sendMessage(
                 MessageType.COLLIDED,
                 new CollisionData(resolvedPos, oldPosB, endPosB, data
                         .getDelta(), getOwner()));
-        
+
         // apply some sort of normal force?
         // data.getCollisionEntity().sendMessage(MessageType.APPLY_FORCE,resolvedPos.sub(endPosB));
     }

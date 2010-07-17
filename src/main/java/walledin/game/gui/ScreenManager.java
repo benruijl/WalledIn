@@ -90,10 +90,20 @@ public class ScreenManager {
         drawCursor = true;
     }
 
+    /**
+     * Returns the entity manager.
+     * 
+     * @return Entity manager
+     */
     public final EntityManager getEntityManager() {
         return entityManager;
     }
 
+    /**
+     * Returns the entity factory.
+     * 
+     * @return Entity factory
+     */
     public final EntityFactory getEntityFactory() {
         return entityFactory;
     }
@@ -108,7 +118,7 @@ public class ScreenManager {
     }
 
     /**
-     * Registers the name of the player. Useful when the player object is
+     * Registers the name of the player entity. Useful when the player entity is
      * needed.
      * 
      * @param name
@@ -118,6 +128,11 @@ public class ScreenManager {
         playerName = name;
     }
 
+    /**
+     * Gets the player entity name.
+     * 
+     * @return Player entity name
+     */
     public final String getPlayerName() {
         return playerName;
     }
@@ -170,6 +185,16 @@ public class ScreenManager {
         screen.registerScreenManager(this);
     }
 
+    /**
+     * Removes a screen from the list. It only removes screens that are
+     * registered to the screen manager. It is safest to always use the screen's
+     * dispose() function.
+     * 
+     * @param screen
+     *            Screen to remove
+     * 
+     * @see Screen#dispose()
+     */
     public final void removeScreen(final Screen screen) {
         if (!screens.remove(screen)) {
             LOG.warn("Tried to remove screen that is not in the list");
@@ -180,7 +205,7 @@ public class ScreenManager {
         }
 
         /* If it is a typed screen, remove the map */
-        typedScreens.remove(screen);
+        typedScreens.values().remove(screen);
     }
 
     /**
@@ -212,7 +237,7 @@ public class ScreenManager {
                     renderer.screenToWorld(Input.getInstance().getMousePos()));
         }
 
-        Set<Integer> keysDown = Input.getInstance().getKeysDown();
+        final Set<Integer> keysDown = Input.getInstance().getKeysDown();
 
         for (int i = 0; i < screens.size(); i++) {
             if (screens.get(i).isVisible()) {
@@ -238,7 +263,7 @@ public class ScreenManager {
          * focused screen.
          */
         if (getFocusedScreen() != null) {
-            Screen screen = getFocusedScreen()
+            final Screen screen = getFocusedScreen()
                     .getSmallestScreenContainingCursor();
 
             if (screen != null) {
@@ -283,18 +308,40 @@ public class ScreenManager {
         renderer.stopHUDRendering();
     }
 
+    /**
+     * Sets the flag to show or hide the cursor.
+     * 
+     * @param drawCursor
+     *            True if the cursor should be drawn, else false.
+     */
     public final void setDrawCursor(final boolean drawCursor) {
         this.drawCursor = drawCursor;
     }
 
+    /**
+     * Checks if the 'draw cursor' flag is set.
+     * 
+     * @return True if set, else false
+     */
     public final boolean isDrawCursor() {
         return drawCursor;
     }
 
+    /**
+     * Returns the current cursor.
+     * 
+     * @return The cursor Entity, or null if there is no cursor.
+     */
     public final Entity getCursor() {
         return cursor;
     }
 
+    /**
+     * Registers a cursor to this screen manager.
+     * 
+     * @param cursor
+     *            Cursor entity
+     */
     public final void setCursor(final Entity cursor) {
         this.cursor = cursor;
     }
@@ -306,7 +353,7 @@ public class ScreenManager {
      * @param screen
      *            Screen. Can be null.
      */
-    public void setFocusedScreen(final Screen screen) {
+    public final void setFocusedScreen(final Screen screen) {
         focusedScreen = screen;
     }
 
@@ -316,7 +363,7 @@ public class ScreenManager {
      * 
      * @return Focused screen
      */
-    public Screen getFocusedScreen() {
+    public final Screen getFocusedScreen() {
         return focusedScreen;
     }
 

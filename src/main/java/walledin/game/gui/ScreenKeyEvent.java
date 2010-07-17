@@ -30,7 +30,7 @@ public class ScreenKeyEvent {
         super();
         this.keys = keys;
     }
-    
+
     public Set<Integer> getKeys() {
         return keys;
     }

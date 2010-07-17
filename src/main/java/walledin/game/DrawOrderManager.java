@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,7 +37,7 @@ import walledin.game.entity.MessageType;
 public class DrawOrderManager {
     private static final Logger LOG = Logger.getLogger(DrawOrderManager.class);
 
-    private static class ZOrderComperator implements Comparator<Entity> {
+    private static class ZOrderComperator implements Comparator<Entity>, Serializable {
         @Override
         public int compare(final Entity o1, final Entity o2) {
             final int zA = (Integer) o1.getAttribute(Attribute.Z_INDEX);

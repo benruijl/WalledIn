@@ -53,7 +53,7 @@ public class ServerListScreen extends Screen implements ScreenKeyEventListener {
     protected void onVisibilityChanged(final boolean visible) {
         if (visible) {
             getManager().getClient().bindServerNotifyChannel();
-            
+
             // request a refresh of the server list
             getManager().getClient().refreshServerList();
         } else {
@@ -68,7 +68,7 @@ public class ServerListScreen extends Screen implements ScreenKeyEventListener {
     }
 
     @Override
-    public void onKeyDown(ScreenKeyEvent e) {
+    public void onKeyDown(final ScreenKeyEvent e) {
         if (e.getKeys().contains(KeyEvent.VK_ESCAPE)) {
             Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
 

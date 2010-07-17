@@ -46,8 +46,8 @@ import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.Screen;
 import walledin.game.gui.ScreenManager;
-import walledin.game.gui.ServerListScreen;
 import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.gui.ServerListScreen;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
@@ -128,10 +128,10 @@ public class Client implements RenderListener, NetworkEventListener {
 
         final SettingsManager settings = SettingsManager.getInstance();
 
-        renderer.initialize("WalledIn", settings
-                .getInteger("engine.window.width"), settings
-                .getInteger("engine.window.height"), settings
-                .getBoolean("engine.window.fullScreen"));
+        renderer.initialize("WalledIn",
+                settings.getInteger("engine.window.width"),
+                settings.getInteger("engine.window.height"),
+                settings.getBoolean("engine.window.fullScreen"));
         renderer.addListener(client);
         // Start renderer
         LOG.info("starting renderer");
@@ -240,8 +240,8 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public final void receivedServerNotificationMessage(final SocketAddress address,
-            final ServerData server) {
+    public final void receivedServerNotificationMessage(
+            final SocketAddress address, final ServerData server) {
         lanServerList.add(server);
     }
 
@@ -266,8 +266,8 @@ public class Client implements RenderListener, NetworkEventListener {
                 // Read messages.
                 SocketAddress address = networkDataReader.readMessage(channel);
                 while (address != null) {
-                    networkDataReader.processMessage(address, screenManager
-                            .getEntityManager());
+                    networkDataReader.processMessage(address,
+                            screenManager.getEntityManager());
                     address = networkDataReader.readMessage(channel);
                 }
             }
@@ -276,8 +276,8 @@ public class Client implements RenderListener, NetworkEventListener {
                 SocketAddress address = networkDataReader
                         .readMessage(masterServerChannel);
                 while (address != null) {
-                    networkDataReader.processMessage(address, screenManager
-                            .getEntityManager());
+                    networkDataReader.processMessage(address,
+                            screenManager.getEntityManager());
                     address = networkDataReader
                             .readMessage(masterServerChannel);
                 }
@@ -286,8 +286,8 @@ public class Client implements RenderListener, NetworkEventListener {
                 SocketAddress address = networkDataReader
                         .readMessage(serverNotifyChannel);
                 while (address != null) {
-                    networkDataReader.processMessage(address, screenManager
-                            .getEntityManager());
+                    networkDataReader.processMessage(address,
+                            screenManager.getEntityManager());
                     address = networkDataReader
                             .readMessage(serverNotifyChannel);
                 }
@@ -322,7 +322,8 @@ public class Client implements RenderListener, NetworkEventListener {
 
         /* Load standard font */
         final Font font = new Font();
-        final String fontName = SettingsManager.getInstance().getString("game.font");
+        final String fontName = SettingsManager.getInstance().getString(
+                "game.font");
         font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
         screenManager.addFont(fontName, font);
 
@@ -368,9 +369,8 @@ public class Client implements RenderListener, NetworkEventListener {
         try {
             serverNotifyChannel = DatagramChannel.open();
             serverNotifyChannel.socket()
-                    .bind(
-                            new InetSocketAddress(
-                                    NetworkConstants.MASTER_PROTOCOL_PORT));
+                    .bind(new InetSocketAddress(
+                            NetworkConstants.MASTER_PROTOCOL_PORT));
             serverNotifyChannel.configureBlocking(false);
             boundServerNotifyChannel = true;
         } catch (final IOException e) {

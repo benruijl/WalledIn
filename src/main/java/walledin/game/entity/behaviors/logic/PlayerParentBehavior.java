@@ -58,8 +58,8 @@ public class PlayerParentBehavior extends Behavior {
             weapon.setAttribute(Attribute.CURSOR_POS, cursorPos);
             break;
         case POSITION:
-            weapon.setAttribute(Attribute.POSITION, pos.add(new Vector2f(35.0f,
-                    20.0f)));
+            weapon.setAttribute(Attribute.POSITION,
+                    pos.add(new Vector2f(35.0f, 20.0f)));
             break;
         case VELOCITY:
             weapon.setAttribute(Attribute.VELOCITY, vel);
