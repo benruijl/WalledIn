@@ -56,6 +56,7 @@ import com.sun.opengl.util.texture.Texture;
  * @author Ben Ruijl
  */
 public class Renderer implements GLEventListener {
+    /** Logger. */
     private static final Logger LOG = Logger.getLogger(Renderer.class);
 
     private Frame win;
@@ -419,16 +420,29 @@ public class Renderer implements GLEventListener {
 
     /**
      * To be called when the rendering of the current frame starts. It clears
-     * the buffers, and applies the camera transformations.
+     * the buffers and resets the modelview matrix.
      */
     private void beginDraw() {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
 
-        /* apply the camera transformations */
+
+    }
+    
+    /**
+     * Applies the camera transformations.
+     */
+    public final void applyCamera() {
         translate(camera.getPos());
         rotate(camera.getRot());
         scale(camera.getScale());
+    }
+    
+    /**
+     * Resets the camera.
+     */
+    public final void resetCamera() {
+        camera = new Camera();
     }
 
     /**

@@ -55,9 +55,9 @@ public abstract class Screen {
 
     /** State of this screen. */
     private ScreenState state = ScreenState.Hidden;
-    
+
     /** Z-index. */
-    private int zIndex;
+    private final int zIndex;
 
     /** Position. */
     private Vector2f position;
@@ -86,6 +86,8 @@ public abstract class Screen {
      * @param boudingRect
      *            Bounding rectangle of this screen. null is allowed for root
      *            screens only.
+     * @param z
+     *            z-index
      */
     public Screen(final Screen parent, final Rectangle boudingRect, final int z) {
         children = new ArrayList<Screen>();
@@ -107,8 +109,11 @@ public abstract class Screen {
      * @param boudingRect
      *            Bounding rectangle of this screen. null is allowed for root
      *            screens only.
+     * @param z
+     *            z-index
      */
-    public Screen(final ScreenManager manager, final Rectangle boudingRect, final int z) {
+    public Screen(final ScreenManager manager, final Rectangle boudingRect,
+            final int z) {
         children = new ArrayList<Screen>();
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
@@ -264,9 +269,10 @@ public abstract class Screen {
     public final ScreenState getState() {
         return state;
     }
-   
+
     /**
      * Returns the z-index.
+     * 
      * @return z-index
      */
     public final int getZIndex() {

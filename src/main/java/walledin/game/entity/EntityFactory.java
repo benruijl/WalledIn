@@ -52,10 +52,13 @@ public class EntityFactory {
     }
 
     /**
-     * Creates a entity. The loaded scripts will be applyed in the order they
+     * Creates a entity. The loaded scripts will be applied in the order they
      * where loaded. The creation function of the family will be looked up for
      * each script. All the functions of the parents up to the root will be
      * executed.
+     * 
+     * The created entity is not automatically inserted in the entity manager's
+     * list.
      * 
      * @param entityManager
      *            The entity manager

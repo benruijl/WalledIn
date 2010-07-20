@@ -274,7 +274,7 @@ public class Client implements RenderListener, NetworkEventListener {
                 /* If the address is null, no message is received. */
                 if (address == null) {
                     if (System.currentTimeMillis() - lastUpdate > TIME_OUT_TIME) {
-                        connected = false;             
+                        connected = false;
                         LOG.fatal("Connection timed out.");
                         screenManager.createDialog("The connection timed out.");
                     }
@@ -363,9 +363,9 @@ public class Client implements RenderListener, NetworkEventListener {
         // initialize entity manager
         screenManager.getEntityManager().init();
 
-        // create cursor
-        final Entity cursor = screenManager.getEntityManager().create(
-                Family.CURSOR, "cursor");
+        // create cursor, use the factory so it does not get added to the list
+        final Entity cursor = screenManager.getEntityFactory().create(
+                screenManager.getEntityManager(), Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
         renderer.hideHardwareCursor();
 
@@ -424,12 +424,12 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.info("Connecting to server " + server.getAddress());
             host = server.getAddress();
             username = System.getProperty("user.name");
-            
+
             // always try to disconnect. Does nothing if not connected
             channel.disconnect();
             channel.configureBlocking(false);
             channel.connect(host);
-            
+
             // set the last update to this timed
             lastUpdate = System.currentTimeMillis();
 
@@ -440,7 +440,7 @@ public class Client implements RenderListener, NetworkEventListener {
             screenManager.createDialog("Could not connect to server.");
         }
     }
-    
+
     public final void disconnectFromServer() throws IOException {
         connected = false;
         channel.disconnect();

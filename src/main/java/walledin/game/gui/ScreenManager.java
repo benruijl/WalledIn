@@ -253,8 +253,8 @@ public class ScreenManager {
 
         /* Update cursor position */
         if (cursor != null) {
-            cursor.setAttribute(Attribute.POSITION,
-                    renderer.screenToWorld(Input.getInstance().getMousePos()));
+            cursor.setAttribute(Attribute.POSITION,Input.getInstance().getMousePos().asVector2f());
+                    //renderer.screenToWorld(Input.getInstance().getMousePos()));
         }
 
         final Set<Integer> keysDown = Input.getInstance().getKeysDown();

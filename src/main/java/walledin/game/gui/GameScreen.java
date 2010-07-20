@@ -53,9 +53,9 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
     @Override
     public void draw(final Renderer renderer) {
         // prevent network from coming in between
-        synchronized (getManager().getEntityManager()) {
             final EntityManager entityManager = getManager().getEntityManager();
 
+            renderer.applyCamera();
             entityManager.draw(renderer); // draw all entities in correct order
 
             renderer.startHUDRendering();
@@ -70,10 +70,8 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
             }
 
             renderer.stopHUDRendering();
-
+            
             super.draw(renderer);
-        }
-
     }
 
     @Override
@@ -210,9 +208,6 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
     public void onKeyDown(final ScreenKeyEvent e) {
         if (e.getKeys().contains(KeyEvent.VK_ESCAPE)) {
             Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
-
-            // reset camera when returning to menu
-            getManager().getRenderer().getCamera().setPos(new Vector2f());
 
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
