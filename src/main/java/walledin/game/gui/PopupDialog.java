@@ -31,7 +31,7 @@ public class PopupDialog extends Screen implements ScreenMouseEventListener {
 
     public PopupDialog(final ScreenManager manager, final String text) {
         super(manager, new Rectangle(-10, -20, manager.getFont("arial20")
-                .getTextWidth(text) + 20, 70));
+                .getTextWidth(text) + 20, 70), 4);
         setPosition(new Vector2f(300, 250));
         this.text = text;
 

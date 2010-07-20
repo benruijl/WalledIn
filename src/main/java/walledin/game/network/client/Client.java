@@ -79,8 +79,10 @@ public class Client implements RenderListener, NetworkEventListener {
     private boolean boundServerNotifyChannel = false;
     private int receivedVersion = 0;
     private long lastLoginTry;
-    // in milliseconds
+    /** The time when the last update was received. */
+    private long lastUpdate;
     private final long LOGIN_RETRY_TIME;
+    private final long TIME_OUT_TIME;
 
     /**
      * Create the client.
@@ -104,6 +106,9 @@ public class Client implements RenderListener, NetworkEventListener {
 
         LOGIN_RETRY_TIME = SettingsManager.getInstance().getInteger(
                 "network.loginRetryTime");
+
+        TIME_OUT_TIME = SettingsManager.getInstance().getInteger(
+                "network.timeOutTime");
     }
 
     public static void main(final String[] args) {
@@ -265,6 +270,19 @@ public class Client implements RenderListener, NetworkEventListener {
                 }
                 // Read messages.
                 SocketAddress address = networkDataReader.readMessage(channel);
+
+                /* If the address is null, no message is received. */
+                if (address == null) {
+                    if (System.currentTimeMillis() - lastUpdate > TIME_OUT_TIME) {
+                        connected = false;             
+                        LOG.fatal("Connection timed out.");
+                        screenManager.createDialog("The connection timed out.");
+                    }
+
+                } else {
+                    lastUpdate = System.currentTimeMillis();
+                }
+
                 while (address != null) {
                     networkDataReader.processMessage(address,
                             screenManager.getEntityManager());
@@ -363,7 +381,7 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     /**
-     * Bind the server notify channel so we can recieve lan broadcasts
+     * Bind the server notify channel so we can receive lan broadcasts.
      */
     public final void bindServerNotifyChannel() {
         try {
@@ -406,13 +424,14 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.info("Connecting to server " + server.getAddress());
             host = server.getAddress();
             username = System.getProperty("user.name");
-
-            if (connected) {
-                channel.disconnect();
-            }
-
+            
+            // always try to disconnect. Does nothing if not connected
+            channel.disconnect();
             channel.configureBlocking(false);
             channel.connect(host);
+            
+            // set the last update to this timed
+            lastUpdate = System.currentTimeMillis();
 
             // the client is connected now
             connected = true;
@@ -420,6 +439,11 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.fatal("IOException", e);
             screenManager.createDialog("Could not connect to server.");
         }
+    }
+    
+    public final void disconnectFromServer() throws IOException {
+        connected = false;
+        channel.disconnect();
     }
 
     public final boolean connectedToServer() {

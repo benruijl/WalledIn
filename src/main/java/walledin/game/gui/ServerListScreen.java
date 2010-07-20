@@ -36,7 +36,7 @@ public class ServerListScreen extends Screen implements ScreenKeyEventListener {
     Screen serverListWidget;
 
     public ServerListScreen(final ScreenManager manager) {
-        super(manager, null);
+        super(manager, null, 0);
         addKeyEventListener(this);
 
         serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400));

@@ -46,7 +46,7 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
     private static final int TILES_PER_LINE = 16;
 
     public GameScreen(final ScreenManager manager) {
-        super(manager, null);
+        super(manager, null, 0);
         addKeyEventListener(this);
     }
 

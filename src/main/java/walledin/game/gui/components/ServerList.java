@@ -40,7 +40,7 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
     List<Screen> serverButtons; // list of buttons
 
     public ServerList(final Screen parent, final Rectangle boudingRect) {
-        super(parent, boudingRect);
+        super(parent, boudingRect, 1);
         serverButtons = new ArrayList<Screen>();
 
         refreshButton = new Button(this, "Refresh", new Vector2f(400, 40));

@@ -21,10 +21,13 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.gui;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -51,8 +54,8 @@ public class ScreenManager {
 
     /** Map of typed screens. */
     private final Map<ScreenType, Screen> typedScreens;
-    /** List of screens. */
-    private final List<Screen> screens;
+    /** Sorted list of screens. It is sorted on z-order. */
+    private final SortedSet<Screen> screens;
     /** Entity list of all screens together. */
     private final EntityManager entityManager;
     /** Client entity factory. */
@@ -80,7 +83,24 @@ public class ScreenManager {
      */
     public ScreenManager(final Client client, final Renderer renderer) {
         typedScreens = new ConcurrentHashMap<ScreenType, Screen>();
-        screens = new ArrayList<Screen>();
+        screens = new TreeSet<Screen>(new Comparator<Screen>() {
+
+            @Override
+            public int compare(final Screen o1, final Screen o2) {
+                int z1 = o1.getZIndex();
+                int z2 = o2.getZIndex();
+                
+                if (z1 == z2) {
+                    if (o1.hashCode() == o2.hashCode()) {
+                        return 0;
+                    }
+                    
+                    return o1.hashCode() < o2.hashCode() ? -1 : 1;
+                }
+
+                return z1 - z2;
+            }
+        });
         fonts = new HashMap<String, Font>();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
@@ -239,13 +259,14 @@ public class ScreenManager {
 
         final Set<Integer> keysDown = Input.getInstance().getKeysDown();
 
-        for (int i = 0; i < screens.size(); i++) {
-            if (screens.get(i).isVisible()) {
-                screens.get(i).update(delta);
+        Screen[] screenList = screens.toArray(new Screen[0]);
+        for (int i = 0; i < screenList.length; i++) {
+            Screen screen = screenList[i];
+            if (screen.isVisible()) {
+                screen.update(delta);
 
                 if (getFocusedScreen() == null && keysDown.size() > 0) {
-                    screens.get(i).sendKeyDownMessage(
-                            new ScreenKeyEvent(keysDown));
+                    screen.sendKeyDownMessage(new ScreenKeyEvent(keysDown));
                 }
             }
         }
@@ -287,11 +308,14 @@ public class ScreenManager {
      *            Renderer to draw with
      */
     public final void draw(final Renderer renderer) {
-        for (int i = 0; i < screens.size(); i++) {
-            if (screens.get(i).isVisible()) {
+        Screen[] screenList = screens.toArray(new Screen[0]);
+        for (int i = 0; i < screenList.length; i++) {
+            Screen screen = screenList[i];
+
+            if (screen.isVisible()) {
                 renderer.pushMatrix();
-                renderer.translate(screens.get(i).getPosition());
-                screens.get(i).draw(renderer);
+                renderer.translate(screen.getPosition());
+                screen.draw(renderer);
                 renderer.popMatrix();
             }
         }

@@ -34,7 +34,7 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
     Screen quitButton;
 
     public MainMenuScreen(final ScreenManager manager) {
-        super(manager, null);
+        super(manager, null, 0);
     }
 
     @Override
