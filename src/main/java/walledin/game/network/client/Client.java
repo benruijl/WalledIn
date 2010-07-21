@@ -277,6 +277,8 @@ public class Client implements RenderListener, NetworkEventListener {
                         connected = false;
                         LOG.fatal("Connection timed out.");
                         screenManager.createDialog("The connection timed out.");
+                        screenManager.getScreen(ScreenType.SERVER_LIST).show();
+                        screenManager.getScreen(ScreenType.GAME).hide();
                     }
 
                 } else {
