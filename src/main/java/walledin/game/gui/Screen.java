@@ -370,6 +370,23 @@ public abstract class Screen {
     }
 
     /**
+     * Updates the absolute position for this window and all its children. This
+     * is called by the parent when it is moved.
+     */
+    public final void updateAbsolutePosition() {
+        if (parent != null) {
+            absolutePosition = parent.getAbsolutePosition().add(position);
+        } else {
+            absolutePosition = position;
+        }
+
+        // update all children
+        for (Screen child : children) {
+            child.updateAbsolutePosition();
+        }
+    }
+
+    /**
      * Updates the position and the absolute position.
      * 
      * @param position
@@ -378,11 +395,7 @@ public abstract class Screen {
     public final void setPosition(final Vector2f position) {
         this.position = position;
 
-        if (parent != null) {
-            absolutePosition = parent.getAbsolutePosition().add(position);
-        } else {
-            absolutePosition = position;
-        }
+        updateAbsolutePosition();
     }
 
     /**
