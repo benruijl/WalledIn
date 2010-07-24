@@ -381,7 +381,7 @@ public abstract class Screen {
         }
 
         // update all children
-        for (Screen child : children) {
+        for (final Screen child : children) {
             child.updateAbsolutePosition();
         }
     }

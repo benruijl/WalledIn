@@ -20,7 +20,6 @@ import walledin.game.entity.behaviors.physics.*
 } as EntityFunction,
 
 (Family.MAP): { entity ->
-    entity.setAttribute(Attribute.RENDER_TILE_SIZE, 32f);
 } as EntityFunction,
 
 (Family.FOAMGUN_BULLET): { entity ->

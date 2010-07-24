@@ -214,7 +214,7 @@ public class GameLogicManager {
 
         final GameMapIO mapIO = new GameMapIOXML(); // choose XML as format
         final String mapName = SettingsManager.getInstance().getString(
-                "game.mapName");
+                "game.map.name");
         map = mapIO.readFromURL(entityManager, Utils.getClasspathURL(mapName));
 
         // this name will be sent to the client

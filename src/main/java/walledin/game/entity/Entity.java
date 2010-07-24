@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 
 import walledin.game.EntityManager;
 
-public class Entity {
+public final class Entity {
     private static final Logger LOG = Logger.getLogger(Entity.class.getName());
     private final Map<Class<? extends Behavior>, Behavior> behaviors;
     private final Map<Attribute, Object> attributes;
@@ -79,7 +79,10 @@ public class Entity {
     }
 
     /**
-     * Set the name of the entity.
+     * Sets the name of the entity.
+     * 
+     * @param name
+     *            New name
      */
     public void setName(final String name) {
         this.name = name;
@@ -105,7 +108,7 @@ public class Entity {
     }
 
     /**
-     * Retrieves a behavior of this entity based on the class of the behavior
+     * Retrieves a behavior of this entity based on the class of the behavior.
      * 
      * @param <T>
      *            The type of the Behavior that has to be fetched
@@ -158,12 +161,14 @@ public class Entity {
     }
 
     /**
-     * Binds the object to the attribute and returns the old object
+     * Binds the object to the attribute and returns the old object.
      * 
      * @param attribute
      *            The attribute to bind
      * @param newObject
      *            Object to bind
+     * @param <T>
+     *            The class of the attribute
      * @return Returns the object bound to the attribute before
      * @throws IllegalArgumentException
      *             if the newObect is not of the class specified in the

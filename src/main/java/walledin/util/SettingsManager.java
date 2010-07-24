@@ -44,7 +44,7 @@ public final class SettingsManager {
     private static SettingsManager ref = null;
 
     /** The parsed configuration data. */
-    private Properties config;
+    private final Properties config;
 
     /** Creates a new entity manager. */
     private SettingsManager() {

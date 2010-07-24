@@ -53,25 +53,24 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
     @Override
     public void draw(final Renderer renderer) {
         // prevent network from coming in between
-            final EntityManager entityManager = getManager().getEntityManager();
+        final EntityManager entityManager = getManager().getEntityManager();
 
-            renderer.applyCamera();
-            entityManager.draw(renderer); // draw all entities in correct order
+        renderer.applyCamera();
+        entityManager.draw(renderer); // draw all entities in correct order
 
-            renderer.startHUDRendering();
-            final Font font = getManager().getFont("arial20");
-            final Entity player = entityManager.get(getManager()
-                    .getPlayerName());
+        renderer.startHUDRendering();
+        final Font font = getManager().getFont("arial20");
+        final Entity player = entityManager.get(getManager().getPlayerName());
 
-            if (player != null) {
-                font.renderText(renderer,
-                        "HP: " + player.getAttribute(Attribute.HEALTH),
-                        new Vector2f(630, 40));
-            }
+        if (player != null) {
+            font.renderText(renderer,
+                    "HP: " + player.getAttribute(Attribute.HEALTH),
+                    new Vector2f(630, 40));
+        }
 
-            renderer.stopHUDRendering();
-            
-            super.draw(renderer);
+        renderer.stopHUDRendering();
+
+        super.draw(renderer);
     }
 
     @Override

@@ -426,9 +426,8 @@ public class Renderer implements GLEventListener {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
 
-
     }
-    
+
     /**
      * Applies the camera transformations.
      */
@@ -437,7 +436,7 @@ public class Renderer implements GLEventListener {
         rotate(camera.getRot());
         scale(camera.getScale());
     }
-    
+
     /**
      * Resets the camera.
      */

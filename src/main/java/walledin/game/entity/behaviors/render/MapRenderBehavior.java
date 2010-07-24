@@ -31,42 +31,74 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
 
+/**
+ * This class renders the map. It optimizes drawing by dividing the map into
+ * blocks and checking if the blocks are in the frustum.
+ * 
+ * @author Ben Ruijl
+ */
 public class MapRenderBehavior extends RenderBehavior {
-    private static final float TILE_WIDTH = 32.0f;
-    private static final int STEP_SIZE = 10;
+    /** The width in tiles of the block that should be rendered. */
+    private final int stepSize = 10;
+    /** The width of a tile. */
+    private float tileWidth;
+    /** Map height in tiles. */
     private int height;
+    /** Map width in tiles. */
     private int width;
+    /** List of map tiles. */
     private List<Tile> tiles;
 
+    /**
+     * Creates a new map render behavior.
+     * 
+     * @param owner
+     *            Map entity
+     */
     public MapRenderBehavior(final Entity owner) {
         super(owner, ZValues.MAP);
-        setAttribute(Attribute.RENDER_TILE_SIZE, TILE_WIDTH);
         tiles = new ArrayList<Tile>();
     }
 
+    /**
+     * Renders the map.
+     * 
+     * @param renderer
+     *            Renderer
+     */
     private void render(final Renderer renderer) {
         /* Partition the map */
-        for (int sw = 0; sw < width; sw += STEP_SIZE) {
-            for (int sh = 0; sh < height; sh += STEP_SIZE) {
+        for (int sw = 0; sw < width; sw += stepSize) {
+            for (int sh = 0; sh < height; sh += stepSize) {
                 renderPart(renderer, sw, sh);
 
             }
         }
     }
 
+    /**
+     * Renders a sub-rectangle of the map. Useful for improving speed.
+     * 
+     * @param renderer
+     *            Renderer
+     * @param sw
+     *            X-coordinate of the top left tile
+     * @param sh
+     *            Y-coordinate of the top left tile
+     */
     private void renderPart(final Renderer renderer, final int sw, final int sh) {
-        final Rectangle part = new Rectangle(sw * TILE_WIDTH, sh * TILE_WIDTH,
-                TILE_WIDTH * STEP_SIZE, TILE_WIDTH * STEP_SIZE);
+        final Rectangle part = new Rectangle(sw * tileWidth, sh * tileWidth,
+                tileWidth * stepSize, tileWidth * stepSize);
         if (renderer.inFrustum(part)) {
-            for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
-                for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
+            for (int i = 0; i < Math.min(stepSize, height - sh); i++) {
+                for (int j = 0; j < Math.min(stepSize, width - sw); j++) {
                     final int index = (sh + i) * width + sw + j;
                     if (index >= 0 && index < tiles.size()) {
                         final Tile tile = tiles.get(index);
                         renderer.drawTexturePart(tile.getType()
                                 .getTexturePartID(), new Rectangle((sw + j)
-                                * TILE_WIDTH, (sh + i) * TILE_WIDTH,
-                                TILE_WIDTH, TILE_WIDTH));
+                                * tileWidth, (sh + i) * tileWidth, tileWidth,
+                                tileWidth));
                     }
                 }
             }
@@ -74,7 +106,7 @@ public class MapRenderBehavior extends RenderBehavior {
     }
 
     @Override
-    public void onMessage(final MessageType messageType, final Object data) {
+    public final void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.RENDER) {
             render((Renderer) data);
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
@@ -88,6 +120,11 @@ public class MapRenderBehavior extends RenderBehavior {
                 break;
             case TILES:
                 tiles = (List<Tile>) getAttribute(attribute);
+                break;
+            case TILE_WIDTH:
+                tileWidth = (Float) getAttribute(attribute);
+                break;
+            default:
                 break;
             }
         }

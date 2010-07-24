@@ -184,6 +184,9 @@ public class NetworkDataReader {
         case VELOCITY:
             data = readVector2fData(buffer);
             break;
+        case TILE_WIDTH:
+            data = buffer.getFloat();
+            break;
         default:
             LOG.error("Could not process attribute " + attribute);
             break;

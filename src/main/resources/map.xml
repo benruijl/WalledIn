@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <map>
     <name>Default</name>
+    <tileWidth>32.0</tileWidth>
     <items>
-        <item name="hk01" type="HEALTHKIT" x="300" y="420" respawn="5" />
-        <item name="ak01" type="ARMOURKIT" x="360" y="420" respawn="5" />
-        <item name="hg01" type="HANDGUN" x ="420" y="420" respawn="5" />
-        <item name="fm01" type="FOAMGUN" x ="480" y="420" respawn="5" /><item
-        	name="fm02" type="FOAMGUN" x="800" y="500" respawn="5">
-</item>
+        <item name="hk01" type="HEALTHKIT" x="9" y="14" respawn="5" />
+        <item name="ak01" type="ARMOURKIT" x="11" y="14" respawn="5" />
+        <item name="hg01" type="HANDGUN" x="13" y="14" respawn="5" />
+        <item name="fm01" type="FOAMGUN" x="15" y="14" respawn="5" />
+	<item name="fm02" type="FOAMGUN" x="25" y="16" respawn="5">
+    </item>
     </items>
 
     <spawnpoints>
-        <spawn x="400" y="300" />
-        <spawn x="800" y="200" />
+        <spawn x="12" y="13" />
+        <spawn x="28" y="15" />
     </spawnpoints>
 
     <tiles>

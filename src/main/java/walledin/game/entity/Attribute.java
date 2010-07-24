@@ -31,15 +31,18 @@ public enum Attribute {
     VELOCITY(Vector2f.class, true),
     WIDTH(Integer.class, true),
     HEIGHT(Integer.class, true),
-    /** Tiles will be read locally */
+    /**
+     * Map tiles. Tiles do not get sent over network, but will be read locally.
+     */
     TILES(List.class, false),
+    TILE_WIDTH(Float.class, true),
     /** Map name will be sent separately at entity creation. */
     MAP_NAME(String.class, false),
     /** Spawn points of a map. */
     SPAWN_POINTS(List.class, false),
     HEALTH(Integer.class, true),
     PLAYER_NAME(String.class, true),
-    /** Orientation angle */
+    /** Orientation angle. */
     ORIENTATION_ANGLE(Float.class, true),
     ACTIVE_WEAPON(Entity.class),
     PICKED_UP(Boolean.class),
@@ -48,7 +51,6 @@ public enum Attribute {
     WALK_ANIM_FRAME(Float.class),
     BOUNDING_GEOMETRY(Geometry.class),
     Z_INDEX(Integer.class),
-    RENDER_TILE_SIZE(Float.class),
     MASS(Float.class),
     TARGET(Vector2f.class);
 

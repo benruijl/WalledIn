@@ -38,11 +38,11 @@ import walledin.game.entity.behaviors.logic.ItemManagementBevahior;
 import walledin.util.XMLReader;
 
 /**
- * Loads a map from an XML file
+ * Loads a map from an XML file.
  * 
- * @author ben
+ * @author Ben Ruijl
  */
-public class GameMapIOXML implements GameMapIO {
+public final class GameMapIOXML implements GameMapIO {
     // FIXME dont use instance vars for this...
     private int width;
     private int height;
@@ -50,8 +50,6 @@ public class GameMapIOXML implements GameMapIO {
     /**
      * Reads tile information.
      * 
-     * @param reader
-     *            XML reader
      * @param element
      *            Current element
      * @return An list of tiles
@@ -80,8 +78,14 @@ public class GameMapIOXML implements GameMapIO {
         return result;
     }
 
-    private Set<ItemInfo> parseItems(final EntityManager entityManager,
-            final Element element) {
+    /**
+     * Parses the item behaviors from a map file.
+     * 
+     * @param element
+     *            XML element
+     * @return A set of item information
+     */
+    private Set<ItemInfo> parseItems(final Element element, final float tileWidth) {
         final Set<ItemInfo> itList = new HashSet<ItemInfo>();
         final Element itemsNode = XMLReader.getFirstElement(element, "items");
         final List<Element> items = XMLReader.getElements(itemsNode, "item");
@@ -95,7 +99,7 @@ public class GameMapIOXML implements GameMapIO {
                     .parseInt(el.getAttribute("respawn"));
 
             final ItemInfo item = new ItemInfo(
-                    Enum.valueOf(Family.class, type), new Vector2f(x, y),
+                    Enum.valueOf(Family.class, type), new Vector2f(x, y).scale(tileWidth),
                     respawnTime);
 
             itList.add(item);
@@ -111,7 +115,7 @@ public class GameMapIOXML implements GameMapIO {
      *            Current element
      * @return List of spawn points
      */
-    private List<SpawnPoint> readSpawnPoints(final Element element) {
+    private List<SpawnPoint> readSpawnPoints(final Element element, final float tileWidth) {
         final List<SpawnPoint> points = new ArrayList<SpawnPoint>();
 
         final Element node = XMLReader.getFirstElement(element, "spawnpoints");
@@ -120,7 +124,7 @@ public class GameMapIOXML implements GameMapIO {
         for (final Element el : spawnElems) {
             final int x = Integer.parseInt(el.getAttribute("x"));
             final int y = Integer.parseInt(el.getAttribute("y"));
-            points.add(new SpawnPoint(new Vector2f(x, y)));
+            points.add(new SpawnPoint(new Vector2f(x, y).scale(tileWidth)));
         }
 
         return points;
@@ -136,16 +140,17 @@ public class GameMapIOXML implements GameMapIO {
      * @return Returns true on success and false on failure
      */
     @Override
-    public final Entity readFromURL(final EntityManager entityManager,
-            final URL file) {
+    public Entity readFromURL(final EntityManager entityManager, final URL file) {
         final XMLReader reader = new XMLReader();
 
         if (reader.open(file)) {
             final Element mapElement = reader.getRootElement();
 
             final String name = XMLReader.getTextValue(mapElement, "name");
-            final Set<ItemInfo> items = parseItems(entityManager, mapElement);
-            final List<SpawnPoint> points = readSpawnPoints(mapElement);
+            final Float tileWidth = XMLReader.getFloatValue(mapElement,
+                    "tileWidth");
+            final Set<ItemInfo> items = parseItems(mapElement, tileWidth);
+            final List<SpawnPoint> points = readSpawnPoints(mapElement, tileWidth);
             final List<Tile> tiles = parseTiles(mapElement);
             final Entity map = entityManager.create(Family.MAP, name);
 
@@ -154,6 +159,7 @@ public class GameMapIOXML implements GameMapIO {
             map.setAttribute(Attribute.HEIGHT, height);
             map.setAttribute(Attribute.SPAWN_POINTS, points);
             map.setAttribute(Attribute.TILES, tiles);
+            map.setAttribute(Attribute.TILE_WIDTH, tileWidth);
 
             return map;
         } else {

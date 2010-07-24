@@ -20,10 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -87,14 +85,14 @@ public class ScreenManager {
 
             @Override
             public int compare(final Screen o1, final Screen o2) {
-                int z1 = o1.getZIndex();
-                int z2 = o2.getZIndex();
-                
+                final int z1 = o1.getZIndex();
+                final int z2 = o2.getZIndex();
+
                 if (z1 == z2) {
                     if (o1.hashCode() == o2.hashCode()) {
                         return 0;
                     }
-                    
+
                     return o1.hashCode() < o2.hashCode() ? -1 : 1;
                 }
 
@@ -253,15 +251,15 @@ public class ScreenManager {
 
         /* Update cursor position */
         if (cursor != null) {
-            cursor.setAttribute(Attribute.POSITION,Input.getInstance().getMousePos().asVector2f());
-                    //renderer.screenToWorld(Input.getInstance().getMousePos()));
+            cursor.setAttribute(Attribute.POSITION, Input.getInstance()
+                    .getMousePos().asVector2f());
+            // renderer.screenToWorld(Input.getInstance().getMousePos()));
         }
 
         final Set<Integer> keysDown = Input.getInstance().getKeysDown();
 
-        Screen[] screenList = screens.toArray(new Screen[0]);
-        for (int i = 0; i < screenList.length; i++) {
-            Screen screen = screenList[i];
+        final Screen[] screenList = screens.toArray(new Screen[0]);
+        for (final Screen screen : screenList) {
             if (screen.isVisible()) {
                 screen.update(delta);
 
@@ -308,10 +306,8 @@ public class ScreenManager {
      *            Renderer to draw with
      */
     public final void draw(final Renderer renderer) {
-        Screen[] screenList = screens.toArray(new Screen[0]);
-        for (int i = 0; i < screenList.length; i++) {
-            Screen screen = screenList[i];
-
+        final Screen[] screenList = screens.toArray(new Screen[0]);
+        for (final Screen screen : screenList) {
             if (screen.isVisible()) {
                 renderer.pushMatrix();
                 renderer.translate(screen.getPosition());

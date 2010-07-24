@@ -207,6 +207,9 @@ public class NetworkDataWriter {
         case ORIENTATION_ANGLE:
             writeFloatData((Float) data, buffer);
             break;
+        case TILE_WIDTH:
+            writeFloatData((Float) data, buffer);
+            break;
         case PLAYER_NAME:
             writeStringData((String) data, buffer);
             break;

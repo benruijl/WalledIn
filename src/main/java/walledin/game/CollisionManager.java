@@ -107,8 +107,7 @@ public class CollisionManager {
      * @return The tile containing <code>pos</code>.
      */
     private static Tile tileFromPixel(final Entity map, final Vector2f pos) {
-        final float tileSize = (Float) map
-                .getAttribute(Attribute.RENDER_TILE_SIZE);
+        final float tileSize = (Float) map.getAttribute(Attribute.TILE_WIDTH);
         final int width = (Integer) map.getAttribute(Attribute.WIDTH);
         final int height = (Integer) map.getAttribute(Attribute.HEIGHT);
         final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
@@ -203,8 +202,7 @@ public class CollisionManager {
      */
     public static void calculateMapCollisions(final Entity map,
             final Collection<Entity> entities, final double delta) {
-        final float tileSize = (Float) map
-                .getAttribute(Attribute.RENDER_TILE_SIZE);
+        final float tileSize = (Float) map.getAttribute(Attribute.TILE_WIDTH);
 
         for (final Entity ent : entities) {
             if (ent.hasAttribute(Attribute.BOUNDING_GEOMETRY)
