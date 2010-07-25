@@ -112,7 +112,7 @@ public class CollisionManager {
                     + "), but the boundaries are (0,0) - (" + width + ","
                     + height + ").");
         }
-
+        
         return tiles.get((int) (pos.getX() / tileSize) + width
                 * (int) (pos.getY() / tileSize));
     }

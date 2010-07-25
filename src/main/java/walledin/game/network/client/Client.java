@@ -46,6 +46,7 @@ import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.Screen;
 import walledin.game.gui.ScreenManager;
+import walledin.game.gui.SelectTeamScreen;
 import walledin.game.gui.ServerListScreen;
 import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.NetworkConstants;
@@ -353,6 +354,8 @@ public class Client implements RenderListener, NetworkEventListener {
         /* Create game screen and add it to the screen manager. */
         gameScreen = new GameScreen(screenManager);
         screenManager.addScreen(ScreenType.GAME, gameScreen);
+        final Screen selectTeamScreen = new SelectTeamScreen(screenManager);
+        screenManager.addScreen(ScreenType.SELECT_TEAM, selectTeamScreen);
         final Screen menuScreen = new MainMenuScreen(screenManager);
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();

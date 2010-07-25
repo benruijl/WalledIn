@@ -46,7 +46,7 @@ public class ScreenManager {
 
     /** Screen types. */
     public enum ScreenType {
-        MAIN_MENU, GAME, SERVER_LIST
+        MAIN_MENU, GAME, SERVER_LIST, SELECT_TEAM
     }
 
     /** Map of typed screens. */
