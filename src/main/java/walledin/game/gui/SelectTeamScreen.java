@@ -35,7 +35,7 @@ public class SelectTeamScreen extends Screen implements ScreenMouseEventListener
     Screen back;
 
     public SelectTeamScreen(final ScreenManager manager) {
-        super(manager, null);
+        super(manager, null, 0);
     }
 
     @Override
