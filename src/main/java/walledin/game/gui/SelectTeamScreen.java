@@ -61,26 +61,21 @@ public class SelectTeamScreen extends Screen implements ScreenMouseEventListener
         addChild(back);
     }
 
-    @Override
-    public void update(final double delta) {
-        if (getState() == ScreenState.Hidden) {
-            return;
-        }
-
-        super.update(delta);
-    }
 
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
         if (e.getScreen() == teamBlue) {
+            getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
+            hide();
         }
 
         if (e.getScreen() == teamRed) {
+            getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
+            hide();
         }
         if (e.getScreen() == back) {
-            getManager().getScreen(ScreenType.SERVER_LIST).initialize();
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
             Input.getInstance().setButtonUp(1); // FIXME

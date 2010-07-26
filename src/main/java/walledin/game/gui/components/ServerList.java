@@ -109,8 +109,8 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
                 getManager().getClient().connectToServer(serverList.get(i));
 
                 if (getManager().getClient().connectedToServer()) {
-                    getManager().getScreen(ScreenType.GAME).initialize();
-                    getManager().getScreen(ScreenType.GAME).show();
+                    getManager().getScreen(ScreenType.SELECT_TEAM).initialize();
+                    getManager().getScreen(ScreenType.SELECT_TEAM).show();
                     getParent().hide();
                 }
 
