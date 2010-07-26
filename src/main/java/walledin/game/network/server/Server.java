@@ -39,6 +39,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.network.NetworkConstants;
+import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
@@ -69,6 +70,7 @@ public class Server implements NetworkEventListener {
     private final String SERVER_NAME;
     private final long CHALLENGE_TIMEOUT;
     private final Map<SocketAddress, PlayerConnection> players;
+    private final int maxPlayers;
     private boolean running;
     private final NetworkDataWriter networkWriter;
     private final NetworkDataReader networkReader;
@@ -107,6 +109,8 @@ public class Server implements NetworkEventListener {
                 "network.lanBroadcastInterval");
         SERVER_NAME = SettingsManager.getInstance()
                 .getString("game.serverName");
+        maxPlayers = SettingsManager.getInstance()
+                .getInteger("game.maxPlayers");
 
         // Store the first version so we can give it new players
         final ChangeSet firstChangeSet = gameLogicManager.getEntityManager()
@@ -159,7 +163,7 @@ public class Server implements NetworkEventListener {
         lastBroadcast = System.currentTimeMillis();
 
         networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                players.size(), Integer.MAX_VALUE);
+                players.size(), maxPlayers);
         networkWriter.sendBuffer(masterServerChannel);
 
         currentTime = System.nanoTime(); // initialize
@@ -204,14 +208,14 @@ public class Server implements NetworkEventListener {
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                    players.size(), Integer.MAX_VALUE);
+                    players.size(), maxPlayers);
             networkWriter.sendBuffer(masterServerChannel);
 
         }
 
         if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                    players.size(), Integer.MAX_VALUE);
+                    players.size(), maxPlayers);
             networkWriter.sendBuffer(serverNotifySocket,
                     NetworkConstants.BROADCAST_ADDRESS);
             lastBroadcast = System.currentTimeMillis();
@@ -321,12 +325,13 @@ public class Server implements NetworkEventListener {
     @Override
     public final void receivedLoginMessage(final SocketAddress address,
             final String name) {
+
+        final String entityName = NetworkConstants
+                .getAddressRepresentation(address);
+        ErrorCodes error = ErrorCodes.ERROR_LOGIN_FAILED;
+
         // Check if this player is already logged in
-        if (!players.containsKey(address)) {
-
-            final String entityName = NetworkConstants
-                    .getAddressRepresentation(address);
-
+        if (!players.containsKey(address) && players.size() < maxPlayers) {
             final Entity player = gameLogicManager.createPlayer(entityName,
                     name);
 
@@ -335,14 +340,20 @@ public class Server implements NetworkEventListener {
             players.put(address, con);
 
             LOG.info("new player " + name + " @ " + address);
+            error = ErrorCodes.ERROR_SUCCESSFULL;
 
-            // send the client the unique entity name of the player
-            try {
-                networkWriter.prepareLoginResponseMessage(entityName);
-                networkWriter.sendBuffer(channel, con.getAddress());
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
+        }
+
+        if (players.size() >= maxPlayers) {
+            error = ErrorCodes.ERROR_SERVER_IS_FULL;
+        }
+
+        // send the client the unique entity name of the player
+        try {
+            networkWriter.prepareLoginResponseMessage(error, entityName);
+            networkWriter.sendBuffer(channel, address);
+        } catch (final IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -394,7 +405,7 @@ public class Server implements NetworkEventListener {
 
     @Override
     public void receivedLoginReponseMessage(final SocketAddress address,
-            final String playerEntityName) {
+            final ErrorCodes errorCode, final String playerEntityName) {
         // ignore .. should not happen
     }
 

@@ -42,6 +42,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
+import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.util.Utils;
 
 /**
@@ -100,11 +101,12 @@ public class NetworkDataReader {
     }
 
     private void processLoginResponseMessage(final SocketAddress address) {
+        final ErrorCodes errorCode = ErrorCodes.values()[buffer.getInt()];
         final int nameLength = buffer.getInt();
         final byte[] nameBytes = new byte[nameLength];
         buffer.get(nameBytes);
         final String name = new String(nameBytes);
-        listener.receivedLoginReponseMessage(address, name);
+        listener.receivedLoginReponseMessage(address, errorCode, name);
     }
 
     private void processLogoutMessage(final SocketAddress address) {

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.PlayerActions;
+import walledin.game.network.NetworkConstants.ErrorCodes;
 
 public interface NetworkEventListener {
     boolean receivedGamestateMessage(SocketAddress address, int oldVersion,
@@ -33,7 +34,7 @@ public interface NetworkEventListener {
     void receivedLoginMessage(SocketAddress address, String name);
 
     void receivedLoginReponseMessage(SocketAddress address,
-            String playerEntityName);
+            ErrorCodes errorCode, String playerEntityName);
 
     void receivedLogoutMessage(SocketAddress address);
 

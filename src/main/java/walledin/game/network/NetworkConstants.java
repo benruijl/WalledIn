@@ -40,6 +40,14 @@ public class NetworkConstants {
     public static final byte GAMESTATE_MESSAGE_REMOVE_ENTITY = 1;
     public static final byte GAMESTATE_MESSAGE_ATTRIBUTES = 2;
     public static final byte GAMESTATE_MESSAGE_END = 3;
+    
+    /** Network error code lists. */
+    public enum ErrorCodes {
+        ERROR_SUCCESSFULL,
+        ERROR_LOGIN_FAILED,
+        ERROR_SERVER_IS_FULL,
+        ERROR_ALREADY_LOGGED_IN; 
+    }
 
     // Master server protocol constants
     public static final int MS_DATAGRAM_IDENTIFICATION = 0x174BC126;

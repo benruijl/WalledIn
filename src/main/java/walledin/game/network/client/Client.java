@@ -53,6 +53,7 @@ import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
+import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
@@ -204,6 +205,18 @@ public class Client implements RenderListener, NetworkEventListener {
         }
         return result;
     }
+    
+    /**
+     * Displays an error message, disconnects from the server and
+     * returns to the server list.
+     * @param message Message to display
+     */
+    public final void displayErrorAndDisconnect(final String message) {
+        screenManager.createDialog(message);
+        connected = false;
+        screenManager.getScreen(ScreenType.SERVER_LIST).show();
+        screenManager.getScreen(ScreenType.GAME).hide();
+    }
 
     @Override
     public final void receivedServersMessage(final SocketAddress address,
@@ -239,9 +252,22 @@ public class Client implements RenderListener, NetworkEventListener {
 
     @Override
     public final void receivedLoginReponseMessage(final SocketAddress address,
-            final String playerEntityName) {
-        screenManager.setPlayerName(playerEntityName);
-        LOG.info("Player entity name received: " + playerEntityName);
+            final ErrorCodes errorCode, final String playerEntityName) {
+
+        if (errorCode == ErrorCodes.ERROR_SUCCESSFULL) {
+            screenManager.setPlayerName(playerEntityName);
+            LOG.info("Player entity name received: " + playerEntityName);
+            return;
+        }
+            
+        switch (errorCode) {
+        case ERROR_SERVER_IS_FULL:
+            displayErrorAndDisconnect("The server is full.");
+            break;
+        default:
+            displayErrorAndDisconnect("Could not login to the server.");
+            break;
+        }
     }
 
     @Override
