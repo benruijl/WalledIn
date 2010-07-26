@@ -1,0 +1,70 @@
+h1. WalledIn
+
+WalledIn is going to be a 2d, online, intelligent shooter, with some nice gimmicks. Apart from regular guns, you have a foam gun, which can shoot different kinds of foam.
+
+If you are being followed or shot at by another player, you can defend yourself by shooting a wall of foam to block their path. The same foam can be used to spray bridges, or create stairs on the fly. Use your imagination!
+
+We have thought out multiple game modes, including:
+
+* Walled In: try to spray a 'wall' over another player. The player has to be careful with shooting foam himself, because his protective foam can be used against him. Foam grenades can also be used to create a circle of death.
+
+* Bridge Builder: work together to reach a certain point by creating bridges and stairs before the other team does.
+
+* Capture the flag, Deathmatch, Team Deathmatch: the standard game modes are also included, of course :)
+
+
+WalledIn has been in development since February 2010. Up until now we have built the networking protocol, a graphics engine, a component-based framework, basic physics, a master server, menus and much more. WalledIn is released under GPL v3.
+
+h2. Installation
+
+There are two ways to run WalledIn:
+* (*Recommended*) Install a released package from the "download area":http://github.com/benruijl/WalledIn/downloads. Use the start-up file for your OS to start the client. You can start a server yourself, or join existing ones.
+* Download and compile the (unstable) source.
+
+If you download the source, you have to build WalledIn. Building is very easy. If you have "Eclipse":http://www.eclipse.org/ you can simply import the project. 
+
+To run the project you have to choose the correct runscript based on your OS and your architecture (32-bit or 64-bit). All the required libraries and native libraries (for Windows, Mac and Linux) are already included and linked.
+
+
+If you want to compile and run WalledIn from the command line, you should include all the libraries in the @<project dir>/libs@ directory and set the correct paths to the native libraries when running.
+
+
+h2. Current team members
+
+Our team currently consists of the following members:
+
+* Ben Ruijl - Project leader and lead programmer
+* Wouter Smeenk - Lead programmer
+* Henry Solberg - Music composer, sound effects composer
+* Wen Yen - Programmer
+
+Currently, WalledIn has got no artist in the project. The development-stage textures are copied from the game "Teeworlds":http://www.teeworlds.com, with permission.
+
+h2. How to contribute
+
+If you find what looks like a bug:
+
+# Check the "GitHub issue tracker":http://github.com/benruijl/WalledIn/issues to see if anyone else has had the same issue. 
+# If you don't see anything, create an issue with information on how to reproduce it.
+
+If you want to contribute an enhancement or a fix:
+
+# Fork "the project":http://github.com/benruijl/WalledIn/ on GitHub. 
+# Make your changes and _test_ them
+# Commit the changes.
+# Send a pull request.
+
+If you want to participate in the project, we are currently looking for:
+
+* A graphics artist. WalledIn has to have its own style, so we need a designer for player skins, level tiles, levels, menu backgrounds et cetera. 
+
+* An experienced (game) developer. Knowledge of OOP is a must, previous experience with game development, component based design, networking or OpenGL is a plus.
+
+
+If you think you can contribute in another way or if you want more information, you can always e-mail us.
+
+h2. Miscellaneous
+
+The game is being developed in Java (as an application). We use Ant, JOGL, log4j and Groovy. Eclipse is our standard IDE. JOGL is our gateway to OpenGL and we use Groovy scripts to build entities from components.
+
+We rely heavy on object oriented design to make the code as clear as possible. We also use component-based game object architecture, so we are able to write generic and uncluttered code. The framework for that is finished, so for new programmers it is easier to get accustomed to the concept. Our philosophy is to prefer code clarity over hacks.

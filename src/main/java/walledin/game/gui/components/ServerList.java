@@ -66,7 +66,8 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
                             + " ("
                             + ((InetSocketAddress) serverList.get(i)
                                     .getAddress()).getAddress() + ")" + " "
-                            + serverList.get(i).getPlayers() + " players",
+                            + serverList.get(i).getPlayers() + "/"
+                            + serverList.get(i).getMaxPlayers() + " players",
                     new Vector2f(10, 65 + i * 20));
             server.registerScreenManager(getManager());
             server.addMouseEventListener(this);

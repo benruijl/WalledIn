@@ -36,6 +36,7 @@ import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
+import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.game.network.server.ChangeSet;
 
 /**
@@ -139,10 +140,11 @@ public class NetworkDataWriter {
         buffer.flip();
     }
 
-    public void prepareLoginResponseMessage(final String entityName) {
+    public void prepareLoginResponseMessage(final ErrorCodes errorMessage, final String entityName) {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.LOGIN_RESPONSE_MESSAGE);
+        writeIntegerData(errorMessage.ordinal(), buffer);
         writeStringData(entityName, buffer);
         buffer.flip();
     }
