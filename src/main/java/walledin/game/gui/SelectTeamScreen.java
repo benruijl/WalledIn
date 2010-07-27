@@ -60,6 +60,7 @@ public class SelectTeamScreen extends Screen implements
         addChild(teamBlue);
         addChild(teamRed);
         addChild(back);
+        
     }
 
     @Override
