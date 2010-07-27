@@ -17,6 +17,8 @@ WalledIn has been in development since February 2010. Up until now we have built
 
 h2. Installation
 
+First make sure that you have "Java":http://www.java.com installed.
+
 There are two ways to run WalledIn:
 * (*Recommended*) Install a released package from the "download area":http://github.com/benruijl/WalledIn/downloads. Use the start-up file for your OS to start the client. You can start a server yourself, or join existing ones.
 * Download and compile the (unstable) source.
