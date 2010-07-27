@@ -29,7 +29,8 @@ import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.components.Button;
 import walledin.util.Utils;
 
-public class SelectTeamScreen extends Screen implements ScreenMouseEventListener {
+public class SelectTeamScreen extends Screen implements
+        ScreenMouseEventListener {
     Screen teamBlue;
     Screen teamRed;
     Screen back;
@@ -60,7 +61,6 @@ public class SelectTeamScreen extends Screen implements ScreenMouseEventListener
         addChild(teamRed);
         addChild(back);
     }
-
 
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {

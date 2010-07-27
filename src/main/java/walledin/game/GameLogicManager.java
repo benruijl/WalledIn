@@ -1,4 +1,4 @@
-package walledin.game.network.server;
+package walledin.game;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.Random;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
-import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
@@ -18,6 +17,7 @@ import walledin.game.entity.MessageType;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.map.SpawnPoint;
+import walledin.game.network.server.Server;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 

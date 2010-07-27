@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.PlayerActions;
+import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -179,6 +180,9 @@ public class NetworkDataReader {
             break;
         case PLAYER_NAME:
             data = readStringData(buffer);
+            break;
+        case PLAYER_TEAM:
+            data = Teams.values()[buffer.getInt()];
             break;
         case POSITION:
             data = readVector2fData(buffer);

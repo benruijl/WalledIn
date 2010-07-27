@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.PlayerActions;
+import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -140,7 +141,8 @@ public class NetworkDataWriter {
         buffer.flip();
     }
 
-    public void prepareLoginResponseMessage(final ErrorCodes errorMessage, final String entityName) {
+    public void prepareLoginResponseMessage(final ErrorCodes errorMessage,
+            final String entityName) {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.LOGIN_RESPONSE_MESSAGE);
@@ -214,6 +216,9 @@ public class NetworkDataWriter {
             break;
         case PLAYER_NAME:
             writeStringData((String) data, buffer);
+            break;
+        case PLAYER_TEAM:
+            writeIntegerData(((Teams) data).ordinal(), buffer);
             break;
         case POSITION:
             writeVector2fData((Vector2f) data, buffer);

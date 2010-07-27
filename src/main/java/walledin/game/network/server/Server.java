@@ -34,6 +34,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
+import walledin.game.GameLogicManager;
 import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -397,6 +398,7 @@ public class Server implements NetworkEventListener {
             // also send the received data to the player
             connection.getPlayer().setAttribute(Attribute.PLAYER_ACTIONS,
                     playerActions);
+            
             connection.getPlayer()
                     .setAttribute(Attribute.CURSOR_POS, cursorPos);
             connection.setReceivedVersion(newVersion);
