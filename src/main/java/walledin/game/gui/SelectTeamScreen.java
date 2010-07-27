@@ -59,6 +59,7 @@ public class SelectTeamScreen extends Screen implements ScreenMouseEventListener
         addChild(teamBlue);
         addChild(teamRed);
         addChild(back);
+        
     }
 
 
