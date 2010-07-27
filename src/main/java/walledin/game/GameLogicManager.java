@@ -2,9 +2,11 @@ package walledin.game;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -25,23 +27,35 @@ public class GameLogicManager {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
+    /** Server that is running this game. */
     private final Server server;
     /** Random number generator. */
     private final Random rng;
     private final EntityManager entityManager;
     private final EntityFactory entityFactory;
 
-    public class PlayerInfo {
+    /** This class contains all information about the player. */
+    public final class PlayerInfo {
         private float currentRespawnTime;
         private final Entity player;
         private boolean dead;
         private boolean respawn;
+        private Teams team;
 
         public PlayerInfo(final Entity player) {
             super();
             this.player = player;
             dead = false;
             respawn = false;
+            team = Teams.UNSELECTED;
+        }
+
+        public Teams getTeam() {
+            return team;
+        }
+
+        public void setTeam(Teams team) {
+            this.team = team;
         }
 
         public Entity getPlayer() {
@@ -91,16 +105,26 @@ public class GameLogicManager {
 
     }
 
-    /* Special entities */
+    /** Active map. */
     private Entity map;
+    /** A map from the player entity name to the player info. */
     private final Map<String, PlayerInfo> players;
-    /** Respawn time in seconds */
+    /** A map to from a team to the players in it. */
+    private final Map<Teams, Set<PlayerInfo>> teams;
+    /** Respawn time in seconds. */
     private final float respawnTime;
 
     public GameLogicManager(final Server server) {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
+        teams = new HashMap<Teams, Set<PlayerInfo>>();
+
+        /* Initialize the map */
+        for (Teams team : Teams.values()) {
+            teams.put(team, new HashSet<GameLogicManager.PlayerInfo>());
+        }
+
         this.server = server;
         rng = new Random();
 
@@ -109,16 +133,36 @@ public class GameLogicManager {
                 .getFloat("game.respawnTime");
     }
 
-    public Server getServer() {
+    public final Server getServer() {
         return server;
     }
 
-    public EntityManager getEntityManager() {
+    public final EntityManager getEntityManager() {
         return entityManager;
     }
 
-    public EntityFactory getEntityFactory() {
+    public final EntityFactory getEntityFactory() {
         return entityFactory;
+    }
+
+    /**
+     * Registers the player with a certain team.
+     * 
+     * @param entityName
+     *            Player entity name
+     * @param team
+     *            new team
+     */
+    public final void setTeam(final String entityName, final Teams team) {
+        PlayerInfo info = players.get(entityName);
+
+        /* Unregister from previous team */
+        if (info.getTeam() != null) {
+            teams.get(info.getTeam()).remove(info);
+        }
+
+        teams.get(team).add(info);
+        info.setTeam(team);
     }
 
     /**
@@ -128,7 +172,7 @@ public class GameLogicManager {
      * @param player
      *            Player
      */
-    public void spawnPlayer(final Entity player) {
+    public final void spawnPlayer(final Entity player) {
         final List<SpawnPoint> points = (List<SpawnPoint>) map
                 .getAttribute(Attribute.SPAWN_POINTS);
 
@@ -147,7 +191,7 @@ public class GameLogicManager {
      *            In-game name of the player
      * @return Player entity
      */
-    public Entity createPlayer(final String entityName, final String name) {
+    public final Entity createPlayer(final String entityName, final String name) {
         final Entity player = entityManager.create(Family.PLAYER, entityName);
         player.setAttribute(Attribute.PLAYER_NAME, name);
         players.put(entityName, new PlayerInfo(player));
@@ -162,7 +206,7 @@ public class GameLogicManager {
      * @param entityName
      *            Player name
      */
-    public void removePlayer(final String entityName) {
+    public final void removePlayer(final String entityName) {
         /* If the player is dead, he is already removed from the entity list. */
         if (!players.get(entityName).isDead()) {
             entityManager.remove(entityName);
@@ -198,7 +242,7 @@ public class GameLogicManager {
         entityManager.doCollisionDetection(map, delta);
     }
 
-    public void initialize() {
+    public final void initialize() {
         try {
             entityFactory.loadScript(Utils
                     .getClasspathURL("entities/entities.groovy"));
