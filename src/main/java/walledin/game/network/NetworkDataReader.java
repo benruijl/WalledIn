@@ -36,6 +36,8 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.GameLogicManager;
+import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActions;
 import walledin.game.Teams;
 import walledin.game.entity.Attribute;
@@ -329,6 +331,12 @@ public class NetworkDataReader {
             case NetworkConstants.INPUT_MESSAGE:
                 processInputMessage(address);
                 break;
+            case NetworkConstants.GET_PLAYER_INFO_MESSAGE:
+                processGetPlayerInfoMessage(address);
+                break;
+            case NetworkConstants.GET_PLAYER_INFO_RESPONSE_MESSAGE:
+                processGetPlayerInfoResponseMessage(address);
+                break;
             default:
                 LOG.warn("Received unhandled message");
                 break;
@@ -353,5 +361,22 @@ public class NetworkDataReader {
             LOG.warn("Unknown ident");
             // else ignore the datagram, incorrect format
         }
+    }
+
+    private void processGetPlayerInfoMessage(final SocketAddress address) {
+        listener.receivedGetPlayerInfoMessage(address);
+    }
+
+    private void processGetPlayerInfoResponseMessage(final SocketAddress address) {
+        final Set<PlayerClientInfo> players = new HashSet<GameLogicManager.PlayerClientInfo>();
+        final int numPlayers = buffer.getInt();
+
+        for (int i = 0; i < numPlayers; i++) {
+            final String entityName = readStringData(buffer);
+            final Teams team = Teams.values()[buffer.getInt()];
+            players.add(new PlayerClientInfo(entityName, team));
+        }
+
+        listener.receivedGetPlayerInfoResponseMessage(address, players);
     }
 }

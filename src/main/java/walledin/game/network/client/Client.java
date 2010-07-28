@@ -39,7 +39,7 @@ import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
-import walledin.game.GameLogicManager.PlayerInfo;
+import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerActions;
 import walledin.game.entity.Entity;
@@ -74,15 +74,14 @@ public final class Client implements RenderListener, NetworkEventListener {
     private final DatagramChannel masterServerChannel;
     private DatagramChannel serverNotifyChannel;
     private boolean quitting = false;
-    
+
     /* Data that may be requested by player. */
     /** List of servers from the master server. */
     private Set<ServerData> internetServerList;
     /** List of servers on LAN. */
     private final Set<ServerData> lanServerList;
     /** List of players of the current server */
-    private final Set<PlayerInfo> playerList;
-        
+    private final Set<PlayerClientInfo> playerList;
 
     /** Keeps track if the player is connected to a server. */
     private boolean connected = false;
@@ -110,7 +109,7 @@ public final class Client implements RenderListener, NetworkEventListener {
         networkDataReader = new NetworkDataReader(this);
         internetServerList = new HashSet<ServerData>();
         lanServerList = new HashSet<ServerData>();
-        playerList = new HashSet<GameLogicManager.PlayerInfo>();
+        playerList = new HashSet<GameLogicManager.PlayerClientInfo>();
         quitting = false;
 
         channel = DatagramChannel.open();
@@ -284,8 +283,8 @@ public final class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedServerNotificationMessage(
-            final SocketAddress address, final ServerData server) {
+    public void receivedServerNotificationMessage(final SocketAddress address,
+            final ServerData server) {
         lanServerList.add(server);
     }
 
@@ -536,20 +535,21 @@ public final class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedGetPlayerInfoMessage(final SocketAddress address,
-            final Set<PlayerInfo> players) {
+    public void receivedGetPlayerInfoResponseMessage(
+            final SocketAddress address, final Set<PlayerClientInfo> players) {
         playerList.clear();
-        playerList.addAll(players);        
+        playerList.addAll(players);
     }
-    
+
     /**
      * Gets the list of players from the current server.
+     * 
      * @return List of players
      */
-    public Set<PlayerInfo> getPlayerList() {
+    public Set<PlayerClientInfo> getPlayerList() {
         return playerList;
     }
-    
+
     /**
      * Refreshes the player list by asking the server for an update.
      */
@@ -558,10 +558,15 @@ public final class Client implements RenderListener, NetworkEventListener {
             try {
                 networkDataWriter.prepareGetPlayerInfoMessage();
                 networkDataWriter.sendBuffer(channel);
-                playerList.clear();
             } catch (final IOException e) {
                 LOG.error("IOException", e);
             }
         }
+    }
+
+    @Override
+    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
+        // ignore
+
     }
 }

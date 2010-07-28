@@ -35,7 +35,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
-import walledin.game.GameLogicManager.PlayerInfo;
+import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -399,7 +399,7 @@ public class Server implements NetworkEventListener {
             // also send the received data to the player
             connection.getPlayer().setAttribute(Attribute.PLAYER_ACTIONS,
                     playerActions);
-            
+
             connection.getPlayer()
                     .setAttribute(Attribute.CURSOR_POS, cursorPos);
             connection.setReceivedVersion(newVersion);
@@ -435,8 +435,20 @@ public class Server implements NetworkEventListener {
     }
 
     @Override
-    public void receivedGetPlayerInfoMessage(SocketAddress address,
-            Set<PlayerInfo> players) {
+    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
+        try {
+            networkWriter.prepareGetPlayerInfoReponseMessage(gameLogicManager
+                    .getPlayers().values());
+            networkWriter.sendBuffer(channel, address);
+        } catch (final IOException e) {
+            LOG.error("IOException during GetPlayerInfo", e);
+        }
+
+    }
+
+    @Override
+    public void receivedGetPlayerInfoResponseMessage(
+            final SocketAddress address, final Set<PlayerClientInfo> players) {
         // ignore
     }
 }

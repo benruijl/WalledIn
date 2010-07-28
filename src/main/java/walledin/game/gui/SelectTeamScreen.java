@@ -20,7 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui;
 
-import java.net.InetSocketAddress;
+import java.util.HashSet;
 import java.util.Set;
 
 import walledin.engine.Font;
@@ -29,9 +29,10 @@ import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.GameLogicManager.PlayerInfo;
-import walledin.game.Teams;
+import walledin.game.GameLogicManager;
+import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.entity.Attribute;
+import walledin.game.entity.Entity;
 import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.components.Button;
 import walledin.util.Utils;
@@ -40,11 +41,13 @@ public class SelectTeamScreen extends Screen implements
         ScreenMouseEventListener {
     Screen teamBlue;
     Screen teamRed;
+    Screen teamUndefined;
     Screen back;
-    Set<PlayerInfo> players;
+    Set<PlayerClientInfo> players;
 
     public SelectTeamScreen(final ScreenManager manager) {
         super(manager, null, 0);
+        players = new HashSet<GameLogicManager.PlayerClientInfo>();
     }
 
     @Override
@@ -57,20 +60,33 @@ public class SelectTeamScreen extends Screen implements
         /* Output the player names under the correct team */
         int redCount = 0;
         int blueCount = 0;
-        for (PlayerInfo player : players) {
-            switch (player.getTeam()) {
+        int specCount = 0;
+        for (final PlayerClientInfo player : players) {
+            final Entity playerEntity = getManager().getEntityManager().get(
+                    player.getEntityName());
+            
+            if (playerEntity == null) {
+                return;
+            }
 
+            switch (player.getTeam()) {
             case BLUE:
-                font.renderText(renderer, (String) player.getPlayer()
+                font.renderText(renderer, (String) playerEntity
                         .getAttribute(Attribute.PLAYER_NAME), new Vector2f(200,
                         220 + blueCount * 20));
                 blueCount++;
                 break;
             case RED:
-                font.renderText(renderer, (String) player.getPlayer()
-                        .getAttribute(Attribute.PLAYER_NAME), new Vector2f(200,
+                font.renderText(renderer, (String) playerEntity
+                        .getAttribute(Attribute.PLAYER_NAME), new Vector2f(400,
                         220 + redCount * 20));
                 redCount++;
+                break;
+            case UNSELECTED:
+                font.renderText(renderer, (String) playerEntity
+                        .getAttribute(Attribute.PLAYER_NAME), new Vector2f(600,
+                        220 + specCount * 20));
+                specCount++;
                 break;
             default:
                 break;
@@ -87,10 +103,12 @@ public class SelectTeamScreen extends Screen implements
         teamBlue.addMouseEventListener(this);
         teamRed = new Button(this, "Team Red", new Vector2f(400, 200));
         teamRed.addMouseEventListener(this);
+        teamUndefined = new Button(this, "Spectators", new Vector2f(600, 200));
         back = new Button(this, "Back", new Vector2f(200, 400));
         back.addMouseEventListener(this);
         addChild(teamBlue);
         addChild(teamRed);
+        addChild(teamUndefined);
         addChild(back);
 
     }
@@ -116,7 +134,8 @@ public class SelectTeamScreen extends Screen implements
     }
 
     @Override
-    public void update(double delta) {
+    public void update(final double delta) {
+        getManager().getClient().refreshPlayerList();
         players = getManager().getClient().getPlayerList();
 
         super.update(delta);

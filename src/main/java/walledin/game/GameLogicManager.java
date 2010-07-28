@@ -23,7 +23,7 @@ import walledin.game.network.server.Server;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
-public class GameLogicManager {
+public final class GameLogicManager {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -33,6 +33,36 @@ public class GameLogicManager {
     private final Random rng;
     private final EntityManager entityManager;
     private final EntityFactory entityFactory;
+
+    /**
+     * This class contains all information the client should know about the
+     * player.
+     */
+    public static final class PlayerClientInfo {
+        private final String entityName;
+        private Teams team;
+
+        public PlayerClientInfo(final String entityName, final Teams team) {
+            this.entityName = entityName;
+            this.team = team;
+        }
+
+        public PlayerClientInfo(final String entityName) {
+            this.entityName = entityName;
+        }
+
+        public String getEntityName() {
+            return entityName;
+        }
+
+        public Teams getTeam() {
+            return team;
+        }
+
+        public void setTeam(final Teams team) {
+            this.team = team;
+        }
+    }
 
     /** This class contains all information about the player. */
     public final class PlayerInfo {
@@ -54,7 +84,7 @@ public class GameLogicManager {
             return team;
         }
 
-        public void setTeam(Teams team) {
+        public void setTeam(final Teams team) {
             this.team = team;
         }
 
@@ -121,7 +151,7 @@ public class GameLogicManager {
         teams = new HashMap<Teams, Set<PlayerInfo>>();
 
         /* Initialize the map */
-        for (Teams team : Teams.values()) {
+        for (final Teams team : Teams.values()) {
             teams.put(team, new HashSet<GameLogicManager.PlayerInfo>());
         }
 
@@ -154,7 +184,7 @@ public class GameLogicManager {
      *            new team
      */
     public final void setTeam(final String entityName, final Teams team) {
-        PlayerInfo info = players.get(entityName);
+        final PlayerInfo info = players.get(entityName);
 
         /* Unregister from previous team */
         if (info.getTeam() != null) {
@@ -180,6 +210,15 @@ public class GameLogicManager {
         final SpawnPoint p = points.get(rng.nextInt(points.size()));
         player.setAttribute(Attribute.POSITION, p.getPos());
         player.sendMessage(MessageType.RESTORE_HEALTH, 100); // FIXME
+    }
+
+    /**
+     * Returns a map from player name to player info for all players.
+     * 
+     * @return Map
+     */
+    public Map<String, PlayerInfo> getPlayers() {
+        return players;
     }
 
     /**

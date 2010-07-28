@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -32,6 +33,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.GameLogicManager.PlayerInfo;
 import walledin.game.PlayerActions;
 import walledin.game.Teams;
 import walledin.game.entity.Attribute;
@@ -164,11 +166,25 @@ public class NetworkDataWriter {
         buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
         buffer.flip();
     }
-    
+
     public void prepareGetPlayerInfoMessage() {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GET_PLAYER_INFO_MESSAGE);
+        buffer.flip();
+    }
+
+    public void prepareGetPlayerInfoReponseMessage(
+            final Collection<PlayerInfo> players) {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.GET_PLAYER_INFO_RESPONSE_MESSAGE);
+        buffer.putInt(players.size());
+
+        for (final PlayerInfo player : players) {
+            writeStringData(player.getPlayer().getName(), buffer);
+            buffer.putInt(player.getTeam().ordinal());
+        }
         buffer.flip();
     }
 
