@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
+import walledin.game.GameLogicManager.PlayerInfo;
 import walledin.game.PlayerActions;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -431,5 +432,11 @@ public class Server implements NetworkEventListener {
         }
 
         gameLogicManager.initialize();
+    }
+
+    @Override
+    public void receivedGetPlayerInfoMessage(SocketAddress address,
+            Set<PlayerInfo> players) {
+        // ignore
     }
 }

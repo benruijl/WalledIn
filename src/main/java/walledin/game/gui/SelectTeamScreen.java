@@ -20,11 +20,18 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui;
 
+import java.net.InetSocketAddress;
+import java.util.Set;
+
+import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.GameLogicManager.PlayerInfo;
+import walledin.game.Teams;
+import walledin.game.entity.Attribute;
 import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.components.Button;
 import walledin.util.Utils;
@@ -34,6 +41,7 @@ public class SelectTeamScreen extends Screen implements
     Screen teamBlue;
     Screen teamRed;
     Screen back;
+    Set<PlayerInfo> players;
 
     public SelectTeamScreen(final ScreenManager manager) {
         super(manager, null, 0);
@@ -44,6 +52,30 @@ public class SelectTeamScreen extends Screen implements
         super.draw(renderer);
 
         renderer.drawRect("logo", new Rectangle(250, 50, 256, 128));
+        final Font font = getManager().getFont("arial20");
+
+        /* Output the player names under the correct team */
+        int redCount = 0;
+        int blueCount = 0;
+        for (PlayerInfo player : players) {
+            switch (player.getTeam()) {
+
+            case BLUE:
+                font.renderText(renderer, (String) player.getPlayer()
+                        .getAttribute(Attribute.PLAYER_NAME), new Vector2f(200,
+                        220 + blueCount * 20));
+                blueCount++;
+                break;
+            case RED:
+                font.renderText(renderer, (String) player.getPlayer()
+                        .getAttribute(Attribute.PLAYER_NAME), new Vector2f(200,
+                        220 + redCount * 20));
+                redCount++;
+                break;
+            default:
+                break;
+            }
+        }
     }
 
     @Override
@@ -60,7 +92,7 @@ public class SelectTeamScreen extends Screen implements
         addChild(teamBlue);
         addChild(teamRed);
         addChild(back);
-        
+
     }
 
     @Override
@@ -81,6 +113,13 @@ public class SelectTeamScreen extends Screen implements
             hide();
             Input.getInstance().setButtonUp(1); // FIXME
         }
+    }
+
+    @Override
+    public void update(double delta) {
+        players = getManager().getClient().getPlayerList();
+
+        super.update(delta);
     }
 
     @Override

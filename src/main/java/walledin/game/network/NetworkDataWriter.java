@@ -164,6 +164,13 @@ public class NetworkDataWriter {
         buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
         buffer.flip();
     }
+    
+    public void prepareGetPlayerInfoMessage() {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.GET_PLAYER_INFO_MESSAGE);
+        buffer.flip();
+    }
 
     public void prepareChallengeResponse(final long challengeData) {
         buffer.clear();
