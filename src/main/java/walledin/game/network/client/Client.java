@@ -28,11 +28,13 @@ import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import walledin.engine.Audio;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.RenderListener;
@@ -166,6 +168,24 @@ public class Client implements RenderListener, NetworkEventListener {
         return servers;
     }
 
+    @Override
+    public void entityCreated(Entity entity) {
+        // TODO: move to a better place
+        /* Play a sound when a bullet is created */
+        Random generator = new Random();
+        int num = generator.nextInt(4) + 1;
+        
+        if (entity.getFamily() == Family.HANDGUN_BULLET) {
+            Audio.getInstance().playSound(
+                    Utils.getClasspathURL("audio/handgun_" + num + ".wav"));
+        }
+        
+        if (entity.getFamily() == Family.FOAMGUN_BULLET) {
+            Audio.getInstance().playSound(
+                    Utils.getClasspathURL("audio/foamgun_" + num + ".wav"));
+        }
+    }
+
     /**
      * Called when the gamestate has been updated. We only send a new input when
      * we receive the net game state.
@@ -205,11 +225,13 @@ public class Client implements RenderListener, NetworkEventListener {
         }
         return result;
     }
-    
+
     /**
-     * Displays an error message, disconnects from the server and
-     * returns to the server list.
-     * @param message Message to display
+     * Displays an error message, disconnects from the server and returns to the
+     * server list.
+     * 
+     * @param message
+     *            Message to display
      */
     public final void displayErrorAndDisconnect(final String message) {
         screenManager.createDialog(message);
@@ -259,7 +281,7 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.info("Player entity name received: " + playerEntityName);
             return;
         }
-            
+
         switch (errorCode) {
         case ERROR_SERVER_IS_FULL:
             displayErrorAndDisconnect("The server is full.");
@@ -519,4 +541,5 @@ public class Client implements RenderListener, NetworkEventListener {
             }
         }
     }
+
 }

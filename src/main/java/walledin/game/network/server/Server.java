@@ -430,4 +430,9 @@ public class Server implements NetworkEventListener {
 
         gameLogicManager.initialize();
     }
+
+    @Override
+    public void entityCreated(Entity entity) {
+        //ignore        
+    }
 }
