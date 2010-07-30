@@ -34,11 +34,11 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
-import walledin.engine.Audio;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
+import walledin.engine.audio.Audio;
 import walledin.engine.math.Vector2f;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerActions;
@@ -112,6 +112,10 @@ public class Client implements RenderListener, NetworkEventListener {
 
         TIME_OUT_TIME = SettingsManager.getInstance().getInteger(
                 "network.timeOutTime");
+
+        /* Player background music */
+        Audio.getInstance().playOgg(
+                Utils.getClasspathURL("audio/Clausterphobia.ogg"));
     }
 
     public static void main(final String[] args) {
@@ -174,12 +178,12 @@ public class Client implements RenderListener, NetworkEventListener {
         /* Play a sound when a bullet is created */
         Random generator = new Random();
         int num = generator.nextInt(4) + 1;
-        
+
         if (entity.getFamily() == Family.HANDGUN_BULLET) {
             Audio.getInstance().playSound(
                     Utils.getClasspathURL("audio/handgun_" + num + ".wav"));
         }
-        
+
         if (entity.getFamily() == Family.FOAMGUN_BULLET) {
             Audio.getInstance().playSound(
                     Utils.getClasspathURL("audio/foamgun_" + num + ".wav"));
