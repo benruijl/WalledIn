@@ -113,9 +113,19 @@ public class Client implements RenderListener, NetworkEventListener {
         TIME_OUT_TIME = SettingsManager.getInstance().getInteger(
                 "network.timeOutTime");
 
-        /* Player background music */
-        Audio.getInstance().playOgg(
+        /* Load music */
+        Audio.getInstance().loadOggSample("background1",
                 Utils.getClasspathURL("audio/Clausterphobia.ogg"));
+
+        for (int i = 1; i < 5; i++) {
+            Audio.getInstance().loadWaveSample("handgun" + i,
+                    Utils.getClasspathURL("audio/handgun_" + i + ".wav"));
+            Audio.getInstance().loadWaveSample("foamgun" + i,
+                    Utils.getClasspathURL("audio/foamgun_" + i + ".wav"));
+        }
+
+        /* Play background music */
+        Audio.getInstance().playSample("background1");
     }
 
     public static void main(final String[] args) {
@@ -180,13 +190,11 @@ public class Client implements RenderListener, NetworkEventListener {
         int num = generator.nextInt(4) + 1;
 
         if (entity.getFamily() == Family.HANDGUN_BULLET) {
-            Audio.getInstance().playSound(
-                    Utils.getClasspathURL("audio/handgun_" + num + ".wav"));
+            Audio.getInstance().playSample("handgun" + num);
         }
 
         if (entity.getFamily() == Family.FOAMGUN_BULLET) {
-            Audio.getInstance().playSound(
-                    Utils.getClasspathURL("audio/foamgun_" + num + ".wav"));
+            Audio.getInstance().playSample("foamgun" + num);
         }
     }
 

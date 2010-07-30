@@ -37,17 +37,14 @@ import com.jcraft.jorbis.Info;
 
 /**
  * This class decodes an Ogg file. It is heavily based on example code delivered
- * with this package. We have not written this ourselves.
+ * with the JOrbis library.
  */
 public class OggDecoder {
-    /** Logger */
+    /** Logger. */
     private static final Logger LOG = Logger.getLogger(OggDecoder.class);
 
     private int convsize = 4096 * 4;
     private byte[] convbuffer = new byte[convsize];
-
-    public OggDecoder() {
-    }
 
     public OggData getData(InputStream input) throws IOException {
         if (input == null) {
@@ -267,11 +264,8 @@ public class OggDecoder {
 
         oy.clear();
 
-        byte[] data = dataout.toByteArray();
-        OggData ogg = new OggData(ByteBuffer.allocateDirect(data.length),
+        OggData ogg = new OggData(dataout.toByteArray(),
                 vi.rate, vi.channels);
-        ogg.getData().put(data);
-        ogg.getData().rewind();
 
         return ogg;
     }

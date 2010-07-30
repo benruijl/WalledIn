@@ -22,6 +22,9 @@ package walledin.engine.audio;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -30,6 +33,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.log4j.Logger;
 
@@ -42,14 +46,17 @@ import org.apache.log4j.Logger;
 public final class Audio {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(Audio.class);
-    /** Reference to only instance of Adio. */
+    /** Reference to only instance of Audio. */
     private static Audio ref = null;
+
+    /** Map of sample name to sample. */
+    private Map<String, Sample> samples;
 
     /**
      * Private constructor.
      */
     private Audio() {
-
+        samples = new HashMap<String, Sample>();
     }
 
     @Override
@@ -71,64 +78,73 @@ public final class Audio {
     }
 
     /**
-     * Plays a wave file.
-     * 
-     * @param url
-     *            URL of file
+     * Loads a Wave sample.
+     * @param name Name of resource
+     * @param url URL of resource
+     * @return Audio sample or null on failure
      */
-    public void playSound(final URL url) {
+    public Sample loadWaveSample(final String name, final URL url) {
+        AudioInputStream stream;
         try {
-            AudioInputStream stream = AudioSystem.getAudioInputStream(url);
+            stream = AudioSystem.getAudioInputStream(url);
 
-            DataLine.Info info = new DataLine.Info(Clip.class,
-                    stream.getFormat());
-            Clip clip = (Clip) AudioSystem.getLine(info);
+            // read the stream
+            byte[] data = new byte[(int) stream.getFrameLength()];
+            stream.read(data);
 
-            clip.open(stream);
-            clip.start();
+            Sample sample = new Sample(data, stream.getFormat(), true);
+            samples.put(name, sample);
+            return sample;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * Loads an Ogg sample.
+     * @param name Name of the sample
+     * @param url URL of the sampel
+     * @return Audio sample or null on failure
+     */
+    public Sample loadOggSample(final String name, final URL url) {
+        try {
+            OggDecoder decoder = new OggDecoder();
+            OggData ogg = decoder.getData(url.openStream());
+            AudioFormat format = new AudioFormat(ogg.getRate(), 16,
+                    ogg.getChannels(), true, false);
+
+            Sample sample = new Sample(ogg.getData(), format, false);
+            samples.put(name, sample);
+            return sample;
+
+        } catch (IOException e) {
+            LOG.info("Could not load file: " + url.getFile());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Plays a sample.
+     * @param name Sample name
+     */
+    public void playSample(final String name) {
+        try {
+            if (!samples.containsKey(name)) {
+                return;
+            }
+            
+            Sample sample = samples.get(name);
+            sample.play();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void playOgg(final URL url) {
-        Runnable r = new Runnable() {
-            public void run() {
-                playOggThread(url);
-            }
-        };
-
-        Thread t = new Thread(r);
-        t.start();
-    }
-
-    private void playOggThread(final URL url) {
-        OggDecoder decoder = new OggDecoder();
-        try {
-            OggData ogg = decoder.getData(url.openStream());
-            AudioFormat format = new AudioFormat(ogg.getRate(), 16,
-                    ogg.getChannels(), true, false);
-            DataLine.Info datalineInfo = new DataLine.Info(
-                    SourceDataLine.class, format, AudioSystem.NOT_SPECIFIED);
-            SourceDataLine outputLine;
-            try {
-                outputLine = (SourceDataLine) AudioSystem.getLine(datalineInfo);
-                outputLine.open(format);
-                outputLine.start();
-                // if (ogg.getData().hasArray()) {
-                byte[] data = new byte[ogg.getData().capacity()];
-                ogg.getData().get(data);
-                outputLine.write(data, 0, ogg.getData().capacity());
-                // }
-            } catch (LineUnavailableException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
-
-        } catch (IOException e) {
-            LOG.info("Could not load file: " + url.getFile());
-            e.printStackTrace();
-        }
-    }
 }

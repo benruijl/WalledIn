@@ -30,20 +30,20 @@ import java.nio.ByteBuffer;
  */
 public class OggData {
     /** PCM data. */
-    private ByteBuffer data;
+    private byte[] data;
     /** Rate of sound. */
     private final int rate;
     /** Channels. */
     private final int channels;
 
-    public OggData(ByteBuffer data, int rate, int channels) {
+    public OggData(byte[] data, int rate, int channels) {
         super();
         this.data = data;
         this.rate = rate;
         this.channels = channels;
     }
 
-    public ByteBuffer getData() {
+    public byte[] getData() {
         return data;
     }
 
