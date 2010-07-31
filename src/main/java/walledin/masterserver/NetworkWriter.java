@@ -64,6 +64,7 @@ public class NetworkWriter {
         writeStringData(server.getName());
         buffer.putInt(server.getPlayers());
         buffer.putInt(server.getMaxPlayers());
+        buffer.putInt(server.getGameMode());
     }
 
     private void writeStringData(final String data) {

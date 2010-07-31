@@ -28,13 +28,15 @@ public class ServerData {
     private final String name;
     private final int players;
     private final int maxPlayers;
+    private final int gameMode;
 
     public ServerData(final SocketAddress address, final String name,
-            final int players, final int maxPlayers) {
+            final int players, final int maxPlayers, final int gameMode) {
         this.address = address;
         this.name = name;
         this.players = players;
         this.maxPlayers = maxPlayers;
+        this.gameMode = gameMode;
     }
 
     public long getTimeLastSeen() {
@@ -56,6 +58,10 @@ public class ServerData {
     public int getMaxPlayers() {
         return maxPlayers;
     }
+    
+    public int getGameMode() {
+		return gameMode;
+	}
 
     public void setTimeLastSeen(final long timeLastSeen) {
         this.timeLastSeen = timeLastSeen;

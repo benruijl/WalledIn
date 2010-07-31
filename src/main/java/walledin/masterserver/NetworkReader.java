@@ -88,8 +88,9 @@ public class NetworkReader {
         final String name = readStringData();
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
+        final int gameMode = buffer.getInt();
         final ServerData server = new ServerData(serverAddress, name, players,
-                maxPlayers);
+                maxPlayers, gameMode);
         listener.receivedServerNotificationMessage(address, server);
     }
 
