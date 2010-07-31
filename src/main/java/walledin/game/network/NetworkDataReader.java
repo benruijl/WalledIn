@@ -115,6 +115,11 @@ public class NetworkDataReader {
     private void processLogoutMessage(final SocketAddress address) {
         listener.receivedLogoutMessage(address);
     }
+    
+    private void processTeamSelectMessage(final SocketAddress address) {
+        final Teams team = Teams.values()[buffer.getInt()];
+        listener.receivedTeamSelectMessage(address, team);
+    }
 
     private void processServersMessage(final SocketAddress address)
             throws UnknownHostException {
@@ -336,6 +341,9 @@ public class NetworkDataReader {
                 break;
             case NetworkConstants.GET_PLAYER_INFO_RESPONSE_MESSAGE:
                 processGetPlayerInfoResponseMessage(address);
+                break;
+            case NetworkConstants.TEAM_SELECT_MESSAGE:
+                processTeamSelectMessage(address);
                 break;
             default:
                 LOG.warn("Received unhandled message");

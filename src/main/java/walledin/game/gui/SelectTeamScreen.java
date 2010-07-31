@@ -29,8 +29,8 @@ import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
+import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.gui.ScreenManager.ScreenType;
@@ -47,7 +47,7 @@ public class SelectTeamScreen extends Screen implements
 
     public SelectTeamScreen(final ScreenManager manager) {
         super(manager, null, 0);
-        players = new HashSet<GameLogicManager.PlayerClientInfo>();
+        players = new HashSet<PlayerClientInfo>();
     }
 
     @Override
@@ -116,12 +116,14 @@ public class SelectTeamScreen extends Screen implements
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
         if (e.getScreen() == teamBlue) {
+            getManager().getClient().selectTeam(Teams.BLUE);
             getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
             hide();
         }
 
         if (e.getScreen() == teamRed) {
+            getManager().getClient().selectTeam(Teams.RED);
             getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
             hide();

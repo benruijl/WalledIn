@@ -37,6 +37,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActions;
+import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -417,22 +418,7 @@ public class Server implements NetworkEventListener {
             final ServerData server) {
         // ignore
     }
-
-    /**
-     * Initializes the game. It reads the default map and initializes the entity
-     * manager.
-     */
-    public final void init() {
-        // Fill the change set queue
-        for (int i = 0; i < STORED_CHANGESETS; i++) {
-            final ChangeSet changeSet = gameLogicManager.getEntityManager()
-                    .getChangeSet();
-            changeSets.add(changeSet);
-            changeSetLookup.put(changeSet.getVersion(), changeSet);
-        }
-
-        gameLogicManager.initialize();
-    }
+    
 
     @Override
     public void receivedGetPlayerInfoMessage(final SocketAddress address) {
@@ -450,5 +436,29 @@ public class Server implements NetworkEventListener {
     public void receivedGetPlayerInfoResponseMessage(
             final SocketAddress address, final Set<PlayerClientInfo> players) {
         // ignore
+    }
+    
+
+    @Override
+    public void receivedTeamSelectMessage(SocketAddress address, Teams team) {
+        final PlayerConnection connection = players.get(address);
+        final String entityName = connection.getPlayer().getName();
+        gameLogicManager.setTeam(entityName, team);
+    }
+
+    /**
+     * Initializes the game. It reads the default map and initializes the entity
+     * manager.
+     */
+    public final void init() {
+        // Fill the change set queue
+        for (int i = 0; i < STORED_CHANGESETS; i++) {
+            final ChangeSet changeSet = gameLogicManager.getEntityManager()
+                    .getChangeSet();
+            changeSets.add(changeSet);
+            changeSetLookup.put(changeSet.getVersion(), changeSet);
+        }
+
+        gameLogicManager.initialize();
     }
 }
