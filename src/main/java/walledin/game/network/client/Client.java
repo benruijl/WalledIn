@@ -42,6 +42,7 @@ import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerActions;
+import walledin.game.Teams;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.gui.GameScreen;
@@ -540,6 +541,18 @@ public final class Client implements RenderListener, NetworkEventListener {
         playerList.clear();
         playerList.addAll(players);
     }
+    
+
+    @Override
+    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
+        // ignore
+
+    }
+
+    @Override
+    public void receivedTeamSelectMessage(SocketAddress address, Teams team) {
+        // ignore
+    }
 
     /**
      * Gets the list of players from the current server.
@@ -564,9 +577,12 @@ public final class Client implements RenderListener, NetworkEventListener {
         }
     }
 
-    @Override
-    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
-        // ignore
-
+    public void selectTeam(Teams team) {
+        networkDataWriter.prepareTeamSelectMessage(team);
+        try {
+            networkDataWriter.sendBuffer(channel);
+        } catch (IOException e) {
+            LOG.error("IOException", e);
+        }
     }
 }

@@ -134,6 +134,14 @@ public class NetworkDataWriter {
         buffer.putFloat(mousePos.getY());
         buffer.flip();
     }
+    
+    public void prepareTeamSelectMessage(final Teams team) {
+        buffer.clear();
+        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
+        buffer.put(NetworkConstants.TEAM_SELECT_MESSAGE);
+        buffer.putInt(team.ordinal());
+        buffer.flip();
+    }
 
     public void prepareLoginMessage(final String username) {
         buffer.clear();
