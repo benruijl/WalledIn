@@ -208,7 +208,7 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
         if (e.getKeys().contains(KeyEvent.VK_ESCAPE)) {
             Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
 
-            getManager().getScreen(ScreenType.SELECT_TEAM).show();
+            getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
         }
 

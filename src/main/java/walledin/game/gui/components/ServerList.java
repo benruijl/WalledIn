@@ -29,6 +29,7 @@ import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.GameMode;
 import walledin.game.gui.Screen;
 import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.gui.ScreenMouseEvent;
@@ -109,8 +110,19 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
                 getManager().getClient().connectToServer(serverList.get(i));
 
                 if (getManager().getClient().connectedToServer()) {
-                    getManager().getScreen(ScreenType.SELECT_TEAM).initialize();
-                    getManager().getScreen(ScreenType.SELECT_TEAM).show();
+
+                    /* If it is a team game, load the team selection screen */
+                    GameMode gameMode = serverList.get(i).getGameMode();
+                    if (gameMode == GameMode.BRIDGE_BUILDER
+                            || gameMode == GameMode.TEAM_DEATHMATCH) {
+                        getManager().getScreen(ScreenType.SELECT_TEAM)
+                                .initialize();
+                        getManager().getScreen(ScreenType.SELECT_TEAM).show();
+                    } else {
+                        getManager().getScreen(ScreenType.GAME).initialize();
+                        getManager().getScreen(ScreenType.GAME).show();
+                    }
+
                     getParent().hide();
                 }
 

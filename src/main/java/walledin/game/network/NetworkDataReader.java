@@ -38,6 +38,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
+import walledin.game.GameMode;
 import walledin.game.PlayerActions;
 import walledin.game.Teams;
 import walledin.game.entity.Attribute;
@@ -143,8 +144,9 @@ public class NetworkDataReader {
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
+        final GameMode gameMode = GameMode.values()[buffer.getInt()];
         final ServerData server = new ServerData(serverAddress, name, players,
-                maxPlayers);
+                maxPlayers, gameMode);
         listener.receivedServerNotificationMessage(address, server);
     }
 
@@ -157,7 +159,9 @@ public class NetworkDataReader {
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
-        return new ServerData(serverAddress, name, players, maxPlayers);
+        final GameMode gameMode = GameMode.values()[buffer.getInt()];
+        return new ServerData(serverAddress, name, players, maxPlayers,
+                gameMode);
     }
 
     private void readAttributeData(final Entity entity,

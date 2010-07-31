@@ -22,18 +22,22 @@ package walledin.game.network;
 
 import java.net.SocketAddress;
 
+import walledin.game.GameMode;
+
 public class ServerData {
     private final SocketAddress address;
     private final String name;
     private final int players;
     private final int maxPlayers;
+    private final GameMode gameMode;
 
     public ServerData(final SocketAddress address, final String name,
-            final int players, final int maxPlayers) {
+            final int players, final int maxPlayers, final GameMode gameMode) {
         this.address = address;
         this.name = name;
         this.players = players;
         this.maxPlayers = maxPlayers;
+        this.gameMode = gameMode;
     }
 
     public SocketAddress getAddress() {
@@ -50,6 +54,10 @@ public class ServerData {
 
     public int getMaxPlayers() {
         return maxPlayers;
+    }
+    
+    public GameMode getGameMode() {
+        return gameMode;
     }
 
     @Override

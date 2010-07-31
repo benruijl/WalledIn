@@ -165,7 +165,7 @@ public class Server implements NetworkEventListener {
         lastBroadcast = System.currentTimeMillis();
 
         networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                players.size(), maxPlayers);
+                players.size(), maxPlayers, gameLogicManager.getGameMode());
         networkWriter.sendBuffer(masterServerChannel);
 
         currentTime = System.nanoTime(); // initialize
@@ -210,14 +210,14 @@ public class Server implements NetworkEventListener {
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                    players.size(), maxPlayers);
+                    players.size(), maxPlayers, gameLogicManager.getGameMode());
             networkWriter.sendBuffer(masterServerChannel);
 
         }
 
         if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                    players.size(), maxPlayers);
+                    players.size(), maxPlayers, gameLogicManager.getGameMode());
             networkWriter.sendBuffer(serverNotifySocket,
                     NetworkConstants.BROADCAST_ADDRESS);
             lastBroadcast = System.currentTimeMillis();

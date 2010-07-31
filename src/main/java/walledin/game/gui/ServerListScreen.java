@@ -77,8 +77,7 @@ public class ServerListScreen extends Screen implements ScreenKeyEventListener {
              * return to main menu.
              */
             if (getManager().getClient().connectedToServer()) {
-                getManager().getScreen(ScreenType.SERVER_LIST).initialize();
-                getManager().getScreen(ScreenType.SELECT_TEAM).show();
+                getManager().getScreen(ScreenType.GAME).show();
                 hide();
                 Input.getInstance().setButtonUp(1); // FIXME
             } else {

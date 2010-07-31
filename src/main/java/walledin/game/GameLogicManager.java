@@ -31,7 +31,9 @@ public final class GameLogicManager {
     private final Server server;
     /** Random number generator. */
     private final Random rng;
+    /** Entity manager. */
     private final EntityManager entityManager;
+    /** Entity factory. */
     private final EntityFactory entityFactory;
 
     /**
@@ -143,6 +145,8 @@ public final class GameLogicManager {
     private final Map<Teams, Set<PlayerInfo>> teams;
     /** Respawn time in seconds. */
     private final float respawnTime;
+    /** Current game mode. */
+    private GameMode gameMode;
 
     public GameLogicManager(final Server server) {
         entityFactory = new EntityFactory();
@@ -156,11 +160,15 @@ public final class GameLogicManager {
         }
 
         this.server = server;
+        
+        /* Initialize random number generator */
         rng = new Random();
 
-        LOG.info(SettingsManager.getInstance().getString("game.respawnTime"));
+        /* Load settings. */
         respawnTime = SettingsManager.getInstance()
                 .getFloat("game.respawnTime");
+        gameMode = GameMode.valueOf(SettingsManager.getInstance().getString(
+                "game.gameMode"));
     }
 
     public final Server getServer() {
@@ -174,7 +182,15 @@ public final class GameLogicManager {
     public final EntityFactory getEntityFactory() {
         return entityFactory;
     }
-
+    
+    /**
+     * Gets the game mode.
+     * @return Current game mode
+     */
+    public GameMode getGameMode() {
+        return gameMode;
+    }
+    
     /**
      * Registers the player with a certain team.
      * 

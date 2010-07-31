@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.GameLogicManager.PlayerInfo;
+import walledin.game.GameMode;
 import walledin.game.PlayerActions;
 import walledin.game.Teams;
 import walledin.game.entity.Attribute;
@@ -197,7 +198,8 @@ public class NetworkDataWriter {
     }
 
     public void prepareServerNotificationResponse(final int port,
-            final String name, final int players, final int maxPlayers) {
+            final String name, final int players, final int maxPlayers,
+            final GameMode gameMode) {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.SERVER_NOTIFICATION_MESSAGE);
@@ -205,6 +207,7 @@ public class NetworkDataWriter {
         writeStringData(name, buffer);
         buffer.putInt(players);
         buffer.putInt(maxPlayers);
+        buffer.putInt(gameMode.ordinal());
         buffer.flip();
     }
 
