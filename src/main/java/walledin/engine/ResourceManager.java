@@ -44,7 +44,7 @@ public class ResourceManager<U, T> {
 
     protected boolean put(final U key, final T value) {
         if (resources.containsKey(key)) {
-            LOG.warn("Key " + key.toString() + "already exists");
+            LOG.warn("Key " + key.toString() + " already exists");
             return false;
         }
 

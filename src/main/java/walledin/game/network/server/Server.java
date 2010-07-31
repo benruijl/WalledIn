@@ -34,7 +34,10 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
+import walledin.game.GameLogicManager;
+import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActions;
+import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -163,7 +166,7 @@ public class Server implements NetworkEventListener {
         lastBroadcast = System.currentTimeMillis();
 
         networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                players.size(), maxPlayers);
+                players.size(), maxPlayers, gameLogicManager.getGameMode());
         networkWriter.sendBuffer(masterServerChannel);
 
         currentTime = System.nanoTime(); // initialize
@@ -208,14 +211,14 @@ public class Server implements NetworkEventListener {
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                    players.size(), maxPlayers);
+                    players.size(), maxPlayers, gameLogicManager.getGameMode());
             networkWriter.sendBuffer(masterServerChannel);
 
         }
 
         if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
             networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                    players.size(), maxPlayers);
+                    players.size(), maxPlayers, gameLogicManager.getGameMode());
             networkWriter.sendBuffer(serverNotifySocket,
                     NetworkConstants.BROADCAST_ADDRESS);
             lastBroadcast = System.currentTimeMillis();
@@ -397,6 +400,7 @@ public class Server implements NetworkEventListener {
             // also send the received data to the player
             connection.getPlayer().setAttribute(Attribute.PLAYER_ACTIONS,
                     playerActions);
+
             connection.getPlayer()
                     .setAttribute(Attribute.CURSOR_POS, cursorPos);
             connection.setReceivedVersion(newVersion);
@@ -413,6 +417,33 @@ public class Server implements NetworkEventListener {
     public void receivedServerNotificationMessage(final SocketAddress address,
             final ServerData server) {
         // ignore
+    }
+    
+
+    @Override
+    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
+        try {
+            networkWriter.prepareGetPlayerInfoReponseMessage(gameLogicManager
+                    .getPlayers().values());
+            networkWriter.sendBuffer(channel, address);
+        } catch (final IOException e) {
+            LOG.error("IOException during GetPlayerInfo", e);
+        }
+
+    }
+
+    @Override
+    public void receivedGetPlayerInfoResponseMessage(
+            final SocketAddress address, final Set<PlayerClientInfo> players) {
+        // ignore
+    }
+    
+
+    @Override
+    public void receivedTeamSelectMessage(SocketAddress address, Teams team) {
+        final PlayerConnection connection = players.get(address);
+        final String entityName = connection.getPlayer().getName();
+        gameLogicManager.setTeam(entityName, team);
     }
 
     /**

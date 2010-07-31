@@ -85,7 +85,8 @@ public final class GameMapIOXML implements GameMapIO {
      *            XML element
      * @return A set of item information
      */
-    private Set<ItemInfo> parseItems(final Element element, final float tileWidth) {
+    private Set<ItemInfo> parseItems(final Element element,
+            final float tileWidth) {
         final Set<ItemInfo> itList = new HashSet<ItemInfo>();
         final Element itemsNode = XMLReader.getFirstElement(element, "items");
         final List<Element> items = XMLReader.getElements(itemsNode, "item");
@@ -99,8 +100,8 @@ public final class GameMapIOXML implements GameMapIO {
                     .parseInt(el.getAttribute("respawn"));
 
             final ItemInfo item = new ItemInfo(
-                    Enum.valueOf(Family.class, type), new Vector2f(x, y).scale(tileWidth),
-                    respawnTime);
+                    Enum.valueOf(Family.class, type),
+                    new Vector2f(x, y).scale(tileWidth), respawnTime);
 
             itList.add(item);
         }
@@ -115,7 +116,8 @@ public final class GameMapIOXML implements GameMapIO {
      *            Current element
      * @return List of spawn points
      */
-    private List<SpawnPoint> readSpawnPoints(final Element element, final float tileWidth) {
+    private List<SpawnPoint> readSpawnPoints(final Element element,
+            final float tileWidth) {
         final List<SpawnPoint> points = new ArrayList<SpawnPoint>();
 
         final Element node = XMLReader.getFirstElement(element, "spawnpoints");
@@ -150,7 +152,8 @@ public final class GameMapIOXML implements GameMapIO {
             final Float tileWidth = XMLReader.getFloatValue(mapElement,
                     "tileWidth");
             final Set<ItemInfo> items = parseItems(mapElement, tileWidth);
-            final List<SpawnPoint> points = readSpawnPoints(mapElement, tileWidth);
+            final List<SpawnPoint> points = readSpawnPoints(mapElement,
+                    tileWidth);
             final List<Tile> tiles = parseTiles(mapElement);
             final Entity map = entityManager.create(Family.MAP, name);
 
