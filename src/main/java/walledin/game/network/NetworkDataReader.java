@@ -36,7 +36,11 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
+import walledin.game.GameLogicManager;
+import walledin.game.GameLogicManager.PlayerClientInfo;
+import walledin.game.GameMode;
 import walledin.game.PlayerActions;
+import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -112,6 +116,11 @@ public class NetworkDataReader {
     private void processLogoutMessage(final SocketAddress address) {
         listener.receivedLogoutMessage(address);
     }
+    
+    private void processTeamSelectMessage(final SocketAddress address) {
+        final Teams team = Teams.values()[buffer.getInt()];
+        listener.receivedTeamSelectMessage(address, team);
+    }
 
     private void processServersMessage(final SocketAddress address)
             throws UnknownHostException {
@@ -140,8 +149,9 @@ public class NetworkDataReader {
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
+        final GameMode gameMode = GameMode.values()[buffer.getInt()];
         final ServerData server = new ServerData(serverAddress, name, players,
-                maxPlayers);
+                maxPlayers, gameMode);
         listener.receivedServerNotificationMessage(address, server);
     }
 
@@ -154,7 +164,9 @@ public class NetworkDataReader {
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
-        return new ServerData(serverAddress, name, players, maxPlayers);
+        final GameMode gameMode = GameMode.values()[buffer.getInt()];
+        return new ServerData(serverAddress, name, players, maxPlayers,
+                gameMode);
     }
 
     private void readAttributeData(final Entity entity,
@@ -179,6 +191,9 @@ public class NetworkDataReader {
             break;
         case PLAYER_NAME:
             data = readStringData(buffer);
+            break;
+        case PLAYER_TEAM:
+            data = Teams.values()[buffer.getInt()];
             break;
         case POSITION:
             data = readVector2fData(buffer);
@@ -325,6 +340,15 @@ public class NetworkDataReader {
             case NetworkConstants.INPUT_MESSAGE:
                 processInputMessage(address);
                 break;
+            case NetworkConstants.GET_PLAYER_INFO_MESSAGE:
+                processGetPlayerInfoMessage(address);
+                break;
+            case NetworkConstants.GET_PLAYER_INFO_RESPONSE_MESSAGE:
+                processGetPlayerInfoResponseMessage(address);
+                break;
+            case NetworkConstants.TEAM_SELECT_MESSAGE:
+                processTeamSelectMessage(address);
+                break;
             default:
                 LOG.warn("Received unhandled message");
                 break;
@@ -349,5 +373,22 @@ public class NetworkDataReader {
             LOG.warn("Unknown ident");
             // else ignore the datagram, incorrect format
         }
+    }
+
+    private void processGetPlayerInfoMessage(final SocketAddress address) {
+        listener.receivedGetPlayerInfoMessage(address);
+    }
+
+    private void processGetPlayerInfoResponseMessage(final SocketAddress address) {
+        final Set<PlayerClientInfo> players = new HashSet<GameLogicManager.PlayerClientInfo>();
+        final int numPlayers = buffer.getInt();
+
+        for (int i = 0; i < numPlayers; i++) {
+            final String entityName = readStringData(buffer);
+            final Teams team = Teams.values()[buffer.getInt()];
+            players.add(new PlayerClientInfo(entityName, team));
+        }
+
+        listener.receivedGetPlayerInfoResponseMessage(address, players);
     }
 }

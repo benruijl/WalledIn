@@ -25,6 +25,7 @@ import java.util.Set;
 
 import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
+import walledin.game.Teams;
 
 public enum Attribute {
     POSITION(Vector2f.class, true),
@@ -42,6 +43,7 @@ public enum Attribute {
     SPAWN_POINTS(List.class, false),
     HEALTH(Integer.class, true),
     PLAYER_NAME(String.class, true),
+    PLAYER_TEAM(Teams.class, true),
     /** Orientation angle. */
     ORIENTATION_ANGLE(Float.class, true),
     ACTIVE_WEAPON(Entity.class),

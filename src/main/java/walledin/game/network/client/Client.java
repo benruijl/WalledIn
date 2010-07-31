@@ -38,8 +38,11 @@ import walledin.engine.Input;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.math.Vector2f;
+import walledin.game.GameLogicManager;
+import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerActions;
+import walledin.game.Teams;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.gui.GameScreen;
@@ -47,17 +50,18 @@ import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.Screen;
 import walledin.game.gui.ScreenManager;
 import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.gui.SelectTeamScreen;
 import walledin.game.gui.ServerListScreen;
 import walledin.game.network.NetworkConstants;
+import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.game.network.NetworkDataReader;
 import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
-import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
-public class Client implements RenderListener, NetworkEventListener {
+public final class Client implements RenderListener, NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(Client.class);
 
     private final Renderer renderer; // current renderer
@@ -70,9 +74,15 @@ public class Client implements RenderListener, NetworkEventListener {
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
     private DatagramChannel serverNotifyChannel;
-    private Set<ServerData> internetServerList;
-    private final Set<ServerData> lanServerList;
     private boolean quitting = false;
+
+    /* Data that may be requested by player. */
+    /** List of servers from the master server. */
+    private Set<ServerData> internetServerList;
+    /** List of servers on LAN. */
+    private final Set<ServerData> lanServerList;
+    /** List of players of the current server */
+    private final Set<PlayerClientInfo> playerList;
 
     /** Keeps track if the player is connected to a server. */
     private boolean connected = false;
@@ -100,6 +110,7 @@ public class Client implements RenderListener, NetworkEventListener {
         networkDataReader = new NetworkDataReader(this);
         internetServerList = new HashSet<ServerData>();
         lanServerList = new HashSet<ServerData>();
+        playerList = new HashSet<GameLogicManager.PlayerClientInfo>();
         quitting = false;
 
         channel = DatagramChannel.open();
@@ -144,7 +155,7 @@ public class Client implements RenderListener, NetworkEventListener {
         renderer.beginLoop();
     }
 
-    public final void refreshServerList() {
+    public void refreshServerList() {
 
         if (!connectedMasterServer) {
             return;
@@ -159,7 +170,7 @@ public class Client implements RenderListener, NetworkEventListener {
         }
     }
 
-    public final List<ServerData> getServerList() {
+    public List<ServerData> getServerList() {
         final List<ServerData> servers = new ArrayList<ServerData>(
                 lanServerList);
         servers.addAll(internetServerList);
@@ -171,7 +182,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * we receive the net game state.
      */
     @Override
-    public final boolean receivedGamestateMessage(final SocketAddress address,
+    public boolean receivedGamestateMessage(final SocketAddress address,
             final int oldVersion, final int newVersion) {
         lastLoginTry = -1;
         boolean result = false;
@@ -205,13 +216,15 @@ public class Client implements RenderListener, NetworkEventListener {
         }
         return result;
     }
-    
+
     /**
-     * Displays an error message, disconnects from the server and
-     * returns to the server list.
-     * @param message Message to display
+     * Displays an error message, disconnects from the server and returns to the
+     * server list.
+     * 
+     * @param message
+     *            Message to display
      */
-    public final void displayErrorAndDisconnect(final String message) {
+    public void displayErrorAndDisconnect(final String message) {
         screenManager.createDialog(message);
         connected = false;
         screenManager.getScreen(ScreenType.SERVER_LIST).show();
@@ -219,7 +232,7 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public final void receivedServersMessage(final SocketAddress address,
+    public void receivedServersMessage(final SocketAddress address,
             final Set<ServerData> servers) {
         LOG.info("Received server list. " + servers.size()
                 + " servers available.");
@@ -251,7 +264,7 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public final void receivedLoginReponseMessage(final SocketAddress address,
+    public void receivedLoginReponseMessage(final SocketAddress address,
             final ErrorCodes errorCode, final String playerEntityName) {
 
         if (errorCode == ErrorCodes.ERROR_SUCCESSFULL) {
@@ -259,7 +272,7 @@ public class Client implements RenderListener, NetworkEventListener {
             LOG.info("Player entity name received: " + playerEntityName);
             return;
         }
-            
+
         switch (errorCode) {
         case ERROR_SERVER_IS_FULL:
             displayErrorAndDisconnect("The server is full.");
@@ -271,8 +284,8 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public final void receivedServerNotificationMessage(
-            final SocketAddress address, final ServerData server) {
+    public void receivedServerNotificationMessage(final SocketAddress address,
+            final ServerData server) {
         lanServerList.add(server);
     }
 
@@ -283,7 +296,7 @@ public class Client implements RenderListener, NetworkEventListener {
      *            time since last update in seconds
      */
     @Override
-    public final void update(final double delta) {
+    public void update(final double delta) {
         // network stuff
         try {
             if (connected) {
@@ -355,7 +368,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * Render the current gamestate.
      */
     @Override
-    public final void draw(final Renderer renderer) {
+    public void draw(final Renderer renderer) {
         screenManager.draw(renderer);
     }
 
@@ -363,7 +376,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * Initialize game.
      */
     @Override
-    public final void init() {
+    public void init() {
         LOG.info("initializing client");
 
         /* Load standard font */
@@ -400,6 +413,8 @@ public class Client implements RenderListener, NetworkEventListener {
         /* Create game screen and add it to the screen manager. */
         gameScreen = new GameScreen(screenManager);
         screenManager.addScreen(ScreenType.GAME, gameScreen);
+        final Screen selectTeamScreen = new SelectTeamScreen(screenManager);
+        screenManager.addScreen(ScreenType.SELECT_TEAM, selectTeamScreen);
         final Screen menuScreen = new MainMenuScreen(screenManager);
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
@@ -411,7 +426,7 @@ public class Client implements RenderListener, NetworkEventListener {
     /**
      * Bind the server notify channel so we can receive lan broadcasts.
      */
-    public final void bindServerNotifyChannel() {
+    public void bindServerNotifyChannel() {
         try {
             serverNotifyChannel = DatagramChannel.open();
             serverNotifyChannel.socket()
@@ -427,7 +442,7 @@ public class Client implements RenderListener, NetworkEventListener {
     /**
      * Unbind the server notify channel.
      */
-    public final void unbindServerNotifyChannel() {
+    public void unbindServerNotifyChannel() {
         try {
             serverNotifyChannel.close();
             boundServerNotifyChannel = false;
@@ -441,7 +456,7 @@ public class Client implements RenderListener, NetworkEventListener {
      * disconnect if the server is a different one. If the server is the same,
      * it will do nothing.
      */
-    public final void connectToServer(final ServerData server) {
+    public void connectToServer(final ServerData server) {
         if (channel.socket().getRemoteSocketAddress() == server.getAddress()) {
             return;
         }
@@ -469,19 +484,19 @@ public class Client implements RenderListener, NetworkEventListener {
         }
     }
 
-    public final void disconnectFromServer() throws IOException {
+    public void disconnectFromServer() throws IOException {
         connected = false;
         channel.disconnect();
     }
 
-    public final boolean connectedToServer() {
+    public boolean connectedToServer() {
         return connected;
     }
 
     /**
      * Connects to a master server.
      */
-    public final void connectToMasterServer() {
+    public void connectToMasterServer() {
 
         /* Connect once */
         if (connectedMasterServer) {
@@ -503,7 +518,7 @@ public class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public final void dispose() {
+    public void dispose() {
         if (!quitting) {
             quitting = true;
             renderer.dispose();
@@ -517,6 +532,57 @@ public class Client implements RenderListener, NetworkEventListener {
                     LOG.fatal("IOException during logout", e);
                 }
             }
+        }
+    }
+
+    @Override
+    public void receivedGetPlayerInfoResponseMessage(
+            final SocketAddress address, final Set<PlayerClientInfo> players) {
+        playerList.clear();
+        playerList.addAll(players);
+    }
+    
+
+    @Override
+    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
+        // ignore
+
+    }
+
+    @Override
+    public void receivedTeamSelectMessage(SocketAddress address, Teams team) {
+        // ignore
+    }
+
+    /**
+     * Gets the list of players from the current server.
+     * 
+     * @return List of players
+     */
+    public Set<PlayerClientInfo> getPlayerList() {
+        return playerList;
+    }
+
+    /**
+     * Refreshes the player list by asking the server for an update.
+     */
+    public void refreshPlayerList() {
+        if (connected) {
+            try {
+                networkDataWriter.prepareGetPlayerInfoMessage();
+                networkDataWriter.sendBuffer(channel);
+            } catch (final IOException e) {
+                LOG.error("IOException", e);
+            }
+        }
+    }
+
+    public void selectTeam(Teams team) {
+        networkDataWriter.prepareTeamSelectMessage(team);
+        try {
+            networkDataWriter.sendBuffer(channel);
+        } catch (IOException e) {
+            LOG.error("IOException", e);
         }
     }
 }

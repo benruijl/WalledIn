@@ -35,18 +35,21 @@ public class NetworkConstants {
     public static final byte LOGIN_RESPONSE_MESSAGE = 5;
     public static final byte INPUT_MESSAGE = 1;
     public static final byte LOGOUT_MESSAGE = 2;
+    public static final byte GET_PLAYER_INFO_MESSAGE = 3;
+    public static final byte GET_PLAYER_INFO_RESPONSE_MESSAGE = 6;
+    public static final byte TEAM_SELECT_MESSAGE = 7;
     public static final byte GAMESTATE_MESSAGE = 4;
     public static final byte GAMESTATE_MESSAGE_CREATE_ENTITY = 0;
     public static final byte GAMESTATE_MESSAGE_REMOVE_ENTITY = 1;
     public static final byte GAMESTATE_MESSAGE_ATTRIBUTES = 2;
     public static final byte GAMESTATE_MESSAGE_END = 3;
-    
+
     /** Network error code lists. */
     public enum ErrorCodes {
         ERROR_SUCCESSFULL,
         ERROR_LOGIN_FAILED,
         ERROR_SERVER_IS_FULL,
-        ERROR_ALREADY_LOGGED_IN; 
+        ERROR_ALREADY_LOGGED_IN;
     }
 
     // Master server protocol constants
