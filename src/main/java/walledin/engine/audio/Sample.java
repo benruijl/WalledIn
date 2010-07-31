@@ -21,7 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.engine.audio;
 
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Queue;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -31,6 +31,8 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 
+import org.apache.log4j.Logger;
+
 /**
  * This class holds the information for a sound sample. It can generate multiple
  * clips, if allowed, to play the same sample multiple times.
@@ -39,6 +41,9 @@ import javax.sound.sampled.LineUnavailableException;
  * 
  */
 public final class Sample {
+    /** Logger. */
+    private static final Logger LOG = Logger.getLogger(Sample.class);
+    
     /** PCM data. */
     private byte[] data;
     /** Format. */
@@ -47,7 +52,7 @@ public final class Sample {
      * Clips. If the clips is only allowed to play once, this list will have one
      * item max.
      */
-    private List<Clip> clips;
+    private Queue<Clip> clips;
     /** Play multiple times? */
     private boolean playMultipleTimes;
 
@@ -86,6 +91,10 @@ public final class Sample {
 
             @Override
             public void update(final LineEvent arg0) {
+                if (arg0.getType() == LineEvent.Type.STOP) {
+                    arg0.getLine().close();
+                }
+                
                 if (arg0.getType() == LineEvent.Type.CLOSE) {
                     clips.remove((Clip) arg0.getLine());
                 }
@@ -110,7 +119,7 @@ public final class Sample {
         if (playMultipleTimes || clips.isEmpty()) {
             clip = generateClip();
         } else {
-            clip = clips.get(0);
+            clip = clips.peek();
         }
 
         if (!clip.isOpen()) {
