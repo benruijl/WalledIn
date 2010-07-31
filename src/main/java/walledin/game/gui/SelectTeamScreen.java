@@ -48,6 +48,21 @@ public class SelectTeamScreen extends Screen implements
     public SelectTeamScreen(final ScreenManager manager) {
         super(manager, null, 0);
         players = new HashSet<PlayerClientInfo>();
+        
+        TextureManager.getInstance().loadFromURL(
+                Utils.getClasspathURL("logo.png"), "logo");
+
+        teamBlue = new Button(this, "Team Blue", new Vector2f(200, 200));
+        teamBlue.addMouseEventListener(this);
+        teamRed = new Button(this, "Team Red", new Vector2f(400, 200));
+        teamRed.addMouseEventListener(this);
+        teamUndefined = new Button(this, "Spectators", new Vector2f(600, 200));
+        back = new Button(this, "Back", new Vector2f(200, 400));
+        back.addMouseEventListener(this);
+        addChild(teamBlue);
+        addChild(teamRed);
+        addChild(teamUndefined);
+        addChild(back);
     }
 
     @Override
@@ -96,21 +111,6 @@ public class SelectTeamScreen extends Screen implements
 
     @Override
     public void initialize() {
-        TextureManager.getInstance().loadFromURL(
-                Utils.getClasspathURL("logo.png"), "logo");
-
-        teamBlue = new Button(this, "Team Blue", new Vector2f(200, 200));
-        teamBlue.addMouseEventListener(this);
-        teamRed = new Button(this, "Team Red", new Vector2f(400, 200));
-        teamRed.addMouseEventListener(this);
-        teamUndefined = new Button(this, "Spectators", new Vector2f(600, 200));
-        back = new Button(this, "Back", new Vector2f(200, 400));
-        back.addMouseEventListener(this);
-        addChild(teamBlue);
-        addChild(teamRed);
-        addChild(teamUndefined);
-        addChild(back);
-
     }
 
     @Override
