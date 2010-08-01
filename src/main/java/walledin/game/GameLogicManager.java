@@ -146,7 +146,7 @@ public final class GameLogicManager {
     /** Respawn time in seconds. */
     private final float respawnTime;
     /** Current game mode. */
-    private GameMode gameMode;
+    private final GameMode gameMode;
 
     public GameLogicManager(final Server server) {
         entityFactory = new EntityFactory();
@@ -160,7 +160,7 @@ public final class GameLogicManager {
         }
 
         this.server = server;
-        
+
         /* Initialize random number generator */
         rng = new Random();
 
@@ -182,15 +182,16 @@ public final class GameLogicManager {
     public final EntityFactory getEntityFactory() {
         return entityFactory;
     }
-    
+
     /**
      * Gets the game mode.
+     * 
      * @return Current game mode
      */
     public GameMode getGameMode() {
         return gameMode;
     }
-    
+
     /**
      * Registers the player with a certain team.
      * 

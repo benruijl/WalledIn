@@ -35,6 +35,9 @@ public class WeaponBehavior extends Behavior {
     private static final Logger LOG = Logger.getLogger(WeaponBehavior.class);
 
     private final float bulletAccelerationConstant = 30000.0f;
+    private final Vector2f bulletStartPositionRight = new Vector2f(50.0f, 20.0f);
+    private final Vector2f bulletStartPositionLeft = new Vector2f(-30.0f, 20.0f);
+
     private Entity owner; // entity that carries the gun
     private final int fireLag;
     private final Family bulletFamily;
@@ -75,9 +78,9 @@ public class WeaponBehavior extends Behavior {
                 // slightly more complicated, since the player pos is defined as
                 // the top left
                 if (facingRight) {
-                    bulletPosition = playerPos.add(new Vector2f(50.0f, 20.0f));
+                    bulletPosition = playerPos.add(bulletStartPositionRight);
                 } else {
-                    bulletPosition = playerPos.add(new Vector2f(-30.0f, 20.0f));
+                    bulletPosition = playerPos.add(bulletStartPositionLeft);
                 }
 
                 final Vector2f target = (Vector2f) getAttribute(Attribute.CURSOR_POS);

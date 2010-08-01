@@ -82,6 +82,66 @@ public class Renderer implements GLEventListener {
     private int frameCount;
     private float curFPS;
 
+    /** Standard clear color is sky blue. */
+    private final ColorRGBA standardClearColor = new ColorRGBA(new ColorRGB(
+            0.52f, 0.8f, 1.0f), 0);
+    /** Clear color. */
+    private ColorRGBA clearColor = standardClearColor;
+
+    /**
+     * RGB color.
+     * 
+     * @author Ben Ruijl
+     * 
+     */
+    public class ColorRGB {
+        private final float r, g, b;
+
+        public ColorRGB(final float r, final float g, final float b) {
+            super();
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
+
+        public float getR() {
+            return r;
+        }
+
+        public float getG() {
+            return g;
+        }
+
+        public float getB() {
+            return b;
+        }
+    }
+
+    /**
+     * RGBA color.
+     * 
+     * @author Ben Ruijl
+     * 
+     */
+    public class ColorRGBA {
+        private final ColorRGB rgb;
+        private final float a;
+
+        public ColorRGBA(final ColorRGB rgb, final float a) {
+            super();
+            this.rgb = rgb;
+            this.a = a;
+        }
+
+        public ColorRGB getRGB() {
+            return rgb;
+        }
+
+        public float getA() {
+            return a;
+        }
+    }
+
     /**
      * Initializes the renderer. It creates the window and a GL render canvas.
      * 
@@ -206,6 +266,14 @@ public class Renderer implements GLEventListener {
         anim = new FPSAnimator(mCanvas, 60);
         anim.start();
 
+    }
+
+    public ColorRGBA getClearColor() {
+        return clearColor;
+    }
+
+    public void setClearColor(final ColorRGBA clearColor) {
+        this.clearColor = clearColor;
     }
 
     /**
@@ -453,7 +521,8 @@ public class Renderer implements GLEventListener {
         mCurDrawable = glDrawable;
         gl = mCurDrawable.getGL();
 
-        gl.glClearColor(0.52f, 0.8f, 1.0f, 0.0f); // sky blue
+        gl.glClearColor(clearColor.getRGB().getR(), clearColor.getRGB().getG(),
+                clearColor.getRGB().getB(), clearColor.getA());
         gl.glEnable(GL.GL_BLEND);
         gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
         gl.glEnable(GL.GL_TEXTURE_2D);

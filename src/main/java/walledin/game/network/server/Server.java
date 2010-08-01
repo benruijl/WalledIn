@@ -438,12 +438,13 @@ public class Server implements NetworkEventListener {
     }
 
     @Override
-    public void receivedTeamSelectMessage(SocketAddress address, Teams team) {
+    public void receivedTeamSelectMessage(final SocketAddress address,
+            final Teams team) {
         final PlayerConnection connection = players.get(address);
 
         /*
-         * Sometimes the login process takes longer than for this message to arrive.
-         * Then the connection is not made yet, so we check it. 
+         * Sometimes the login process takes longer than for this message to
+         * arrive. Then the connection is not made yet, so we check it.
          */
         if (connection != null) {
             final String entityName = connection.getPlayer().getName();

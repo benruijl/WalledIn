@@ -48,7 +48,7 @@ public class SelectTeamScreen extends Screen implements
     public SelectTeamScreen(final ScreenManager manager) {
         super(manager, null, 0);
         players = new HashSet<PlayerClientInfo>();
-        
+
         TextureManager.getInstance().loadFromURL(
                 Utils.getClasspathURL("logo.png"), "logo");
 
@@ -79,7 +79,7 @@ public class SelectTeamScreen extends Screen implements
         for (final PlayerClientInfo player : players) {
             final Entity playerEntity = getManager().getEntityManager().get(
                     player.getEntityName());
-            
+
             if (playerEntity == null) {
                 return;
             }

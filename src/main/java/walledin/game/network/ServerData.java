@@ -55,7 +55,7 @@ public class ServerData {
     public int getMaxPlayers() {
         return maxPlayers;
     }
-    
+
     public GameMode getGameMode() {
         return gameMode;
     }

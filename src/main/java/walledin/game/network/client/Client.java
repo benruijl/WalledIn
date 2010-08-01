@@ -541,7 +541,6 @@ public final class Client implements RenderListener, NetworkEventListener {
         playerList.clear();
         playerList.addAll(players);
     }
-    
 
     @Override
     public void receivedGetPlayerInfoMessage(final SocketAddress address) {
@@ -550,7 +549,8 @@ public final class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void receivedTeamSelectMessage(SocketAddress address, Teams team) {
+    public void receivedTeamSelectMessage(final SocketAddress address,
+            final Teams team) {
         // ignore
     }
 
@@ -577,11 +577,11 @@ public final class Client implements RenderListener, NetworkEventListener {
         }
     }
 
-    public void selectTeam(Teams team) {
+    public void selectTeam(final Teams team) {
         networkDataWriter.prepareTeamSelectMessage(team);
         try {
             networkDataWriter.sendBuffer(channel);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("IOException", e);
         }
     }
