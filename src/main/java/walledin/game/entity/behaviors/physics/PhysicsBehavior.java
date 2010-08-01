@@ -34,7 +34,7 @@ public class PhysicsBehavior extends Behavior {
     /** Standard acceleration by gravity. */
     private static final float GRAVITY_ACCELERATION_CONSTANT = 300.0f;
     /** Standard friction coefficient. */
-    private static final float FRICTION_COEFFICIENT_CONSTANT = 0.2f;
+    private static final float FRICTION_COEFFICIENT_CONSTANT = 0.02f;
     /** Mass of object. */
     private final float mass;
     /** Gravity acceleration. */
@@ -62,7 +62,6 @@ public class PhysicsBehavior extends Behavior {
      */
     public PhysicsBehavior(final Entity owner, final float mass) {
         this(owner, mass, true, true);
-        acceleration = new Vector2f();
     }
 
     /**
@@ -80,6 +79,7 @@ public class PhysicsBehavior extends Behavior {
     public PhysicsBehavior(final Entity owner, final float mass,
             final boolean doGravity, final boolean doFriction) {
         super(owner);
+        acceleration = new Vector2f();
 
         if (mass == 0) {
             LOG.warn("Mass of " + getOwner().getName()
