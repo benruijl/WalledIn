@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.physics;
 
+import walledin.engine.math.Circle;
 import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
@@ -129,7 +130,7 @@ public class StaticObjectCollisionBehavior extends Behavior {
                 resolvedPosX,
                 resolvedPosX.getXVector().add(endPosB.getYVector()), boundsA,
                 boundsB);
-        
+
         /*
          * Check if the old position is colliding. This is the case if the
          * resolved position is colliding, because then they are the same. If it
@@ -137,16 +138,31 @@ public class StaticObjectCollisionBehavior extends Behavior {
          * so, allow the movement. This will prevent objects from getting stuck.
          */
         if (boundsA.intersects(boundsB.translate(oldPosB))) {
-            float newColDepth = boundsA.asCircumscribedCircle()
-                    .intersectionDepth(
-                            boundsB.asCircumscribedCircle().translate(endPosB));
-            float oldColDepth = boundsA.asCircumscribedCircle()
-                    .intersectionDepth(
-                            boundsB.asCircumscribedCircle().translate(
-                                    oldPosB));
+            Circle circA = boundsA.asCircumscribedCircle();
+            Circle newCircB = boundsB.asCircumscribedCircle()
+                    .translate(endPosB);
+            Circle oldCircB = boundsB.asCircumscribedCircle()
+                    .translate(oldPosB);
 
-            if (newColDepth < oldColDepth) {
-                resolvedPos = endPosB;
+            /*
+             * Only allow the movement if it doesn't move over the center of the
+             * object, else you will get tunneling.
+             */
+            if (newCircB.getPos().sub(oldCircB.getPos()).lengthSquared() <
+                    circA.getPos().sub(oldCircB.getPos()).lengthSquared()) {
+
+                float newColDepth = boundsA.asCircumscribedCircle()
+                        .intersectionDepth(
+                                boundsB.asCircumscribedCircle().translate(
+                                        endPosB));
+                float oldColDepth = boundsA.asCircumscribedCircle()
+                        .intersectionDepth(
+                                boundsB.asCircumscribedCircle().translate(
+                                        oldPosB));
+
+                if (newColDepth < oldColDepth) {
+                    resolvedPos = endPosB;
+                }
             }
         }
 
