@@ -49,6 +49,17 @@ public class Circle extends Geometry {
     public void setRadius(final float radius) {
         this.radius = radius;
     }
+    
+    /**
+     * Returns the 'depth' of the intersection.
+     * @param circ Circle
+     * @return Depth of collision. Can be negative if there is no collision.
+     */
+    public float intersectionDepth(final Circle circ) {
+        return (getRadius() + circ.getRadius())
+        * (getRadius() + circ.getRadius()) - getPos().sub(
+        circ.getPos()).lengthSquared();
+    }
 
     @Override
     public Circle translate(final Vector2f pos) {

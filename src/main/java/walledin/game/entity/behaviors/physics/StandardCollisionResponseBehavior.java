@@ -46,7 +46,7 @@ public class StandardCollisionResponseBehavior extends Behavior {
      * @param data
      *            Collision data
      */
-    private void doRepsonse(final CollisionData data) {
+    private void doResponse(final CollisionData data) {
         // TODO: check if response is already done
 
         // check if object is moving
@@ -146,7 +146,7 @@ public class StandardCollisionResponseBehavior extends Behavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
-            doRepsonse((CollisionData) data);
+            doResponse((CollisionData) data);
         }
 
     }

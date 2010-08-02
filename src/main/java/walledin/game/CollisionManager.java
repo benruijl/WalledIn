@@ -32,6 +32,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
+import walledin.game.map.TileType;
 
 /**
  * CollisionManager checks for collisions between all non-map entities and
@@ -98,7 +99,8 @@ public class CollisionManager {
     }
 
     /**
-     * Calculates the tile containing the point <code>pos</code>.
+     * Calculates the tile containing the point <code>pos</code>. If the
+     * coordinates are illegal, a solid tile is returned and a warning is given.
      * 
      * @param map
      *            Map
@@ -115,11 +117,12 @@ public class CollisionManager {
         final int y = (int) (pos.getY() / tileSize);
 
         if (x < 0 || y < 0 || x >= width || y >= height) {
-            LOG.fatal("Illegal tile requested! "
+            LOG.warn("Illegal tile requested! "
                     + "Tried to access tile at coordinates (" + x + "," + y
                     + "), but the boundaries are (0,0) - (" + width + ","
                     + height + ").");
-            throw new IllegalArgumentException("Illegal tile requested.");
+
+            return new Tile(TileType.TILE_FILLED, x, y);
         }
 
         return tiles.get((int) (pos.getX() / tileSize) + width

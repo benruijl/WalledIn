@@ -125,10 +125,30 @@ public class StaticObjectCollisionResponse extends Behavior {
         final Vector2f resolvedPosX = doBinarySearch(maxCollisionSearchDepth,
                 oldPosB, oldPosB.getYVector().add(endPosB.getXVector()),
                 boundsA, boundsB);
-        final Vector2f resolvedPos = doBinarySearch(maxCollisionSearchDepth,
+        Vector2f resolvedPos = doBinarySearch(maxCollisionSearchDepth,
                 resolvedPosX,
                 resolvedPosX.getXVector().add(endPosB.getYVector()), boundsA,
                 boundsB);
+        
+        /*
+         * Check if the old position is colliding. This is the case if the
+         * resolved position is colliding, because then they are the same. If it
+         * is, check if the new collision depth is smaller than the old one. If
+         * so, allow the movement. This will prevent objects from getting stuck.
+         */
+        if (boundsA.intersects(boundsB.translate(oldPosB))) {
+            float newColDepth = boundsA.asCircumscribedCircle()
+                    .intersectionDepth(
+                            boundsB.asCircumscribedCircle().translate(endPosB));
+            float oldColDepth = boundsA.asCircumscribedCircle()
+                    .intersectionDepth(
+                            boundsB.asCircumscribedCircle().translate(
+                                    oldPosB));
+
+            if (newColDepth < oldColDepth) {
+                resolvedPos = endPosB;
+            }
+        }
 
         data.getCollisionEntity().setAttribute(Attribute.POSITION, resolvedPos);
 
