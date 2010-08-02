@@ -37,7 +37,7 @@ import walledin.util.SettingsManager;
  * @author Ben Ruijl
  * 
  */
-public class StaticObjectCollisionResponse extends Behavior {
+public class StaticObjectCollisionBehavior extends Behavior {
     /** The maximum depth of a collision resolving search. */
     private final int maxCollisionSearchDepth;
 
@@ -47,7 +47,7 @@ public class StaticObjectCollisionResponse extends Behavior {
      * @param owner
      *            Owner of this behavior
      */
-    public StaticObjectCollisionResponse(final Entity owner) {
+    public StaticObjectCollisionBehavior(final Entity owner) {
         super(owner);
 
         maxCollisionSearchDepth = SettingsManager.getInstance().getInteger(
