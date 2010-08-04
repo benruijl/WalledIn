@@ -31,6 +31,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import walledin.engine.math.Vector2f;
+import walledin.engine.math.Vector2i;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
@@ -39,6 +41,7 @@ import walledin.game.entity.MessageType;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.map.SpawnPoint;
+import walledin.game.map.Tile;
 import walledin.game.network.server.Server;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
@@ -291,6 +294,70 @@ public final class GameLogicManager {
         players.remove(entityName);
     }
 
+    boolean canReachDistance(int distance, Vector2i curPos, Vector2i startPos,
+            boolean[][] field) {
+
+        if (field[curPos.getX()][curPos.getY()]) {
+            return false;
+        }
+
+        if (Math.abs(startPos.getX() - curPos.getX())
+                + Math.abs(startPos.getY() - curPos.getY()) >= distance) {
+            return true;
+        }
+
+        /* Crawl through the level. */
+        for (int i = -1; i < 1; i++) {
+            for (int j = -1; j < 1; j++) {
+                if (i == j) {
+                    continue;
+                }
+
+                if (canReachDistance(distance, curPos.add(new Vector2i(i, j)),
+                        startPos, field)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
+     * Checks if a certain player is walled in.
+     */
+    private void detectWalledIn(Entity player) {
+        float width = (Integer) map.getAttribute(Attribute.WIDTH);
+        float height = (Integer) map.getAttribute(Attribute.HEIGHT);
+        float playerSize = 32.0f; // FIXME: read from config
+        Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
+        int minimalSpace = 5; // five times the player size
+
+        boolean[][] field = new boolean[(int) (width * 64.0f / playerSize)][(int) (height * 64.0f / playerSize)];
+        List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
+
+        /* Mark the filled tiles. */
+        for (Tile tile : tiles) {
+            if (tile.getType().isSolid()) {
+                field[(int) (tile.getX() / playerSize)][(int) (tile.getY() / playerSize)] = true;
+            }
+        }
+
+        /* Check the foam particles. */
+        for (Entity ent : entityManager.getEntities().values()) {
+            if (ent.getFamily() == Family.FOAM_PARTICLE) {
+                Vector2f pos = (Vector2f) ent.getAttribute(Attribute.POSITION);
+                field[(int) (pos.getX() / playerSize)][(int) (pos.getY() / playerSize)] = true;
+            }
+        }
+
+        if (!canReachDistance(5, playerPos.scale(1 / playerSize).asVector2i(),
+                playerPos.scale(1 / playerSize).asVector2i(), field)) {
+            LOG.info("Player is walled in!");
+        }
+    }
+
     /**
      * Update the gamestate, removes disconnected players and does collision
      * detection.
@@ -311,6 +378,9 @@ public final class GameLogicManager {
                 entityManager.add(info.getPlayer());
                 info.hasRespawned();
             }
+
+            /* Check if walledin */
+            detectWalledIn(info.getPlayer());
 
         }
 

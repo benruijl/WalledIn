@@ -72,6 +72,10 @@ public class Vector2f {
     public final Vector2f getYVector() {
         return new Vector2f(0, y);
     }
+    
+    public Vector2i asVector2i() {
+        return new Vector2i((int)x, (int)y);
+    }
 
     public Vector2f add(final Vector2f vec) {
         return new Vector2f(x + vec.x, y + vec.y);

@@ -108,7 +108,7 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
                     "Background");
         }
     }
-
+        
     private void loadTextures() {
         final TextureManager manager = TextureManager.getInstance();
         manager.loadFromURL(Utils.getClasspathURL("tiles.png"), "tiles");
