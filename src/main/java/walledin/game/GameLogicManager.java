@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
 import walledin.game.entity.Attribute;
@@ -301,6 +302,9 @@ public final class GameLogicManager {
             return false;
         }
 
+        /* Disables going back. */
+        field[curPos.getX()][curPos.getY()] = false;
+
         if (Math.abs(startPos.getX() - curPos.getX())
                 + Math.abs(startPos.getY() - curPos.getY()) >= distance) {
             return true;
@@ -330,11 +334,15 @@ public final class GameLogicManager {
     private void detectWalledIn(Entity player) {
         float width = (Integer) map.getAttribute(Attribute.WIDTH);
         float height = (Integer) map.getAttribute(Attribute.HEIGHT);
-        float playerSize = 32.0f; // FIXME: read from config
+        float playerSize = ((Geometry) player
+                .getAttribute(Attribute.BOUNDING_GEOMETRY))
+                .asCircumscribedCircle().getRadius() * 2;
+        float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
         Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
         int minimalSpace = 5; // five times the player size
 
-        boolean[][] field = new boolean[(int) (width * 64.0f / playerSize)][(int) (height * 64.0f / playerSize)];
+        boolean[][] field = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
+                * tileWidth / playerSize)];
         List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
         /* Mark the filled tiles. */
