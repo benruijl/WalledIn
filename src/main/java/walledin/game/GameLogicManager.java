@@ -313,7 +313,9 @@ public final class GameLogicManager {
         /* Crawl through the level. */
         for (int i = -1; i < 1; i++) {
             for (int j = -1; j < 1; j++) {
-                if (i == j) {
+                if (i == j || curPos.getX() + i < 0 || curPos.getY() + j < 0
+                        || curPos.getX() + i >= field.length
+                        || curPos.getY() + j >= field[0].length) {
                     continue;
                 }
 
@@ -336,7 +338,7 @@ public final class GameLogicManager {
         float height = (Integer) map.getAttribute(Attribute.HEIGHT);
         float playerSize = ((Geometry) player
                 .getAttribute(Attribute.BOUNDING_GEOMETRY))
-                .asCircumscribedCircle().getRadius() * 2;
+                .asRectangle().getWidth();
         float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
         Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
         int minimalSpace = 5; // five times the player size
@@ -359,6 +361,9 @@ public final class GameLogicManager {
                 field[(int) (pos.getX() / playerSize)][(int) (pos.getY() / playerSize)] = true;
             }
         }
+
+        /* Make the player position free. */
+        field[(int) (playerPos.getX() / playerSize)][(int) (playerPos.getY() / playerSize)] = false;
 
         if (!canReachDistance(5, playerPos.scale(1 / playerSize).asVector2i(),
                 playerPos.scale(1 / playerSize).asVector2i(), field)) {
