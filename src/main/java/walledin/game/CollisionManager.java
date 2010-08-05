@@ -119,6 +119,7 @@ public class CollisionManager {
                     + "Tried to access tile at coordinates (" + x + "," + y
                     + "), but the boundaries are (0,0) - (" + width + ","
                     + height + ").");
+            throw new IllegalArgumentException("Illegal tile requested.");
         }
 
         return tiles.get((int) (pos.getX() / tileSize) + width

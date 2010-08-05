@@ -112,7 +112,7 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
                 if (getManager().getClient().connectedToServer()) {
 
                     /* If it is a team game, load the team selection screen */
-                    GameMode gameMode = serverList.get(i).getGameMode();
+                    final GameMode gameMode = serverList.get(i).getGameMode();
                     if (gameMode == GameMode.BRIDGE_BUILDER
                             || gameMode == GameMode.TEAM_DEATHMATCH) {
                         getManager().getScreen(ScreenType.SELECT_TEAM)

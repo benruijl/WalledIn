@@ -178,7 +178,19 @@ public class EntityManager {
         return entities.get(name);
 
     }
+    
+    /**
+     * Returns the entity list.
+     * @return Entity list
+     */
+    public Map<String, Entity> getEntities() {
+        return entities;
+    }
 
+    /**
+     * Draws the entities using the draw order manager.
+     * @param renderer Renderer
+     */
     public void draw(final Renderer renderer) {
         drawOrderManager.draw(renderer);
     }

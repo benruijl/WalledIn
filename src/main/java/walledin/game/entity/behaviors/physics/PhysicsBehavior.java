@@ -29,28 +29,62 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PhysicsBehavior extends Behavior {
+    /** Logger. */
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-
-    private final float mass; // mass of object
-    private final Vector2f gravity; // acceleration of gravity
-    private final float frictionCoefficient; // part of the velocity that is
-    // kept
+    /** Standard acceleration by gravity. */
+    private static final float GRAVITY_ACCELERATION_CONSTANT = 300.0f;
+    /** Standard friction coefficient. */
+    private static final float FRICTION_COEFFICIENT_CONSTANT = 0.02f;
+    /** Mass of object. */
+    private final float mass;
+    /** Gravity acceleration. */
+    private final Vector2f gravity;
+    /**
+     * The friction coefficient. In WalledIn this is defined as the part of the
+     * velocity squared that counters the movement: a = -v^2 * c.
+     */
+    private final float frictionCoefficient;
+    /** The current position. */
     private Vector2f position;
+    /** The current velocity. */
     private Vector2f velocity;
-    private Vector2f acceleration = new Vector2f(0, 0);
+    /** The current acceleration. */
+    private Vector2f acceleration;
 
+    /**
+     * Creates a new standard physics behavior that gives the object gravity and
+     * friction.
+     * 
+     * @param owner
+     *            Owner entity
+     * @param mass
+     *            Mass of the object
+     */
     public PhysicsBehavior(final Entity owner, final float mass) {
         this(owner, mass, true, true);
     }
 
+    /**
+     * Creates a new physics behavior with special settings.
+     * 
+     * @param owner
+     *            Owner entity
+     * @param mass
+     *            Mass
+     * @param doGravity
+     *            Set to true if gravity should be applied
+     * @param doFriction
+     *            Set to true if friction should be applied
+     */
     public PhysicsBehavior(final Entity owner, final float mass,
             final boolean doGravity, final boolean doFriction) {
         super(owner);
+        acceleration = new Vector2f();
 
         if (mass == 0) {
-            LOG.warn("Mass of "
-                    + getOwner().getName()
-                    + " is 0. Applying a force will give an infinite acceleration.");
+            LOG.warn("Mass of " + getOwner().getName()
+                    + " is 0. Applying a force will "
+                    + "give an infinite acceleration.");
         }
 
         this.mass = mass;
@@ -61,12 +95,13 @@ public class PhysicsBehavior extends Behavior {
         velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
 
         if (doGravity) {
-            gravity = new Vector2f(0, 300.0f);
+            gravity = new Vector2f(0, GRAVITY_ACCELERATION_CONSTANT);
         } else {
             gravity = new Vector2f(0, 0);
         }
+
         if (doFriction) {
-            frictionCoefficient = 0.02f;
+            frictionCoefficient = FRICTION_COEFFICIENT_CONSTANT;
         } else {
             frictionCoefficient = 0;
         }
@@ -84,6 +119,8 @@ public class PhysicsBehavior extends Behavior {
                 break;
             case VELOCITY:
                 velocity = (Vector2f) getAttribute(attribute);
+                break;
+            default:
                 break;
             }
         }

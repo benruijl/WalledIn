@@ -59,17 +59,14 @@ public class PlayerActionManager {
                 final int key = KeyEvent.class.getField(inputName).getInt(
                         KeyEvent.class);
                 keyMap.put(key, action);
-            }
-            /* Not in key list, check the mouse button list */
-            catch (final NoSuchFieldException e) {
-
+            } catch (final NoSuchFieldException e) {
+                /* Not in key list, check the mouse button list */
                 try {
                     final int button = MouseEvent.class.getField(inputName)
                             .getInt(KeyEvent.class);
                     buttonMap.put(button, action);
-                }
-                /* If not in any of the lists, print a warning */
-                catch (final NoSuchFieldException e1) {
+                } catch (final NoSuchFieldException e1) {
+                    /* If not in any of the lists, print a warning */
                     LOG.warn("Warning: action " + action + " is unassigned.");
                 } catch (final Exception e1) {
                     e.printStackTrace();

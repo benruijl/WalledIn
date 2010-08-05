@@ -32,13 +32,12 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
             .getLogger(PlayerAnimationBehavior.class);
 
     private float walkAnimFrame;
-    private final float animSpeed;
+    private final float animSpeed = 0.002f;
     private Vector2f velocity;
 
     public PlayerAnimationBehavior(final Entity owner) {
         super(owner);
         setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
-        animSpeed = 0.002f;
     }
 
     @Override

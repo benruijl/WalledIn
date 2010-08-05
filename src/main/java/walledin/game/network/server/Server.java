@@ -418,7 +418,6 @@ public class Server implements NetworkEventListener {
             final ServerData server) {
         // ignore
     }
-    
 
     @Override
     public void receivedGetPlayerInfoMessage(final SocketAddress address) {
@@ -437,13 +436,21 @@ public class Server implements NetworkEventListener {
             final SocketAddress address, final Set<PlayerClientInfo> players) {
         // ignore
     }
-    
 
     @Override
-    public void receivedTeamSelectMessage(SocketAddress address, Teams team) {
+    public void receivedTeamSelectMessage(final SocketAddress address,
+            final Teams team) {
         final PlayerConnection connection = players.get(address);
-        final String entityName = connection.getPlayer().getName();
-        gameLogicManager.setTeam(entityName, team);
+
+        /*
+         * Sometimes the login process takes longer than for this message to
+         * arrive. Then the connection is not made yet, so we check it.
+         */
+        if (connection != null) {
+            final String entityName = connection.getPlayer().getName();
+            gameLogicManager.setTeam(entityName, team);
+        }
+
     }
 
     /**

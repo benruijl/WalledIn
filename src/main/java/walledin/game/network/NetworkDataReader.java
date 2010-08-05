@@ -116,7 +116,7 @@ public class NetworkDataReader {
     private void processLogoutMessage(final SocketAddress address) {
         listener.receivedLogoutMessage(address);
     }
-    
+
     private void processTeamSelectMessage(final SocketAddress address) {
         final Teams team = Teams.values()[buffer.getInt()];
         listener.receivedTeamSelectMessage(address, team);

@@ -134,7 +134,7 @@ public class NetworkDataWriter {
         buffer.putFloat(mousePos.getY());
         buffer.flip();
     }
-    
+
     public void prepareTeamSelectMessage(final Teams team) {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);

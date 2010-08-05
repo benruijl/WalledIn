@@ -147,9 +147,7 @@ public class Font {
 
             // for now, use font name
             TextureManager.getInstance().loadFromTextureData(name, texData);
-        }
-
-        catch (final IOException e) {
+        } catch (final IOException e) {
             LOG.error("Problems reading " + file, e);
             return false;
         } finally {
