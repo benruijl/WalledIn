@@ -97,6 +97,7 @@ public final class GameLogicManager {
         private boolean dead;
         private boolean respawn;
         private Teams team;
+        private float walledInTime;
 
         public PlayerInfo(final Entity player) {
             super();
@@ -120,6 +121,14 @@ public final class GameLogicManager {
 
         public boolean isDead() {
             return dead;
+        }
+
+        public void setWalledInTime(float walledInTime) {
+            this.walledInTime = walledInTime;
+        }
+
+        public float getWalledInTime() {
+            return walledInTime;
         }
 
         /**
@@ -171,6 +180,10 @@ public final class GameLogicManager {
     private final float respawnTime;
     /** Current game mode. */
     private final GameMode gameMode;
+    /** Maximum walledin time. */
+    private final float maxWalledInTime;
+    /** Minimum walledin space. */
+    private final float minimalWalledInSpace;
 
     public GameLogicManager(final Server server) {
         entityFactory = new EntityFactory();
@@ -193,6 +206,10 @@ public final class GameLogicManager {
                 .getFloat("game.respawnTime");
         gameMode = GameMode.valueOf(SettingsManager.getInstance().getString(
                 "game.gameMode"));
+        maxWalledInTime = SettingsManager.getInstance().getFloat(
+                "game.walledInTime");
+        minimalWalledInSpace = SettingsManager.getInstance().getFloat(
+                "game.mininmalWalledInSpace");
     }
 
     public final Server getServer() {
@@ -333,12 +350,12 @@ public final class GameLogicManager {
     /**
      * Checks if a certain player is walled in.
      */
-    private void detectWalledIn(Entity player) {
+    private boolean detectWalledIn(Entity player) {
         float width = (Integer) map.getAttribute(Attribute.WIDTH);
         float height = (Integer) map.getAttribute(Attribute.HEIGHT);
         float playerSize = ((Geometry) player
-                .getAttribute(Attribute.BOUNDING_GEOMETRY))
-                .asRectangle().getWidth();
+                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
+                .getWidth();
         float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
         Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
         int minimalSpace = 5; // five times the player size
@@ -367,8 +384,10 @@ public final class GameLogicManager {
 
         if (!canReachDistance(5, playerPos.scale(1 / playerSize).asVector2i(),
                 playerPos.scale(1 / playerSize).asVector2i(), field)) {
-            LOG.info("Player is walled in!");
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -393,8 +412,19 @@ public final class GameLogicManager {
             }
 
             /* Check if walledin */
-            detectWalledIn(info.getPlayer());
+            if (detectWalledIn(info.getPlayer())) {
+                info.setWalledInTime(info.getWalledInTime() + (float) delta);
+                
+                /* Kill the player if the max walledin time has passed. */
+                if (info.getWalledInTime() >= maxWalledInTime) {
+                    info.getPlayer().setAttribute(Attribute.HEALTH, 0);
+                }
+            } else {
+                info.setWalledInTime(0);
+            }
 
+            info.getPlayer().setAttribute(Attribute.WALLEDIN_IN,
+                    info.getWalledInTime() / maxWalledInTime);
         }
 
         /* Do collision detection */

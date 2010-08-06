@@ -195,6 +195,9 @@ public class NetworkDataReader {
         case PLAYER_TEAM:
             data = Teams.values()[buffer.getInt()];
             break;
+        case WALLEDIN_IN:
+            data = buffer.getFloat();
+            break;
         case POSITION:
             data = readVector2fData(buffer);
             break;
