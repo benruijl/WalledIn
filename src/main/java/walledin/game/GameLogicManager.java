@@ -335,8 +335,8 @@ public final class GameLogicManager {
      *            Field of booleans. True is filled and false is empty.
      * @return True if a certain distance can be reached, else false.
      */
-    boolean canReachDistance(final int distance, Vector2i curPos,
-            final Vector2i startPos, boolean[][] field) {
+    boolean canReachDistance(final int distance, final Vector2i curPos,
+            final Vector2i startPos, final boolean[][] field) {
 
         if (field[curPos.getX()][curPos.getY()]) {
             return false;
@@ -390,6 +390,7 @@ public final class GameLogicManager {
                         .getY() / playerSize)] = true;
             }
         }
+
     }
 
     /**
@@ -403,8 +404,9 @@ public final class GameLogicManager {
     private boolean detectWalledIn(final Entity player) {
         float playerSize = 44; // FIXME: hardcoded
         Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
+
         /* Use the static field as a base for new field. */
-        boolean[][] field = staticField.clone();
+        boolean[][] field = Utils.clone2DArray(staticField);
 
         /* Check the foam particles. */
         for (Entity ent : entityManager.getEntities().values()) {
