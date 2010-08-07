@@ -376,10 +376,6 @@ public final class GameLogicManager {
     /**
      * Builds the mobility field by looking only at the map.
      */
-    /*
-     * TODO: if the tile width is greater than the player size, multiple entries
-     * in the field should be set.
-     */
     private void buildStaticField() {
         /* Do a + 1 do avoid rounding errors */
         float width = (Integer) map.getAttribute(Attribute.WIDTH) + 1;
@@ -391,7 +387,10 @@ public final class GameLogicManager {
                 * tileWidth / playerSize)];
         List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
-        /* Mark the filled tiles. */
+        /*
+         * Mark the filled tiles. TODO: if the tile width is greater than the
+         * player size, multiple entries in the field should be set.
+         */
         for (Tile tile : tiles) {
             if (tile.getType().isSolid()) {
                 staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
