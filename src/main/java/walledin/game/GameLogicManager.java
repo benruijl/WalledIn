@@ -20,6 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +30,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
@@ -345,15 +348,15 @@ public final class GameLogicManager {
         /* Disables going back. */
         field[curPos.getX()][curPos.getY()] = true;
 
-        if (Math.abs(startPos.getX() - curPos.getX())
-                + Math.abs(startPos.getY() - curPos.getY()) >= distance) {
+        if (curPos.sub(startPos).lengthSquared() >= distance * distance) {
             return true;
         }
 
         /* Crawl through the level. */
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                if (i == j || curPos.getX() + i < 0 || curPos.getY() + j < 0
+                if (i == j || i == -j || curPos.getX() + i < 0
+                        || curPos.getY() + j < 0
                         || curPos.getX() + i >= field.length
                         || curPos.getY() + j >= field[0].length) {
                     continue;
@@ -373,11 +376,19 @@ public final class GameLogicManager {
     /**
      * Builds the mobility field by looking only at the map.
      */
+    /*
+     * TODO: if the tile width is greater than the player size, multiple entries
+     * in the field should be set.
+     */
     private void buildStaticField() {
-        float width = (Integer) map.getAttribute(Attribute.WIDTH);
-        float height = (Integer) map.getAttribute(Attribute.HEIGHT);
+        /* Do a + 1 do avoid rounding errors */
+        float width = (Integer) map.getAttribute(Attribute.WIDTH) + 1;
+        float height = (Integer) map.getAttribute(Attribute.HEIGHT) + 1;
         float playerSize = 44; // FIXME: hardcoded
         float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
+
+        LOG.info(width);
+        LOG.info(height);
 
         staticField = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
                 * tileWidth / playerSize)];
@@ -386,8 +397,10 @@ public final class GameLogicManager {
         /* Mark the filled tiles. */
         for (Tile tile : tiles) {
             if (tile.getType().isSolid()) {
-                staticField[(int) (tile.getX() / playerSize)][(int) (tile
-                        .getY() / playerSize)] = true;
+                LOG.info(tile.getX());
+                LOG.info(tile.getY());
+                staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
+                        .getY() * tileWidth / playerSize)] = true;
             }
         }
 
@@ -419,6 +432,11 @@ public final class GameLogicManager {
         /* Make the player position free. */
         field[(int) (playerPos.getX() / playerSize)][(int) (playerPos.getY() / playerSize)] = false;
 
+        /* Output the map if tracing. */
+        if (LOG.getLevel() == Level.TRACE) {
+            outputMobilityMap(field);
+        }
+
         if (!canReachDistance(minimalWalledInSpace,
                 playerPos.scale(1 / playerSize).asVector2i(),
                 playerPos.scale(1 / playerSize).asVector2i(), field)) {
@@ -426,6 +444,36 @@ public final class GameLogicManager {
         }
 
         return false;
+    }
+
+    /**
+     * Outputs a mobility map. Useful for debugging.
+     * 
+     * @param field
+     *            Mobility map
+     */
+    private void outputMobilityMap(final boolean[][] field) {
+        try {
+            FileWriter fstream = new FileWriter("mobmap.txt");
+            BufferedWriter out = new BufferedWriter(fstream);
+
+            // print map
+            for (int j = 0; j < field[0].length; j++) {
+                for (int i = 0; i < field.length; i++) {
+                    if (field[i][j]) {
+                        out.write("#");
+                    } else {
+                        out.write(" ");
+                    }
+                }
+                out.write("\n");
+            }
+
+            out.close();
+
+        } catch (IOException e) {
+            LOG.error("Error while writing mobility map: ", e);
+        }
     }
 
     /**
@@ -450,7 +498,7 @@ public final class GameLogicManager {
             }
 
             /* Check if walledin */
-            if (detectWalledIn(info.getPlayer())) {
+            if (!info.isDead() && detectWalledIn(info.getPlayer())) {
                 info.setWalledInTime(info.getWalledInTime() + (float) delta);
 
                 /* Kill the player if the max walledin time has passed. */

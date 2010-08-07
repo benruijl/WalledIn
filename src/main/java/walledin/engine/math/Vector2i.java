@@ -54,6 +54,9 @@ public class Vector2i {
     public Vector2i add(final Vector2i vec) {
         return new Vector2i(x + vec.x, y + vec.y);
     }
+    public Vector2i sub(final Vector2i vec) {
+        return new Vector2i(x - vec.x, y - vec.y);
+    }
 
     public int dot(final Vector2i vec) {
         return x * vec.x + y * vec.y;
