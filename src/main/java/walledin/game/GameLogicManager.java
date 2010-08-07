@@ -20,6 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,10 +30,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
-import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
 import walledin.game.entity.Attribute;
@@ -47,6 +49,12 @@ import walledin.game.network.server.Server;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
+/**
+ * This class takes care of the game logic.
+ * 
+ * @author Ben Ruijl
+ * 
+ */
 public final class GameLogicManager {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
@@ -97,6 +105,7 @@ public final class GameLogicManager {
         private boolean dead;
         private boolean respawn;
         private Teams team;
+        private float walledInTime;
 
         public PlayerInfo(final Entity player) {
             super();
@@ -120,6 +129,14 @@ public final class GameLogicManager {
 
         public boolean isDead() {
             return dead;
+        }
+
+        public void setWalledInTime(final float walledInTime) {
+            this.walledInTime = walledInTime;
+        }
+
+        public float getWalledInTime() {
+            return walledInTime;
         }
 
         /**
@@ -172,6 +189,14 @@ public final class GameLogicManager {
     /** Current game mode. */
     private final GameMode gameMode;
 
+    /* Walled In checks */
+    /** Mobility field of the map. */
+    private boolean[][] staticField;
+    /** Maximum Walled In time. */
+    private final float maxWalledInTime;
+    /** Minimum Walled In space in player size units. */
+    private final int minimalWalledInSpace;
+
     public GameLogicManager(final Server server) {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
@@ -193,17 +218,21 @@ public final class GameLogicManager {
                 .getFloat("game.respawnTime");
         gameMode = GameMode.valueOf(SettingsManager.getInstance().getString(
                 "game.gameMode"));
+        maxWalledInTime = SettingsManager.getInstance().getFloat(
+                "game.walledInTime");
+        minimalWalledInSpace = SettingsManager.getInstance().getInteger(
+                "game.mininmalWalledInSpace");
     }
 
-    public final Server getServer() {
+    public Server getServer() {
         return server;
     }
 
-    public final EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return entityManager;
     }
 
-    public final EntityFactory getEntityFactory() {
+    public EntityFactory getEntityFactory() {
         return entityFactory;
     }
 
@@ -224,7 +253,7 @@ public final class GameLogicManager {
      * @param team
      *            new team
      */
-    public final void setTeam(final String entityName, final Teams team) {
+    public void setTeam(final String entityName, final Teams team) {
         final PlayerInfo info = players.get(entityName);
 
         /* Unregister from previous team */
@@ -243,7 +272,7 @@ public final class GameLogicManager {
      * @param player
      *            Player
      */
-    public final void spawnPlayer(final Entity player) {
+    public void spawnPlayer(final Entity player) {
         final List<SpawnPoint> points = (List<SpawnPoint>) map
                 .getAttribute(Attribute.SPAWN_POINTS);
 
@@ -271,7 +300,7 @@ public final class GameLogicManager {
      *            In-game name of the player
      * @return Player entity
      */
-    public final Entity createPlayer(final String entityName, final String name) {
+    public Entity createPlayer(final String entityName, final String name) {
         final Entity player = entityManager.create(Family.PLAYER, entityName);
         player.setAttribute(Attribute.PLAYER_NAME, name);
         players.put(entityName, new PlayerInfo(player));
@@ -286,7 +315,7 @@ public final class GameLogicManager {
      * @param entityName
      *            Player name
      */
-    public final void removePlayer(final String entityName) {
+    public void removePlayer(final String entityName) {
         /* If the player is dead, he is already removed from the entity list. */
         if (!players.get(entityName).isDead()) {
             entityManager.remove(entityName);
@@ -295,25 +324,41 @@ public final class GameLogicManager {
         players.remove(entityName);
     }
 
-    boolean canReachDistance(int distance, Vector2i curPos, Vector2i startPos,
-            boolean[][] field) {
+    /**
+     * Recursively checks if a certain distance can be reached from a starting
+     * position.
+     * 
+     * @param distance
+     *            Distance to reach
+     * @param curPos
+     *            Current position
+     * @param startPos
+     *            Starting position
+     * @param field
+     *            Field of booleans. True is filled and false is empty.
+     * @return True if a certain distance can be reached, else false.
+     */
+    boolean canReachDistance(final int distance, final Vector2i curPos,
+            final Vector2i startPos, final boolean[][] field) {
 
         if (field[curPos.getX()][curPos.getY()]) {
             return false;
         }
 
         /* Disables going back. */
-        field[curPos.getX()][curPos.getY()] = false;
+        field[curPos.getX()][curPos.getY()] = true;
 
-        if (Math.abs(startPos.getX() - curPos.getX())
-                + Math.abs(startPos.getY() - curPos.getY()) >= distance) {
+        if (curPos.sub(startPos).lengthSquared() >= distance * distance) {
             return true;
         }
 
         /* Crawl through the level. */
-        for (int i = -1; i < 1; i++) {
-            for (int j = -1; j < 1; j++) {
-                if (i == j) {
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == j || i == -j || curPos.getX() + i < 0
+                        || curPos.getY() + j < 0
+                        || curPos.getX() + i >= field.length
+                        || curPos.getY() + j >= field[0].length) {
                     continue;
                 }
 
@@ -329,28 +374,46 @@ public final class GameLogicManager {
     }
 
     /**
-     * Checks if a certain player is walled in.
+     * Builds the mobility field by looking only at the map.
      */
-    private void detectWalledIn(Entity player) {
-        float width = (Integer) map.getAttribute(Attribute.WIDTH);
-        float height = (Integer) map.getAttribute(Attribute.HEIGHT);
-        float playerSize = ((Geometry) player
-                .getAttribute(Attribute.BOUNDING_GEOMETRY))
-                .asCircumscribedCircle().getRadius() * 2;
+    private void buildStaticField() {
+        /* Do a + 1 do avoid rounding errors */
+        float width = (Integer) map.getAttribute(Attribute.WIDTH) + 1;
+        float height = (Integer) map.getAttribute(Attribute.HEIGHT) + 1;
+        float playerSize = 44; // FIXME: hardcoded
         float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
-        Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
-        int minimalSpace = 5; // five times the player size
 
-        boolean[][] field = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
+        staticField = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
                 * tileWidth / playerSize)];
         List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
-        /* Mark the filled tiles. */
+        /*
+         * Mark the filled tiles. TODO: if the tile width is greater than the
+         * player size, multiple entries in the field should be set.
+         */
         for (Tile tile : tiles) {
             if (tile.getType().isSolid()) {
-                field[(int) (tile.getX() / playerSize)][(int) (tile.getY() / playerSize)] = true;
+                staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
+                        .getY() * tileWidth / playerSize)] = true;
             }
         }
+
+    }
+
+    /**
+     * Checks if a certain player is walled in. This is the case if the mobility
+     * of the player is less than <code>minimalWalledInSpace</code>.
+     * 
+     * @param player
+     *            Player
+     * @return True if walled in, else false.
+     */
+    private boolean detectWalledIn(final Entity player) {
+        float playerSize = 44; // FIXME: hardcoded
+        Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
+
+        /* Use the static field as a base for new field. */
+        boolean[][] field = Utils.clone2DArray(staticField);
 
         /* Check the foam particles. */
         for (Entity ent : entityManager.getEntities().values()) {
@@ -360,9 +423,50 @@ public final class GameLogicManager {
             }
         }
 
-        if (!canReachDistance(5, playerPos.scale(1 / playerSize).asVector2i(),
+        /* Make the player position free. */
+        field[(int) (playerPos.getX() / playerSize)][(int) (playerPos.getY() / playerSize)] = false;
+
+        /* Output the map if tracing. */
+        if (LOG.getLevel() == Level.TRACE) {
+            outputMobilityMap(field);
+        }
+
+        if (!canReachDistance(minimalWalledInSpace,
+                playerPos.scale(1 / playerSize).asVector2i(),
                 playerPos.scale(1 / playerSize).asVector2i(), field)) {
-            LOG.info("Player is walled in!");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Outputs a mobility map. Useful for debugging.
+     * 
+     * @param field
+     *            Mobility map
+     */
+    private void outputMobilityMap(final boolean[][] field) {
+        try {
+            FileWriter fstream = new FileWriter("mobmap.txt");
+            BufferedWriter out = new BufferedWriter(fstream);
+
+            // print map
+            for (int j = 0; j < field[0].length; j++) {
+                for (int i = 0; i < field.length; i++) {
+                    if (field[i][j]) {
+                        out.write("#");
+                    } else {
+                        out.write(" ");
+                    }
+                }
+                out.write("\n");
+            }
+
+            out.close();
+
+        } catch (IOException e) {
+            LOG.error("Error while writing mobility map: ", e);
         }
     }
 
@@ -373,7 +477,7 @@ public final class GameLogicManager {
      * @param delta
      *            Time elapsed since last update
      */
-    public final void update(final double delta) {
+    public void update(final double delta) {
         /* Update all entities */
         entityManager.update(delta);
 
@@ -388,15 +492,29 @@ public final class GameLogicManager {
             }
 
             /* Check if walledin */
-            detectWalledIn(info.getPlayer());
+            if (!info.isDead() && detectWalledIn(info.getPlayer())) {
+                info.setWalledInTime(info.getWalledInTime() + (float) delta);
 
+                /* Kill the player if the max walledin time has passed. */
+                if (info.getWalledInTime() >= maxWalledInTime) {
+                    info.getPlayer().setAttribute(Attribute.HEALTH, 0);
+                }
+            } else {
+                info.setWalledInTime(0);
+            }
+
+            info.getPlayer().setAttribute(Attribute.WALLEDIN_IN,
+                    info.getWalledInTime() / maxWalledInTime);
         }
 
         /* Do collision detection */
         entityManager.doCollisionDetection(map, delta);
     }
 
-    public final void initialize() {
+    /**
+     * Initialize the game logic of the server.
+     */
+    public void initialize() {
         try {
             entityFactory.loadScript(Utils
                     .getClasspathURL("entities/entities.groovy"));
@@ -417,6 +535,9 @@ public final class GameLogicManager {
 
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, mapName);
+
+        /* Build the static movability field. */
+        buildStaticField();
     }
 
 }

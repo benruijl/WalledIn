@@ -254,6 +254,9 @@ public class NetworkDataWriter {
         case PLAYER_TEAM:
             writeIntegerData(((Teams) data).ordinal(), buffer);
             break;
+        case WALLEDIN_IN:
+            writeFloatData((Float) data, buffer);
+            break;
         case POSITION:
             writeVector2fData((Vector2f) data, buffer);
             break;

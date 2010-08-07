@@ -89,4 +89,25 @@ public final class Utils {
     public static int getCircleHalf(final float angle) {
         return angle > 0.5 * Math.PI && angle < 1.5 * Math.PI ? -1 : 1;
     }
+
+    /**
+     * Creates an independent copy of the boolean array. This involves cloning
+     * the structure and the data itself.
+     * 
+     * @param array
+     *            The array to be cloned
+     * @return An independent 'deep' structure clone of the array
+     */
+    public static boolean[][] clone2DArray(final boolean[][] array) {
+        int rows = array.length;
+
+        boolean[][] newArray = (boolean[][]) array.clone();
+
+        for (int row = 0; row < rows; row++) {
+            newArray[row] = (boolean[]) array[row].clone();
+        }
+
+        return newArray;
+    }
+
 }
