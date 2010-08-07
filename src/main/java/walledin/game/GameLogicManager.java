@@ -387,9 +387,6 @@ public final class GameLogicManager {
         float playerSize = 44; // FIXME: hardcoded
         float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
 
-        LOG.info(width);
-        LOG.info(height);
-
         staticField = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
                 * tileWidth / playerSize)];
         List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
@@ -397,8 +394,6 @@ public final class GameLogicManager {
         /* Mark the filled tiles. */
         for (Tile tile : tiles) {
             if (tile.getType().isSolid()) {
-                LOG.info(tile.getX());
-                LOG.info(tile.getY());
                 staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
                         .getY() * tileWidth / playerSize)] = true;
             }
