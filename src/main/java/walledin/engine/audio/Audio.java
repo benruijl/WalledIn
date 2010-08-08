@@ -22,20 +22,26 @@ package walledin.engine.audio;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.UnsupportedAudioFileException;
+
+import net.java.games.joal.AL;
+import net.java.games.joal.ALC;
+import net.java.games.joal.ALCcontext;
+import net.java.games.joal.ALCdevice;
+import net.java.games.joal.ALException;
+import net.java.games.joal.ALFactory;
+import net.java.games.sound3d.AudioSystem3D;
 
 import org.apache.log4j.Logger;
+
+import walledin.engine.math.Vector2f;
 
 /**
  * A singleton audio manager.
@@ -49,14 +55,63 @@ public final class Audio {
     /** Reference to only instance of Audio. */
     private static Audio ref = null;
 
+    /** JOAL instance. */
+    private AL al;
+    /** JOAL context manager. */
+    private ALC alc;
+    /** Maximum number of samples. */
+    private final int maximumAudioSamples;
     /** Map of sample name to sample. */
-    private Map<String, Sample> samples;
+    private final Map<String, Integer> samples;
 
     /**
      * Private constructor.
      */
     private Audio() {
-        samples = new HashMap<String, Sample>();
+        samples = new HashMap<String, Integer>();
+        maximumAudioSamples = 100; // TODO: add to config
+
+        initializeSystem();
+        initializeListener();
+    }
+
+    /**
+     * Initializes the OpenAL system.
+     */
+    private void initializeSystem() {
+        AudioSystem3D.init();
+
+        alc = ALFactory.getALC();
+        al = ALFactory.getAL();
+
+        ALCdevice device;
+        ALCcontext context;
+        String deviceID;
+
+        // Get handle to default device.
+        device = alc.alcOpenDevice(null);
+        if (device == null) {
+            throw new ALException("Error opening default OpenAL device");
+        }
+
+        deviceID = alc.alcGetString(device, ALC.ALC_DEVICE_SPECIFIER);
+        if (deviceID == null) {
+            throw new ALException(
+                    "Error getting specifier for default OpenAL device");
+        }
+
+        System.out.println("Using device " + deviceID);
+
+        // Create audio context.
+        context = alc.alcCreateContext(device, null);
+        if (context == null) {
+            throw new ALException("Can't create OpenAL context");
+        }
+        alc.alcMakeContextCurrent(context);
+
+        if (alc.alcGetError(device) != ALC.ALC_NO_ERROR) {
+            throw new ALException("Unable to make context current");
+        }
     }
 
     @Override
@@ -78,12 +133,36 @@ public final class Audio {
     }
 
     /**
-     * Loads a Wave sample.
-     * @param name Name of resource
-     * @param url URL of resource
-     * @return Audio sample or null on failure
+     * Initializes the listener.
      */
-    public Sample loadWaveSample(final String name, final URL url) {
+    public void initializeListener() {
+        float[] listenerPos = { 0.0f, 0.0f, 0.0f };
+        float[] listenerVel = { 0.0f, 0.0f, 0.0f };
+        float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
+        al.alListenerfv(AL.AL_POSITION, listenerPos, 0);
+        al.alListenerfv(AL.AL_VELOCITY, listenerVel, 0);
+        al.alListenerfv(AL.AL_ORIENTATION, listenerOri, 0);
+    }
+
+    /**
+     * Sets the position of the listener. Usually the position of the player.
+     * 
+     * @param position
+     *            Listener position.
+     */
+    public void setListenerPosition(final Vector2f position) {
+        al.alListener3f(AL.AL_POSITION, position.getX(), position.getX(), 0);
+    }
+
+    /**
+     * Loads a Wave sample.
+     * 
+     * @param name
+     *            Name of resource
+     * @param url
+     *            URL of resource
+     */
+    public void loadWaveSample(final String name, final URL url) {
         AudioInputStream stream;
         try {
             stream = AudioSystem.getAudioInputStream(url);
@@ -92,55 +171,96 @@ public final class Audio {
             byte[] data = new byte[(int) stream.getFrameLength()];
             stream.read(data);
 
-            Sample sample = new Sample(data, stream.getFormat(), true);
-            samples.put(name, sample);
-            return sample;
+            /*
+             * AudioFormat fmt = stream.getFormat(); int numChannels =
+             * fmt.getChannels(); int bits = fmt.getSampleSizeInBits(); int
+             * format = AL.AL_FORMAT_MONO8;
+             * 
+             * if ((bits == 8) && (numChannels == 1)) { format =
+             * AL.AL_FORMAT_MONO8; } else if ((bits == 16) && (numChannels ==
+             * 1)) { format = AL.AL_FORMAT_MONO16; } else if ((bits == 8) &&
+             * (numChannels == 2)) { format = AL.AL_FORMAT_STEREO8; } else if
+             * ((bits == 16) && (numChannels == 2)) { format =
+             * AL.AL_FORMAT_STEREO16; }
+             */
+
+            IntBuffer buffer = IntBuffer.allocate(1);
+            al.alGenBuffers(1, buffer);
+            al.alBufferData(
+                    buffer.get(0),
+                    stream.getFormat().getChannels() > 1 ? AL.AL_FORMAT_STEREO16
+                            : AL.AL_FORMAT_MONO16, ByteBuffer.wrap(data),
+                    data.length, (int) stream.getFormat().getSampleRate());
+
+            samples.put(name, buffer.get(0));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return null;
     }
 
     /**
      * Loads an Ogg sample.
-     * @param name Name of the sample
-     * @param url URL of the sampel
-     * @return Audio sample or null on failure
+     * 
+     * @param name
+     *            Name of the sample
+     * @param url
+     *            URL of the sample
      */
-    public Sample loadOggSample(final String name, final URL url) {
+    public void loadOggSample(final String name, final URL url) {
         try {
             OggDecoder decoder = new OggDecoder();
             OggData ogg = decoder.getData(url.openStream());
-            AudioFormat format = new AudioFormat(ogg.getRate(), 16,
-                    ogg.getChannels(), true, false);
 
-            Sample sample = new Sample(ogg.getData(), format, false);
-            samples.put(name, sample);
-            return sample;
+            IntBuffer buffer = IntBuffer.allocate(1);
+            al.alGenBuffers(1, buffer);
+            al.alBufferData(buffer.get(0),
+                    ogg.getChannels() > 1 ? AL.AL_FORMAT_STEREO16
+                            : AL.AL_FORMAT_MONO16, ByteBuffer.wrap(ogg
+                            .getData()), ogg.getData().length, ogg.getRate());
+
+            samples.put(name, buffer.get(0));
 
         } catch (IOException e) {
             LOG.info("Could not load file: " + url.getFile());
             e.printStackTrace();
         }
-
-        return null;
     }
-
 
     /**
      * Plays a sample.
-     * @param name Sample name
+     * 
+     * @param name
+     *            Sample name
+     * @param sourcePosition
+     *            The position of the audio source
+     * @param loop
+     *            True is sound should loop, else false
      */
-    public void playSample(final String name) {
+    public void playSample(final String name, final Vector2f sourcePosition,
+            final boolean loop) {
         try {
             if (!samples.containsKey(name)) {
+                LOG.warn("Audio file + " + name + " not found.");
                 return;
             }
-            
-            Sample sample = samples.get(name);
-            sample.play();
+
+            IntBuffer sources = IntBuffer.allocate(1);
+            al.alGenSources(1, sources);
+            int source = sources.get(0);
+
+            al.alSourcei(source, AL.AL_BUFFER, samples.get(name));
+            al.alSourcef(source, AL.AL_PITCH, 1.0f);
+            /* Full volume. */
+            al.alSourcef(source, AL.AL_GAIN, 1.0f);
+            al.alSource3f(source, AL.AL_POSITION, sourcePosition.getX(),
+                    sourcePosition.getY(), 0);
+            al.alSource3f(source, AL.AL_VELOCITY, 0, 0, 0);
+            al.alSourcei(source, AL.AL_LOOPING, loop ? AL.AL_TRUE : AL.AL_FALSE);
+
+            /* Play the sound */
+            al.alSourcePlay(sources.get(0));
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -136,7 +136,7 @@ public final class Client implements RenderListener, NetworkEventListener {
         }
 
         /* Play background music */
-        Audio.getInstance().playSample("background1");
+        Audio.getInstance().playSample("background1", new Vector2f(), true);
     }
 
     public static void main(final String[] args) {
@@ -201,11 +201,11 @@ public final class Client implements RenderListener, NetworkEventListener {
         int num = generator.nextInt(4) + 1;
 
         if (entity.getFamily() == Family.HANDGUN_BULLET) {
-            Audio.getInstance().playSample("handgun" + num);
+            Audio.getInstance().playSample("handgun" + num, new Vector2f(), false);
         }
 
         if (entity.getFamily() == Family.FOAMGUN_BULLET) {
-            Audio.getInstance().playSample("foamgun" + num);
+            Audio.getInstance().playSample("foamgun" + num, new Vector2f(), false);
         }
     }
 

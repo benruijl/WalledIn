@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar" sourcepath="lib/log4j-1.2.16-sources.jar"/>
 	<classpathentry kind="lib" path="lib/groovy-all-1.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/jorbis-0.0.17.jar"/>
+	<classpathentry kind="lib" path="lib/joal.jar" sourcepath="lib/joal-1.1.2-src.zip"/>
 	<classpathentry kind="output" path="build/classes/main"/>
 </classpath>
