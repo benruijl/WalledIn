@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.audio;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -59,8 +60,6 @@ public final class Audio {
     private AL al;
     /** JOAL context manager. */
     private ALC alc;
-    /** Maximum number of samples. */
-    private final int maximumAudioSamples;
     /** Map of sample name to sample. */
     private final Map<String, Integer> samples;
 
@@ -69,49 +68,9 @@ public final class Audio {
      */
     private Audio() {
         samples = new HashMap<String, Integer>();
-        maximumAudioSamples = 100; // TODO: add to config
 
         initializeSystem();
         initializeListener();
-    }
-
-    /**
-     * Initializes the OpenAL system.
-     */
-    private void initializeSystem() {
-        AudioSystem3D.init();
-
-        alc = ALFactory.getALC();
-        al = ALFactory.getAL();
-
-        ALCdevice device;
-        ALCcontext context;
-        String deviceID;
-
-        // Get handle to default device.
-        device = alc.alcOpenDevice(null);
-        if (device == null) {
-            throw new ALException("Error opening default OpenAL device");
-        }
-
-        deviceID = alc.alcGetString(device, ALC.ALC_DEVICE_SPECIFIER);
-        if (deviceID == null) {
-            throw new ALException(
-                    "Error getting specifier for default OpenAL device");
-        }
-
-        System.out.println("Using device " + deviceID);
-
-        // Create audio context.
-        context = alc.alcCreateContext(device, null);
-        if (context == null) {
-            throw new ALException("Can't create OpenAL context");
-        }
-        alc.alcMakeContextCurrent(context);
-
-        if (alc.alcGetError(device) != ALC.ALC_NO_ERROR) {
-            throw new ALException("Unable to make context current");
-        }
     }
 
     @Override
@@ -130,6 +89,45 @@ public final class Audio {
         }
 
         return ref;
+    }
+    
+    /**
+     * Initializes the OpenAL system.
+     */
+    private void initializeSystem() {
+        AudioSystem3D.init();
+
+        alc = ALFactory.getALC();
+        al = ALFactory.getAL();
+
+        ALCdevice device;
+        ALCcontext context;
+        String deviceID;
+
+        // Get handle to default device.
+        device = alc.alcOpenDevice(null);
+        if (device == null) {
+            LOG.error("Error opening default OpenAL device", new ALException());
+        }
+
+        deviceID = alc.alcGetString(device, ALC.ALC_DEVICE_SPECIFIER);
+        if (deviceID == null) {
+            LOG.error("Error getting specifier for default OpenAL device",
+                    new ALException());
+        }
+
+        LOG.info("Using sound device " + deviceID);
+
+        // Create audio context.
+        context = alc.alcCreateContext(device, null);
+        if (context == null) {
+            LOG.error("Can't create OpenAL context", new ALException());
+        }
+        alc.alcMakeContextCurrent(context);
+
+        if (alc.alcGetError(device) != ALC.ALC_NO_ERROR) {
+            LOG.error("Unable to make context current", new ALException());
+        }
     }
 
     /**
@@ -167,22 +165,17 @@ public final class Audio {
         try {
             stream = AudioSystem.getAudioInputStream(url);
 
-            // read the stream
-            byte[] data = new byte[(int) stream.getFrameLength()];
-            stream.read(data);
+            /* Convert audio format. */
+            AudioFormat audioFormat = new AudioFormat(stream.getFormat()
+                    .getSampleRate(), 16, stream.getFormat().getChannels(),
+                    true, false);
 
-            /*
-             * AudioFormat fmt = stream.getFormat(); int numChannels =
-             * fmt.getChannels(); int bits = fmt.getSampleSizeInBits(); int
-             * format = AL.AL_FORMAT_MONO8;
-             * 
-             * if ((bits == 8) && (numChannels == 1)) { format =
-             * AL.AL_FORMAT_MONO8; } else if ((bits == 16) && (numChannels ==
-             * 1)) { format = AL.AL_FORMAT_MONO16; } else if ((bits == 8) &&
-             * (numChannels == 2)) { format = AL.AL_FORMAT_STEREO8; } else if
-             * ((bits == 16) && (numChannels == 2)) { format =
-             * AL.AL_FORMAT_STEREO16; }
-             */
+            stream = AudioSystem.getAudioInputStream(audioFormat, stream);
+
+            /* Read the stream. */
+            byte[] data = new byte[(int) stream.getFrameLength()
+                    * audioFormat.getFrameSize()];
+            stream.read(data);
 
             IntBuffer buffer = IntBuffer.allocate(1);
             al.alGenBuffers(1, buffer);
@@ -190,7 +183,7 @@ public final class Audio {
                     buffer.get(0),
                     stream.getFormat().getChannels() > 1 ? AL.AL_FORMAT_STEREO16
                             : AL.AL_FORMAT_MONO16, ByteBuffer.wrap(data),
-                    data.length, (int) stream.getFormat().getSampleRate());
+                    data.length, (int) audioFormat.getSampleRate());
 
             samples.put(name, buffer.get(0));
 

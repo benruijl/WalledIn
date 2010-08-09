@@ -201,11 +201,13 @@ public final class Client implements RenderListener, NetworkEventListener {
         int num = generator.nextInt(4) + 1;
 
         if (entity.getFamily() == Family.HANDGUN_BULLET) {
-            Audio.getInstance().playSample("handgun" + num, new Vector2f(), false);
+            Audio.getInstance().playSample("handgun" + num, new Vector2f(),
+                    false);
         }
 
         if (entity.getFamily() == Family.FOAMGUN_BULLET) {
-            Audio.getInstance().playSample("foamgun" + num, new Vector2f(), false);
+            Audio.getInstance().playSample("foamgun" + num, new Vector2f(),
+                    false);
         }
     }
 
