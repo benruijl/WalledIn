@@ -125,18 +125,20 @@ public final class Client implements RenderListener, NetworkEventListener {
                 "network.timeOutTime");
 
         /* Load music */
-        Audio.getInstance().loadOggSample("background1",
-                Utils.getClasspathURL("audio/Clausterphobia.ogg"));
+        if (Audio.getInstance().isEnabled()) {
+            Audio.getInstance().loadOggSample("background1",
+                    Utils.getClasspathURL("audio/Clausterphobia.ogg"));
 
-        for (int i = 1; i < 5; i++) {
-            Audio.getInstance().loadWaveSample("handgun" + i,
-                    Utils.getClasspathURL("audio/handgun_" + i + ".wav"));
-            Audio.getInstance().loadWaveSample("foamgun" + i,
-                    Utils.getClasspathURL("audio/foamgun_" + i + ".wav"));
+            for (int i = 1; i < 5; i++) {
+                Audio.getInstance().loadWaveSample("handgun" + i,
+                        Utils.getClasspathURL("audio/handgun_" + i + ".wav"));
+                Audio.getInstance().loadWaveSample("foamgun" + i,
+                        Utils.getClasspathURL("audio/foamgun_" + i + ".wav"));
+            }
+
+            /* Play background music */
+            Audio.getInstance().playSample("background1", new Vector2f(), true);
         }
-
-        /* Play background music */
-        Audio.getInstance().playSample("background1", new Vector2f(), true);
     }
 
     public static void main(final String[] args) {
@@ -200,14 +202,16 @@ public final class Client implements RenderListener, NetworkEventListener {
         Random generator = new Random();
         int num = generator.nextInt(4) + 1;
 
-        if (entity.getFamily() == Family.HANDGUN_BULLET) {
-            Audio.getInstance().playSample("handgun" + num, new Vector2f(),
-                    false);
-        }
+        if (Audio.getInstance().isEnabled()) {
+            if (entity.getFamily() == Family.HANDGUN_BULLET) {
+                Audio.getInstance().playSample("handgun" + num, new Vector2f(),
+                        false);
+            }
 
-        if (entity.getFamily() == Family.FOAMGUN_BULLET) {
-            Audio.getInstance().playSample("foamgun" + num, new Vector2f(),
-                    false);
+            if (entity.getFamily() == Family.FOAMGUN_BULLET) {
+                Audio.getInstance().playSample("foamgun" + num, new Vector2f(),
+                        false);
+            }
         }
     }
 
@@ -395,7 +399,10 @@ public final class Client implements RenderListener, NetworkEventListener {
             connected = false;
         }
 
-        Audio.getInstance().removeUnusedSources();
+        if (Audio.getInstance().isEnabled()) {
+            Audio.getInstance().update();
+        }
+        
         screenManager.update(delta);
     }
 

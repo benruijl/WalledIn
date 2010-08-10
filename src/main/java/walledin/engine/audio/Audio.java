@@ -76,8 +76,12 @@ public final class Audio {
         samples = new HashMap<String, Integer>();
         sources = new LinkedList<Integer>();
 
+        enabled = false;
         initializeSystem();
-        initializeListener();
+
+        if (enabled) {
+            initializeListener();
+        }
     }
 
     @Override
@@ -124,12 +128,14 @@ public final class Audio {
         device = alc.alcOpenDevice(null);
         if (device == null) {
             LOG.error("Error opening default OpenAL device", new ALException());
+            return;
         }
 
         deviceID = alc.alcGetString(device, ALC.ALC_DEVICE_SPECIFIER);
         if (deviceID == null) {
             LOG.error("Error getting specifier for default OpenAL device",
                     new ALException());
+            return;
         }
 
         LOG.info("Using sound device " + deviceID);
@@ -138,12 +144,16 @@ public final class Audio {
         context = alc.alcCreateContext(device, null);
         if (context == null) {
             LOG.error("Can't create OpenAL context", new ALException());
+            return;
         }
         alc.alcMakeContextCurrent(context);
 
         if (alc.alcGetError(device) != ALC.ALC_NO_ERROR) {
             LOG.error("Unable to make context current", new ALException());
+            return;
         }
+
+        enabled = true;
     }
 
     /**
@@ -278,9 +288,18 @@ public final class Audio {
     }
 
     /**
+     * If enabled, updates the audio component.
+     */
+    public void update() {
+        if (enabled) {
+            removeUnusedSources();
+        }
+    }
+
+    /**
      * Checks the sources list for inactive sources and removes them.
      */
-    public void removeUnusedSources() {
+    private void removeUnusedSources() {
         if (al != null) {
             int[] state = new int[1];
 
