@@ -34,6 +34,7 @@ import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -54,10 +55,6 @@ public class ScreenManager {
     private final Map<ScreenType, Screen> typedScreens;
     /** Sorted list of screens. It is sorted on z-order. */
     private final SortedSet<Screen> screens;
-    /** Entity list of all screens together. */
-    private final EntityManager entityManager;
-    /** Client entity factory. */
-    private final EntityFactory entityFactory;
     /** Map of shared fonts. */
     private final Map<String, Font> fonts;
     /** Shared cursor. */
@@ -68,6 +65,8 @@ public class ScreenManager {
     private String playerName;
     /** Client using this screen manager. */
     private final Client client;
+    /** Client login manager. */
+    private final ClientLogicManager clientLogicManager;
     /** Keeps track is the cursor has to be drawn. */
     private boolean drawCursor;
     /** Focused screen. Only one screen can be focused. */
@@ -100,30 +99,10 @@ public class ScreenManager {
             }
         });
         fonts = new HashMap<String, Font>();
-        entityFactory = new EntityFactory();
-        entityManager = new EntityManager(entityFactory);
 
         this.client = client;
         this.renderer = renderer;
         drawCursor = true;
-    }
-
-    /**
-     * Returns the entity manager.
-     * 
-     * @return Entity manager
-     */
-    public final EntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    /**
-     * Returns the entity factory.
-     * 
-     * @return Entity factory
-     */
-    public final EntityFactory getEntityFactory() {
-        return entityFactory;
     }
 
     /**

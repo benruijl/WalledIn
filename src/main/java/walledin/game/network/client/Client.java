@@ -63,12 +63,9 @@ import walledin.game.network.ServerData;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
-public final class Client implements RenderListener, NetworkEventListener {
+public final class Client implements NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(Client.class);
 
-    private final Renderer renderer; // current renderer
-    private final ScreenManager screenManager;
-    private Screen gameScreen;
     private SocketAddress host;
     private String username;
     private final NetworkDataWriter networkDataWriter;
@@ -106,7 +103,7 @@ public final class Client implements RenderListener, NetworkEventListener {
      */
     public Client(final Renderer renderer) throws IOException {
         this.renderer = renderer;
-        screenManager = new ScreenManager(this, renderer);
+ 
 
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
@@ -123,54 +120,6 @@ public final class Client implements RenderListener, NetworkEventListener {
 
         TIME_OUT_TIME = SettingsManager.getInstance().getInteger(
                 "network.timeOutTime");
-
-        /* Load music */
-        if (Audio.getInstance().isEnabled()) {
-            Audio.getInstance().loadOggSample("background1",
-                    Utils.getClasspathURL("audio/Clausterphobia.ogg"));
-
-            for (int i = 1; i < 5; i++) {
-                Audio.getInstance().loadWaveSample("handgun" + i,
-                        Utils.getClasspathURL("audio/handgun_" + i + ".wav"));
-                Audio.getInstance().loadWaveSample("foamgun" + i,
-                        Utils.getClasspathURL("audio/foamgun_" + i + ".wav"));
-            }
-
-            /* Play background music */
-            Audio.getInstance().playSample("background1", new Vector2f(), true);
-        }
-    }
-
-    public static void main(final String[] args) {
-        /* Load configuration */
-        try {
-            SettingsManager.getInstance().loadSettings(
-                    Utils.getClasspathURL("settings.ini"));
-        } catch (final IOException e) {
-            LOG.error("Could not read configuration file.", e);
-        }
-
-        final Renderer renderer = new Renderer();
-
-        Client client;
-        try {
-            client = new Client(renderer);
-        } catch (final IOException e) {
-            LOG.fatal("IO exception while creating client.", e);
-            return;
-        }
-        LOG.info("Initializing renderer");
-
-        final SettingsManager settings = SettingsManager.getInstance();
-
-        renderer.initialize("WalledIn",
-                settings.getInteger("engine.window.width"),
-                settings.getInteger("engine.window.height"),
-                settings.getBoolean("engine.window.fullScreen"));
-        renderer.addListener(client);
-        // Start renderer
-        LOG.info("Starting renderer");
-        renderer.beginLoop();
     }
 
     public void refreshServerList() {
@@ -333,7 +282,6 @@ public final class Client implements RenderListener, NetworkEventListener {
      * @param delta
      *            time since last update in seconds
      */
-    @Override
     public void update(final double delta) {
         // network stuff
         try {
@@ -407,61 +355,9 @@ public final class Client implements RenderListener, NetworkEventListener {
     }
 
     /**
-     * Render the current gamestate.
-     */
-    @Override
-    public void draw(final Renderer renderer) {
-        screenManager.draw(renderer);
-    }
-
-    /**
      * Initialize game.
      */
-    @Override
-    public void init() {
-        LOG.info("initializing client");
-
-        /* Load standard font */
-        final Font font = new Font();
-        final String fontName = SettingsManager.getInstance().getString(
-                "game.font");
-        font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
-        screenManager.addFont(fontName, font);
-
-        final Screen serverListScreen = new ServerListScreen(screenManager);
-        screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
-
-        try {
-            screenManager.getEntityFactory().loadScript(
-                    Utils.getClasspathURL("entities/entities.groovy"));
-            screenManager.getEntityFactory().loadScript(
-                    Utils.getClasspathURL("entities/cliententities.groovy"));
-        } catch (final CompilationFailedException e) {
-            LOG.fatal("Could not compile script", e);
-            dispose();
-        } catch (final IOException e) {
-            LOG.fatal("IOException during loading of scripts", e);
-            dispose();
-        }
-        // initialize entity manager
-        screenManager.getEntityManager().init();
-
-        // create cursor, use the factory so it does not get added to the list
-        final Entity cursor = screenManager.getEntityFactory().create(
-                screenManager.getEntityManager(), Family.CURSOR, "cursor");
-        screenManager.setCursor(cursor);
-        renderer.hideHardwareCursor();
-
-        /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen(screenManager);
-        screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen selectTeamScreen = new SelectTeamScreen(screenManager);
-        screenManager.addScreen(ScreenType.SELECT_TEAM, selectTeamScreen);
-        final Screen menuScreen = new MainMenuScreen(screenManager);
-        screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
-        menuScreen.initialize();
-        menuScreen.show();
-
+    public void initialize() {
         connectToMasterServer();
     }
 
@@ -559,7 +455,6 @@ public final class Client implements RenderListener, NetworkEventListener {
         }
     }
 
-    @Override
     public void dispose() {
         if (!quitting) {
             quitting = true;

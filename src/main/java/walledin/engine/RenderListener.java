@@ -30,7 +30,7 @@ package walledin.engine;
  */
 public interface RenderListener {
 
-    void init();
+    void initialize();
 
     void update(double delta);
 
