@@ -20,12 +20,14 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.audio;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 import javax.sound.sampled.AudioFormat;
@@ -62,12 +64,17 @@ public final class Audio {
     private ALC alc;
     /** Map of sample name to sample. */
     private final Map<String, Integer> samples;
+    /** Buffer of OpenAL sources. */
+    private final List<Integer> sources;
+    /** Is sound enabled? */
+    private boolean enabled;
 
     /**
      * Private constructor.
      */
     private Audio() {
         samples = new HashMap<String, Integer>();
+        sources = new LinkedList<Integer>();
 
         initializeSystem();
         initializeListener();
@@ -90,7 +97,16 @@ public final class Audio {
 
         return ref;
     }
-    
+
+    /**
+     * Is the sound enabled?
+     * 
+     * @return True if enabled, else false
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     /**
      * Initializes the OpenAL system.
      */
@@ -239,9 +255,10 @@ public final class Audio {
                 return;
             }
 
-            IntBuffer sources = IntBuffer.allocate(1);
-            al.alGenSources(1, sources);
-            int source = sources.get(0);
+            IntBuffer sourceBuffer = IntBuffer.allocate(1);
+            al.alGenSources(1, sourceBuffer);
+            int source = sourceBuffer.get(0);
+            sources.add(source);
 
             al.alSourcei(source, AL.AL_BUFFER, samples.get(name));
             al.alSourcef(source, AL.AL_PITCH, 1.0f);
@@ -253,11 +270,56 @@ public final class Audio {
             al.alSourcei(source, AL.AL_LOOPING, loop ? AL.AL_TRUE : AL.AL_FALSE);
 
             /* Play the sound */
-            al.alSourcePlay(sources.get(0));
+            al.alSourcePlay(source);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Checks the sources list for inactive sources and removes them.
+     */
+    public void removeUnusedSources() {
+        if (al != null) {
+            int[] state = new int[1];
+
+            ListIterator<Integer> it = sources.listIterator();
+            while (it.hasNext()) {
+                al.alGetSourcei(it.next(), AL.AL_SOURCE_STATE, state, 0);
+
+                if (state[0] == AL.AL_STOPPED) {
+                    it.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes the buffers, the sources and the OpenAL context.
+     */
+    public void cleanUp() {
+        for (Integer source : sources) {
+            int[] so = new int[] { source };
+            al.alDeleteBuffers(1, so, 0);
+        }
+
+        for (Integer buffer : samples.values()) {
+            int[] buf = new int[] { buffer };
+            al.alDeleteBuffers(1, buf, 0);
+        }
+
+        ALCcontext curContext;
+        ALCdevice curDevice;
+
+        curContext = alc.alcGetCurrentContext();
+        curDevice = alc.alcGetContextsDevice(curContext);
+        alc.alcMakeContextCurrent(null);
+        alc.alcDestroyContext(curContext);
+        alc.alcCloseDevice(curDevice);
+
+        al = null;
+        alc = null;
     }
 
 }

@@ -157,7 +157,7 @@ public final class Client implements RenderListener, NetworkEventListener {
             LOG.fatal("IO exception while creating client.", e);
             return;
         }
-        LOG.info("initializing renderer");
+        LOG.info("Initializing renderer");
 
         final SettingsManager settings = SettingsManager.getInstance();
 
@@ -167,7 +167,7 @@ public final class Client implements RenderListener, NetworkEventListener {
                 settings.getBoolean("engine.window.fullScreen"));
         renderer.addListener(client);
         // Start renderer
-        LOG.info("starting renderer");
+        LOG.info("Starting renderer");
         renderer.beginLoop();
     }
 
@@ -395,6 +395,7 @@ public final class Client implements RenderListener, NetworkEventListener {
             connected = false;
         }
 
+        Audio.getInstance().removeUnusedSources();
         screenManager.update(delta);
     }
 
