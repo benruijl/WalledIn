@@ -124,32 +124,40 @@ public final class Audio {
         ALCcontext context;
         String deviceID;
 
-        // Get handle to default device.
-        device = alc.alcOpenDevice(null);
-        if (device == null) {
-            LOG.error("Error opening default OpenAL device", new ALException());
-            return;
-        }
+        try {
+            // Get handle to default device.
+            device = alc.alcOpenDevice(null);
+            if (device == null) {
+                LOG.error("Error opening default OpenAL device",
+                        new ALException());
+                return;
+            }
 
-        deviceID = alc.alcGetString(device, ALC.ALC_DEVICE_SPECIFIER);
-        if (deviceID == null) {
-            LOG.error("Error getting specifier for default OpenAL device",
-                    new ALException());
-            return;
-        }
+            deviceID = alc.alcGetString(device, ALC.ALC_DEVICE_SPECIFIER);
+            if (deviceID == null) {
+                LOG.error("Error getting specifier for default OpenAL device",
+                        new ALException());
+                return;
+            }
 
-        LOG.info("Using sound device " + deviceID);
+            LOG.info("Using sound device " + deviceID);
 
-        // Create audio context.
-        context = alc.alcCreateContext(device, null);
-        if (context == null) {
-            LOG.error("Can't create OpenAL context", new ALException());
-            return;
-        }
-        alc.alcMakeContextCurrent(context);
+            // Create audio context.
+            context = alc.alcCreateContext(device, null);
+            if (context == null) {
+                LOG.error("Can't create OpenAL context", new ALException());
+                return;
+            }
+            alc.alcMakeContextCurrent(context);
 
-        if (alc.alcGetError(device) != ALC.ALC_NO_ERROR) {
-            LOG.error("Unable to make context current", new ALException());
+            if (alc.alcGetError(device) != ALC.ALC_NO_ERROR) {
+                LOG.error("Unable to make context current", new ALException());
+                return;
+            }
+
+        } catch (Exception e) {
+            LOG.error("Exception during initialization "
+                    + "of audio system. Disabling audio.", e);
             return;
         }
 
@@ -205,18 +213,16 @@ public final class Audio {
 
             IntBuffer buffer = IntBuffer.allocate(1);
             al.alGenBuffers(1, buffer);
-            al.alBufferData(
-                    buffer.get(0),
-                    stream.getFormat().getChannels() > 1 ? AL.AL_FORMAT_STEREO16
-                            : AL.AL_FORMAT_MONO16, ByteBuffer.wrap(data),
+            final int format = stream.getFormat().getChannels() > 1 ? AL.AL_FORMAT_STEREO16
+                    : AL.AL_FORMAT_MONO16;
+            al.alBufferData(buffer.get(0), format, ByteBuffer.wrap(data),
                     data.length, (int) audioFormat.getSampleRate());
 
             samples.put(name, buffer.get(0));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.info("Could not load file: " + url.getFile(), e);
         }
-
     }
 
     /**
@@ -242,8 +248,7 @@ public final class Audio {
             samples.put(name, buffer.get(0));
 
         } catch (IOException e) {
-            LOG.info("Could not load file: " + url.getFile());
-            e.printStackTrace();
+            LOG.info("Could not load file: " + url.getFile(), e);
         }
     }
 
@@ -283,7 +288,7 @@ public final class Audio {
             al.alSourcePlay(source);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.info("Could not play sample: " + name, e);
         }
     }
 
