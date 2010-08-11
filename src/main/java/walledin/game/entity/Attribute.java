@@ -54,7 +54,9 @@ public enum Attribute {
     BOUNDING_GEOMETRY(Geometry.class),
     Z_INDEX(Integer.class),
     MASS(Float.class),
-    TARGET(Vector2f.class);
+    TARGET(Vector2f.class),
+    /** Counter between zero and one that takes track of how blocked you are */
+    WALLEDIN_IN(Float.class, true);
 
     public final Class<?> clazz;
     public final boolean sendOverNetwork;

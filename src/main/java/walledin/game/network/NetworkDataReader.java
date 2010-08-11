@@ -195,6 +195,9 @@ public class NetworkDataReader {
         case PLAYER_TEAM:
             data = Teams.values()[buffer.getInt()];
             break;
+        case WALLEDIN_IN:
+            data = buffer.getFloat();
+            break;
         case POSITION:
             data = readVector2fData(buffer);
             break;
@@ -241,6 +244,7 @@ public class NetworkDataReader {
 
             entity = entityManager.create(family, name);
             readFamilySpecificData(family, entity);
+            listener.entityCreated(entity);
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
             entityManager.remove(name);
@@ -295,7 +299,7 @@ public class NetworkDataReader {
     }
 
     /**
-     * Reads a datagram from the channel if there is one
+     * Reads a datagram from the channel if there is one.
      * 
      * @param channel
      *            The channel to read from

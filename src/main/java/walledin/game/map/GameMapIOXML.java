@@ -64,17 +64,17 @@ public final class GameMapIOXML implements GameMapIO {
             if (row.trim().isEmpty()) {
                 continue;
             }
-            y = 0;
+            x = 0;
             for (final char mapChar : row.trim().toCharArray()) {
                 final TileType type = TileType.getTile(mapChar);
                 final Tile tile = new Tile(type, x, y);
                 result.add(tile);
-                y++;
+                x++;
             }
-            x++;
+            y++;
         }
-        height = x;
-        width = y;
+        height = y;
+        width = x;
         return result;
     }
 

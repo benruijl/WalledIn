@@ -30,12 +30,20 @@ package walledin.engine.math;
  * @author ben
  */
 public class Vector2i {
-    public final int x;
-    public final int y;
+    private final int x;
+    private final int y;
 
     public Vector2i() {
         x = 0;
         y = 0;
+    }
+    
+    public int getX() {
+        return x;
+    }
+    
+    public int getY() {
+        return y;
     }
 
     public Vector2i(final int x, final int y) {
@@ -45,6 +53,9 @@ public class Vector2i {
 
     public Vector2i add(final Vector2i vec) {
         return new Vector2i(x + vec.x, y + vec.y);
+    }
+    public Vector2i sub(final Vector2i vec) {
+        return new Vector2i(x - vec.x, y - vec.y);
     }
 
     public int dot(final Vector2i vec) {

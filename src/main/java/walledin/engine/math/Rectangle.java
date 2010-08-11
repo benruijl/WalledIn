@@ -26,7 +26,7 @@ package walledin.engine.math;
 
 /**
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public class Rectangle extends Geometry {
     private final float x;

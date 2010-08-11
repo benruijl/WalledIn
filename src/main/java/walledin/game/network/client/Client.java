@@ -28,6 +28,7 @@ import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -37,6 +38,7 @@ import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
+import walledin.engine.audio.Audio;
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
@@ -121,6 +123,22 @@ public final class Client implements RenderListener, NetworkEventListener {
 
         TIME_OUT_TIME = SettingsManager.getInstance().getInteger(
                 "network.timeOutTime");
+
+        /* Load music */
+        if (Audio.getInstance().isEnabled()) {
+            Audio.getInstance().loadOggSample("background1",
+                    Utils.getClasspathURL("audio/Clausterphobia.ogg"));
+
+            for (int i = 1; i < 5; i++) {
+                Audio.getInstance().loadWaveSample("handgun" + i,
+                        Utils.getClasspathURL("audio/handgun_" + i + ".wav"));
+                Audio.getInstance().loadWaveSample("foamgun" + i,
+                        Utils.getClasspathURL("audio/foamgun_" + i + ".wav"));
+            }
+
+            /* Play background music */
+            Audio.getInstance().playSample("background1", new Vector2f(), true);
+        }
     }
 
     public static void main(final String[] args) {
@@ -141,7 +159,7 @@ public final class Client implements RenderListener, NetworkEventListener {
             LOG.fatal("IO exception while creating client.", e);
             return;
         }
-        LOG.info("initializing renderer");
+        LOG.info("Initializing renderer");
 
         final SettingsManager settings = SettingsManager.getInstance();
 
@@ -151,7 +169,7 @@ public final class Client implements RenderListener, NetworkEventListener {
                 settings.getBoolean("engine.window.fullScreen"));
         renderer.addListener(client);
         // Start renderer
-        LOG.info("starting renderer");
+        LOG.info("Starting renderer");
         renderer.beginLoop();
     }
 
@@ -175,6 +193,26 @@ public final class Client implements RenderListener, NetworkEventListener {
                 lanServerList);
         servers.addAll(internetServerList);
         return servers;
+    }
+
+    @Override
+    public void entityCreated(Entity entity) {
+        // TODO: move to a better place
+        /* Play a sound when a bullet is created */
+        Random generator = new Random();
+        int num = generator.nextInt(4) + 1;
+
+        if (Audio.getInstance().isEnabled()) {
+            if (entity.getFamily() == Family.HANDGUN_BULLET) {
+                Audio.getInstance().playSample("handgun" + num, new Vector2f(),
+                        false);
+            }
+
+            if (entity.getFamily() == Family.FOAMGUN_BULLET) {
+                Audio.getInstance().playSample("foamgun" + num, new Vector2f(),
+                        false);
+            }
+        }
     }
 
     /**
@@ -361,6 +399,10 @@ public final class Client implements RenderListener, NetworkEventListener {
             connected = false;
         }
 
+        if (Audio.getInstance().isEnabled()) {
+            Audio.getInstance().update();
+        }
+        
         screenManager.update(delta);
     }
 
@@ -585,4 +627,5 @@ public final class Client implements RenderListener, NetworkEventListener {
             LOG.error("IOException", e);
         }
     }
+
 }

@@ -719,7 +719,7 @@ public class Renderer implements GLEventListener {
      * @return Returns world position
      */
     public final Vector2f screenToWorld(final Vector2i p) {
-        final Vector2f fp = new Vector2f(p.x, p.y);
+        final Vector2f fp = p.asVector2f();
 
         // Create a rotation matrix, calculate its inverse and apply the camera
         // translation

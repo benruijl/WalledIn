@@ -23,8 +23,8 @@ package walledin.engine.math;
 import walledin.util.Utils;
 
 /**
- * 
- * @author ben
+ * 2d vector class using floats.
+ * @author Ben Ruijl
  */
 public class Vector2f {
     /** X component of the vector */
@@ -71,6 +71,10 @@ public class Vector2f {
      */
     public final Vector2f getYVector() {
         return new Vector2f(0, y);
+    }
+    
+    public Vector2i asVector2i() {
+        return new Vector2i((int)x, (int)y);
     }
 
     public Vector2f add(final Vector2f vec) {

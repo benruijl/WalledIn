@@ -99,25 +99,22 @@ public class EntityManager {
          * unset that.
          */
         if (entities.containsKey(entity.getName())) {
-            LOG.warn("Trying to add entity " + entity.getName()
-                    + " , but entity already exists.");
-
             if (entity.isMarkedRemoved()) {
                 entity.resetMarkedRemoved();
+            } else {
+                LOG.warn("Trying to add entity " + entity.getName()
+                        + " , but entity already exists.");
             }
 
             return;
         }
+
+        /*
+         * If the entity is in the removed list, remove it from there. If not,
+         * add it to the created list.
+         */
         if (removed.contains(entity)) {
-            /*
-             * If the entity is already removed in this update, remove it
-             * because it also created in this update
-             */
             removed.remove(entity);
-            /*
-             * Don't add it to created because it was never removed so we cannot
-             * create it.
-             */
         } else {
             created.add(entity);
         }
@@ -179,6 +176,21 @@ public class EntityManager {
 
     }
 
+    /**
+     * Returns the entity list.
+     * 
+     * @return Entity list
+     */
+    public Map<String, Entity> getEntities() {
+        return entities;
+    }
+
+    /**
+     * Draws the entities using the draw order manager.
+     * 
+     * @param renderer
+     *            Renderer
+     */
     public void draw(final Renderer renderer) {
         drawOrderManager.draw(renderer);
     }

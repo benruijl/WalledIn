@@ -37,7 +37,7 @@ import walledin.game.EntityManager;
 
 /**
  * Loads entity creation functions from the scripts and executes them when
- * created
+ * created.
  * 
  * @author Wouter Smeenk
  */

@@ -26,6 +26,7 @@ import java.util.Set;
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActions;
+import walledin.game.entity.Entity;
 import walledin.game.Teams;
 import walledin.game.network.NetworkConstants.ErrorCodes;
 
@@ -49,6 +50,8 @@ public interface NetworkEventListener {
 
     void receivedServerNotificationMessage(SocketAddress address,
             ServerData server);
+    
+    void entityCreated(Entity entity);
 
     void receivedGetPlayerInfoMessage(SocketAddress address);
 
