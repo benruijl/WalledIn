@@ -310,9 +310,12 @@ public final class Audio {
 
             ListIterator<Integer> it = sources.listIterator();
             while (it.hasNext()) {
-                al.alGetSourcei(it.next(), AL.AL_SOURCE_STATE, state, 0);
+                int source = it.next();
+                al.alGetSourcei(source, AL.AL_SOURCE_STATE, state, 0);
 
                 if (state[0] == AL.AL_STOPPED) {
+                    int[] so = new int[] { source };
+                    al.alDeleteSources(1, so, 0);
                     it.remove();
                 }
             }
@@ -325,7 +328,7 @@ public final class Audio {
     public void cleanUp() {
         for (Integer source : sources) {
             int[] so = new int[] { source };
-            al.alDeleteBuffers(1, so, 0);
+            al.alDeleteSources(1, so, 0);
         }
 
         for (Integer buffer : samples.values()) {
