@@ -18,39 +18,20 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.engine.audio;
+package walledin.engine.gui;
 
+import java.util.Set;
 
-/**
- * Data package read from Ogg file.
- * 
- * @author Ben Ruijl
- * 
- */
-public class OggData {
-    /** PCM data. */
-    private final byte[] data;
-    /** Rate of sound. */
-    private final int rate;
-    /** Channels. */
-    private final int channels;
+public class ScreenKeyEvent {
+    /** The screen the mouse is on. */
+    private final Set<Integer> keys;
 
-    public OggData(final byte[] data, final int rate, final int channels) {
+    public ScreenKeyEvent(final Set<Integer> keys) {
         super();
-        this.data = data;
-        this.rate = rate;
-        this.channels = channels;
+        this.keys = keys;
     }
 
-    public byte[] getData() {
-        return data;
-    }
-
-    public int getRate() {
-        return rate;
-    }
-
-    public int getChannels() {
-        return channels;
+    public Set<Integer> getKeys() {
+        return keys;
     }
 }

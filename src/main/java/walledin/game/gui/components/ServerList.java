@@ -27,22 +27,27 @@ import java.util.List;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.gui.ScreenMouseEvent;
+import walledin.engine.gui.ScreenMouseEventListener;
+import walledin.engine.gui.components.Button;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.GameMode;
-import walledin.game.gui.Screen;
-import walledin.game.gui.ScreenManager.ScreenType;
-import walledin.game.gui.ScreenMouseEvent;
-import walledin.game.gui.ScreenMouseEventListener;
 import walledin.game.network.ServerData;
 
 public class ServerList extends Screen implements ScreenMouseEventListener {
-    Screen refreshButton;
-    List<ServerData> serverList; // list of servers
-    List<Screen> serverButtons; // list of buttons
+    private final Screen refreshButton;
+    private List<ServerData> serverList; // list of servers
+    private final List<Screen> serverButtons; // list of buttons
+    private final ClientLogicManager clientLogicManager;
 
-    public ServerList(final Screen parent, final Rectangle boudingRect) {
+    public ServerList(final Screen parent, final Rectangle boudingRect,
+            final ClientLogicManager clientLogicManager) {
         super(parent, boudingRect, 1);
+        this.clientLogicManager = clientLogicManager;
         serverButtons = new ArrayList<Screen>();
 
         refreshButton = new Button(this, "Refresh", new Vector2f(400, 40));
@@ -53,7 +58,7 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
 
     @Override
     public void update(final double delta) {
-        serverList = getManager().getClient().getServerList();
+        serverList = clientLogicManager.getClient().getServerList();
 
         for (int i = 0; i < serverButtons.size(); i++) {
             removeChild(serverButtons.get(i));
@@ -99,7 +104,7 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
             getManager().createDialog("Refreshing server list.");
 
             // request a refresh
-            getManager().getClient().refreshServerList();
+            clientLogicManager.getClient().refreshServerList();
             Input.getInstance().setButtonUp(1); // FIXME
         }
 
@@ -107,9 +112,10 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
         for (int i = 0; i < serverButtons.size(); i++) {
             if (e.getScreen() == serverButtons.get(i)) {
                 // connect to server
-                getManager().getClient().connectToServer(serverList.get(i));
+                clientLogicManager.getClient().connectToServer(
+                        serverList.get(i));
 
-                if (getManager().getClient().connectedToServer()) {
+                if (clientLogicManager.getClient().isConnected()) {
 
                     /* If it is a team game, load the team selection screen */
                     final GameMode gameMode = serverList.get(i).getGameMode();

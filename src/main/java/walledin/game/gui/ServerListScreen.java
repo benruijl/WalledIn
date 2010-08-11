@@ -26,20 +26,29 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenKeyEvent;
+import walledin.engine.gui.ScreenKeyEventListener;
+import walledin.engine.gui.ScreenManager;
+import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.gui.ScreenManager.ScreenType;
+import walledin.game.ClientLogicManager;
 import walledin.game.gui.components.ServerList;
 
 public class ServerListScreen extends Screen implements ScreenKeyEventListener {
     private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
-    Screen serverListWidget;
+    private final Screen serverListWidget;
+    private final ClientLogicManager clientLogicManager;
 
-    public ServerListScreen(final ScreenManager manager) {
+    public ServerListScreen(final ScreenManager manager,
+            final ClientLogicManager clientLogicManager) {
         super(manager, null, 0);
         addKeyEventListener(this);
+        this.clientLogicManager = clientLogicManager;
 
-        serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400));
+        serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400),
+                clientLogicManager);
         serverListWidget.setPosition(new Vector2f(100, 0));
         addChild(serverListWidget);
     }
@@ -52,12 +61,12 @@ public class ServerListScreen extends Screen implements ScreenKeyEventListener {
     @Override
     protected void onVisibilityChanged(final boolean visible) {
         if (visible) {
-            getManager().getClient().bindServerNotifyChannel();
+            clientLogicManager.getClient().bindServerNotifyChannel();
 
             // request a refresh of the server list
-            getManager().getClient().refreshServerList();
+            clientLogicManager.getClient().refreshServerList();
         } else {
-            getManager().getClient().unbindServerNotifyChannel();
+            clientLogicManager.getClient().unbindServerNotifyChannel();
         }
         super.onVisibilityChanged(visible);
     }
@@ -76,7 +85,7 @@ public class ServerListScreen extends Screen implements ScreenKeyEventListener {
              * If playing a game, return to it when pressing escape. Otherwise,
              * return to main menu.
              */
-            if (getManager().getClient().connectedToServer()) {
+            if (clientLogicManager.getClient().isConnected()) {
                 getManager().getScreen(ScreenType.GAME).show();
                 hide();
                 Input.getInstance().setButtonUp(1); // FIXME

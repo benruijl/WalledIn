@@ -27,37 +27,41 @@ import org.apache.log4j.Logger;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
-import walledin.engine.TextureManager;
-import walledin.engine.TexturePartManager;
-import walledin.engine.math.Rectangle;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenKeyEvent;
+import walledin.engine.gui.ScreenKeyEventListener;
+import walledin.engine.gui.ScreenManager;
+import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
-import walledin.game.gui.ScreenManager.ScreenType;
-import walledin.util.Utils;
 
 public class GameScreen extends Screen implements ScreenKeyEventListener {
     private static final Logger LOG = Logger.getLogger(GameScreen.class);
+    private final ClientLogicManager clientLogicManager;
 
-
-    public GameScreen(final ScreenManager manager) {
+    public GameScreen(final ScreenManager manager,
+            final ClientLogicManager clientLogicManager) {
         super(manager, null, 0);
         addKeyEventListener(this);
+        this.clientLogicManager = clientLogicManager;
     }
 
     @Override
     public void draw(final Renderer renderer) {
         // prevent network from coming in between
-        final EntityManager entityManager = getManager().getEntityManager();
+        final EntityManager entityManager = clientLogicManager
+                .getEntityManager();
 
         renderer.applyCamera();
         entityManager.draw(renderer); // draw all entities in correct order
 
         renderer.startHUDRendering();
         final Font font = getManager().getFont("arial20");
-        final Entity player = entityManager.get(getManager().getPlayerName());
+        final Entity player = entityManager.get(clientLogicManager
+                .getPlayerName());
 
         if (player != null) {
             font.renderText(renderer,
@@ -74,6 +78,16 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
     public void update(final double delta) {
         super.update(delta);
 
+        /* Center the camera around the player */
+        if (clientLogicManager.getPlayerName() != null) {
+            final Entity player = clientLogicManager.getEntityManager().get(
+                    clientLogicManager.getPlayerName());
+            if (player != null) {
+                getManager().getRenderer().centerAround(
+                        (Vector2f) player.getAttribute(Attribute.POSITION));
+            }
+        }
+
         /*
          * If no other screen has the focus and this window is visible, take the
          * focus.
@@ -82,7 +96,7 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
             getManager().setFocusedScreen(this);
         }
     }
-    
+
     @Override
     public void onKeyDown(final ScreenKeyEvent e) {
         if (e.getKeys().contains(KeyEvent.VK_ESCAPE)) {
@@ -96,8 +110,6 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
-        
     }
 
 }

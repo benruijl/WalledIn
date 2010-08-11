@@ -470,7 +470,7 @@ public class Server implements NetworkEventListener {
     }
 
     @Override
-    public void entityCreated(Entity entity) {
-        //ignore        
+    public void entityCreated(final Entity entity) {
+        // ignore
     }
 }

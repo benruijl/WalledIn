@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui;
+package walledin.engine.gui;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,14 +33,9 @@ import org.apache.log4j.Logger;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
-import walledin.engine.math.Vector2f;
-import walledin.game.ClientLogicManager;
-import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.EntityFactory;
 import walledin.game.entity.MessageType;
-import walledin.game.network.client.Client;
 
 public class ScreenManager {
     /** Logger */
@@ -61,12 +56,6 @@ public class ScreenManager {
     private Entity cursor;
     /** Shared renderer. */
     private final Renderer renderer;
-    /** Player name. */
-    private String playerName;
-    /** Client using this screen manager. */
-    private final Client client;
-    /** Client login manager. */
-    private final ClientLogicManager clientLogicManager;
     /** Keeps track is the cursor has to be drawn. */
     private boolean drawCursor;
     /** Focused screen. Only one screen can be focused. */
@@ -78,7 +67,7 @@ public class ScreenManager {
      * @param renderer
      *            Renderer used by screen manager
      */
-    public ScreenManager(final Client client, final Renderer renderer) {
+    public ScreenManager(final Renderer renderer) {
         typedScreens = new ConcurrentHashMap<ScreenType, Screen>();
         screens = new TreeSet<Screen>(new Comparator<Screen>() {
 
@@ -99,8 +88,6 @@ public class ScreenManager {
             }
         });
         fonts = new HashMap<String, Font>();
-
-        this.client = client;
         this.renderer = renderer;
         drawCursor = true;
     }
@@ -112,26 +99,6 @@ public class ScreenManager {
      */
     public final Renderer getRenderer() {
         return renderer;
-    }
-
-    /**
-     * Registers the name of the player entity. Useful when the player entity is
-     * needed.
-     * 
-     * @param name
-     *            Name of player
-     */
-    public final void setPlayerName(final String name) {
-        playerName = name;
-    }
-
-    /**
-     * Gets the player entity name.
-     * 
-     * @return Player entity name
-     */
-    public final String getPlayerName() {
-        return playerName;
     }
 
     /**
@@ -225,9 +192,6 @@ public class ScreenManager {
      *            Delta time
      */
     public final void update(final double delta) {
-        /* Update all entities */
-        getEntityManager().update(delta);
-
         /* Update cursor position */
         if (cursor != null) {
             cursor.setAttribute(Attribute.POSITION, Input.getInstance()
@@ -298,13 +262,6 @@ public class ScreenManager {
         if (cursor != null && drawCursor) {
             getCursor().sendMessage(MessageType.RENDER, renderer);
         }
-
-        /* Show FPS for debugging */
-        renderer.startHUDRendering();
-        final Font font = getFont("arial20");
-        font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
-                630, 20));
-        renderer.stopHUDRendering();
     }
 
     /**
@@ -364,22 +321,6 @@ public class ScreenManager {
      */
     public final Screen getFocusedScreen() {
         return focusedScreen;
-    }
-
-    /**
-     * Kill the application. Sends the dispose message to the client.
-     */
-    public final void dispose() {
-        client.dispose();
-    }
-
-    /**
-     * Get the client.
-     * 
-     * @return Client that owns this screen manager.
-     */
-    public final Client getClient() {
-        return client;
     }
 
     /**

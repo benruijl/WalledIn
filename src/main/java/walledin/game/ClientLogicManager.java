@@ -31,19 +31,18 @@ import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.audio.Audio;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenManager;
+import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
-import walledin.game.gui.Screen;
-import walledin.game.gui.ScreenManager;
 import walledin.game.gui.SelectTeamScreen;
 import walledin.game.gui.ServerListScreen;
-import walledin.game.gui.ScreenManager.ScreenType;
 import walledin.game.network.client.Client;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
@@ -77,21 +76,28 @@ public final class ClientLogicManager implements RenderListener {
     private final Client client;
     /** The screen of the game (not the menus). */
     private Screen gameScreen;
+    /** Is the client quitting? */
+    private boolean quitting = false;
+    /** The name of the player of this client. */
+    private String playerName;
 
     /**
      * Creates a new logic manager.
+     * 
+     * @throws WalledInException
+     *             A generic error
      */
-    public ClientLogicManager() {
+    public ClientLogicManager() throws WalledInException {
         renderer = new Renderer();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
-        screenManager = new ScreenManager(this, renderer);
+        screenManager = new ScreenManager(renderer);
 
         try {
-            client = new Client(renderer);
+            client = new Client(renderer, this);
         } catch (final IOException e) {
             LOG.fatal("IO exception while creating client.", e);
-            return;
+            throw new WalledInException("Could not initialize the client.");
         }
         LOG.info("Initializing renderer");
 
@@ -139,22 +145,94 @@ public final class ClientLogicManager implements RenderListener {
     public void draw(final Renderer renderer) {
         screenManager.draw(renderer);
 
+        /* Show FPS for debugging */
+        renderer.startHUDRendering();
+        final Font font = screenManager.getFont("arial20");
+        font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
+                630, 20));
+        renderer.stopHUDRendering();
     }
-    
+
+    /**
+     * Registers the name of the player entity. Useful when the player entity is
+     * needed.
+     * 
+     * @param name
+     *            Name of player
+     */
+    public final void setPlayerName(final String name) {
+        playerName = name;
+    }
+
+    /**
+     * Gets the player entity name.
+     * 
+     * @return Player entity name
+     */
+    public final String getPlayerName() {
+        return playerName;
+    }
+
+    public Screen getGameScreen() {
+        return gameScreen;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
+    }
+
+    public ScreenManager getScreenManager() {
+        return screenManager;
+    }
+
+    /**
+     * Displays an error message, disconnects from the server and returns to the
+     * server list.
+     * 
+     * @param message
+     *            Message to display
+     */
+    public void displayErrorAndDisconnect(final String message) {
+        screenManager.createDialog(message);
+        LOG.error(message);
+
+        try {
+            client.disconnectFromServer();
+        } catch (final IOException e) {
+            LOG.error("Error while trying to disconnect from server", e);
+        }
+
+        screenManager.getScreen(ScreenType.SERVER_LIST).show();
+        screenManager.getScreen(ScreenType.GAME).hide();
+    }
+
     /**
      * Updates the client.
      */
     @Override
     public void update(final double delta) {
-        /* Center the camera around the player */
-        if (getManager().getPlayerName() != null) {
-            final Entity player = getManager().getEntityManager().get(
-                    getManager().getPlayerName());
-            if (player != null) {
-                getManager().getRenderer().centerAround(
-                        (Vector2f) player.getAttribute(Attribute.POSITION));
-            }
+        /* Only register actions when the game screen has the focus. */
+        if (screenManager.getFocusedScreen() != screenManager
+                .getScreen(ScreenType.GAME)) {
+            PlayerActionManager.getInstance().clear();
+        } else {
+            PlayerActionManager.getInstance().update();
         }
+
+        /* Update all entities */
+        getEntityManager().update(delta);
+
+        client.update(delta);
+
+        if (Audio.getInstance().isEnabled()) {
+            Audio.getInstance().update();
+        }
+
+        screenManager.update(delta);
     }
 
     /**
@@ -174,14 +252,15 @@ public final class ClientLogicManager implements RenderListener {
         font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
         screenManager.addFont(fontName, font);
 
-        final Screen serverListScreen = new ServerListScreen(screenManager);
+        final Screen serverListScreen = new ServerListScreen(screenManager,
+                this);
         screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
 
         try {
-            screenManager.getEntityFactory().loadScript(
-                    Utils.getClasspathURL("entities/entities.groovy"));
-            screenManager.getEntityFactory().loadScript(
-                    Utils.getClasspathURL("entities/cliententities.groovy"));
+            entityFactory.loadScript(Utils
+                    .getClasspathURL("entities/entities.groovy"));
+            entityFactory.loadScript(Utils
+                    .getClasspathURL("entities/cliententities.groovy"));
         } catch (final CompilationFailedException e) {
             LOG.fatal("Could not compile script", e);
             dispose();
@@ -190,11 +269,11 @@ public final class ClientLogicManager implements RenderListener {
             dispose();
         }
         // initialize entity manager
-        screenManager.getEntityManager().init();
+        entityManager.init();
 
         // create cursor, use the factory so it does not get added to the list
-        final Entity cursor = screenManager.getEntityFactory().create(
-                screenManager.getEntityManager(), Family.CURSOR, "cursor");
+        final Entity cursor = entityFactory.create(entityManager,
+                Family.CURSOR, "cursor");
         screenManager.setCursor(cursor);
         renderer.hideHardwareCursor();
 
@@ -202,7 +281,7 @@ public final class ClientLogicManager implements RenderListener {
         loadTextures();
         createTextureParts();
 
-        getManager().getEntityManager().create(Family.BACKGROUND, "Background");
+        entityManager.create(Family.BACKGROUND, "Background");
 
         /* Load music */
         if (Audio.getInstance().isEnabled()) {
@@ -221,11 +300,12 @@ public final class ClientLogicManager implements RenderListener {
         }
 
         /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen(screenManager);
+        gameScreen = new GameScreen(screenManager, this);
         screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen selectTeamScreen = new SelectTeamScreen(screenManager);
+        final Screen selectTeamScreen = new SelectTeamScreen(screenManager,
+                this);
         screenManager.addScreen(ScreenType.SELECT_TEAM, selectTeamScreen);
-        final Screen menuScreen = new MainMenuScreen(screenManager);
+        final Screen menuScreen = new MainMenuScreen(screenManager, this);
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.show();
@@ -233,15 +313,21 @@ public final class ClientLogicManager implements RenderListener {
 
     @Override
     public void dispose() {
-        client.dispose();
+        if (!quitting) {
+            quitting = true;
+            renderer.dispose();
+
+            client.dispose();
+        }
     }
 
     /**
      * Starts the application.
      * 
      * @param args
+     * @throws WalledInException
      */
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws WalledInException {
         /* Load configuration */
         try {
             SettingsManager.getInstance().loadSettings(
@@ -250,7 +336,7 @@ public final class ClientLogicManager implements RenderListener {
             LOG.error("Could not read configuration file.", e);
         }
 
-        ClientLogicManager logicManager = new ClientLogicManager();
+        final ClientLogicManager logicManager = new ClientLogicManager();
     }
 
     private void createTextureParts() {
