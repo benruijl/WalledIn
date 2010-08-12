@@ -122,12 +122,12 @@ public class Circle extends Geometry {
      * @return time at which collision happened. Is negative when none happened.
      */
     public float pointCollision(final Vector2f point, final Vector2f velocity) {
-        Vector2f H = pos.sub(point);
+        Vector2f h = pos.sub(point);
 
         float a = velocity.lengthSquared();
-        float b = 2.0f * (velocity.dot(H));
-        float c = H.dot(H) - radius * radius;
-        float d = (b * b) - (4.0f * a * c);
+        float b = 2.0f * velocity.dot(h);
+        float c = h.dot(h) - radius * radius;
+        float d = b * b - 4.0f * a * c;
 
         // point missed by infinite ray
         if (d < 0.0f) {

@@ -147,6 +147,8 @@ public class Line2f {
         }
 
         Vector2f edge = circle.getPos().add(velocity.scale(t0));
+        
+        /* Project edge to line. */
         float e = edge.sub(begin).dot(dir);
 
         if (e < 0.0f) {

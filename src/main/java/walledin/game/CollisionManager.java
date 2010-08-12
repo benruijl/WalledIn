@@ -195,15 +195,6 @@ public class CollisionManager {
                 Geometry boundsB = (Geometry) entArray[j]
                         .getAttribute(Attribute.BOUNDING_GEOMETRY);
 
-                boundsA = boundsA.translate((Vector2f) entArray[i]
-                        .getAttribute(Attribute.POSITION));
-                boundsB = boundsB.translate((Vector2f) entArray[j]
-                        .getAttribute(Attribute.POSITION));
-
-                /*
-                 * if (!boundsA.intersects(boundsB)) { continue; }
-                 */
-
                 final Vector2f posA = (Vector2f) entArray[i]
                         .getAttribute(Attribute.POSITION);
                 final Vector2f posB = (Vector2f) entArray[j]
@@ -216,8 +207,12 @@ public class CollisionManager {
 
                 final Vector2f oldPosA = posA.sub(velA);
                 final Vector2f oldPosB = posB.sub(velB);
-                
+
+                boundsA = boundsA.translate(oldPosA);
+                boundsB = boundsB.translate(oldPosB);
+
                 Vector2f newPosA = posA;
+                Vector2f newPosB = posB;
 
                 /* Assumes the circle is static for now. */
                 if (boundsB instanceof Circle && boundsA instanceof Rectangle) {
@@ -228,28 +223,57 @@ public class CollisionManager {
                                     boundsB.asCircumscribedCircle(),
                                     velA.scale(-1.0f));
 
-                    if (!data.collided) {
-                        return;
+                    if (!data.isCollided()) {
+                        continue;
                     }
 
                     /* Get surface vector */
                     Vector2f surfaceVector = new Vector2f(-data.getNormal()
                             .getY(), data.getNormal().getX());
 
-                    newPosA = oldPosA.add(velA.scale(data.getTime()))
-                            .add(surfaceVector.scale(data.getNormal().cross(
-                                    data.getPenetration())));
+                    LOG.info(data.getTime());
+                    newPosA = oldPosA.add(velA.scale(data.getTime()));
+                    /*
+                     * newPosA.add(surfaceVector.scale(data.getNormal().cross(
+                     * data.getPenetration())));
+                     */
 
                     entArray[i].setAttribute(Attribute.POSITION, newPosA);
                     entArray[i]
                             .setAttribute(Attribute.VELOCITY, new Vector2f());
+                } else {
+                    if (boundsB instanceof Rectangle
+                            && boundsA instanceof Circle) {
+                        GeometricalCollisionData data = boundsB
+                                .asRectangle()
+                                .asPolygon()
+                                .circleCollisionData(
+                                        boundsA.asCircumscribedCircle(),
+                                        velB.scale(-1.0f));
+
+                        if (!data.isCollided()) {
+                            continue;
+                        }
+
+                        /* Get surface vector */
+                        Vector2f surfaceVector = new Vector2f(-data.getNormal()
+                                .getY(), data.getNormal().getX());
+
+                        newPosB = oldPosB.add(velB.scale(data.getTime()));
+                       /* newPosB.add(surfaceVector.scale(data.getNormal().cross(
+                                data.getPenetration())));*/
+
+                        entArray[j].setAttribute(Attribute.POSITION, newPosB);
+                        entArray[j].setAttribute(Attribute.VELOCITY,
+                                new Vector2f());
+                    }
                 }
-                
+
                 entArray[i].sendMessage(MessageType.COLLIDED,
                         new CollisionData(newPosA, oldPosA, posA, delta,
                                 entArray[j]));
                 entArray[j].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posB, oldPosB, posB, delta,
+                        new CollisionData(newPosB, oldPosB, posB, delta,
                                 entArray[i]));
 
             }
