@@ -5,6 +5,10 @@ import java.util.List;
 
 import org.junit.experimental.max.MaxCore;
 
+import com.sun.org.apache.bcel.internal.generic.FLOAD;
+
+import walledin.game.CollisionManager.GeometricalCollisionData;
+
 public class Polygon2f {
     private List<Line2f> edges;
     private Vector2f position;
@@ -59,5 +63,40 @@ public class Polygon2f {
         }
 
         return collision ? collisionTime : -1.0f;
+    }
+
+    public Vector2f closestPointOnPolygon(Vector2f point) {
+        Vector2f closest = new Vector2f();
+        float distance = Float.MAX_VALUE;
+
+        for (Line2f edge : edges) {
+            Vector2f closestToEdge = edge.projectionPointToLine(point);
+            float distSquared = point.sub(closestToEdge).lengthSquared();
+            if (distSquared < distance) {
+                distance = distSquared;
+                closest = closestToEdge;
+            }
+        }
+
+        return closest;
+    }
+
+    public GeometricalCollisionData circleCollisionData(Circle circle,
+            Vector2f velocity) {
+        float time = circleCollision(circle, velocity);
+
+        if (time < 0) {
+            return new GeometricalCollisionData(false, 0, null, null);
+        }
+
+        Vector2f circlePos = circle.getPos().add(velocity.scale(time));
+        Vector2f polygonPoint = closestPointOnPolygon(circlePos);
+        Vector2f circlePoint = new Circle(circlePos, circle.getRadius())
+                .closestPointOnCircle(polygonPoint);
+        
+        Vector2f normal =  circlePos.sub(polygonPoint).normalize();
+        Vector2f penetration = polygonPoint.sub(circlePoint);
+        
+        return new GeometricalCollisionData(true, time, normal, penetration);
     }
 }

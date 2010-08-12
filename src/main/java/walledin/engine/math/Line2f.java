@@ -131,7 +131,7 @@ public class Line2f {
             t1 = temp;
         }
 
-        /* The point misses the infinte cylinder. */
+        /* The point misses the infinite cylinder. */
         if (t0 > 1.0f || t1 < 0.0f) {
             return -1;
         }
@@ -150,11 +150,11 @@ public class Line2f {
         float e = edge.sub(begin).dot(dir);
 
         if (e < 0.0f) {
-            return circleLineCollision(new Circle(begin, circle.getRadius()),
-                    velocity);
+            return new Circle(begin, circle.getRadius()).pointCollision(
+                    circle.getPos(), velocity);
         } else if (e > 1.0f) {
-            return circleLineCollision(new Circle(end, circle.getRadius()),
-                    velocity);
+            return new Circle(end, circle.getRadius()).pointCollision(
+                    circle.getPos(), velocity);
         } else {
             return t0;
         }

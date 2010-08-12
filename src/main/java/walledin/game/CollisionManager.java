@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import walledin.engine.math.Circle;
 import walledin.engine.math.Geometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -43,6 +44,38 @@ import walledin.game.map.TileType;
  */
 public class CollisionManager {
     private static final Logger LOG = Logger.getLogger(CollisionManager.class);
+
+    public static class GeometricalCollisionData {
+        private final boolean collided;
+        private final float time;
+        private final Vector2f normal;
+        private final Vector2f penetration;
+
+        public GeometricalCollisionData(boolean collided, float time,
+                Vector2f normal, Vector2f penetration) {
+            super();
+            this.collided = collided;
+            this.time = time;
+            this.normal = normal;
+            this.penetration = penetration;
+        }
+
+        public boolean isCollided() {
+            return collided;
+        }
+
+        public float getTime() {
+            return time;
+        }
+
+        public Vector2f getNormal() {
+            return normal;
+        }
+
+        public Vector2f getPenetration() {
+            return penetration;
+        }
+    }
 
     public static class CollisionData {
         private final Vector2f newPos;
@@ -167,9 +200,9 @@ public class CollisionManager {
                 boundsB = boundsB.translate((Vector2f) entArray[j]
                         .getAttribute(Attribute.POSITION));
 
-                if (!boundsA.intersects(boundsB)) {
-                    continue;
-                }
+                /*
+                 * if (!boundsA.intersects(boundsB)) { continue; }
+                 */
 
                 final Vector2f posA = (Vector2f) entArray[i]
                         .getAttribute(Attribute.POSITION);
@@ -183,13 +216,42 @@ public class CollisionManager {
 
                 final Vector2f oldPosA = posA.sub(velA);
                 final Vector2f oldPosB = posB.sub(velB);
+                
+                Vector2f newPosA = posA;
 
+                /* Assumes the circle is static for now. */
+                if (boundsB instanceof Circle && boundsA instanceof Rectangle) {
+                    GeometricalCollisionData data = boundsA
+                            .asRectangle()
+                            .asPolygon()
+                            .circleCollisionData(
+                                    boundsB.asCircumscribedCircle(),
+                                    velA.scale(-1.0f));
+
+                    if (!data.collided) {
+                        return;
+                    }
+
+                    /* Get surface vector */
+                    Vector2f surfaceVector = new Vector2f(-data.getNormal()
+                            .getY(), data.getNormal().getX());
+
+                    newPosA = oldPosA.add(velA.scale(data.getTime()))
+                            .add(surfaceVector.scale(data.getNormal().cross(
+                                    data.getPenetration())));
+
+                    entArray[i].setAttribute(Attribute.POSITION, newPosA);
+                    entArray[i]
+                            .setAttribute(Attribute.VELOCITY, new Vector2f());
+                }
+                
                 entArray[i].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posA, oldPosA, posA, delta,
+                        new CollisionData(newPosA, oldPosA, posA, delta,
                                 entArray[j]));
                 entArray[j].sendMessage(MessageType.COLLIDED,
                         new CollisionData(posB, oldPosB, posB, delta,
                                 entArray[i]));
+
             }
         }
     }
