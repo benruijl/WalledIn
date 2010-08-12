@@ -109,5 +109,43 @@ public class Circle extends Geometry {
     public boolean containsPoint(final Vector2f point) {
         return pos.sub(pos).lengthSquared() < radius * radius;
     }
+    
+    /**
+     * Returns the time at which a moving point collides with the circle.
+     * @param point Point
+     * @param velocity Velocity of point
+     * @return time at which collision happened. Is negative when none happened.
+     */
+    public float pointCollision(final Vector2f point, final Vector2f velocity) {
+        Vector2f H = pos.sub(point);
+        
+        float a = velocity.lengthSquared();
+        float b = 2.0f * (velocity.dot(H));
+        float c = H.dot(H) - radius * radius;
+        float d = (b*b) - (4.0f * a * c);
+        
+        // point missed by infinite ray
+        if (d < 0.0f) {
+            return -1.0f;
+        }
+        
+        d = (float) Math.sqrt(d);
+        float t0 = (-b - d) / (2.0f * a);
+        float t1 = (-b + d) / (2.0f * a);
+
+        // sort times
+        if (t0 > t1) {
+            float temp = t0;
+            t0 = t1;
+            t1 = temp;
+        }
+        
+        // point missed by ray range
+        if (t0 > 1.0f || t1 < 0.0f) {
+            return -1.0f;
+        }
+        
+        return t0;
+    }
 
 }

@@ -26,10 +26,10 @@ import walledin.util.Utils;
  * 2d vector class using floats.
  * @author Ben Ruijl
  */
-public class Vector2f {
-    /** X component of the vector */
+public final class Vector2f {
+    /** X component of the vector. */
     private final float x;
-    /** Y component of the vector */
+    /** Y component of the vector. */
     private final float y;
 
     public Vector2f() {
@@ -88,9 +88,22 @@ public class Vector2f {
     public float dot(final Vector2f vec) {
         return x * vec.x + y * vec.y;
     }
+    
+    /**
+     * Returns the <b>length</b> of the cross product.
+     * @param vec Vector2
+     * @return Length of cross product
+     */
+    public float cross(final Vector2f vec) {
+        return x * vec.y - y * vec.x;
+    }
 
     public float lengthSquared() {
         return dot(this);
+    }
+    
+    public float length() {
+        return (float) Math.sqrt(lengthSquared());
     }
 
     public Vector2f scale(final float amount) {
