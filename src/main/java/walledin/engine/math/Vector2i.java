@@ -37,11 +37,11 @@ public class Vector2i {
         x = 0;
         y = 0;
     }
-    
+
     public int getX() {
         return x;
     }
-    
+
     public int getY() {
         return y;
     }
@@ -54,6 +54,7 @@ public class Vector2i {
     public Vector2i add(final Vector2i vec) {
         return new Vector2i(x + vec.x, y + vec.y);
     }
+
     public Vector2i sub(final Vector2i vec) {
         return new Vector2i(x - vec.x, y - vec.y);
     }

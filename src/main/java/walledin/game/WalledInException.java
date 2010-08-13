@@ -18,15 +18,27 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui;
+package walledin.game;
 
-public interface ScreenKeyEventListener {
+/**
+ * Custom exception for WalledIn.
+ * 
+ * @author Ben Ruijl
+ * 
+ */
+public class WalledInException extends Exception {
     /**
-     * Called when a key is pressed.
-     * 
-     * @param e
-     *            Key event information
+     * Serial ID.
      */
-    public void onKeyDown(ScreenKeyEvent e);
+    private static final long serialVersionUID = -5392195441733476397L;
 
+    /**
+     * Creates a new WalledIn exception.
+     * 
+     * @param message
+     *            Message to print
+     */
+    public WalledInException(final String message) {
+        super(message);
+    }
 }

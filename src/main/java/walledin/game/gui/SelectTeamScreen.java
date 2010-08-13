@@ -27,27 +27,35 @@ import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenManager;
+import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.gui.ScreenMouseEvent;
+import walledin.engine.gui.ScreenMouseEventListener;
+import walledin.engine.gui.components.Button;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.gui.ScreenManager.ScreenType;
-import walledin.game.gui.components.Button;
 import walledin.util.Utils;
 
 public class SelectTeamScreen extends Screen implements
         ScreenMouseEventListener {
-    Screen teamBlue;
-    Screen teamRed;
-    Screen teamUndefined;
-    Screen back;
-    Set<PlayerClientInfo> players;
+    private final Screen teamBlue;
+    private final Screen teamRed;
+    private final Screen teamUndefined;
+    private final Screen back;
+    private Set<PlayerClientInfo> players;
+    private final ClientLogicManager clientLogicManager;
 
-    public SelectTeamScreen(final ScreenManager manager) {
+    public SelectTeamScreen(final ScreenManager manager,
+            final ClientLogicManager clientLogicManager) {
         super(manager, null, 0);
         players = new HashSet<PlayerClientInfo>();
+        this.clientLogicManager = clientLogicManager;
 
         TextureManager.getInstance().loadFromURL(
                 Utils.getClasspathURL("logo.png"), "logo");
@@ -77,8 +85,8 @@ public class SelectTeamScreen extends Screen implements
         int blueCount = 0;
         int specCount = 0;
         for (final PlayerClientInfo player : players) {
-            final Entity playerEntity = getManager().getEntityManager().get(
-                    player.getEntityName());
+            final Entity playerEntity = clientLogicManager.getEntityManager()
+                    .get(player.getEntityName());
 
             if (playerEntity == null) {
                 return;
@@ -116,14 +124,14 @@ public class SelectTeamScreen extends Screen implements
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
         if (e.getScreen() == teamBlue) {
-            getManager().getClient().selectTeam(Teams.BLUE);
+            clientLogicManager.getClient().selectTeam(Teams.BLUE);
             getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
             hide();
         }
 
         if (e.getScreen() == teamRed) {
-            getManager().getClient().selectTeam(Teams.RED);
+            clientLogicManager.getClient().selectTeam(Teams.RED);
             getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
             hide();
@@ -137,8 +145,8 @@ public class SelectTeamScreen extends Screen implements
 
     @Override
     public void update(final double delta) {
-        getManager().getClient().refreshPlayerList();
-        players = getManager().getClient().getPlayerList();
+        clientLogicManager.getClient().refreshPlayerList();
+        players = clientLogicManager.getClient().getPlayerList();
 
         super.update(delta);
     }

@@ -18,26 +18,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui;
+package walledin.engine.gui;
 
-import walledin.engine.math.Vector2f;
+public interface ScreenKeyEventListener {
+    /**
+     * Called when a key is pressed.
+     * 
+     * @param e
+     *            Key event information
+     */
+    public void onKeyDown(ScreenKeyEvent e);
 
-public class ScreenMouseEvent {
-    /** The screen the mouse is on. */
-    private final Screen screen;
-    private final Vector2f pos;
-
-    public ScreenMouseEvent(final Screen screen, final Vector2f pos) {
-        super();
-        this.screen = screen;
-        this.pos = pos;
-    }
-
-    public Screen getScreen() {
-        return screen;
-    }
-
-    public Vector2f getPos() {
-        return pos;
-    }
 }

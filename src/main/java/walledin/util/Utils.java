@@ -99,12 +99,12 @@ public final class Utils {
      * @return An independent 'deep' structure clone of the array
      */
     public static boolean[][] clone2DArray(final boolean[][] array) {
-        int rows = array.length;
+        final int rows = array.length;
 
-        boolean[][] newArray = (boolean[][]) array.clone();
+        final boolean[][] newArray = array.clone();
 
         for (int row = 0; row < rows; row++) {
-            newArray[row] = (boolean[]) array[row].clone();
+            newArray[row] = array[row].clone();
         }
 
         return newArray;

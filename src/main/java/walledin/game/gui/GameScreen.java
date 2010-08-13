@@ -27,40 +27,41 @@ import org.apache.log4j.Logger;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
-import walledin.engine.TextureManager;
-import walledin.engine.TexturePartManager;
-import walledin.engine.math.Rectangle;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenKeyEvent;
+import walledin.engine.gui.ScreenKeyEventListener;
+import walledin.engine.gui.ScreenManager;
+import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.EntityManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
-import walledin.game.gui.ScreenManager.ScreenType;
-import walledin.util.Utils;
 
 public class GameScreen extends Screen implements ScreenKeyEventListener {
     private static final Logger LOG = Logger.getLogger(GameScreen.class);
+    private final ClientLogicManager clientLogicManager;
 
-    private boolean assetsLoaded = false;
-    private static final int TILE_SIZE = 64;
-    private static final int TILES_PER_LINE = 16;
-
-    public GameScreen(final ScreenManager manager) {
+    public GameScreen(final ScreenManager manager,
+            final ClientLogicManager clientLogicManager) {
         super(manager, null, 0);
         addKeyEventListener(this);
+        this.clientLogicManager = clientLogicManager;
     }
 
     @Override
     public void draw(final Renderer renderer) {
         // prevent network from coming in between
-        final EntityManager entityManager = getManager().getEntityManager();
+        final EntityManager entityManager = clientLogicManager
+                .getEntityManager();
 
         renderer.applyCamera();
         entityManager.draw(renderer); // draw all entities in correct order
 
         renderer.startHUDRendering();
         final Font font = getManager().getFont("arial20");
-        final Entity player = entityManager.get(getManager().getPlayerName());
+        final Entity player = entityManager.get(clientLogicManager
+                .getPlayerName());
 
         if (player != null) {
             font.renderText(renderer,
@@ -77,6 +78,16 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
     public void update(final double delta) {
         super.update(delta);
 
+        /* Center the camera around the player */
+        if (clientLogicManager.getPlayerName() != null) {
+            final Entity player = clientLogicManager.getEntityManager().get(
+                    clientLogicManager.getPlayerName());
+            if (player != null) {
+                getManager().getRenderer().centerAround(
+                        (Vector2f) player.getAttribute(Attribute.POSITION));
+            }
+        }
+
         /*
          * If no other screen has the focus and this window is visible, take the
          * focus.
@@ -84,123 +95,6 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
         if (getManager().getFocusedScreen() == null) {
             getManager().setFocusedScreen(this);
         }
-
-        /* Center the camera around the player */
-        if (getManager().getPlayerName() != null) {
-            final Entity player = getManager().getEntityManager().get(
-                    getManager().getPlayerName());
-            if (player != null) {
-                getManager().getRenderer().centerAround(
-                        (Vector2f) player.getAttribute(Attribute.POSITION));
-            }
-        }
-    }
-
-    @Override
-    public void initialize() {
-        /* Prevent loading assets twice. */
-        if (!assetsLoaded) {
-            assetsLoaded = true;
-            loadTextures();
-            createTextureParts();
-
-            getManager().getEntityManager().create(Family.BACKGROUND,
-                    "Background");
-        }
-    }
-        
-    private void loadTextures() {
-        final TextureManager manager = TextureManager.getInstance();
-        manager.loadFromURL(Utils.getClasspathURL("tiles.png"), "tiles");
-        manager.loadFromURL(Utils.getClasspathURL("zon.png"), "sun");
-        manager.loadFromURL(Utils.getClasspathURL("player.png"), "player");
-        manager.loadFromURL(Utils.getClasspathURL("wall.png"), "wall");
-    }
-
-    private void createTextureParts() {
-        final TexturePartManager manager = TexturePartManager.getInstance();
-        manager.createTexturePart("player_eyes", "player", new Rectangle(70,
-                96, 20, 32));
-        manager.createTexturePart("player_background", "player", new Rectangle(
-                96, 0, 96, 96));
-        manager.createTexturePart("player_body", "player", new Rectangle(0, 0,
-                96, 96));
-        manager.createTexturePart("player_background_foot", "player",
-                new Rectangle(192, 64, 96, 32));
-        manager.createTexturePart("player_foot", "player", new Rectangle(192,
-                32, 96, 32));
-        manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
-        manager.createTexturePart(
-                "tile_empty",
-                "tiles",
-                createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_filled",
-                "tiles",
-                createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_left",
-                "tiles",
-                createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_right",
-                "tiles",
-                createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass",
-                "tiles",
-                createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_grass",
-                "tiles",
-                createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_mud",
-                "tiles",
-                createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_right_mud",
-                "tiles",
-                createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass",
-                "tiles",
-                createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_left_mud",
-                "tiles",
-                createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_right_mud",
-                "tiles",
-                createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass_end",
-                "tiles",
-                createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_mud",
-                "tiles",
-                createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
-                        TILE_SIZE));
-    }
-
-    private Rectangle createMapTextureRectangle(final int tileNumber,
-            final int tileNumPerLine, final int tileWidth, final int tileHeight) {
-        return new Rectangle((tileNumber % 16 * tileWidth + 1), (tileNumber
-                / 16 * tileHeight + 1), (tileWidth - 2), (tileHeight - 2));
     }
 
     @Override
@@ -212,6 +106,10 @@ public class GameScreen extends Screen implements ScreenKeyEventListener {
             hide();
         }
 
+    }
+
+    @Override
+    public void initialize() {
     }
 
 }

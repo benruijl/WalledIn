@@ -18,19 +18,18 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui.components;
+package walledin.engine.gui.components;
 
 import walledin.engine.Font;
 import walledin.engine.Renderer;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenMouseEvent;
+import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.math.Vector2f;
-import walledin.game.gui.Screen;
-import walledin.game.gui.ScreenMouseEvent;
-import walledin.game.gui.ScreenMouseEventListener;
 
 public class Button extends Screen implements ScreenMouseEventListener {
     /** Button text. */
     private String text;
-
     /** Keeps track if move is hovering over button. */
     private boolean selected;
 

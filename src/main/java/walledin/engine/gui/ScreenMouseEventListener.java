@@ -18,20 +18,22 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui;
+package walledin.engine.gui;
 
-import java.util.Set;
+public interface ScreenMouseEventListener {
+    /**
+     * Called when the mouse is pressed above the screen.
+     * 
+     * @param e
+     *            Mouse event information
+     */
+    public void onMouseDown(ScreenMouseEvent e);
 
-public class ScreenKeyEvent {
-    /** The screen the mouse is on. */
-    private final Set<Integer> keys;
-
-    public ScreenKeyEvent(final Set<Integer> keys) {
-        super();
-        this.keys = keys;
-    }
-
-    public Set<Integer> getKeys() {
-        return keys;
-    }
+    /**
+     * Called when mouse hovers over screen.
+     * 
+     * @param e
+     *            Mouse event information
+     */
+    public void onMouseHover(ScreenMouseEvent e);
 }

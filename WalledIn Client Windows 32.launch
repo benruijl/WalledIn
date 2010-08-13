@@ -6,7 +6,7 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="walledin.game.network.client.Client"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="walledin.game.ClientLogicManager"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="WalledIn"/>
 <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${project_loc:WalledIn}/lib/native/windows32"/>
 </launchConfiguration>
