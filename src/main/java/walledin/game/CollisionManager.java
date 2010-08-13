@@ -224,30 +224,29 @@ public class CollisionManager {
                             .circleCollisionData(
                                     boundsB.asCircumscribedCircle(),
                                     velA.scale(-1.0f));
-                    
+
                     if (!data.isCollided()) {
                         continue;
                     }
 
-                    /* Get surface vector */
-                    Vector2f surfaceVector = new Vector2f(-data.getNormal()
-                            .getY(), data.getNormal().getX());
+                    float dn = -velA.dot(data.getNormal());
 
-                    LOG.info(data.getTime());
+                    if (dn < 0) {
+                        newPosA = oldPosA.add(velA.scale(data.getTime()));
 
-                    float epsilon = 0.000001f;
-                    if (data.getTime() > epsilon) {
-                        newPosA = oldPosA.add(velA.scale(data.getTime()
-                                - epsilon));
+                        // slide
+                        Vector2f slideVel = velA.scale(1.0f - data.getTime());
+                        slideVel = slideVel.sub(data.getNormal().scale(
+                                slideVel.dot(data.getNormal())));
+                        newPosA = newPosA.add(slideVel);
+
+                    } else {
+                        newPosA = posA;
                     }
-                    /*
-                     * newPosA.add(surfaceVector.scale(data.getNormal().cross(
-                     * data.getPenetration())));
-                     */
 
                     entArray[i].setAttribute(Attribute.POSITION, newPosA);
-                    entArray[i]
-                            .setAttribute(Attribute.VELOCITY, new Vector2f());
+                    entArray[i].setAttribute(Attribute.VELOCITY,
+                            newPosA.sub(oldPosA).scale(1 / (float) delta));
                 } else {
                     if (entArray[j].getFamily() == Family.PLAYER
                             && entArray[i].getFamily() == Family.FOAM_PARTICLE) {
@@ -262,36 +261,37 @@ public class CollisionManager {
                             continue;
                         }
 
-                        /* Get surface vector */
-                        Vector2f surfaceVector = new Vector2f(-data.getNormal()
-                                .getY(), data.getNormal().getX());
+                        float dn = -velB.dot(data.getNormal());
 
-                        float epsilon = 0.000001f;
-                        LOG.info(data.getTime());
-                        if (data.getTime() > epsilon) {
-                            newPosB = oldPosB.add(velB.scale(data.getTime()
-                                    - epsilon));
+                        if (dn < 0) {
+                            newPosB = oldPosB.add(velB.scale(data.getTime()));
+
+                            // slide
+                            Vector2f slideVel = velB.scale(1.0f - data
+                                    .getTime());
+                            slideVel = slideVel.sub(data.getNormal().scale(
+                                    slideVel.dot(data.getNormal())));
+                            newPosB = newPosB.add(slideVel);
+
+                        } else {
+                            newPosB = posB;
                         }
-                        /*
-                         * newPosB.add(surfaceVector.scale(data.getNormal().cross
-                         * ( data.getPenetration())));
-                         */
 
                         entArray[j].setAttribute(Attribute.POSITION, newPosB);
-                        entArray[j].setAttribute(Attribute.VELOCITY,
-                                new Vector2f());
+                        entArray[j].setAttribute(Attribute.VELOCITY, newPosA
+                                .sub(oldPosA).scale(1 / (float) delta));
                     }
                 }
-                
+
                 /* Hack. The bounds also have the wrong translation. */
                 if (boundsA.intersects(boundsB)) {
 
-                entArray[i].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(newPosA, oldPosA, posA, delta,
-                                entArray[j]));
-                entArray[j].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(newPosB, oldPosB, posB, delta,
-                                entArray[i]));
+                    entArray[i].sendMessage(MessageType.COLLIDED,
+                            new CollisionData(newPosA, oldPosA, posA, delta,
+                                    entArray[j]));
+                    entArray[j].sendMessage(MessageType.COLLIDED,
+                            new CollisionData(newPosB, oldPosB, posB, delta,
+                                    entArray[i]));
                 }
 
             }

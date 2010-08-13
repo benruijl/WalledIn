@@ -53,6 +53,13 @@ public class Polygon2f {
         float collisionTime = Float.MAX_VALUE;
         boolean collision = false;
 
+        /* Check if it is already colliding. */
+        Vector2f closest = closestPointOnPolygon(circle.getPos());
+        float t = circle.pointCollision(closest, velocity);
+        if (t >= 0) {
+            return t;
+        }
+
         for (Line2f edge : edges) {
             float time = edge.circleLineCollision(circle, velocity);
 
@@ -93,10 +100,10 @@ public class Polygon2f {
         Vector2f polygonPoint = closestPointOnPolygon(circlePos);
         Vector2f circlePoint = new Circle(circlePos, circle.getRadius())
                 .closestPointOnCircle(polygonPoint);
-        
-        Vector2f normal =  circlePos.sub(polygonPoint).normalize();
+
+        Vector2f normal = circlePos.sub(polygonPoint).normalize();
         Vector2f penetration = polygonPoint.sub(circlePoint);
-        
+
         return new GeometricalCollisionData(true, time, normal, penetration);
     }
 }

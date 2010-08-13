@@ -152,11 +152,9 @@ public class Line2f {
         float e = edge.sub(begin).dot(dir);
 
         if (e < 0.0f) {
-            return new Circle(begin, circle.getRadius()).pointCollision(
-                    circle.getPos(), velocity);
+            return circle.pointCollision(begin, velocity);
         } else if (e > 1.0f) {
-            return new Circle(end, circle.getRadius()).pointCollision(
-                    circle.getPos(), velocity);
+            return circle.pointCollision(end, velocity);
         } else {
             return t0;
         }
