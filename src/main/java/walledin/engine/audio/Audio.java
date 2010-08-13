@@ -47,6 +47,7 @@ import net.java.games.sound3d.AudioSystem3D;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
+import walledin.util.SettingsManager;
 
 /**
  * A singleton audio manager.
@@ -77,6 +78,11 @@ public final class Audio {
     private Audio() {
         samples = new HashMap<String, Integer>();
         sources = new LinkedList<Integer>();
+        
+        if (!SettingsManager.getInstance().getBoolean("game.audio")) {
+            enabled = false;
+            return;
+        }
 
         enabled = false;
         initializeSystem();
