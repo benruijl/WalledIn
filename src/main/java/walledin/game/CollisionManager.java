@@ -31,6 +31,7 @@ import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
@@ -215,14 +216,15 @@ public class CollisionManager {
                 Vector2f newPosB = posB;
 
                 /* Assumes the circle is static for now. */
-                if (boundsB instanceof Circle && boundsA instanceof Rectangle) {
+                if (entArray[i].getFamily() == Family.PLAYER
+                        && entArray[j].getFamily() == Family.FOAM_PARTICLE) {
                     GeometricalCollisionData data = boundsA
                             .asRectangle()
                             .asPolygon()
                             .circleCollisionData(
                                     boundsB.asCircumscribedCircle(),
                                     velA.scale(-1.0f));
-
+                    
                     if (!data.isCollided()) {
                         continue;
                     }
@@ -232,7 +234,12 @@ public class CollisionManager {
                             .getY(), data.getNormal().getX());
 
                     LOG.info(data.getTime());
-                    newPosA = oldPosA.add(velA.scale(data.getTime()));
+
+                    float epsilon = 0.000001f;
+                    if (data.getTime() > epsilon) {
+                        newPosA = oldPosA.add(velA.scale(data.getTime()
+                                - epsilon));
+                    }
                     /*
                      * newPosA.add(surfaceVector.scale(data.getNormal().cross(
                      * data.getPenetration())));
@@ -242,8 +249,8 @@ public class CollisionManager {
                     entArray[i]
                             .setAttribute(Attribute.VELOCITY, new Vector2f());
                 } else {
-                    if (boundsB instanceof Rectangle
-                            && boundsA instanceof Circle) {
+                    if (entArray[j].getFamily() == Family.PLAYER
+                            && entArray[i].getFamily() == Family.FOAM_PARTICLE) {
                         GeometricalCollisionData data = boundsB
                                 .asRectangle()
                                 .asPolygon()
@@ -259,15 +266,25 @@ public class CollisionManager {
                         Vector2f surfaceVector = new Vector2f(-data.getNormal()
                                 .getY(), data.getNormal().getX());
 
-                        newPosB = oldPosB.add(velB.scale(data.getTime()));
-                       /* newPosB.add(surfaceVector.scale(data.getNormal().cross(
-                                data.getPenetration())));*/
+                        float epsilon = 0.000001f;
+                        LOG.info(data.getTime());
+                        if (data.getTime() > epsilon) {
+                            newPosB = oldPosB.add(velB.scale(data.getTime()
+                                    - epsilon));
+                        }
+                        /*
+                         * newPosB.add(surfaceVector.scale(data.getNormal().cross
+                         * ( data.getPenetration())));
+                         */
 
                         entArray[j].setAttribute(Attribute.POSITION, newPosB);
                         entArray[j].setAttribute(Attribute.VELOCITY,
                                 new Vector2f());
                     }
                 }
+                
+                /* Hack. The bounds also have the wrong translation. */
+                if (boundsA.intersects(boundsB)) {
 
                 entArray[i].sendMessage(MessageType.COLLIDED,
                         new CollisionData(newPosA, oldPosA, posA, delta,
@@ -275,6 +292,7 @@ public class CollisionManager {
                 entArray[j].sendMessage(MessageType.COLLIDED,
                         new CollisionData(newPosB, oldPosB, posB, delta,
                                 entArray[i]));
+                }
 
             }
         }
