@@ -63,10 +63,10 @@ public class PlayerRenderBehavior extends RenderBehavior {
         }
 
         final float footPos = (Float) getAttribute(Attribute.WALK_ANIM_FRAME);
-        
+
         /* Adjust the color. */
-        float walledinRatio = (Float) getAttribute(Attribute.WALLEDIN_IN);
-        renderer.setColorRGB(1, 1 - walledinRatio , 1 - walledinRatio);
+        final float walledinRatio = (Float) getAttribute(Attribute.WALLEDIN_IN);
+        renderer.setColorRGB(1, 1 - walledinRatio, 1 - walledinRatio);
 
         renderer.drawTexturePart(PLAYER_BACKGROUND, BODY_RECT);
         renderer.drawTexturePart(PLAYER_BODY, BODY_RECT);
@@ -78,7 +78,7 @@ public class PlayerRenderBehavior extends RenderBehavior {
         final Rectangle footRect = new Rectangle(footX, 60, 96, 32);
         renderer.drawTexturePart(PLAYER_BACKGROUND_FOOT, footRect);
         renderer.drawTexturePart(PLAYER_FOOT, footRect);
-        
+
         renderer.setColorRGB(1, 1, 1);
 
         renderer.popMatrix();

@@ -535,7 +535,7 @@ public class Renderer implements GLEventListener {
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
 
-        mEvListener.init();
+        mEvListener.initialize();
 
         camera = new Camera();
     }

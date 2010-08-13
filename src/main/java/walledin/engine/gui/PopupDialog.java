@@ -18,12 +18,12 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui;
+package walledin.engine.gui;
 
 import walledin.engine.Renderer;
+import walledin.engine.gui.components.Button;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.gui.components.Button;
 
 public class PopupDialog extends Screen implements ScreenMouseEventListener {
     private final String text;

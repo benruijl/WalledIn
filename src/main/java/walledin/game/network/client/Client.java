@@ -32,14 +32,12 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.codehaus.groovy.control.CompilationFailedException;
 
-import walledin.engine.Font;
 import walledin.engine.Input;
-import walledin.engine.RenderListener;
 import walledin.engine.Renderer;
 import walledin.engine.audio.Audio;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActionManager;
@@ -47,13 +45,6 @@ import walledin.game.PlayerActions;
 import walledin.game.Teams;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
-import walledin.game.gui.GameScreen;
-import walledin.game.gui.MainMenuScreen;
-import walledin.game.gui.Screen;
-import walledin.game.gui.ScreenManager;
-import walledin.game.gui.ScreenManager.ScreenType;
-import walledin.game.gui.SelectTeamScreen;
-import walledin.game.gui.ServerListScreen;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.game.network.NetworkDataReader;
@@ -61,14 +52,10 @@ import walledin.game.network.NetworkDataWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
 import walledin.util.SettingsManager;
-import walledin.util.Utils;
 
-public final class Client implements RenderListener, NetworkEventListener {
+public final class Client implements NetworkEventListener {
     private static final Logger LOG = Logger.getLogger(Client.class);
 
-    private final Renderer renderer; // current renderer
-    private final ScreenManager screenManager;
-    private Screen gameScreen;
     private SocketAddress host;
     private String username;
     private final NetworkDataWriter networkDataWriter;
@@ -76,7 +63,6 @@ public final class Client implements RenderListener, NetworkEventListener {
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
     private DatagramChannel serverNotifyChannel;
-    private boolean quitting = false;
 
     /* Data that may be requested by player. */
     /** List of servers from the master server. */
@@ -96,6 +82,9 @@ public final class Client implements RenderListener, NetworkEventListener {
     private long lastUpdate;
     private final long LOGIN_RETRY_TIME;
     private final long TIME_OUT_TIME;
+    /** The renderer. */
+    private final Renderer renderer;
+    private final ClientLogicManager clientLogicManager;
 
     /**
      * Create the client.
@@ -104,16 +93,16 @@ public final class Client implements RenderListener, NetworkEventListener {
      *            Current renderer
      * @throws IOException
      */
-    public Client(final Renderer renderer) throws IOException {
+    public Client(final Renderer renderer,
+            final ClientLogicManager clientLogicManager) throws IOException {
         this.renderer = renderer;
-        screenManager = new ScreenManager(this, renderer);
+        this.clientLogicManager = clientLogicManager;
 
         networkDataWriter = new NetworkDataWriter();
         networkDataReader = new NetworkDataReader(this);
         internetServerList = new HashSet<ServerData>();
         lanServerList = new HashSet<ServerData>();
         playerList = new HashSet<GameLogicManager.PlayerClientInfo>();
-        quitting = false;
 
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
@@ -123,54 +112,6 @@ public final class Client implements RenderListener, NetworkEventListener {
 
         TIME_OUT_TIME = SettingsManager.getInstance().getInteger(
                 "network.timeOutTime");
-
-        /* Load music */
-        if (Audio.getInstance().isEnabled()) {
-            Audio.getInstance().loadOggSample("background1",
-                    Utils.getClasspathURL("audio/Clausterphobia.ogg"));
-
-            for (int i = 1; i < 5; i++) {
-                Audio.getInstance().loadWaveSample("handgun" + i,
-                        Utils.getClasspathURL("audio/handgun_" + i + ".wav"));
-                Audio.getInstance().loadWaveSample("foamgun" + i,
-                        Utils.getClasspathURL("audio/foamgun_" + i + ".wav"));
-            }
-
-            /* Play background music */
-            Audio.getInstance().playSample("background1", new Vector2f(), true);
-        }
-    }
-
-    public static void main(final String[] args) {
-        /* Load configuration */
-        try {
-            SettingsManager.getInstance().loadSettings(
-                    Utils.getClasspathURL("settings.ini"));
-        } catch (final IOException e) {
-            LOG.error("Could not read configuration file.", e);
-        }
-
-        final Renderer renderer = new Renderer();
-
-        Client client;
-        try {
-            client = new Client(renderer);
-        } catch (final IOException e) {
-            LOG.fatal("IO exception while creating client.", e);
-            return;
-        }
-        LOG.info("Initializing renderer");
-
-        final SettingsManager settings = SettingsManager.getInstance();
-
-        renderer.initialize("WalledIn",
-                settings.getInteger("engine.window.width"),
-                settings.getInteger("engine.window.height"),
-                settings.getBoolean("engine.window.fullScreen"));
-        renderer.addListener(client);
-        // Start renderer
-        LOG.info("Starting renderer");
-        renderer.beginLoop();
     }
 
     public void refreshServerList() {
@@ -196,11 +137,11 @@ public final class Client implements RenderListener, NetworkEventListener {
     }
 
     @Override
-    public void entityCreated(Entity entity) {
+    public void entityCreated(final Entity entity) {
         // TODO: move to a better place
         /* Play a sound when a bullet is created */
-        Random generator = new Random();
-        int num = generator.nextInt(4) + 1;
+        final Random generator = new Random();
+        final int num = generator.nextInt(4) + 1;
 
         if (Audio.getInstance().isEnabled()) {
             if (entity.getFamily() == Family.HANDGUN_BULLET) {
@@ -233,17 +174,6 @@ public final class Client implements RenderListener, NetworkEventListener {
             result = true;
         }
         try {
-            // update the player actions
-            // TODO: do somewhere else?
-
-            /* Only register actions when the game screen has the focus. */
-            if (screenManager.getFocusedScreen() != screenManager
-                    .getScreen(ScreenType.GAME)) {
-                PlayerActionManager.getInstance().clear();
-            } else {
-                PlayerActionManager.getInstance().update();
-            }
-
             networkDataWriter.prepareInputMessage(receivedVersion,
                     PlayerActionManager.getInstance().getPlayerActions(),
                     renderer.screenToWorld(Input.getInstance().getMousePos()));
@@ -253,20 +183,6 @@ public final class Client implements RenderListener, NetworkEventListener {
             dispose();
         }
         return result;
-    }
-
-    /**
-     * Displays an error message, disconnects from the server and returns to the
-     * server list.
-     * 
-     * @param message
-     *            Message to display
-     */
-    public void displayErrorAndDisconnect(final String message) {
-        screenManager.createDialog(message);
-        connected = false;
-        screenManager.getScreen(ScreenType.SERVER_LIST).show();
-        screenManager.getScreen(ScreenType.GAME).hide();
     }
 
     @Override
@@ -306,17 +222,18 @@ public final class Client implements RenderListener, NetworkEventListener {
             final ErrorCodes errorCode, final String playerEntityName) {
 
         if (errorCode == ErrorCodes.ERROR_SUCCESSFULL) {
-            screenManager.setPlayerName(playerEntityName);
+            clientLogicManager.setPlayerName(playerEntityName);
             LOG.info("Player entity name received: " + playerEntityName);
             return;
         }
 
         switch (errorCode) {
         case ERROR_SERVER_IS_FULL:
-            displayErrorAndDisconnect("The server is full.");
+            clientLogicManager.displayErrorAndDisconnect("The server is full.");
             break;
         default:
-            displayErrorAndDisconnect("Could not login to the server.");
+            clientLogicManager
+                    .displayErrorAndDisconnect("Could not login to the server.");
             break;
         }
     }
@@ -333,7 +250,6 @@ public final class Client implements RenderListener, NetworkEventListener {
      * @param delta
      *            time since last update in seconds
      */
-    @Override
     public void update(final double delta) {
         // network stuff
         try {
@@ -351,11 +267,8 @@ public final class Client implements RenderListener, NetworkEventListener {
                 /* If the address is null, no message is received. */
                 if (address == null) {
                     if (System.currentTimeMillis() - lastUpdate > TIME_OUT_TIME) {
-                        connected = false;
-                        LOG.fatal("Connection timed out.");
-                        screenManager.createDialog("The connection timed out.");
-                        screenManager.getScreen(ScreenType.SERVER_LIST).show();
-                        screenManager.getScreen(ScreenType.GAME).hide();
+                        clientLogicManager
+                                .displayErrorAndDisconnect("The connection timed out.");
                     }
 
                 } else {
@@ -364,7 +277,7 @@ public final class Client implements RenderListener, NetworkEventListener {
 
                 while (address != null) {
                     networkDataReader.processMessage(address,
-                            screenManager.getEntityManager());
+                            clientLogicManager.getEntityManager());
                     address = networkDataReader.readMessage(channel);
                 }
             }
@@ -374,7 +287,7 @@ public final class Client implements RenderListener, NetworkEventListener {
                         .readMessage(masterServerChannel);
                 while (address != null) {
                     networkDataReader.processMessage(address,
-                            screenManager.getEntityManager());
+                            clientLogicManager.getEntityManager());
                     address = networkDataReader
                             .readMessage(masterServerChannel);
                 }
@@ -384,84 +297,26 @@ public final class Client implements RenderListener, NetworkEventListener {
                         .readMessage(serverNotifyChannel);
                 while (address != null) {
                     networkDataReader.processMessage(address,
-                            screenManager.getEntityManager());
+                            clientLogicManager.getEntityManager());
                     address = networkDataReader
                             .readMessage(serverNotifyChannel);
                 }
             }
         } catch (final PortUnreachableException e) {
-            screenManager.createDialog("Connection to server lost.");
-            LOG.fatal("Connection to server lost. The port is unreachable.");
-            connected = false;
+            clientLogicManager
+                    .displayErrorAndDisconnect("Connection to server lost.");
+            LOG.fatal("The port is unreachable.");
         } catch (final IOException e) {
-            screenManager.createDialog("Connection to server lost.");
-            LOG.fatal("IOException", e);
-            connected = false;
+            clientLogicManager
+                    .displayErrorAndDisconnect("Connection to server lost.");
         }
 
-        if (Audio.getInstance().isEnabled()) {
-            Audio.getInstance().update();
-        }
-        
-        screenManager.update(delta);
-    }
-
-    /**
-     * Render the current gamestate.
-     */
-    @Override
-    public void draw(final Renderer renderer) {
-        screenManager.draw(renderer);
     }
 
     /**
      * Initialize game.
      */
-    @Override
-    public void init() {
-        LOG.info("initializing client");
-
-        /* Load standard font */
-        final Font font = new Font();
-        final String fontName = SettingsManager.getInstance().getString(
-                "game.font");
-        font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
-        screenManager.addFont(fontName, font);
-
-        final Screen serverListScreen = new ServerListScreen(screenManager);
-        screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
-
-        try {
-            screenManager.getEntityFactory().loadScript(
-                    Utils.getClasspathURL("entities/entities.groovy"));
-            screenManager.getEntityFactory().loadScript(
-                    Utils.getClasspathURL("entities/cliententities.groovy"));
-        } catch (final CompilationFailedException e) {
-            LOG.fatal("Could not compile script", e);
-            dispose();
-        } catch (final IOException e) {
-            LOG.fatal("IOException during loading of scripts", e);
-            dispose();
-        }
-        // initialize entity manager
-        screenManager.getEntityManager().init();
-
-        // create cursor, use the factory so it does not get added to the list
-        final Entity cursor = screenManager.getEntityFactory().create(
-                screenManager.getEntityManager(), Family.CURSOR, "cursor");
-        screenManager.setCursor(cursor);
-        renderer.hideHardwareCursor();
-
-        /* Create game screen and add it to the screen manager. */
-        gameScreen = new GameScreen(screenManager);
-        screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen selectTeamScreen = new SelectTeamScreen(screenManager);
-        screenManager.addScreen(ScreenType.SELECT_TEAM, selectTeamScreen);
-        final Screen menuScreen = new MainMenuScreen(screenManager);
-        screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
-        menuScreen.initialize();
-        menuScreen.show();
-
+    public void initialize() {
         connectToMasterServer();
     }
 
@@ -522,7 +377,8 @@ public final class Client implements RenderListener, NetworkEventListener {
             connected = true;
         } catch (final IOException e) {
             LOG.fatal("IOException", e);
-            screenManager.createDialog("Could not connect to server.");
+            clientLogicManager.getScreenManager().createDialog(
+                    "Could not connect to server.");
         }
     }
 
@@ -531,7 +387,7 @@ public final class Client implements RenderListener, NetworkEventListener {
         channel.disconnect();
     }
 
-    public boolean connectedToServer() {
+    public boolean isConnected() {
         return connected;
     }
 
@@ -552,27 +408,23 @@ public final class Client implements RenderListener, NetworkEventListener {
             connectedMasterServer = true;
         } catch (final PortUnreachableException e) {
             LOG.fatal("Could not connect to server. PortUnreachableException");
-            screenManager.createDialog("Could not connect to master server.");
+            clientLogicManager.getScreenManager().createDialog(
+                    "Could not connect to master server.");
         } catch (final IOException e) {
             LOG.fatal("IOException", e);
-            screenManager.createDialog("Could not connect to master server.");
+            clientLogicManager.getScreenManager().createDialog(
+                    "Could not connect to master server.");
         }
     }
 
-    @Override
     public void dispose() {
-        if (!quitting) {
-            quitting = true;
-            renderer.dispose();
-
-            if (connected) {
-                try {
-                    networkDataWriter.prepareLogoutMessage();
-                    networkDataWriter.sendBuffer(channel);
-                    connected = false;
-                } catch (final IOException e) {
-                    LOG.fatal("IOException during logout", e);
-                }
+        if (connected) {
+            try {
+                networkDataWriter.prepareLogoutMessage();
+                networkDataWriter.sendBuffer(channel);
+                connected = false;
+            } catch (final IOException e) {
+                LOG.fatal("IOException during logout", e);
             }
         }
     }

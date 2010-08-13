@@ -23,9 +23,10 @@ package walledin.engine.audio;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
 import org.apache.log4j.Logger;
+
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
 import com.jcraft.jogg.StreamState;
@@ -44,29 +45,29 @@ public class OggDecoder {
     private static final Logger LOG = Logger.getLogger(OggDecoder.class);
 
     private int convsize = 4096 * 4;
-    private byte[] convbuffer = new byte[convsize];
+    private final byte[] convbuffer = new byte[convsize];
 
-    public OggData getData(InputStream input) throws IOException {
+    public OggData getData(final InputStream input) throws IOException {
         if (input == null) {
             throw new IOException("Failed to read OGG, source does not exist?");
         }
-        ByteArrayOutputStream dataout = new ByteArrayOutputStream();
+        final ByteArrayOutputStream dataout = new ByteArrayOutputStream();
 
-        SyncState oy = new SyncState();
-        StreamState os = new StreamState();
-        Page og = new Page();
-        Packet op = new Packet();
+        final SyncState oy = new SyncState();
+        final StreamState os = new StreamState();
+        final Page og = new Page();
+        final Packet op = new Packet();
 
-        Info vi = new Info();
-        Comment vc = new Comment();
-        DspState vd = new DspState();
-        Block vb = new Block(vd);
+        final Info vi = new Info();
+        final Comment vc = new Comment();
+        final DspState vd = new DspState();
+        final Block vb = new Block(vd);
 
         byte[] buffer;
         int bytes = 0;
 
-        boolean bigEndian = ByteOrder.nativeOrder()
-                .equals(ByteOrder.BIG_ENDIAN);
+        final boolean bigEndian = ByteOrder.nativeOrder().equals(
+                ByteOrder.BIG_ENDIAN);
 
         oy.init();
 
@@ -78,15 +79,16 @@ public class OggDecoder {
             buffer = oy.data;
             try {
                 bytes = input.read(buffer, index, 4096);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 LOG.error("Failure reading in vorbis");
                 LOG.error(e);
                 System.exit(0);
             }
             oy.wrote(bytes);
             if (oy.pageout(og) != 1) {
-                if (bytes < 4096)
+                if (bytes < 4096) {
                     break;
+                }
 
                 LOG.error("Input does not appear to be an Ogg bitstream.");
                 System.exit(0);
@@ -117,16 +119,18 @@ public class OggDecoder {
                 while (i < 2) {
 
                     int result = oy.pageout(og);
-                    if (result == 0)
+                    if (result == 0) {
                         break;
+                    }
 
                     if (result == 1) {
                         os.pagein(og);
 
                         while (i < 2) {
                             result = os.packetout(op);
-                            if (result == 0)
+                            if (result == 0) {
                                 break;
+                            }
                             if (result == -1) {
 
                                 LOG.error("Corrupt secondary header.  Exiting.");
@@ -142,7 +146,7 @@ public class OggDecoder {
                 buffer = oy.data;
                 try {
                     bytes = input.read(buffer, index, 4096);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOG.error("Failed to read Vorbis: ");
                     LOG.error(e);
                     System.exit(0);
@@ -159,15 +163,16 @@ public class OggDecoder {
             vd.synthesis_init(vi);
             vb.init(vd);
 
-            float[][][] _pcm = new float[1][][];
-            int[] _index = new int[vi.channels];
+            final float[][][] _pcm = new float[1][][];
+            final int[] _index = new int[vi.channels];
 
             while (eos == 0) {
                 while (eos == 0) {
 
                     int result = oy.pageout(og);
-                    if (result == 0)
+                    if (result == 0) {
                         break;
+                    }
                     if (result == -1) {
                         LOG.error("Corrupt or missing data in bitstream; continuing...");
                     } else {
@@ -176,8 +181,9 @@ public class OggDecoder {
                         while (true) {
                             result = os.packetout(op);
 
-                            if (result == 0)
+                            if (result == 0) {
                                 break;
+                            }
                             if (result == -1) {
 
                             } else {
@@ -189,15 +195,15 @@ public class OggDecoder {
 
                                 while ((samples = vd.synthesis_pcmout(_pcm,
                                         _index)) > 0) {
-                                    float[][] pcm = _pcm[0];
+                                    final float[][] pcm = _pcm[0];
 
-                                    int bout = (samples < convsize ? samples
-                                            : convsize);
+                                    final int bout = samples < convsize ? samples
+                                            : convsize;
 
                                     for (i = 0; i < vi.channels; i++) {
                                         int ptr = i * 2;
 
-                                        int mono = _index[i];
+                                        final int mono = _index[i];
                                         for (int j = 0; j < bout; j++) {
                                             int val = (int) (pcm[i][mono + j] * 32767.);
 
@@ -209,17 +215,18 @@ public class OggDecoder {
                                                 val = -32768;
 
                                             }
-                                            if (val < 0)
+                                            if (val < 0) {
                                                 val = val | 0x8000;
+                                            }
 
                                             if (bigEndian) {
                                                 convbuffer[ptr] = (byte) (val >>> 8);
-                                                convbuffer[ptr + 1] = (byte) (val);
+                                                convbuffer[ptr + 1] = (byte) val;
                                             } else {
-                                                convbuffer[ptr] = (byte) (val);
+                                                convbuffer[ptr] = (byte) val;
                                                 convbuffer[ptr + 1] = (byte) (val >>> 8);
                                             }
-                                            ptr += 2 * (vi.channels);
+                                            ptr += 2 * vi.channels;
                                         }
                                     }
 
@@ -231,8 +238,9 @@ public class OggDecoder {
                                 }
                             }
                         }
-                        if (og.eos() != 0)
+                        if (og.eos() != 0) {
                             eos = 1;
+                        }
                     }
                 }
                 if (eos == 0) {
@@ -241,7 +249,7 @@ public class OggDecoder {
                         buffer = oy.data;
                         try {
                             bytes = input.read(buffer, index, 4096);
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             LOG.error("Failure during vorbis decoding");
                             LOG.error(e);
                             System.exit(0);
@@ -250,8 +258,9 @@ public class OggDecoder {
                         bytes = 0;
                     }
                     oy.wrote(bytes);
-                    if (bytes == 0)
+                    if (bytes == 0) {
                         eos = 1;
+                    }
                 }
             }
 
@@ -264,8 +273,8 @@ public class OggDecoder {
 
         oy.clear();
 
-        OggData ogg = new OggData(dataout.toByteArray(),
-                vi.rate, vi.channels);
+        final OggData ogg = new OggData(dataout.toByteArray(), vi.rate,
+                vi.channels);
 
         return ogg;
     }
