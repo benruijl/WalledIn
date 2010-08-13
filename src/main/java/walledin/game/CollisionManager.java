@@ -229,13 +229,14 @@ public class CollisionManager {
                         continue;
                     }
 
-                    float dn = -velA.dot(data.getNormal());
+                    float dn = velA.scale(-1.0f).dot(data.getNormal());
 
                     if (dn < 0) {
                         newPosA = oldPosA.add(velA.scale(data.getTime()));
 
                         // slide
-                        Vector2f slideVel = velA.scale(1.0f - data.getTime());
+                        Vector2f slideVel = velA.scale(
+                                1.0f - data.getTime());
                         slideVel = slideVel.sub(data.getNormal().scale(
                                 slideVel.dot(data.getNormal())));
                         newPosA = newPosA.add(slideVel);
@@ -261,14 +262,14 @@ public class CollisionManager {
                             continue;
                         }
 
-                        float dn = -velB.dot(data.getNormal());
+                        float dn = velB.scale(-1.0f).dot(data.getNormal());
 
                         if (dn < 0) {
                             newPosB = oldPosB.add(velB.scale(data.getTime()));
 
                             // slide
-                            Vector2f slideVel = velB.scale(1.0f - data
-                                    .getTime());
+                            Vector2f slideVel = velB.scale(
+                                    1.0f - data.getTime());
                             slideVel = slideVel.sub(data.getNormal().scale(
                                     slideVel.dot(data.getNormal())));
                             newPosB = newPosB.add(slideVel);

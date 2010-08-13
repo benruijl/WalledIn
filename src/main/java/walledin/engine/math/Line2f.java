@@ -69,10 +69,10 @@ public class Line2f {
         Vector2f dirVec = point.sub(begin);
         float projLength = dirVec.dot(dir);
 
-        if (finite && projLength < 0) {
+        if (finite && projLength <= 0) {
             return begin;
         } else {
-            if (finite && projLength > end.sub(begin).length()) {
+            if (finite && projLength >= end.sub(begin).length()) {
                 return end;
             }
         }
@@ -108,13 +108,14 @@ public class Line2f {
          * of the sphere to the beginning, b the normalized direction of the
          * line and r the radius of the circle.
          */
-        float a = velocity.cross(dir) * velocity.cross(dir);
-        float b = 2.0f * velocity.cross(dir)
-                * circle.getPos().sub(begin).cross(dir);
-        float c = circle.getPos().sub(begin).cross(dir)
-                * circle.getPos().sub(begin).cross(dir) - circle.getRadius()
-                * circle.getRadius();
-        float d = b * b - 4 * a * c;
+        Vector2f l = end.sub(begin);
+        float a = velocity.cross(l) * velocity.cross(l);
+        float b = 2.0f * velocity.cross(l)
+                * circle.getPos().sub(begin).cross(l);
+        float c = circle.getPos().sub(begin).cross(l)
+                * circle.getPos().sub(begin).cross(l) - circle.getRadius()
+                * circle.getRadius() * l.lengthSquared();
+        float d = b * b - 4.0f * a * c;
 
         if (d < 0) {
             /* There is no collision. */
@@ -142,12 +143,12 @@ public class Line2f {
          * check, because the region we are looking at is a rounded off
          * rectangle.
          */
-        if (t0 < 0.0f) {
-            t0 = 0.0f;
+        float tEdge = t0;
+        if (tEdge < 0.0f) {
+            tEdge = 0.0f;
         }
+        Vector2f edge = circle.getPos().add(velocity.scale(tEdge));
 
-        Vector2f edge = circle.getPos().add(velocity.scale(t0));
-        
         /* Project edge to line. */
         float e = edge.sub(begin).dot(dir);
 
