@@ -21,42 +21,58 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.network;
 
 import java.net.SocketAddress;
-import java.util.Set;
 
-import walledin.engine.math.Vector2f;
-import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.PlayerActions;
-import walledin.game.Teams;
 import walledin.game.entity.Entity;
-import walledin.game.network.NetworkConstants.ErrorCodes;
+import walledin.game.network.messages.game.GamestateMessage;
+import walledin.game.network.messages.game.GetPlayerInfoMessage;
+import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
+import walledin.game.network.messages.game.GetServersMessage;
+import walledin.game.network.messages.game.InputMessage;
+import walledin.game.network.messages.game.LoginMessage;
+import walledin.game.network.messages.game.LoginResponseMessage;
+import walledin.game.network.messages.game.LogoutMessage;
+import walledin.game.network.messages.game.ServerNotificationResponseMessage;
+import walledin.game.network.messages.game.TeamSelectMessage;
+import walledin.game.network.messages.masterserver.ChallengeResponseMessage;
+import walledin.game.network.messages.masterserver.ServerNotificationMessage;
+import walledin.game.network.messages.masterserver.ServersMessage;
 
 public interface NetworkEventListener {
-    boolean receivedGamestateMessage(SocketAddress address, int oldVersion,
-            int newVersion);
 
-    void receivedLoginMessage(SocketAddress address, String name);
-
-    void receivedLoginReponseMessage(SocketAddress address,
-            ErrorCodes errorCode, String playerEntityName);
-
-    void receivedLogoutMessage(SocketAddress address);
-
-    void receivedInputMessage(SocketAddress address, int newVersion,
-            Set<PlayerActions> playerActions, Vector2f cursorPos);
-
-    void receivedChallengeMessage(SocketAddress address, long challengeData);
-
-    void receivedServersMessage(SocketAddress address, Set<ServerData> servers);
-
-    void receivedServerNotificationMessage(SocketAddress address,
-            ServerData server);
+    void receivedMessage(SocketAddress address, LoginMessage loginMessage);
 
     void entityCreated(Entity entity);
 
-    void receivedGetPlayerInfoMessage(SocketAddress address);
+    void receivedMessage(SocketAddress address,
+            ChallengeResponseMessage challengeResponseMessage);
 
-    void receivedGetPlayerInfoResponseMessage(SocketAddress address,
-            Set<PlayerClientInfo> players);
+    void receivedMessage(SocketAddress address,
+            GetPlayerInfoMessage getPlayerInfoMessage);
 
-    void receivedTeamSelectMessage(SocketAddress address, Teams team);
+    void receivedMessage(SocketAddress address,
+            GamestateMessage gamestateMessage);
+
+    void receivedMessage(SocketAddress address,
+            TeamSelectMessage teamSelectMessage);
+
+    void receivedMessage(SocketAddress address, ServersMessage serversMessage);
+
+    void receivedMessage(SocketAddress address,
+            ServerNotificationResponseMessage serverNotificationResponseMessage);
+
+    void receivedMessage(SocketAddress address,
+            ServerNotificationMessage serverNotificationMessage);
+
+    void receivedMessage(SocketAddress address, LogoutMessage logoutMessage);
+
+    void receivedMessage(SocketAddress address,
+            LoginResponseMessage loginResponseMessage);
+
+    void receivedMessage(SocketAddress address, InputMessage inputMessage);
+
+    void receivedMessage(SocketAddress address,
+            GetServersMessage getServersMessage);
+
+    void receivedMessage(SocketAddress address,
+            GetPlayerInfoResponseMessage getPlayerInfoResponseMessage);
 }

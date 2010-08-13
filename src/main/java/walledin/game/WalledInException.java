@@ -47,11 +47,11 @@ public class WalledInException extends Exception {
      * 
      * @param message
      *            Message to print
-     *            
+     * 
      * @param cause
      *            The cause
      */
-    public WalledInException(String message, Throwable cause) {
+    public WalledInException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

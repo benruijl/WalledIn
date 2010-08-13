@@ -28,25 +28,19 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
-import walledin.game.GameLogicManager;
-import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.GameMode;
-import walledin.game.PlayerActions;
 import walledin.game.Teams;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
-import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.util.Utils;
 
 /**
@@ -69,93 +63,7 @@ public class NetworkDataReader {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 
-    private void processGamestateMessage(final EntityManager entityManager,
-            final SocketAddress address) {
-        final int oldVersion = buffer.getInt();
-        final int newVersion = buffer.getInt();
-        // Ask the client if the we should process this gamestate
-        final boolean process = listener.receivedGamestateMessage(address,
-                oldVersion, newVersion);
-        boolean hasMore = true;
-        if (process) {
-            while (hasMore) {
-                hasMore = readEntityData(entityManager, buffer);
-            }
-        }
-    }
-
-    private void processInputMessage(final SocketAddress address) {
-        final int newVersion = buffer.getInt();
-        final short numActions = buffer.getShort();
-        final Set<PlayerActions> actions = new HashSet<PlayerActions>();
-        for (int i = 0; i < numActions; i++) {
-            actions.add(PlayerActions.values()[buffer.getShort()]);
-        }
-        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
-                buffer.getFloat());
-        listener.receivedInputMessage(address, newVersion, actions, mousePos);
-    }
-
-    private void processLoginMessage(final SocketAddress address) {
-        final int nameLength = buffer.getInt();
-        final byte[] nameBytes = new byte[nameLength];
-        buffer.get(nameBytes);
-        final String name = new String(nameBytes);
-        listener.receivedLoginMessage(address, name);
-    }
-
-    private void processLoginResponseMessage(final SocketAddress address) {
-        final ErrorCodes errorCode = ErrorCodes.values()[buffer.getInt()];
-        final int nameLength = buffer.getInt();
-        final byte[] nameBytes = new byte[nameLength];
-        buffer.get(nameBytes);
-        final String name = new String(nameBytes);
-        listener.receivedLoginReponseMessage(address, errorCode, name);
-    }
-
-    private void processLogoutMessage(final SocketAddress address) {
-        listener.receivedLogoutMessage(address);
-    }
-
-    private void processTeamSelectMessage(final SocketAddress address) {
-        final Teams team = Teams.values()[buffer.getInt()];
-        listener.receivedTeamSelectMessage(address, team);
-    }
-
-    private void processServersMessage(final SocketAddress address)
-            throws UnknownHostException {
-        final int amount = buffer.getInt();
-        final Set<ServerData> servers = new HashSet<ServerData>();
-        for (int i = 0; i < amount; i++) {
-            final ServerData server = readServerData();
-            servers.add(server);
-        }
-        listener.receivedServersMessage(address, servers);
-    }
-
-    private void processChallengeMessage(final SocketAddress address) {
-        final long challengeData = buffer.getLong();
-        listener.receivedChallengeMessage(address, challengeData);
-    }
-
-    private void processServerNotificationMessage(final SocketAddress address)
-            throws UnknownHostException {
-        final InetSocketAddress inetAddress = (InetSocketAddress) address;
-        // only read port. ip is derived from connection
-        final int port = buffer.getInt();
-        final SocketAddress serverAddress = new InetSocketAddress(
-                InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
-                port);
-        final String name = readStringData(buffer);
-        final int players = buffer.getInt();
-        final int maxPlayers = buffer.getInt();
-        final GameMode gameMode = GameMode.values()[buffer.getInt()];
-        final ServerData server = new ServerData(serverAddress, name, players,
-                maxPlayers, gameMode);
-        listener.receivedServerNotificationMessage(address, server);
-    }
-
-    private ServerData readServerData() throws UnknownHostException {
+    public static ServerData readServerData() throws UnknownHostException {
         final byte[] ip = new byte[4];
         buffer.get(ip);
         final int port = buffer.getInt();
@@ -169,7 +77,7 @@ public class NetworkDataReader {
                 gameMode);
     }
 
-    private void readAttributeData(final Entity entity,
+    public static void readAttributeData(final Entity entity,
             final ByteBuffer buffer, final EntityManager entityManager) {
         // Write attribute identification
         final short ord = buffer.getShort();
@@ -214,7 +122,7 @@ public class NetworkDataReader {
         entity.setAttribute(attribute, data);
     }
 
-    private void readAttributesData(final Entity entity,
+    public static void readAttributesData(final Entity entity,
             final ByteBuffer buffer, final EntityManager entityManager) {
         final int num = buffer.getInt();
         for (int i = 0; i < num; i++) {
@@ -229,7 +137,7 @@ public class NetworkDataReader {
      * @param buffer
      * @return true if there is more in the list
      */
-    private boolean readEntityData(final EntityManager entityManager,
+    public static boolean readEntityData(final EntityManager entityManager,
             final ByteBuffer buffer) {
         final int type = buffer.get();
         if (type == NetworkConstants.GAMESTATE_MESSAGE_END) {
@@ -257,7 +165,7 @@ public class NetworkDataReader {
         return true;
     }
 
-    private void readFamilySpecificData(final Family family, final Entity entity) {
+    public static void readFamilySpecificData(final Family family, final Entity entity) {
         switch (family) {
         case MAP:
             final String mapName = readStringData(buffer);
@@ -273,7 +181,7 @@ public class NetworkDataReader {
         }
     }
 
-    private Object readEntityListData(final ByteBuffer buffer,
+    public static Object readEntityListData(final ByteBuffer buffer,
             final EntityManager entityManager) {
         final int size = buffer.getInt();
         final List<Entity> entities = new ArrayList<Entity>();
@@ -285,14 +193,14 @@ public class NetworkDataReader {
         return entities;
     }
 
-    private String readStringData(final ByteBuffer buffer) {
+    public static String readStringData(final ByteBuffer buffer) {
         final int size = buffer.getInt();
         final byte[] bytes = new byte[size];
         buffer.get(bytes);
         return new String(bytes);
     }
 
-    private Object readVector2fData(final ByteBuffer buffer) {
+    public static Object readVector2fData(final ByteBuffer buffer) {
         final float x = buffer.getFloat();
         final float y = buffer.getFloat();
         return new Vector2f(x, y);
@@ -377,22 +285,5 @@ public class NetworkDataReader {
             LOG.warn("Unknown ident");
             // else ignore the datagram, incorrect format
         }
-    }
-
-    private void processGetPlayerInfoMessage(final SocketAddress address) {
-        listener.receivedGetPlayerInfoMessage(address);
-    }
-
-    private void processGetPlayerInfoResponseMessage(final SocketAddress address) {
-        final Set<PlayerClientInfo> players = new HashSet<GameLogicManager.PlayerClientInfo>();
-        final int numPlayers = buffer.getInt();
-
-        for (int i = 0; i < numPlayers; i++) {
-            final String entityName = readStringData(buffer);
-            final Teams team = Teams.values()[buffer.getInt()];
-            players.add(new PlayerClientInfo(entityName, team));
-        }
-
-        listener.receivedGetPlayerInfoResponseMessage(address, players);
     }
 }
