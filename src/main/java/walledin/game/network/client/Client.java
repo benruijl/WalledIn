@@ -479,5 +479,4 @@ public final class Client implements NetworkEventListener {
             LOG.error("IOException", e);
         }
     }
-
 }

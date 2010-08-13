@@ -97,7 +97,7 @@ public final class ClientLogicManager implements RenderListener {
             client = new Client(renderer, this);
         } catch (final IOException e) {
             LOG.fatal("IO exception while creating client.", e);
-            throw new WalledInException("Could not initialize the client.");
+            throw new WalledInException("Could not initialize the client.", e);
         }
         LOG.info("Initializing renderer");
 
@@ -108,8 +108,6 @@ public final class ClientLogicManager implements RenderListener {
                 settings.getInteger("engine.window.height"),
                 settings.getBoolean("engine.window.fullScreen"));
         renderer.addListener(this);
-        LOG.info("Starting renderer");
-        renderer.beginLoop();
     }
 
     /**
@@ -151,6 +149,14 @@ public final class ClientLogicManager implements RenderListener {
         font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
                 630, 20));
         renderer.stopHUDRendering();
+    }
+
+    /**
+     * Starts the render loop
+     */
+    public void start() {
+        LOG.info("Starting renderer");
+        renderer.beginLoop();
     }
 
     /**
@@ -316,7 +322,6 @@ public final class ClientLogicManager implements RenderListener {
         if (!quitting) {
             quitting = true;
             renderer.dispose();
-
             client.dispose();
         }
     }
@@ -337,6 +342,7 @@ public final class ClientLogicManager implements RenderListener {
         }
 
         final ClientLogicManager logicManager = new ClientLogicManager();
+        logicManager.start();
     }
 
     private void createTextureParts() {
