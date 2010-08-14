@@ -35,7 +35,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.GameLogicManager.PlayerInfo;
 import walledin.game.GameMode;
-import walledin.game.PlayerActions;
+import walledin.game.PlayerAction;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -121,13 +121,13 @@ public class NetworkDataWriter {
     }
 
     public void prepareInputMessage(final int version,
-            final Set<PlayerActions> playerActions, final Vector2f mousePos) {
+            final Set<PlayerAction> playerActions, final Vector2f mousePos) {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);
         buffer.putInt(version);
         buffer.putShort((short) playerActions.size());
-        for (final PlayerActions actions : playerActions) {
+        for (final PlayerAction actions : playerActions) {
             buffer.putShort((short) actions.ordinal());
         }
         buffer.putFloat(mousePos.getX());

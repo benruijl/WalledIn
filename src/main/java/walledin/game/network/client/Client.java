@@ -41,7 +41,7 @@ import walledin.game.ClientLogicManager;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActionManager;
-import walledin.game.PlayerActions;
+import walledin.game.PlayerAction;
 import walledin.game.Team;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -206,7 +206,7 @@ public final class Client implements NetworkEventListener {
 
     @Override
     public void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<PlayerActions> playerActions,
+            final int newVersion, final Set<PlayerAction> playerActions,
             final Vector2f cursorPos) {
         // ignore
     }

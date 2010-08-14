@@ -24,7 +24,7 @@ import walledin.engine.Renderer;
 import walledin.engine.math.Geometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.ZValues;
+import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -43,7 +43,7 @@ public class ItemRenderBehavior extends RenderBehavior {
      */
     public ItemRenderBehavior(final Entity owner, final String texPart,
             final Geometry destRect) {
-        super(owner, ZValues.ITEM);
+        super(owner, ZValue.ITEM);
 
         this.texPart = texPart;
         itemRect = destRect.asRectangle();

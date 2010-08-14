@@ -23,7 +23,7 @@ package walledin.game.entity.behaviors.render;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.ZValues;
+import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -32,7 +32,7 @@ public class CursorRenderBehavior extends RenderBehavior {
     /** Cursor size. */
     private static final float CURSOR_SIZE = 32;
 
-    public CursorRenderBehavior(final Entity owner, final ZValues z) {
+    public CursorRenderBehavior(final Entity owner, final ZValue z) {
         super(owner, z);
         // TODO Auto-generated constructor stub
     }

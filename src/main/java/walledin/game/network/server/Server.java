@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.PlayerActions;
+import walledin.game.PlayerAction;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -389,7 +389,7 @@ public class Server implements NetworkEventListener {
 
     @Override
     public final void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<PlayerActions> playerActions,
+            final int newVersion, final Set<PlayerAction> playerActions,
             final Vector2f cursorPos) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {

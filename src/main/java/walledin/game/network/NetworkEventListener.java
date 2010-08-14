@@ -25,7 +25,7 @@ import java.util.Set;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.PlayerActions;
+import walledin.game.PlayerAction;
 import walledin.game.Team;
 import walledin.game.entity.Entity;
 import walledin.game.network.NetworkConstants.ErrorCodes;
@@ -42,7 +42,7 @@ public interface NetworkEventListener {
     void receivedLogoutMessage(SocketAddress address);
 
     void receivedInputMessage(SocketAddress address, int newVersion,
-            Set<PlayerActions> playerActions, Vector2f cursorPos);
+            Set<PlayerAction> playerActions, Vector2f cursorPos);
 
     void receivedChallengeMessage(SocketAddress address, long challengeData);
 
