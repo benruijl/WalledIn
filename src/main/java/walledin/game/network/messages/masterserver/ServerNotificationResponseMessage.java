@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 
 import walledin.game.GameMode;
 import walledin.game.network.NetworkConstants;
-import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.messages.game.GameProtocolMessage;
 
 public class ServerNotificationResponseMessage extends GameProtocolMessage {
@@ -17,7 +17,7 @@ public class ServerNotificationResponseMessage extends GameProtocolMessage {
     private GameMode gameMode;
 
     @Override
-    public void read(final ByteBuffer buffer, SocketAddress address) {
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
         final int nameLength = buffer.getInt();
         final byte[] nameBytes = new byte[nameLength];
         buffer.get(nameBytes);

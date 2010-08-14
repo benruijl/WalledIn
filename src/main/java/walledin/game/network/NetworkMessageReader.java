@@ -54,7 +54,8 @@ import walledin.util.Utils;
  * 
  */
 public class NetworkMessageReader {
-    private static final Logger LOG = Logger.getLogger(NetworkMessageReader.class);
+    private static final Logger LOG = Logger
+            .getLogger(NetworkMessageReader.class);
     private final ByteBuffer buffer;
     private final NetworkEventListener listener;
 
@@ -63,7 +64,8 @@ public class NetworkMessageReader {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 
-    public static ServerData readServerData() throws UnknownHostException {
+    public static ServerData readServerData(final ByteBuffer buffer)
+            throws UnknownHostException {
         final byte[] ip = new byte[4];
         buffer.get(ip);
         final int port = buffer.getInt();

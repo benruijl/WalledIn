@@ -4,15 +4,15 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkConstants;
-import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
 public class LoginMessage extends GameProtocolMessage {
     private String name;
 
     @Override
-    public void read(final ByteBuffer buffer, SocketAddress address) {
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
         name = NetworkMessageReader.readStringData(buffer);
     }
 

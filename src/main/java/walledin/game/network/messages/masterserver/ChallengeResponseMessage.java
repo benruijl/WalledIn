@@ -10,7 +10,7 @@ public class ChallengeResponseMessage extends MasterServerProtocolMessage {
     private long challengeData;
 
     @Override
-    public void read(final ByteBuffer buffer, SocketAddress address) {
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
         challengeData = buffer.getLong();
     }
 

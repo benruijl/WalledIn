@@ -19,7 +19,7 @@ public class GamestateMessage extends GameProtocolMessage {
     private int currentVersion;
 
     @Override
-    public void read(final ByteBuffer buffer, SocketAddress address) {
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
         knownClientVersion = buffer.getInt();
         currentVersion = buffer.getInt();
         // Ask the client if the we should process this gamestate
@@ -71,7 +71,8 @@ public class GamestateMessage extends GameProtocolMessage {
             // write name of entity
             NetworkMessageWriter.writeStringData(entry.getKey(), buffer);
             // write family of entity
-            NetworkMessageWriter.writeStringData(entry.getValue().toString(), buffer);
+            NetworkMessageWriter.writeStringData(entry.getValue().toString(),
+                    buffer);
 
             // write family specific data
             writeFamilySpecificData(entry.getValue(),
@@ -82,7 +83,8 @@ public class GamestateMessage extends GameProtocolMessage {
                 .entrySet()) {
             final Entity entity = entityManager.get(entry.getKey());
 
-            NetworkMessageWriter.writeAttributesData(entity, entry.getValue(), buffer);
+            NetworkMessageWriter.writeAttributesData(entity, entry.getValue(),
+                    buffer);
         }
         // write end
         buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);

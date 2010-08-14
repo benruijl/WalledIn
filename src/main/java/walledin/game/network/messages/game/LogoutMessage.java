@@ -8,7 +8,7 @@ import walledin.game.network.NetworkEventListener;
 
 public class LogoutMessage extends GameProtocolMessage {
     @Override
-    public void read(final ByteBuffer buffer, SocketAddress address) {
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
     }
 
     @Override

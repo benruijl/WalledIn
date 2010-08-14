@@ -42,7 +42,8 @@ import walledin.game.network.messages.game.GameProtocolMessage;
  * 
  */
 public class NetworkMessageWriter {
-    private static final Logger LOG = Logger.getLogger(NetworkMessageWriter.class);
+    private static final Logger LOG = Logger
+            .getLogger(NetworkMessageWriter.class);
     private final ByteBuffer buffer;
 
     public NetworkMessageWriter() {

@@ -5,8 +5,8 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkConstants.ErrorCodes;
-import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
 public class LoginResponseMessage extends GameProtocolMessage {
@@ -14,7 +14,7 @@ public class LoginResponseMessage extends GameProtocolMessage {
     private String entityName;
 
     @Override
-    public void read(final ByteBuffer buffer, SocketAddress address) {
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
         errorMessage = ErrorCodes.values()[buffer.getInt()];
         entityName = NetworkMessageReader.readStringData(buffer);
     }

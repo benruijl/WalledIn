@@ -58,8 +58,8 @@ public final class Client implements NetworkEventListener {
 
     private SocketAddress host;
     private String username;
-    private final NetworkMessageWriter networkDataWriter;
-    private final NetworkMessageReader networkDataReader;
+    private final NetworkMessageWriter networkWriter;
+    private final NetworkMessageReader networkReader;
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
     private DatagramChannel serverNotifyChannel;
@@ -98,8 +98,8 @@ public final class Client implements NetworkEventListener {
         this.renderer = renderer;
         this.clientLogicManager = clientLogicManager;
 
-        networkDataWriter = new NetworkMessageWriter();
-        networkDataReader = new NetworkMessageReader(this);
+        networkWriter = new NetworkMessageWriter();
+        networkReader = new NetworkMessageReader(this);
         internetServerList = new HashSet<ServerData>();
         lanServerList = new HashSet<ServerData>();
         playerList = new HashSet<GameLogicManager.PlayerClientInfo>();
@@ -121,8 +121,8 @@ public final class Client implements NetworkEventListener {
         }
 
         try {
-            networkDataWriter.prepareGetServersMessage();
-            networkDataWriter.sendBuffer(masterServerChannel);
+            networkWriter.prepareGetServersMessage();
+            networkWriter.sendBuffer(masterServerChannel);
             lanServerList.clear();
         } catch (final IOException e) {
             LOG.error("IOException", e);
@@ -174,10 +174,10 @@ public final class Client implements NetworkEventListener {
             result = true;
         }
         try {
-            networkDataWriter.prepareInputMessage(receivedVersion,
+            networkWriter.prepareInputMessage(receivedVersion,
                     PlayerActionManager.getInstance().getPlayerActions(),
                     renderer.screenToWorld(Input.getInstance().getMousePos()));
-            networkDataWriter.sendBuffer(channel);
+            networkWriter.sendBuffer(channel);
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
             dispose();
@@ -258,11 +258,11 @@ public final class Client implements NetworkEventListener {
                 if (lastLoginTry >= 0
                         && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
                     lastLoginTry = System.currentTimeMillis();
-                    networkDataWriter.prepareLoginMessage(username);
-                    networkDataWriter.sendBuffer(channel);
+                    networkWriter.prepareLoginMessage(username);
+                    networkWriter.sendBuffer(channel);
                 }
                 // Read messages.
-                SocketAddress address = networkDataReader.readMessage(channel);
+                SocketAddress address = networkReader.readMessage(channel);
 
                 /* If the address is null, no message is received. */
                 if (address == null) {
@@ -276,29 +276,29 @@ public final class Client implements NetworkEventListener {
                 }
 
                 while (address != null) {
-                    networkDataReader.processMessage(address,
+                    networkReader.processMessage(address,
                             clientLogicManager.getEntityManager());
-                    address = networkDataReader.readMessage(channel);
+                    address = networkReader.readMessage(channel);
                 }
             }
             if (connectedMasterServer) {
                 // Read messages.
-                SocketAddress address = networkDataReader
+                SocketAddress address = networkReader
                         .readMessage(masterServerChannel);
                 while (address != null) {
-                    networkDataReader.processMessage(address,
+                    networkReader.processMessage(address,
                             clientLogicManager.getEntityManager());
-                    address = networkDataReader
+                    address = networkReader
                             .readMessage(masterServerChannel);
                 }
             }
             if (boundServerNotifyChannel) {
-                SocketAddress address = networkDataReader
+                SocketAddress address = networkReader
                         .readMessage(serverNotifyChannel);
                 while (address != null) {
-                    networkDataReader.processMessage(address,
+                    networkReader.processMessage(address,
                             clientLogicManager.getEntityManager());
-                    address = networkDataReader
+                    address = networkReader
                             .readMessage(serverNotifyChannel);
                 }
             }
@@ -420,8 +420,8 @@ public final class Client implements NetworkEventListener {
     public void dispose() {
         if (connected) {
             try {
-                networkDataWriter.prepareLogoutMessage();
-                networkDataWriter.sendBuffer(channel);
+                networkWriter.prepareLogoutMessage();
+                networkWriter.sendBuffer(channel);
                 connected = false;
             } catch (final IOException e) {
                 LOG.fatal("IOException during logout", e);
@@ -463,8 +463,8 @@ public final class Client implements NetworkEventListener {
     public void refreshPlayerList() {
         if (connected) {
             try {
-                networkDataWriter.prepareGetPlayerInfoMessage();
-                networkDataWriter.sendBuffer(channel);
+                networkWriter.prepareGetPlayerInfoMessage();
+                networkWriter.sendBuffer(channel);
             } catch (final IOException e) {
                 LOG.error("IOException", e);
             }
@@ -472,9 +472,9 @@ public final class Client implements NetworkEventListener {
     }
 
     public void selectTeam(final Team team) {
-        networkDataWriter.prepareTeamSelectMessage(team);
+        networkWriter.prepareTeamSelectMessage(team);
         try {
-            networkDataWriter.sendBuffer(channel);
+            networkWriter.sendBuffer(channel);
         } catch (final IOException e) {
             LOG.error("IOException", e);
         }

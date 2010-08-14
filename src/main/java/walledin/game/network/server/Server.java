@@ -59,19 +59,19 @@ public class Server implements NetworkEventListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(Server.class);
 
-    private final long BROADCAST_INTERVAL;
+    private final long broadcastInterval;
 
     /** Server port. */
-    private final int PORT;
+    private final int port;
 
     /** Updates per second. */
-    private final int UPDATES_PER_SECOND;
+    private final int updatesPerSecond;
 
     /** The maximum number of frames stored in memory. */
-    private final int STORED_CHANGESETS;
+    private final int storedChangesets;
 
-    private final String SERVER_NAME;
-    private final long CHALLENGE_TIMEOUT;
+    private final String serverName;
+    private final long challengeTimeout;
     private final Map<SocketAddress, PlayerConnection> players;
     private final int maxPlayers;
     private boolean running;
@@ -101,16 +101,16 @@ public class Server implements NetworkEventListener {
         gameLogicManager = new GameLogicManager(this);
 
         /* Load settings */
-        UPDATES_PER_SECOND = SettingsManager.getInstance().getInteger(
+        updatesPerSecond = SettingsManager.getInstance().getInteger(
                 "general.updatesPerSecond");
-        STORED_CHANGESETS = SettingsManager.getInstance().getInteger(
+        storedChangesets = SettingsManager.getInstance().getInteger(
                 "general.storageCapacity");
-        PORT = SettingsManager.getInstance().getInteger("network.port");
-        CHALLENGE_TIMEOUT = SettingsManager.getInstance().getInteger(
+        port = SettingsManager.getInstance().getInteger("network.port");
+        challengeTimeout = SettingsManager.getInstance().getInteger(
                 "network.challengeTimeOut");
-        BROADCAST_INTERVAL = SettingsManager.getInstance().getInteger(
+        broadcastInterval = SettingsManager.getInstance().getInteger(
                 "network.lanBroadcastInterval");
-        SERVER_NAME = SettingsManager.getInstance()
+        serverName = SettingsManager.getInstance()
                 .getString("game.serverName");
         maxPlayers = SettingsManager.getInstance()
                 .getInteger("game.maxPlayers");
@@ -153,7 +153,7 @@ public class Server implements NetworkEventListener {
         LOG.info("initializing");
         init();
         channel = DatagramChannel.open();
-        channel.socket().bind(new InetSocketAddress(PORT));
+        channel.socket().bind(new InetSocketAddress(port));
         channel.configureBlocking(false);
         serverNotifySocket = DatagramChannel.open();
         serverNotifySocket.socket().setBroadcast(true);
@@ -165,7 +165,7 @@ public class Server implements NetworkEventListener {
         lastChallenge = System.currentTimeMillis();
         lastBroadcast = System.currentTimeMillis();
 
-        networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
+        networkWriter.prepareServerNotificationResponse(port, serverName,
                 players.size(), maxPlayers, gameLogicManager.getGameMode());
         networkWriter.sendBuffer(masterServerChannel);
 
@@ -179,7 +179,7 @@ public class Server implements NetworkEventListener {
             // convert to sec
             delta /= 1000000000;
             // Calculate the how many milliseconds are left
-            final long left = (long) ((1d / UPDATES_PER_SECOND - delta) * 1000);
+            final long left = (long) ((1d / updatesPerSecond - delta) * 1000);
             try {
                 if (left > 0) {
                     Thread.sleep(left);
@@ -206,18 +206,18 @@ public class Server implements NetworkEventListener {
             address = networkReader.readMessage(channel);
         }
 
-        if (lastChallenge < System.currentTimeMillis() - CHALLENGE_TIMEOUT) {
+        if (lastChallenge < System.currentTimeMillis() - challengeTimeout) {
             LOG.warn("Did not recieve challenge from master server yet! "
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
-            networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
+            networkWriter.prepareServerNotificationResponse(port, serverName,
                     players.size(), maxPlayers, gameLogicManager.getGameMode());
             networkWriter.sendBuffer(masterServerChannel);
 
         }
 
-        if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
-            networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
+        if (lastBroadcast < System.currentTimeMillis() - broadcastInterval) {
+            networkWriter.prepareServerNotificationResponse(port, serverName,
                     players.size(), maxPlayers, gameLogicManager.getGameMode());
             networkWriter.sendBuffer(serverNotifySocket,
                     NetworkConstants.BROADCAST_ADDRESS);
@@ -459,7 +459,7 @@ public class Server implements NetworkEventListener {
      */
     public final void init() {
         // Fill the change set queue
-        for (int i = 0; i < STORED_CHANGESETS; i++) {
+        for (int i = 0; i < storedChangesets; i++) {
             final ChangeSet changeSet = gameLogicManager.getEntityManager()
                     .getChangeSet();
             changeSets.add(changeSet);

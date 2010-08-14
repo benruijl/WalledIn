@@ -16,7 +16,7 @@ public class InputMessage extends GameProtocolMessage {
     private Vector2f mousePos;
 
     @Override
-    public void read(final ByteBuffer buffer, SocketAddress address) {
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
         version = buffer.getInt();
         final short numActions = buffer.getShort();
         playerActions = new HashSet<PlayerAction>();
