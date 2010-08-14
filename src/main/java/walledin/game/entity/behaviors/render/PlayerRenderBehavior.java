@@ -23,7 +23,7 @@ package walledin.game.entity.behaviors.render;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.ZValues;
+import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -43,7 +43,7 @@ public class PlayerRenderBehavior extends RenderBehavior {
     private final Vector2f scale;
 
     public PlayerRenderBehavior(final Entity owner) {
-        super(owner, ZValues.PLAYER);
+        super(owner, ZValue.PLAYER);
 
         scale = new Vector2f(0.5f, 0.5f); // standard scale
     }

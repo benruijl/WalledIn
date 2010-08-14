@@ -27,14 +27,14 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.PlayerActions;
+import walledin.game.PlayerAction;
 import walledin.game.entity.Entity;
 
 public class PlayerConnection {
     private static final Logger LOG = Logger.getLogger(PlayerConnection.class);
 
     private final Entity player;
-    private Set<PlayerActions> playerActions;
+    private Set<PlayerAction> playerActions;
     private Vector2f mousePos;
 
     private final SocketAddress address;
@@ -46,7 +46,7 @@ public class PlayerConnection {
             final int currentVersion) {
         super();
 
-        playerActions = new HashSet<PlayerActions>();
+        playerActions = new HashSet<PlayerAction>();
         mousePos = new Vector2f();
 
         this.player = player;
@@ -87,11 +87,11 @@ public class PlayerConnection {
         return isNew;
     }
 
-    public Set<PlayerActions> getPlayerActions() {
+    public Set<PlayerAction> getPlayerActions() {
         return playerActions;
     }
 
-    public void setPlayerActions(final Set<PlayerActions> playerActions) {
+    public void setPlayerActions(final Set<PlayerAction> playerActions) {
         this.playerActions = playerActions;
     }
 

@@ -20,17 +20,12 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
-/**
- * Game teams. Used in team deathmatch, etc.
- * 
- * @author Ben Ruijl
- * 
- */
-public enum Teams {
-    /** No team selected. */
-    UNSELECTED,
-    /** Red team. */
-    RED,
-    /** Blue team. */
-    BLUE;
+public enum PlayerAction {
+    WALK_LEFT,
+    WALK_RIGHT,
+    JUMP,
+    SHOOT_PRIMARY,
+    SHOOT_SECUNDARY,
+    SELECT_WEAPON_1,
+    SELECT_WEAPON_2;
 }
