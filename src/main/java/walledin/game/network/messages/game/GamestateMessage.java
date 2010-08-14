@@ -10,15 +10,16 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.server.ChangeSet;
 
-public class GamestateMessage {
+public class GamestateMessage extends GameProtocolMessage {
     private ChangeSet changeSet;
     private int knownClientVersion;
     private int currentVersion;
 
     @Override
-    public void read(final ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer, SocketAddress address) {
         knownClientVersion = buffer.getInt();
         currentVersion = buffer.getInt();
         // Ask the client if the we should process this gamestate
@@ -61,16 +62,16 @@ public class GamestateMessage {
         buffer.putInt(currentVersion);
         for (final String name : changeSet.getRemoved()) {
             buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
-            writeStringData(name, buffer);
+            NetworkMessageWriter.writeStringData(name, buffer);
         }
 
         for (final Entry<String, Family> entry : changeSet.getCreated()
                 .entrySet()) {
             buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
             // write name of entity
-            writeStringData(entry.getKey(), buffer);
+            NetworkMessageWriter.writeStringData(entry.getKey(), buffer);
             // write family of entity
-            writeStringData(entry.getValue().toString(), buffer);
+            NetworkMessageWriter.writeStringData(entry.getValue().toString(), buffer);
 
             // write family specific data
             writeFamilySpecificData(entry.getValue(),
@@ -81,7 +82,7 @@ public class GamestateMessage {
                 .entrySet()) {
             final Entity entity = entityManager.get(entry.getKey());
 
-            writeAttributesData(entity, entry.getValue(), buffer);
+            NetworkMessageWriter.writeAttributesData(entity, entry.getValue(), buffer);
         }
         // write end
         buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);

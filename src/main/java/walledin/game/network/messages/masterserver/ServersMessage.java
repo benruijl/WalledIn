@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.ServerData;
 
 public class ServersMessage extends MasterServerProtocolMessage {
@@ -13,11 +14,11 @@ public class ServersMessage extends MasterServerProtocolMessage {
     private Set<ServerData> servers;
 
     @Override
-    public void read(final ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer, SocketAddress address) {
         amount = buffer.getInt();
         servers = new HashSet<ServerData>();
         for (int i = 0; i < amount; i++) {
-            final ServerData server = readServerData();
+            final ServerData server = NetworkMessageReader.readServerData();
             servers.add(server);
         }
     }

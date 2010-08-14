@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkEventListener;
 
-public interface Message {
+public interface NetworkMessage {
     void write(ByteBuffer buffer);
 
-    void read(ByteBuffer buffer);
+    void read(ByteBuffer buffer, SocketAddress address);
 
     void fireEvent(NetworkEventListener listener, SocketAddress address);
 }

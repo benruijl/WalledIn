@@ -41,11 +41,11 @@ import walledin.game.network.messages.game.GameProtocolMessage;
  * @author Wouter Smeenk
  * 
  */
-public class NetworkDataWriter {
-    private static final Logger LOG = Logger.getLogger(NetworkDataWriter.class);
+public class NetworkMessageWriter {
+    private static final Logger LOG = Logger.getLogger(NetworkMessageWriter.class);
     private final ByteBuffer buffer;
 
-    public NetworkDataWriter() {
+    public NetworkMessageWriter() {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 

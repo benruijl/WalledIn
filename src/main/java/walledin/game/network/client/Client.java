@@ -47,8 +47,8 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkConstants.ErrorCodes;
-import walledin.game.network.NetworkDataReader;
-import walledin.game.network.NetworkDataWriter;
+import walledin.game.network.NetworkMessageReader;
+import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
 import walledin.util.SettingsManager;
@@ -58,8 +58,8 @@ public final class Client implements NetworkEventListener {
 
     private SocketAddress host;
     private String username;
-    private final NetworkDataWriter networkDataWriter;
-    private final NetworkDataReader networkDataReader;
+    private final NetworkMessageWriter networkDataWriter;
+    private final NetworkMessageReader networkDataReader;
     private final DatagramChannel channel;
     private final DatagramChannel masterServerChannel;
     private DatagramChannel serverNotifyChannel;
@@ -98,8 +98,8 @@ public final class Client implements NetworkEventListener {
         this.renderer = renderer;
         this.clientLogicManager = clientLogicManager;
 
-        networkDataWriter = new NetworkDataWriter();
-        networkDataReader = new NetworkDataReader(this);
+        networkDataWriter = new NetworkMessageWriter();
+        networkDataReader = new NetworkMessageReader(this);
         internetServerList = new HashSet<ServerData>();
         lanServerList = new HashSet<ServerData>();
         playerList = new HashSet<GameLogicManager.PlayerClientInfo>();

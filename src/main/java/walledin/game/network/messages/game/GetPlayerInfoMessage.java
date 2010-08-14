@@ -9,7 +9,7 @@ import walledin.game.network.NetworkEventListener;
 public class GetPlayerInfoMessage extends GameProtocolMessage {
 
     @Override
-    public void read(final ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer, SocketAddress address) {
     }
 
     @Override

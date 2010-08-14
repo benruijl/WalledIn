@@ -31,10 +31,10 @@ import walledin.game.network.messages.game.InputMessage;
 import walledin.game.network.messages.game.LoginMessage;
 import walledin.game.network.messages.game.LoginResponseMessage;
 import walledin.game.network.messages.game.LogoutMessage;
-import walledin.game.network.messages.game.ServerNotificationResponseMessage;
 import walledin.game.network.messages.game.TeamSelectMessage;
 import walledin.game.network.messages.masterserver.ChallengeResponseMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
+import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
 import walledin.game.network.messages.masterserver.ServersMessage;
 
 public interface NetworkEventListener {

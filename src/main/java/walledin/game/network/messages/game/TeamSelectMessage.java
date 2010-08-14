@@ -11,7 +11,7 @@ public class TeamSelectMessage extends GameProtocolMessage {
     private Team team;
 
     @Override
-    public void read(final ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer, SocketAddress address) {
         team = Team.values()[buffer.getInt()];
     }
 

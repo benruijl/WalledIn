@@ -53,12 +53,12 @@ import walledin.util.Utils;
  * @author Wouter Smeenk
  * 
  */
-public class NetworkDataReader {
-    private static final Logger LOG = Logger.getLogger(NetworkDataReader.class);
+public class NetworkMessageReader {
+    private static final Logger LOG = Logger.getLogger(NetworkMessageReader.class);
     private final ByteBuffer buffer;
     private final NetworkEventListener listener;
 
-    public NetworkDataReader(final NetworkEventListener listener) {
+    public NetworkMessageReader(final NetworkEventListener listener) {
         this.listener = listener;
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }

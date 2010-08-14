@@ -7,20 +7,22 @@ import java.nio.ByteBuffer;
 
 import walledin.game.GameMode;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.NetworkMessageReader;
+import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.ServerData;
 
 public class ServerNotificationMessage extends MasterServerProtocolMessage {
     private ServerData server;
 
     @Override
-    public void read(final ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer, SocketAddress address) {
         final InetSocketAddress inetAddress = (InetSocketAddress) address;
         // only read port. ip is derived from connection
         final int port = buffer.getInt();
         final SocketAddress serverAddress = new InetSocketAddress(
                 InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
                 port);
-        final String name = readStringData(buffer);
+        final String name = NetworkMessageReader.readStringData(buffer);
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
         final GameMode gameMode = GameMode.values()[buffer.getInt()];

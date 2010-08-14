@@ -43,8 +43,8 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkConstants.ErrorCodes;
-import walledin.game.network.NetworkDataReader;
-import walledin.game.network.NetworkDataWriter;
+import walledin.game.network.NetworkMessageReader;
+import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
 import walledin.util.SettingsManager;
@@ -75,8 +75,8 @@ public class Server implements NetworkEventListener {
     private final Map<SocketAddress, PlayerConnection> players;
     private final int maxPlayers;
     private boolean running;
-    private final NetworkDataWriter networkWriter;
-    private final NetworkDataReader networkReader;
+    private final NetworkMessageWriter networkWriter;
+    private final NetworkMessageReader networkReader;
     private long currentTime;
     private final GameLogicManager gameLogicManager;
     private final Queue<ChangeSet> changeSets;
@@ -94,8 +94,8 @@ public class Server implements NetworkEventListener {
     public Server() {
         players = new HashMap<SocketAddress, PlayerConnection>();
         running = false;
-        networkWriter = new NetworkDataWriter();
-        networkReader = new NetworkDataReader(this);
+        networkWriter = new NetworkMessageWriter();
+        networkReader = new NetworkMessageReader(this);
         changeSetLookup = new HashMap<Integer, ChangeSet>();
         changeSets = new LinkedList<ChangeSet>();
         gameLogicManager = new GameLogicManager(this);
