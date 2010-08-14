@@ -55,6 +55,10 @@ public class Line2f {
     public Vector2f getDir() {
         return dir;
     }
+    
+    public boolean isBackFacing(final Vector2f point) {
+        return point.sub(begin).cross(dir) <= 0;
+    }
 
     /**
      * Returns the projection of a point to a line or line segment.

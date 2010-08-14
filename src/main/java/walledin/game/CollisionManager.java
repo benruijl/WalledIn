@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import java.awt.LinearGradientPaint;
 import java.util.Collection;
 import java.util.List;
 
@@ -223,11 +224,14 @@ public class CollisionManager {
             newPolygonPos = newPolygonPos.add(slideVel);
 
             polygonEntity.setAttribute(Attribute.VELOCITY,
-                    slideVel.scale(1 / (float) delta));
+                    slideVel.scale(1.0f / (float) delta));
 
         } else {
             /* Moving away from collision. Allow. */
             newPolygonPos = newPolygonPos.add(polygonVelocity);
+            polygonEntity.setAttribute(Attribute.VELOCITY,
+                    newPolygonPos.sub(polygonOldPos)
+                            .scale(1.0f / (float) delta));
         }
 
         polygonEntity.setAttribute(Attribute.POSITION, newPolygonPos);
@@ -244,9 +248,8 @@ public class CollisionManager {
      *            Delta time, used for interpolation
      */
     public static void calculateEntityCollisions(
-            final Collection<Entity> entities, final double delta) {
-        Entity[] entArray = new Entity[0];
-        entArray = entities.toArray(entArray);
+            final Collection<Entity> entities, double delta) {
+        Entity[] entArray = entities.toArray(new Entity[0]);
 
         for (int i = 0; i < entArray.length - 1; i++) {
             for (int j = i + 1; j < entArray.length; j++) {
@@ -313,6 +316,7 @@ public class CollisionManager {
 
             }
         }
+
     }
 
     /**

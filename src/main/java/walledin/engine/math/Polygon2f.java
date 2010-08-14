@@ -12,6 +12,8 @@ public class Polygon2f {
     private static final Logger LOG = Logger.getLogger(Polygon2f.class);
 
     private List<Line2f> edges;
+
+    /* TODO: use position. */
     private Vector2f position;
 
     public Polygon2f(final Vector2f position) {
@@ -39,6 +41,22 @@ public class Polygon2f {
 
     public void setPosition(final Vector2f position) {
         this.position = position;
+    }
+
+    public boolean pointInsidePolygon(final Vector2f point) {
+        /* Bitfields. */
+        int ccwPartition = 0;
+        int cwPartition = 0;
+
+        for (int i = 0; i < edges.size(); i++) {
+            if (edges.get(i).isBackFacing(point)) {
+                ccwPartition |= (1 << i);
+            } else {
+                cwPartition |= (1 << i);
+            }
+        }
+
+        return ccwPartition == 0 || cwPartition == 0;
     }
 
     /**
@@ -97,13 +115,25 @@ public class Polygon2f {
             return new GeometricalCollisionData(false, 0, null, null);
         }
 
-        final Vector2f circlePos = circle.getPos().add(velocity.scale(time));
-        final Vector2f polygonPoint = closestPointOnPolygon(circlePos);
-        final Vector2f circlePoint = new Circle(circlePos, circle.getRadius())
+        Vector2f circlePos = circle.getPos().add(velocity.scale(time));
+        Vector2f polygonPoint = closestPointOnPolygon(circlePos);
+        Vector2f circlePoint = new Circle(circlePos, circle.getRadius())
                 .closestPointOnCircle(polygonPoint);
 
-        final Vector2f normal = circlePos.sub(polygonPoint).normalize();
-        final Vector2f penetration = polygonPoint.sub(circlePoint);
+        Vector2f normal = circlePos.sub(polygonPoint).normalize();
+        Vector2f penetration = polygonPoint.sub(circlePoint);
+
+        if (pointInsidePolygon(circlePos)) {
+
+            /* We are deep in the polygon! */
+            if (!(new Circle(circlePos, circle.getRadius()))
+                    .isPointInCircle(polygonPoint)) {
+                normal = normal.scale(-1.0f);
+            }
+
+            circlePoint = circlePos.add(normal.scale(circle.getRadius()));
+            penetration = polygonPoint.sub(circlePoint);
+        }
 
         return new GeometricalCollisionData(true, time, normal, penetration);
     }

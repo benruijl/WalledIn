@@ -155,14 +155,18 @@ public class Circle extends Geometry {
 
     public Vector2f closestPointOnCircle(final Vector2f point) {
         Vector2f delta = point.sub(pos);
-        final float distSquared = delta.lengthSquared();
+        final float dist = delta.length();
 
         /* Prevent division by zero. */
-        if (distSquared > 0.0000001f) {
-            delta = delta.scale(1.0f / (float) Math.sqrt(distSquared));
+        if (dist > 0.0000001f) {
+            delta = delta.scale(1.0f / dist);
         }
 
         return pos.add(delta.scale(radius));
+    }
+    
+    public boolean isPointInCircle(final Vector2f point) {
+        return point.sub(pos).lengthSquared() <= radius * radius;
     }
 
 }
