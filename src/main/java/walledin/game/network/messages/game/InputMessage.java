@@ -10,7 +10,7 @@ import walledin.game.PlayerAction;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class InputMessage extends GameProtocolMessage {
+public class InputMessage extends MasterServerProtocolMessage {
     private int version;
     private Set<PlayerAction> playerActions;
     private Vector2f mousePos;

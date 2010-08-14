@@ -7,9 +7,10 @@ import walledin.game.GameMode;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageWriter;
-import walledin.game.network.messages.game.GameProtocolMessage;
+import walledin.game.network.messages.game.MasterServerProtocolMessage;
 
-public class ServerNotificationResponseMessage extends GameProtocolMessage {
+public class ServerNotificationResponseMessage extends
+        MasterServerProtocolMessage {
     private int port;
     private String name;
     private int players;
@@ -18,10 +19,7 @@ public class ServerNotificationResponseMessage extends GameProtocolMessage {
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
-        final int nameLength = buffer.getInt();
-        final byte[] nameBytes = new byte[nameLength];
-        buffer.get(nameBytes);
-        name = new String(nameBytes);
+        throw new IllegalStateException("Not yet implemented");
     }
 
     @Override

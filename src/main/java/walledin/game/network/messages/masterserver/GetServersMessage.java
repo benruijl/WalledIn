@@ -1,12 +1,13 @@
-package walledin.game.network.messages.game;
+package walledin.game.network.messages.masterserver;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
+import walledin.game.network.messages.game.MasterServerProtocolMessage;
 
-public class GetServersMessage extends GameProtocolMessage {
+public class GetServersMessage extends MasterServerProtocolMessage {
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {

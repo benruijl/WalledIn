@@ -13,7 +13,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.server.ChangeSet;
 
-public class GamestateMessage extends GameProtocolMessage {
+public class GamestateMessage extends MasterServerProtocolMessage {
     private ChangeSet changeSet;
     private int knownClientVersion;
     private int currentVersion;

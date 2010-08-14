@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class LogoutMessage extends GameProtocolMessage {
+public class LogoutMessage extends MasterServerProtocolMessage {
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
     }

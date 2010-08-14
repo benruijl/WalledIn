@@ -33,7 +33,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.network.messages.game.GameProtocolMessage;
+import walledin.game.network.messages.game.MasterServerProtocolMessage;
 
 /**
  * Writes network messages
@@ -50,20 +50,20 @@ public class NetworkMessageWriter {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 
-    private void writeMessage(final GameProtocolMessage message) {
+    private void writeMessage(final MasterServerProtocolMessage message) {
         buffer.clear();
         message.write(buffer);
         buffer.flip();
     }
 
     public void sendMessage(final DatagramChannel channel,
-            final GameProtocolMessage message) throws IOException {
+            final MasterServerProtocolMessage message) throws IOException {
         writeMessage(message);
         channel.write(buffer);
     }
 
     public void sendMessage(final DatagramChannel channel,
-            final SocketAddress address, final GameProtocolMessage message)
+            final SocketAddress address, final MasterServerProtocolMessage message)
             throws IOException {
         writeMessage(message);
         channel.send(buffer, address);

@@ -8,7 +8,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class LoginMessage extends GameProtocolMessage {
+public class LoginMessage extends MasterServerProtocolMessage {
     private String name;
 
     @Override

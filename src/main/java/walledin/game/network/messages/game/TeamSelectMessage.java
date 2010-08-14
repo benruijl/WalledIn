@@ -7,7 +7,7 @@ import walledin.game.Team;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class TeamSelectMessage extends GameProtocolMessage {
+public class TeamSelectMessage extends MasterServerProtocolMessage {
     private Team team;
 
     @Override

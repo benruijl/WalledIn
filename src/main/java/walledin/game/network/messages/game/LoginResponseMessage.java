@@ -9,7 +9,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class LoginResponseMessage extends GameProtocolMessage {
+public class LoginResponseMessage extends MasterServerProtocolMessage {
     private ErrorCodes errorMessage;
     private String entityName;
 

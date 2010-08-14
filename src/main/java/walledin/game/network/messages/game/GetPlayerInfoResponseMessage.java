@@ -13,7 +13,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class GetPlayerInfoResponseMessage extends GameProtocolMessage {
+public class GetPlayerInfoResponseMessage extends MasterServerProtocolMessage {
     private Collection<PlayerInfo> players;
 
     @Override

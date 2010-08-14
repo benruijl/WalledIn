@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class GetPlayerInfoMessage extends GameProtocolMessage {
+public class GetPlayerInfoMessage extends MasterServerProtocolMessage {
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
