@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.GameLogicManager.PlayerInfo;
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
@@ -21,7 +21,7 @@ public class GetPlayerInfoResponseMessage extends GameProtocolMessage {
 
         for (int i = 0; i < numPlayers; i++) {
             final String entityName = readStringData(buffer);
-            final Teams team = Teams.values()[buffer.getInt()];
+            final Team team = Team.values()[buffer.getInt()];
             players.add(new PlayerClientInfo(entityName, team));
         }
     }

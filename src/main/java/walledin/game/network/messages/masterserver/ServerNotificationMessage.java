@@ -4,16 +4,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.Set;
 
-import walledin.engine.math.Vector2f;
 import walledin.game.GameMode;
-import walledin.game.PlayerActions;
-import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
-import walledin.game.network.messages.game.GameProtocolMessage;
 
 public class ServerNotificationMessage extends MasterServerProtocolMessage {
     private ServerData server;

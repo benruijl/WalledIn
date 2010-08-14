@@ -35,7 +35,12 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.GameMode;
+<<<<<<< HEAD
+import walledin.game.Teams;
+=======
+import walledin.game.PlayerAction;
 import walledin.game.Team;
+>>>>>>> master
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -63,7 +68,97 @@ public class NetworkDataReader {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
     }
 
+<<<<<<< HEAD
     public static ServerData readServerData() throws UnknownHostException {
+=======
+    private void processGamestateMessage(final EntityManager entityManager,
+            final SocketAddress address) {
+        final int oldVersion = buffer.getInt();
+        final int newVersion = buffer.getInt();
+        // Ask the client if the we should process this gamestate
+        final boolean process = listener.receivedGamestateMessage(address,
+                oldVersion, newVersion);
+        boolean hasMore = true;
+        if (process) {
+            while (hasMore) {
+                hasMore = readEntityData(entityManager, buffer);
+            }
+        }
+    }
+
+    private void processInputMessage(final SocketAddress address) {
+        final int newVersion = buffer.getInt();
+        final short numActions = buffer.getShort();
+        final Set<PlayerAction> actions = new HashSet<PlayerAction>();
+        for (int i = 0; i < numActions; i++) {
+            actions.add(PlayerAction.values()[buffer.getShort()]);
+        }
+        final Vector2f mousePos = new Vector2f(buffer.getFloat(),
+                buffer.getFloat());
+        listener.receivedInputMessage(address, newVersion, actions, mousePos);
+    }
+
+    private void processLoginMessage(final SocketAddress address) {
+        final int nameLength = buffer.getInt();
+        final byte[] nameBytes = new byte[nameLength];
+        buffer.get(nameBytes);
+        final String name = new String(nameBytes);
+        listener.receivedLoginMessage(address, name);
+    }
+
+    private void processLoginResponseMessage(final SocketAddress address) {
+        final ErrorCodes errorCode = ErrorCodes.values()[buffer.getInt()];
+        final int nameLength = buffer.getInt();
+        final byte[] nameBytes = new byte[nameLength];
+        buffer.get(nameBytes);
+        final String name = new String(nameBytes);
+        listener.receivedLoginReponseMessage(address, errorCode, name);
+    }
+
+    private void processLogoutMessage(final SocketAddress address) {
+        listener.receivedLogoutMessage(address);
+    }
+
+    private void processTeamSelectMessage(final SocketAddress address) {
+        final Team team = Team.values()[buffer.getInt()];
+        listener.receivedTeamSelectMessage(address, team);
+    }
+
+    private void processServersMessage(final SocketAddress address)
+            throws UnknownHostException {
+        final int amount = buffer.getInt();
+        final Set<ServerData> servers = new HashSet<ServerData>();
+        for (int i = 0; i < amount; i++) {
+            final ServerData server = readServerData();
+            servers.add(server);
+        }
+        listener.receivedServersMessage(address, servers);
+    }
+
+    private void processChallengeMessage(final SocketAddress address) {
+        final long challengeData = buffer.getLong();
+        listener.receivedChallengeMessage(address, challengeData);
+    }
+
+    private void processServerNotificationMessage(final SocketAddress address)
+            throws UnknownHostException {
+        final InetSocketAddress inetAddress = (InetSocketAddress) address;
+        // only read port. ip is derived from connection
+        final int port = buffer.getInt();
+        final SocketAddress serverAddress = new InetSocketAddress(
+                InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
+                port);
+        final String name = readStringData(buffer);
+        final int players = buffer.getInt();
+        final int maxPlayers = buffer.getInt();
+        final GameMode gameMode = GameMode.values()[buffer.getInt()];
+        final ServerData server = new ServerData(serverAddress, name, players,
+                maxPlayers, gameMode);
+        listener.receivedServerNotificationMessage(address, server);
+    }
+
+    private ServerData readServerData() throws UnknownHostException {
+>>>>>>> master
         final byte[] ip = new byte[4];
         buffer.get(ip);
         final int port = buffer.getInt();
@@ -286,4 +381,24 @@ public class NetworkDataReader {
             // else ignore the datagram, incorrect format
         }
     }
+<<<<<<< HEAD
+=======
+
+    private void processGetPlayerInfoMessage(final SocketAddress address) {
+        listener.receivedGetPlayerInfoMessage(address);
+    }
+
+    private void processGetPlayerInfoResponseMessage(final SocketAddress address) {
+        final Set<PlayerClientInfo> players = new HashSet<GameLogicManager.PlayerClientInfo>();
+        final int numPlayers = buffer.getInt();
+
+        for (int i = 0; i < numPlayers; i++) {
+            final String entityName = readStringData(buffer);
+            final Team team = Team.values()[buffer.getInt()];
+            players.add(new PlayerClientInfo(entityName, team));
+        }
+
+        listener.receivedGetPlayerInfoResponseMessage(address, players);
+    }
+>>>>>>> master
 }

@@ -36,17 +36,17 @@ public class PlayerActionManager {
     private static final Logger LOG = Logger
             .getLogger(PlayerActionManager.class);
     private static PlayerActionManager ref = null;
-    private final Map<Integer, PlayerActions> keyMap;
-    private final Map<Integer, PlayerActions> buttonMap;
-    private final Set<PlayerActions> playerActions;
+    private final Map<Integer, PlayerAction> keyMap;
+    private final Map<Integer, PlayerAction> buttonMap;
+    private final Set<PlayerAction> playerActions;
 
     private PlayerActionManager() {
-        keyMap = new HashMap<Integer, PlayerActions>();
-        buttonMap = new HashMap<Integer, PlayerActions>();
-        playerActions = new HashSet<PlayerActions>();
+        keyMap = new HashMap<Integer, PlayerAction>();
+        buttonMap = new HashMap<Integer, PlayerAction>();
+        playerActions = new HashSet<PlayerAction>();
 
         /* Load the mapping from the configuration file */
-        for (final PlayerActions action : PlayerActions.values()) {
+        for (final PlayerAction action : PlayerAction.values()) {
             final String inputName = SettingsManager.getInstance().getString(
                     action.toString());
 
@@ -116,7 +116,7 @@ public class PlayerActionManager {
         playerActions.clear();
     }
 
-    public Set<PlayerActions> getPlayerActions() {
+    public Set<PlayerAction> getPlayerActions() {
         return playerActions;
     }
 }

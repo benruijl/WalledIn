@@ -25,7 +25,7 @@ import java.util.List;
 
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
-import walledin.game.ZValues;
+import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -56,7 +56,7 @@ public class MapRenderBehavior extends RenderBehavior {
      *            Map entity
      */
     public MapRenderBehavior(final Entity owner) {
-        super(owner, ZValues.MAP);
+        super(owner, ZValue.MAP);
         tiles = new ArrayList<Tile>();
     }
 

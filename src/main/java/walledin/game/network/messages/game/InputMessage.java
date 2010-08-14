@@ -6,22 +6,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.PlayerActions;
+import walledin.game.PlayerAction;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
 public class InputMessage extends GameProtocolMessage {
     private int version;
-    private Set<PlayerActions> playerActions;
+    private Set<PlayerAction> playerActions;
     private Vector2f mousePos;
 
     @Override
     public void read(ByteBuffer buffer) {
         version = buffer.getInt();
         final short numActions = buffer.getShort();
-        playerActions = new HashSet<PlayerActions>();
+        playerActions = new HashSet<PlayerAction>();
         for (int i = 0; i < numActions; i++) {
-            playerActions.add(PlayerActions.values()[buffer.getShort()]);
+            playerActions.add(PlayerAction.values()[buffer.getShort()]);
         }
         mousePos = new Vector2f(buffer.getFloat(),
                 buffer.getFloat());
@@ -32,7 +32,7 @@ public class InputMessage extends GameProtocolMessage {
         buffer.put(NetworkConstants.INPUT_MESSAGE);
         buffer.putInt(version);
         buffer.putShort((short) playerActions.size());
-        for (final PlayerActions actions : playerActions) {
+        for (final PlayerAction actions : playerActions) {
             buffer.putShort((short) actions.ordinal());
         }
         buffer.putFloat(mousePos.getX());

@@ -23,7 +23,7 @@ package walledin.game.entity.behaviors.render;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.ZValues;
+import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -43,7 +43,7 @@ public class WeaponRenderBehavior extends RenderBehavior {
      */
     public WeaponRenderBehavior(final Entity owner, final String texPart,
             final Rectangle destRect) {
-        super(owner, ZValues.WEAPON);
+        super(owner, ZValue.WEAPON);
 
         this.texPart = texPart;
         weaponRect = destRect;

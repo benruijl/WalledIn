@@ -30,7 +30,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.network.messages.game.GameProtocolMessage;
@@ -92,7 +92,7 @@ public class NetworkDataWriter {
             writeStringData((String) data, buffer);
             break;
         case PLAYER_TEAM:
-            writeIntegerData(((Teams) data).ordinal(), buffer);
+            writeIntegerData(((Team) data).ordinal(), buffer);
             break;
         case WALLEDIN_IN:
             writeFloatData((Float) data, buffer);

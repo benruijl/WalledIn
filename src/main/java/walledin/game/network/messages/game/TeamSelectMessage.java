@@ -3,16 +3,16 @@ package walledin.game.network.messages.game;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
 public class TeamSelectMessage extends GameProtocolMessage {
-    private Teams team;
+    private Team team;
 
     @Override
     public void read(ByteBuffer buffer) {
-        team = Teams.values()[buffer.getInt()];
+        team = Team.values()[buffer.getInt()];
     }
 
     @Override

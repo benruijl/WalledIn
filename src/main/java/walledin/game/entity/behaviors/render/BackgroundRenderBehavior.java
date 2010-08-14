@@ -22,14 +22,14 @@ package walledin.game.entity.behaviors.render;
 
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
-import walledin.game.ZValues;
+import walledin.game.ZValue;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class BackgroundRenderBehavior extends RenderBehavior {
 
     public BackgroundRenderBehavior(final Entity owner) {
-        super(owner, ZValues.BACKGROUND);
+        super(owner, ZValue.BACKGROUND);
     }
 
     @Override

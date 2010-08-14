@@ -5,12 +5,8 @@ import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
-import walledin.engine.math.Vector2f;
-import walledin.game.PlayerActions;
-import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
-import walledin.game.network.messages.game.GameProtocolMessage;
 
 public class ServersMessage extends MasterServerProtocolMessage {
     private int amount;
