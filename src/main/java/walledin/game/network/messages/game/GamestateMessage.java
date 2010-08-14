@@ -2,12 +2,9 @@ package walledin.game.network.messages.game;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.Collection;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import walledin.game.EntityManager;
-import walledin.game.GameLogicManager.PlayerInfo;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -16,12 +13,12 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.server.ChangeSet;
 
 public class GamestateMessage {
-    private  ChangeSet changeSet;
+    private ChangeSet changeSet;
     private int knownClientVersion;
     private int currentVersion;
-    
+
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         knownClientVersion = buffer.getInt();
         currentVersion = buffer.getInt();
         // Ask the client if the we should process this gamestate
@@ -55,9 +52,9 @@ public class GamestateMessage {
             break;
         }
     }
-    
+
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
         buffer.putInt(knownClientVersion);
@@ -89,9 +86,10 @@ public class GamestateMessage {
         // write end
         buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
     }
-    
+
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

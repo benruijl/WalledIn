@@ -15,7 +15,7 @@ public class ServerNotificationResponseMessage extends GameProtocolMessage {
     private GameMode gameMode;
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         final int nameLength = buffer.getInt();
         final byte[] nameBytes = new byte[nameLength];
         buffer.get(nameBytes);
@@ -23,7 +23,7 @@ public class ServerNotificationResponseMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.SERVER_NOTIFICATION_MESSAGE);
         buffer.putInt(port);
@@ -34,7 +34,8 @@ public class ServerNotificationResponseMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

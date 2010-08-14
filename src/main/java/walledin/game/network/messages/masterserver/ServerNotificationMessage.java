@@ -13,7 +13,7 @@ public class ServerNotificationMessage extends MasterServerProtocolMessage {
     private ServerData server;
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         final InetSocketAddress inetAddress = (InetSocketAddress) address;
         // only read port. ip is derived from connection
         final int port = buffer.getInt();
@@ -29,12 +29,13 @@ public class ServerNotificationMessage extends MasterServerProtocolMessage {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         throw new IllegalStateException("Not yet implemented");
     }
 
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

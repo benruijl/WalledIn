@@ -9,17 +9,18 @@ import walledin.game.network.NetworkEventListener;
 public class GetPlayerInfoMessage extends GameProtocolMessage {
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GET_PLAYER_INFO_MESSAGE);
     }
-    
+
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

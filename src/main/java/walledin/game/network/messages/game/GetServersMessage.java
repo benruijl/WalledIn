@@ -9,11 +9,11 @@ import walledin.game.network.NetworkEventListener;
 public class GetServersMessage extends GameProtocolMessage {
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.clear();
         buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GET_SERVERS_MESSAGE);
@@ -21,7 +21,8 @@ public class GetServersMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

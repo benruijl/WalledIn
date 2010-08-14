@@ -10,7 +10,7 @@ public class LoginMessage extends GameProtocolMessage {
     private String name;
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         final int nameLength = buffer.getInt();
         final byte[] nameBytes = new byte[nameLength];
         buffer.get(nameBytes);
@@ -18,7 +18,7 @@ public class LoginMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.LOGIN_MESSAGE);
         buffer.putInt(name.length());
@@ -26,7 +26,8 @@ public class LoginMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

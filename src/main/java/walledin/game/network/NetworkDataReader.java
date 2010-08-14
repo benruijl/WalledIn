@@ -165,7 +165,8 @@ public class NetworkDataReader {
         return true;
     }
 
-    public static void readFamilySpecificData(final Family family, final Entity entity) {
+    public static void readFamilySpecificData(final Family family,
+            final Entity entity) {
         switch (family) {
         case MAP:
             final String mapName = readStringData(buffer);

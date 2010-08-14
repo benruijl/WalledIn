@@ -13,7 +13,7 @@ public class ServersMessage extends MasterServerProtocolMessage {
     private Set<ServerData> servers;
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         amount = buffer.getInt();
         servers = new HashSet<ServerData>();
         for (int i = 0; i < amount; i++) {
@@ -23,12 +23,13 @@ public class ServersMessage extends MasterServerProtocolMessage {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         throw new IllegalStateException("Not yet implemented");
     }
 
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

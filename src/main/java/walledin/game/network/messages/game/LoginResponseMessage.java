@@ -4,15 +4,15 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkConstants;
-import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkConstants.ErrorCodes;
+import walledin.game.network.NetworkEventListener;
 
 public class LoginResponseMessage extends GameProtocolMessage {
     private ErrorCodes errorMessage;
     private String entityName;
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         errorMessage = ErrorCodes.values()[buffer.getInt()];
         final int nameLength = buffer.getInt();
         final byte[] nameBytes = new byte[nameLength];
@@ -21,7 +21,7 @@ public class LoginResponseMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.LOGIN_RESPONSE_MESSAGE);
         writeIntegerData(errorMessage.ordinal(), buffer);
@@ -29,7 +29,8 @@ public class LoginResponseMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

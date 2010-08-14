@@ -16,18 +16,18 @@ public class InputMessage extends GameProtocolMessage {
     private Vector2f mousePos;
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         version = buffer.getInt();
         final short numActions = buffer.getShort();
         playerActions = new HashSet<PlayerAction>();
         for (int i = 0; i < numActions; i++) {
             playerActions.add(PlayerAction.values()[buffer.getShort()]);
         }
-        mousePos = new Vector2f(buffer.getFloat(),
-                buffer.getFloat());
+        mousePos = new Vector2f(buffer.getFloat(), buffer.getFloat());
     }
+
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.INPUT_MESSAGE);
         buffer.putInt(version);
@@ -38,8 +38,10 @@ public class InputMessage extends GameProtocolMessage {
         buffer.putFloat(mousePos.getX());
         buffer.putFloat(mousePos.getY());
     }
+
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }

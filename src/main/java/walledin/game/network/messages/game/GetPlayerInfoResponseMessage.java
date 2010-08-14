@@ -15,7 +15,7 @@ public class GetPlayerInfoResponseMessage extends GameProtocolMessage {
     private Collection<PlayerInfo> players;
 
     @Override
-    public void read(ByteBuffer buffer) {
+    public void read(final ByteBuffer buffer) {
         players = new HashSet<PlayerClientInfo>();
         final int numPlayers = buffer.getInt();
 
@@ -27,7 +27,7 @@ public class GetPlayerInfoResponseMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void write(ByteBuffer buffer) {
+    public void write(final ByteBuffer buffer) {
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.GET_PLAYER_INFO_RESPONSE_MESSAGE);
         buffer.putInt(players.size());
@@ -39,7 +39,8 @@ public class GetPlayerInfoResponseMessage extends GameProtocolMessage {
     }
 
     @Override
-    public void fireEvent(NetworkEventListener listener, SocketAddress address) {
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
         listener.receivedMessage(address, this);
     }
 }
