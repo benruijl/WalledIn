@@ -42,7 +42,7 @@ import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerActions;
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
@@ -444,7 +444,7 @@ public final class Client implements NetworkEventListener {
 
     @Override
     public void receivedTeamSelectMessage(final SocketAddress address,
-            final Teams team) {
+            final Team team) {
         // ignore
     }
 
@@ -471,7 +471,7 @@ public final class Client implements NetworkEventListener {
         }
     }
 
-    public void selectTeam(final Teams team) {
+    public void selectTeam(final Team team) {
         networkDataWriter.prepareTeamSelectMessage(team);
         try {
             networkDataWriter.sendBuffer(channel);

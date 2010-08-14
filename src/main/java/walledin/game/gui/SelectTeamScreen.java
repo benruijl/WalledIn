@@ -37,7 +37,7 @@ import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.util.Utils;
@@ -124,14 +124,14 @@ public class SelectTeamScreen extends Screen implements
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
         if (e.getScreen() == teamBlue) {
-            clientLogicManager.getClient().selectTeam(Teams.BLUE);
+            clientLogicManager.getClient().selectTeam(Team.BLUE);
             getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
             hide();
         }
 
         if (e.getScreen() == teamRed) {
-            clientLogicManager.getClient().selectTeam(Teams.RED);
+            clientLogicManager.getClient().selectTeam(Team.RED);
             getManager().getScreen(ScreenType.GAME).initialize();
             getManager().getScreen(ScreenType.GAME).show();
             hide();

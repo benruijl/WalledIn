@@ -74,9 +74,9 @@ public final class GameLogicManager {
      */
     public static final class PlayerClientInfo {
         private final String entityName;
-        private Teams team;
+        private Team team;
 
-        public PlayerClientInfo(final String entityName, final Teams team) {
+        public PlayerClientInfo(final String entityName, final Team team) {
             this.entityName = entityName;
             this.team = team;
         }
@@ -89,11 +89,11 @@ public final class GameLogicManager {
             return entityName;
         }
 
-        public Teams getTeam() {
+        public Team getTeam() {
             return team;
         }
 
-        public void setTeam(final Teams team) {
+        public void setTeam(final Team team) {
             this.team = team;
         }
     }
@@ -104,7 +104,7 @@ public final class GameLogicManager {
         private final Entity player;
         private boolean dead;
         private boolean respawn;
-        private Teams team;
+        private Team team;
         private float walledInTime;
 
         public PlayerInfo(final Entity player) {
@@ -112,14 +112,14 @@ public final class GameLogicManager {
             this.player = player;
             dead = false;
             respawn = false;
-            team = Teams.UNSELECTED;
+            team = Team.UNSELECTED;
         }
 
-        public Teams getTeam() {
+        public Team getTeam() {
             return team;
         }
 
-        public void setTeam(final Teams team) {
+        public void setTeam(final Team team) {
             this.team = team;
         }
 
@@ -183,7 +183,7 @@ public final class GameLogicManager {
     /** A map from the player entity name to the player info. */
     private final Map<String, PlayerInfo> players;
     /** A map to from a team to the players in it. */
-    private final Map<Teams, Set<PlayerInfo>> teams;
+    private final Map<Team, Set<PlayerInfo>> teams;
     /** Respawn time in seconds. */
     private final float respawnTime;
     /** Current game mode. */
@@ -201,10 +201,10 @@ public final class GameLogicManager {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
-        teams = new HashMap<Teams, Set<PlayerInfo>>();
+        teams = new HashMap<Team, Set<PlayerInfo>>();
 
         /* Initialize the map */
-        for (final Teams team : Teams.values()) {
+        for (final Team team : Team.values()) {
             teams.put(team, new HashSet<GameLogicManager.PlayerInfo>());
         }
 
@@ -253,7 +253,7 @@ public final class GameLogicManager {
      * @param team
      *            new team
      */
-    public void setTeam(final String entityName, final Teams team) {
+    public void setTeam(final String entityName, final Team team) {
         final PlayerInfo info = players.get(entityName);
 
         /* Unregister from previous team */

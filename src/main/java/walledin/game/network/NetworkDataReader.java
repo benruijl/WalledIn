@@ -40,7 +40,7 @@ import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.GameMode;
 import walledin.game.PlayerActions;
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -118,7 +118,7 @@ public class NetworkDataReader {
     }
 
     private void processTeamSelectMessage(final SocketAddress address) {
-        final Teams team = Teams.values()[buffer.getInt()];
+        final Team team = Team.values()[buffer.getInt()];
         listener.receivedTeamSelectMessage(address, team);
     }
 
@@ -193,7 +193,7 @@ public class NetworkDataReader {
             data = readStringData(buffer);
             break;
         case PLAYER_TEAM:
-            data = Teams.values()[buffer.getInt()];
+            data = Team.values()[buffer.getInt()];
             break;
         case WALLEDIN_IN:
             data = buffer.getFloat();
@@ -389,7 +389,7 @@ public class NetworkDataReader {
 
         for (int i = 0; i < numPlayers; i++) {
             final String entityName = readStringData(buffer);
-            final Teams team = Teams.values()[buffer.getInt()];
+            final Team team = Team.values()[buffer.getInt()];
             players.add(new PlayerClientInfo(entityName, team));
         }
 

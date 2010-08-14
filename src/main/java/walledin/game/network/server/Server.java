@@ -37,7 +37,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActions;
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -439,7 +439,7 @@ public class Server implements NetworkEventListener {
 
     @Override
     public void receivedTeamSelectMessage(final SocketAddress address,
-            final Teams team) {
+            final Team team) {
         final PlayerConnection connection = players.get(address);
 
         /*

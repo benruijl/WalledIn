@@ -36,7 +36,7 @@ import walledin.game.EntityManager;
 import walledin.game.GameLogicManager.PlayerInfo;
 import walledin.game.GameMode;
 import walledin.game.PlayerActions;
-import walledin.game.Teams;
+import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -135,7 +135,7 @@ public class NetworkDataWriter {
         buffer.flip();
     }
 
-    public void prepareTeamSelectMessage(final Teams team) {
+    public void prepareTeamSelectMessage(final Team team) {
         buffer.clear();
         buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
         buffer.put(NetworkConstants.TEAM_SELECT_MESSAGE);
@@ -252,7 +252,7 @@ public class NetworkDataWriter {
             writeStringData((String) data, buffer);
             break;
         case PLAYER_TEAM:
-            writeIntegerData(((Teams) data).ordinal(), buffer);
+            writeIntegerData(((Team) data).ordinal(), buffer);
             break;
         case WALLEDIN_IN:
             writeFloatData((Float) data, buffer);

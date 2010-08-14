@@ -26,7 +26,7 @@ package walledin.game;
  * @author Ben Ruijl
  * 
  */
-public enum Teams {
+public enum Team {
     /** No team selected. */
     UNSELECTED,
     /** Red team. */
