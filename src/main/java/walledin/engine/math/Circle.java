@@ -122,11 +122,11 @@ public class Circle extends Geometry {
      * @return time at which collision happened. Is negative when none happened.
      */
     public float pointCollision(final Vector2f point, final Vector2f velocity) {
-        Vector2f h = pos.sub(point);
+        final Vector2f h = pos.sub(point);
 
-        float a = velocity.lengthSquared();
-        float b = 2.0f * velocity.dot(h);
-        float c = h.dot(h) - radius * radius;
+        final float a = velocity.lengthSquared();
+        final float b = 2.0f * velocity.dot(h);
+        final float c = h.dot(h) - radius * radius;
         float d = b * b - 4.0f * a * c;
 
         // point missed by infinite ray
@@ -140,7 +140,7 @@ public class Circle extends Geometry {
 
         // sort times
         if (t0 > t1) {
-            float temp = t0;
+            final float temp = t0;
             t0 = t1;
             t1 = temp;
         }
@@ -153,13 +153,13 @@ public class Circle extends Geometry {
         return t0;
     }
 
-    public Vector2f closestPointOnCircle(Vector2f point) {
+    public Vector2f closestPointOnCircle(final Vector2f point) {
         Vector2f delta = point.sub(pos);
-        float distSquared = delta.lengthSquared();
+        final float distSquared = delta.lengthSquared();
 
         /* Prevent division by zero. */
         if (distSquared > 0.0000001f) {
-            delta.scale(1 / (float) Math.sqrt(distSquared));
+            delta = delta.scale(1.0f / (float) Math.sqrt(distSquared));
         }
 
         return pos.add(delta.scale(radius));

@@ -74,7 +74,7 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
 } as EntityFunction,
 
 (Family.CURSOR): { entity ->
-    entity.addBehavior(new CursorRenderBehavior(entity, ZValues.CURSOR));
+    entity.addBehavior(new CursorRenderBehavior(entity, ZValue.CURSOR));
 } as EntityFunction,
 
 ]

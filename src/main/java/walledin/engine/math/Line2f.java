@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
-import com.sun.org.apache.bcel.internal.generic.SWAP;
 
 /**
  * This class describes a 2-dimensional line or line segment.
@@ -30,20 +29,20 @@ import com.sun.org.apache.bcel.internal.generic.SWAP;
  */
 public class Line2f {
     /** Normalized direction. */
-    private Vector2f dir;
+    private final Vector2f dir;
 
-    private boolean finite;
-    private Vector2f begin;
+    private final boolean finite;
+    private final Vector2f begin;
     private Vector2f end;
 
-    public Line2f(Vector2f begin, Vector2f end, boolean finite) {
+    public Line2f(final Vector2f begin, final Vector2f end, final boolean finite) {
         this.finite = finite;
         this.begin = begin;
         this.end = end;
         dir = end.sub(begin).normalize();
     }
 
-    public Line2f(Vector2f pointOnLine, Vector2f dir) {
+    public Line2f(final Vector2f pointOnLine, final Vector2f dir) {
         finite = false;
         begin = pointOnLine;
         this.dir = dir.normalize();
@@ -64,10 +63,10 @@ public class Line2f {
      *            Point
      * @return Closest point on line
      */
-    public Vector2f projectionPointToLine(Vector2f point) {
+    public Vector2f projectionPointToLine(final Vector2f point) {
         /* Project point to line. */
-        Vector2f dirVec = point.sub(begin);
-        float projLength = dirVec.dot(dir);
+        final Vector2f dirVec = point.sub(begin);
+        final float projLength = dirVec.dot(dir);
 
         if (finite && projLength <= 0) {
             return begin;
@@ -87,7 +86,7 @@ public class Line2f {
      *            Point
      * @return Distance
      */
-    public float distancePointToLine(Vector2f point) {
+    public float distancePointToLine(final Vector2f point) {
         return point.sub(projectionPointToLine(point)).length();
     }
 
@@ -102,17 +101,18 @@ public class Line2f {
      *            Velocity of circle
      * @return Time. If it is less than zero, no collision happened.
      */
-    public float circleLineCollision(Circle circle, Vector2f velocity) {
+    public float circleLineCollision(final Circle circle,
+            final Vector2f velocity) {
         /*
          * We know that (a x b)^2 = r^2, where a is the distance from the center
          * of the sphere to the beginning, b the normalized direction of the
          * line and r the radius of the circle.
          */
-        Vector2f l = end.sub(begin);
-        float a = velocity.cross(l) * velocity.cross(l);
-        float b = 2.0f * velocity.cross(l)
+        final Vector2f l = end.sub(begin);
+        final float a = velocity.cross(l) * velocity.cross(l);
+        final float b = 2.0f * velocity.cross(l)
                 * circle.getPos().sub(begin).cross(l);
-        float c = circle.getPos().sub(begin).cross(l)
+        final float c = circle.getPos().sub(begin).cross(l)
                 * circle.getPos().sub(begin).cross(l) - circle.getRadius()
                 * circle.getRadius() * l.lengthSquared();
         float d = b * b - 4.0f * a * c;
@@ -127,7 +127,7 @@ public class Line2f {
         float t1 = (-b + d) / (2.0f * a);
 
         if (t0 > t1) {
-            float temp = t0;
+            final float temp = t0;
             t0 = t1;
             t1 = temp;
         }
@@ -147,10 +147,10 @@ public class Line2f {
         if (tEdge < 0.0f) {
             tEdge = 0.0f;
         }
-        Vector2f edge = circle.getPos().add(velocity.scale(tEdge));
+        final Vector2f edge = circle.getPos().add(velocity.scale(tEdge));
 
         /* Project edge to line. */
-        float e = edge.sub(begin).dot(dir);
+        final float e = edge.sub(begin).dot(dir);
 
         if (e < 0.0f) {
             return circle.pointCollision(begin, velocity);

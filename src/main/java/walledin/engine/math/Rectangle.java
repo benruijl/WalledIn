@@ -150,14 +150,14 @@ public class Rectangle extends Geometry {
         return getRight() > point.getX() && getLeft() < point.getX()
                 && getBottom() > point.getY() && getTop() < point.getY();
     }
-    
+
     public Polygon2f asPolygon() {
-        List<Line2f> edges = new ArrayList<Line2f>();
+        final List<Line2f> edges = new ArrayList<Line2f>();
         edges.add(new Line2f(getLeftTop(), getLeftBottom(), true));
         edges.add(new Line2f(getLeftBottom(), getRightBottom(), true));
         edges.add(new Line2f(getRightBottom(), getRightTop(), true));
         edges.add(new Line2f(getRightTop(), getLeftTop(), true));
-        
+
         return new Polygon2f(edges, new Vector2f());
     }
 }

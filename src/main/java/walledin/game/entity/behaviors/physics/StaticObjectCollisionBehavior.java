@@ -138,24 +138,24 @@ public class StaticObjectCollisionBehavior extends Behavior {
          * so, allow the movement. This will prevent objects from getting stuck.
          */
         if (boundsA.intersects(boundsB.translate(oldPosB))) {
-            Circle circA = boundsA.asCircumscribedCircle();
-            Circle newCircB = boundsB.asCircumscribedCircle()
-                    .translate(endPosB);
-            Circle oldCircB = boundsB.asCircumscribedCircle()
-                    .translate(oldPosB);
+            final Circle circA = boundsA.asCircumscribedCircle();
+            final Circle newCircB = boundsB.asCircumscribedCircle().translate(
+                    endPosB);
+            final Circle oldCircB = boundsB.asCircumscribedCircle().translate(
+                    oldPosB);
 
             /*
              * Only allow the movement if it doesn't move over the center of the
              * object, else you will get tunneling.
              */
-            if (newCircB.getPos().sub(oldCircB.getPos()).lengthSquared() <
-                    circA.getPos().sub(oldCircB.getPos()).lengthSquared()) {
+            if (newCircB.getPos().sub(oldCircB.getPos()).lengthSquared() < circA
+                    .getPos().sub(oldCircB.getPos()).lengthSquared()) {
 
-                float newColDepth = boundsA.asCircumscribedCircle()
+                final float newColDepth = boundsA.asCircumscribedCircle()
                         .intersectionDepth(
                                 boundsB.asCircumscribedCircle().translate(
                                         endPosB));
-                float oldColDepth = boundsA.asCircumscribedCircle()
+                final float oldColDepth = boundsA.asCircumscribedCircle()
                         .intersectionDepth(
                                 boundsB.asCircumscribedCircle().translate(
                                         oldPosB));
