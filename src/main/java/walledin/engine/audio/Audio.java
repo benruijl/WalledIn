@@ -36,8 +36,10 @@ import javax.sound.sampled.AudioSystem;
 
 import net.java.games.joal.AL;
 import net.java.games.joal.ALC;
+import net.java.games.joal.ALCConstants;
 import net.java.games.joal.ALCcontext;
 import net.java.games.joal.ALCdevice;
+import net.java.games.joal.ALConstants;
 import net.java.games.joal.ALException;
 import net.java.games.joal.ALFactory;
 import net.java.games.sound3d.AudioSystem3D;
@@ -45,6 +47,7 @@ import net.java.games.sound3d.AudioSystem3D;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
+import walledin.util.SettingsManager;
 
 /**
  * A singleton audio manager.
@@ -75,9 +78,18 @@ public final class Audio {
     private Audio() {
         samples = new HashMap<String, Integer>();
         sources = new LinkedList<Integer>();
+        
+        if (!SettingsManager.getInstance().getBoolean("game.audio")) {
+            enabled = false;
+            return;
+        }
 
+        enabled = false;
         initializeSystem();
-        initializeListener();
+
+        if (enabled) {
+            initializeListener();
+        }
     }
 
     @Override
@@ -120,42 +132,57 @@ public final class Audio {
         ALCcontext context;
         String deviceID;
 
-        // Get handle to default device.
-        device = alc.alcOpenDevice(null);
-        if (device == null) {
-            LOG.error("Error opening default OpenAL device", new ALException());
+        try {
+            // Get handle to default device.
+            device = alc.alcOpenDevice(null);
+            if (device == null) {
+                LOG.error("Error opening default OpenAL device",
+                        new ALException());
+                return;
+            }
+
+            deviceID = alc.alcGetString(device,
+                    ALCConstants.ALC_DEVICE_SPECIFIER);
+            if (deviceID == null) {
+                LOG.error("Error getting specifier for default OpenAL device",
+                        new ALException());
+                return;
+            }
+
+            LOG.info("Using sound device " + deviceID);
+
+            // Create audio context.
+            context = alc.alcCreateContext(device, null);
+            if (context == null) {
+                LOG.error("Can't create OpenAL context", new ALException());
+                return;
+            }
+            alc.alcMakeContextCurrent(context);
+
+            if (alc.alcGetError(device) != ALCConstants.ALC_NO_ERROR) {
+                LOG.error("Unable to make context current", new ALException());
+                return;
+            }
+
+        } catch (final Exception e) {
+            LOG.error("Exception during initialization "
+                    + "of audio system. Disabling audio.", e);
+            return;
         }
 
-        deviceID = alc.alcGetString(device, ALC.ALC_DEVICE_SPECIFIER);
-        if (deviceID == null) {
-            LOG.error("Error getting specifier for default OpenAL device",
-                    new ALException());
-        }
-
-        LOG.info("Using sound device " + deviceID);
-
-        // Create audio context.
-        context = alc.alcCreateContext(device, null);
-        if (context == null) {
-            LOG.error("Can't create OpenAL context", new ALException());
-        }
-        alc.alcMakeContextCurrent(context);
-
-        if (alc.alcGetError(device) != ALC.ALC_NO_ERROR) {
-            LOG.error("Unable to make context current", new ALException());
-        }
+        enabled = true;
     }
 
     /**
      * Initializes the listener.
      */
     public void initializeListener() {
-        float[] listenerPos = { 0.0f, 0.0f, 0.0f };
-        float[] listenerVel = { 0.0f, 0.0f, 0.0f };
-        float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
-        al.alListenerfv(AL.AL_POSITION, listenerPos, 0);
-        al.alListenerfv(AL.AL_VELOCITY, listenerVel, 0);
-        al.alListenerfv(AL.AL_ORIENTATION, listenerOri, 0);
+        final float[] listenerPos = { 0.0f, 0.0f, 0.0f };
+        final float[] listenerVel = { 0.0f, 0.0f, 0.0f };
+        final float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
+        al.alListenerfv(ALConstants.AL_POSITION, listenerPos, 0);
+        al.alListenerfv(ALConstants.AL_VELOCITY, listenerVel, 0);
+        al.alListenerfv(ALConstants.AL_ORIENTATION, listenerOri, 0);
     }
 
     /**
@@ -165,7 +192,8 @@ public final class Audio {
      *            Listener position.
      */
     public void setListenerPosition(final Vector2f position) {
-        al.alListener3f(AL.AL_POSITION, position.getX(), position.getX(), 0);
+        al.alListener3f(ALConstants.AL_POSITION, position.getX(),
+                position.getX(), 0);
     }
 
     /**
@@ -182,31 +210,29 @@ public final class Audio {
             stream = AudioSystem.getAudioInputStream(url);
 
             /* Convert audio format. */
-            AudioFormat audioFormat = new AudioFormat(stream.getFormat()
+            final AudioFormat audioFormat = new AudioFormat(stream.getFormat()
                     .getSampleRate(), 16, stream.getFormat().getChannels(),
                     true, false);
 
             stream = AudioSystem.getAudioInputStream(audioFormat, stream);
 
             /* Read the stream. */
-            byte[] data = new byte[(int) stream.getFrameLength()
+            final byte[] data = new byte[(int) stream.getFrameLength()
                     * audioFormat.getFrameSize()];
             stream.read(data);
 
-            IntBuffer buffer = IntBuffer.allocate(1);
+            final IntBuffer buffer = IntBuffer.allocate(1);
             al.alGenBuffers(1, buffer);
-            al.alBufferData(
-                    buffer.get(0),
-                    stream.getFormat().getChannels() > 1 ? AL.AL_FORMAT_STEREO16
-                            : AL.AL_FORMAT_MONO16, ByteBuffer.wrap(data),
+            final int format = stream.getFormat().getChannels() > 1 ? ALConstants.AL_FORMAT_STEREO16
+                    : ALConstants.AL_FORMAT_MONO16;
+            al.alBufferData(buffer.get(0), format, ByteBuffer.wrap(data),
                     data.length, (int) audioFormat.getSampleRate());
 
             samples.put(name, buffer.get(0));
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            LOG.info("Could not load file: " + url.getFile(), e);
         }
-
     }
 
     /**
@@ -219,21 +245,20 @@ public final class Audio {
      */
     public void loadOggSample(final String name, final URL url) {
         try {
-            OggDecoder decoder = new OggDecoder();
-            OggData ogg = decoder.getData(url.openStream());
+            final OggDecoder decoder = new OggDecoder();
+            final OggData ogg = decoder.getData(url.openStream());
 
-            IntBuffer buffer = IntBuffer.allocate(1);
+            final IntBuffer buffer = IntBuffer.allocate(1);
             al.alGenBuffers(1, buffer);
             al.alBufferData(buffer.get(0),
-                    ogg.getChannels() > 1 ? AL.AL_FORMAT_STEREO16
-                            : AL.AL_FORMAT_MONO16, ByteBuffer.wrap(ogg
+                    ogg.getChannels() > 1 ? ALConstants.AL_FORMAT_STEREO16
+                            : ALConstants.AL_FORMAT_MONO16, ByteBuffer.wrap(ogg
                             .getData()), ogg.getData().length, ogg.getRate());
 
             samples.put(name, buffer.get(0));
 
-        } catch (IOException e) {
-            LOG.info("Could not load file: " + url.getFile());
-            e.printStackTrace();
+        } catch (final IOException e) {
+            LOG.info("Could not load file: " + url.getFile(), e);
         }
     }
 
@@ -255,40 +280,53 @@ public final class Audio {
                 return;
             }
 
-            IntBuffer sourceBuffer = IntBuffer.allocate(1);
+            final IntBuffer sourceBuffer = IntBuffer.allocate(1);
             al.alGenSources(1, sourceBuffer);
-            int source = sourceBuffer.get(0);
+            final int source = sourceBuffer.get(0);
             sources.add(source);
 
-            al.alSourcei(source, AL.AL_BUFFER, samples.get(name));
-            al.alSourcef(source, AL.AL_PITCH, 1.0f);
+            al.alSourcei(source, ALConstants.AL_BUFFER, samples.get(name));
+            al.alSourcef(source, ALConstants.AL_PITCH, 1.0f);
             /* Full volume. */
-            al.alSourcef(source, AL.AL_GAIN, 1.0f);
-            al.alSource3f(source, AL.AL_POSITION, sourcePosition.getX(),
-                    sourcePosition.getY(), 0);
-            al.alSource3f(source, AL.AL_VELOCITY, 0, 0, 0);
-            al.alSourcei(source, AL.AL_LOOPING, loop ? AL.AL_TRUE : AL.AL_FALSE);
+            al.alSourcef(source, ALConstants.AL_GAIN, 1.0f);
+            al.alSource3f(source, ALConstants.AL_POSITION,
+                    sourcePosition.getX(), sourcePosition.getY(), 0);
+            al.alSource3f(source, ALConstants.AL_VELOCITY, 0, 0, 0);
+            al.alSourcei(source, ALConstants.AL_LOOPING,
+                    loop ? ALConstants.AL_TRUE : ALConstants.AL_FALSE);
 
             /* Play the sound */
             al.alSourcePlay(source);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (final Exception e) {
+            LOG.info("Could not play sample: " + name, e);
+        }
+    }
+
+    /**
+     * If enabled, updates the audio component.
+     */
+    public void update() {
+        if (enabled) {
+            removeUnusedSources();
         }
     }
 
     /**
      * Checks the sources list for inactive sources and removes them.
      */
-    public void removeUnusedSources() {
+    private void removeUnusedSources() {
         if (al != null) {
-            int[] state = new int[1];
+            final int[] state = new int[1];
 
-            ListIterator<Integer> it = sources.listIterator();
+            final ListIterator<Integer> it = sources.listIterator();
             while (it.hasNext()) {
-                al.alGetSourcei(it.next(), AL.AL_SOURCE_STATE, state, 0);
+                final int source = it.next();
+                al.alGetSourcei(source, ALConstants.AL_SOURCE_STATE, state, 0);
 
-                if (state[0] == AL.AL_STOPPED) {
+                if (state[0] == ALConstants.AL_STOPPED) {
+                    final int[] so = new int[] { source };
+                    al.alDeleteSources(1, so, 0);
                     it.remove();
                 }
             }
@@ -299,13 +337,13 @@ public final class Audio {
      * Removes the buffers, the sources and the OpenAL context.
      */
     public void cleanUp() {
-        for (Integer source : sources) {
-            int[] so = new int[] { source };
-            al.alDeleteBuffers(1, so, 0);
+        for (final Integer source : sources) {
+            final int[] so = new int[] { source };
+            al.alDeleteSources(1, so, 0);
         }
 
-        for (Integer buffer : samples.values()) {
-            int[] buf = new int[] { buffer };
+        for (final Integer buffer : samples.values()) {
+            final int[] buf = new int[] { buffer };
             al.alDeleteBuffers(1, buf, 0);
         }
 

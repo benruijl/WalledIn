@@ -39,8 +39,8 @@ import walledin.game.EntityManager;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.GameMode;
-import walledin.game.PlayerActions;
-import walledin.game.Teams;
+import walledin.game.PlayerAction;
+import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -87,9 +87,9 @@ public class NetworkDataReader {
     private void processInputMessage(final SocketAddress address) {
         final int newVersion = buffer.getInt();
         final short numActions = buffer.getShort();
-        final Set<PlayerActions> actions = new HashSet<PlayerActions>();
+        final Set<PlayerAction> actions = new HashSet<PlayerAction>();
         for (int i = 0; i < numActions; i++) {
-            actions.add(PlayerActions.values()[buffer.getShort()]);
+            actions.add(PlayerAction.values()[buffer.getShort()]);
         }
         final Vector2f mousePos = new Vector2f(buffer.getFloat(),
                 buffer.getFloat());
@@ -118,7 +118,7 @@ public class NetworkDataReader {
     }
 
     private void processTeamSelectMessage(final SocketAddress address) {
-        final Teams team = Teams.values()[buffer.getInt()];
+        final Team team = Team.values()[buffer.getInt()];
         listener.receivedTeamSelectMessage(address, team);
     }
 
@@ -193,7 +193,7 @@ public class NetworkDataReader {
             data = readStringData(buffer);
             break;
         case PLAYER_TEAM:
-            data = Teams.values()[buffer.getInt()];
+            data = Team.values()[buffer.getInt()];
             break;
         case WALLEDIN_IN:
             data = buffer.getFloat();
@@ -389,7 +389,7 @@ public class NetworkDataReader {
 
         for (int i = 0; i < numPlayers; i++) {
             final String entityName = readStringData(buffer);
-            final Teams team = Teams.values()[buffer.getInt()];
+            final Team team = Team.values()[buffer.getInt()];
             players.add(new PlayerClientInfo(entityName, team));
         }
 

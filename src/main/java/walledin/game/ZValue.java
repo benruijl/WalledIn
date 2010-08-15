@@ -18,26 +18,14 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui;
+package walledin.game;
 
-import walledin.engine.math.Vector2f;
+public enum ZValue {
+    BACKGROUND(-20), MAP(-10), ITEM(0), PLAYER(1), WEAPON(2), CURSOR(3);
 
-public class ScreenMouseEvent {
-    /** The screen the mouse is on. */
-    private final Screen screen;
-    private final Vector2f pos;
+    public final int z;
 
-    public ScreenMouseEvent(final Screen screen, final Vector2f pos) {
-        super();
-        this.screen = screen;
-        this.pos = pos;
-    }
-
-    public Screen getScreen() {
-        return screen;
-    }
-
-    public Vector2f getPos() {
-        return pos;
+    private ZValue(final int z) {
+        this.z = z;
     }
 }

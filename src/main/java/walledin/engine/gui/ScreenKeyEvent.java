@@ -18,15 +18,20 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.gui;
+package walledin.engine.gui;
 
-public interface ScreenKeyEventListener {
-    /**
-     * Called when a key is pressed.
-     * 
-     * @param e
-     *            Key event information
-     */
-    public void onKeyDown(ScreenKeyEvent e);
+import java.util.Set;
 
+public class ScreenKeyEvent {
+    /** The screen the mouse is on. */
+    private final Set<Integer> keys;
+
+    public ScreenKeyEvent(final Set<Integer> keys) {
+        super();
+        this.keys = keys;
+    }
+
+    public Set<Integer> getKeys() {
+        return keys;
+    }
 }

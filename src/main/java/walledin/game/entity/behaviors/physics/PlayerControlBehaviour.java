@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
-import walledin.game.PlayerActions;
+import walledin.game.PlayerAction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
@@ -39,11 +39,11 @@ public class PlayerControlBehaviour extends Behavior {
     private static final float MOVE_SPEED = 240.0f;
     private static final float JUMP_SPEED = 8000.0f;
     private boolean canJump;
-    private Set<PlayerActions> playerActions;
+    private Set<PlayerAction> playerActions;
 
     public PlayerControlBehaviour(final Entity owner) {
         super(owner);
-        playerActions = new HashSet<PlayerActions>();
+        playerActions = new HashSet<PlayerAction>();
         setAttribute(Attribute.PLAYER_ACTIONS, playerActions);
     }
 
@@ -60,7 +60,7 @@ public class PlayerControlBehaviour extends Behavior {
             final Attribute attribute = (Attribute) data;
             switch (attribute) {
             case PLAYER_ACTIONS:
-                playerActions = (Set<PlayerActions>) getAttribute(attribute);
+                playerActions = (Set<PlayerAction>) getAttribute(attribute);
                 break;
             default:
                 break;
@@ -91,31 +91,31 @@ public class PlayerControlBehaviour extends Behavior {
         float x = 0;
         float y = 0;
 
-        if (playerActions.contains(PlayerActions.WALK_RIGHT)) {
+        if (playerActions.contains(PlayerAction.WALK_RIGHT)) {
             x += MOVE_SPEED;
             setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
 
         }
 
-        if (playerActions.contains(PlayerActions.WALK_LEFT)) {
+        if (playerActions.contains(PlayerAction.WALK_LEFT)) {
             x -= MOVE_SPEED;
             setAttribute(Attribute.ORIENTATION_ANGLE, (float) Math.PI);
         }
 
-        if (canJump && playerActions.contains(PlayerActions.JUMP)) {
+        if (canJump && playerActions.contains(PlayerAction.JUMP)) {
             y -= JUMP_SPEED;
         }
 
-        if (playerActions.contains(PlayerActions.SELECT_WEAPON_1)) {
+        if (playerActions.contains(PlayerAction.SELECT_WEAPON_1)) {
             getOwner().sendMessage(MessageType.SELECT_WEAPON,
                     Integer.valueOf(1));
-        } else if (playerActions.contains(PlayerActions.SELECT_WEAPON_2)) {
+        } else if (playerActions.contains(PlayerAction.SELECT_WEAPON_2)) {
             getOwner().sendMessage(MessageType.SELECT_WEAPON,
                     Integer.valueOf(2));
         }
 
         // change orientation if shooting in other directory
-        if (playerActions.contains(PlayerActions.SHOOT_PRIMARY)) {
+        if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)) {
             setAttribute(
                     Attribute.ORIENTATION_ANGLE,
                     ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))

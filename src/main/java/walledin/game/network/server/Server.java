@@ -36,8 +36,8 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.PlayerActions;
-import walledin.game.Teams;
+import walledin.game.PlayerAction;
+import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -389,7 +389,7 @@ public class Server implements NetworkEventListener {
 
     @Override
     public final void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<PlayerActions> playerActions,
+            final int newVersion, final Set<PlayerAction> playerActions,
             final Vector2f cursorPos) {
         final PlayerConnection connection = players.get(address);
         if (connection != null && newVersion > connection.getReceivedVersion()) {
@@ -439,7 +439,7 @@ public class Server implements NetworkEventListener {
 
     @Override
     public void receivedTeamSelectMessage(final SocketAddress address,
-            final Teams team) {
+            final Team team) {
         final PlayerConnection connection = players.get(address);
 
         /*
@@ -470,7 +470,7 @@ public class Server implements NetworkEventListener {
     }
 
     @Override
-    public void entityCreated(Entity entity) {
-        //ignore        
+    public void entityCreated(final Entity entity) {
+        // ignore
     }
 }

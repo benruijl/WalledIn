@@ -18,39 +18,19 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.engine.audio;
-
+package walledin.game;
 
 /**
- * Data package read from Ogg file.
+ * Game teams. Used in team deathmatch, etc.
  * 
  * @author Ben Ruijl
  * 
  */
-public class OggData {
-    /** PCM data. */
-    private final byte[] data;
-    /** Rate of sound. */
-    private final int rate;
-    /** Channels. */
-    private final int channels;
-
-    public OggData(final byte[] data, final int rate, final int channels) {
-        super();
-        this.data = data;
-        this.rate = rate;
-        this.channels = channels;
-    }
-
-    public byte[] getData() {
-        return data;
-    }
-
-    public int getRate() {
-        return rate;
-    }
-
-    public int getChannels() {
-        return channels;
-    }
+public enum Team {
+    /** No team selected. */
+    UNSELECTED,
+    /** Red team. */
+    RED,
+    /** Blue team. */
+    BLUE;
 }

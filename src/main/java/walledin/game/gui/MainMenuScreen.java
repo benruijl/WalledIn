@@ -23,18 +23,26 @@ package walledin.game.gui;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
+import walledin.engine.gui.Screen;
+import walledin.engine.gui.ScreenManager;
+import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.gui.ScreenMouseEvent;
+import walledin.engine.gui.ScreenMouseEventListener;
+import walledin.engine.gui.components.Button;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.gui.ScreenManager.ScreenType;
-import walledin.game.gui.components.Button;
+import walledin.game.ClientLogicManager;
 import walledin.util.Utils;
 
 public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
-    Screen startButton;
-    Screen quitButton;
+    private Screen startButton;
+    private Screen quitButton;
+    private final ClientLogicManager clientLogicManager;
 
-    public MainMenuScreen(final ScreenManager manager) {
+    public MainMenuScreen(final ScreenManager manager,
+            final ClientLogicManager clientLogicManager) {
         super(manager, null, 0);
+        this.clientLogicManager = clientLogicManager;
     }
 
     @Override
@@ -76,7 +84,7 @@ public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
         }
 
         if (e.getScreen() == quitButton) {
-            getManager().dispose(); // quit application
+            clientLogicManager.dispose(); // quit application
         }
 
     }

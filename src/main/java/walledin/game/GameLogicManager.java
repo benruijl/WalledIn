@@ -74,9 +74,9 @@ public final class GameLogicManager {
      */
     public static final class PlayerClientInfo {
         private final String entityName;
-        private Teams team;
+        private Team team;
 
-        public PlayerClientInfo(final String entityName, final Teams team) {
+        public PlayerClientInfo(final String entityName, final Team team) {
             this.entityName = entityName;
             this.team = team;
         }
@@ -89,11 +89,11 @@ public final class GameLogicManager {
             return entityName;
         }
 
-        public Teams getTeam() {
+        public Team getTeam() {
             return team;
         }
 
-        public void setTeam(final Teams team) {
+        public void setTeam(final Team team) {
             this.team = team;
         }
     }
@@ -104,7 +104,7 @@ public final class GameLogicManager {
         private final Entity player;
         private boolean dead;
         private boolean respawn;
-        private Teams team;
+        private Team team;
         private float walledInTime;
 
         public PlayerInfo(final Entity player) {
@@ -112,14 +112,14 @@ public final class GameLogicManager {
             this.player = player;
             dead = false;
             respawn = false;
-            team = Teams.UNSELECTED;
+            team = Team.UNSELECTED;
         }
 
-        public Teams getTeam() {
+        public Team getTeam() {
             return team;
         }
 
-        public void setTeam(final Teams team) {
+        public void setTeam(final Team team) {
             this.team = team;
         }
 
@@ -183,7 +183,7 @@ public final class GameLogicManager {
     /** A map from the player entity name to the player info. */
     private final Map<String, PlayerInfo> players;
     /** A map to from a team to the players in it. */
-    private final Map<Teams, Set<PlayerInfo>> teams;
+    private final Map<Team, Set<PlayerInfo>> teams;
     /** Respawn time in seconds. */
     private final float respawnTime;
     /** Current game mode. */
@@ -201,10 +201,10 @@ public final class GameLogicManager {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
-        teams = new HashMap<Teams, Set<PlayerInfo>>();
+        teams = new HashMap<Team, Set<PlayerInfo>>();
 
         /* Initialize the map */
-        for (final Teams team : Teams.values()) {
+        for (final Team team : Team.values()) {
             teams.put(team, new HashSet<GameLogicManager.PlayerInfo>());
         }
 
@@ -253,7 +253,7 @@ public final class GameLogicManager {
      * @param team
      *            new team
      */
-    public void setTeam(final String entityName, final Teams team) {
+    public void setTeam(final String entityName, final Team team) {
         final PlayerInfo info = players.get(entityName);
 
         /* Unregister from previous team */
@@ -378,20 +378,20 @@ public final class GameLogicManager {
      */
     private void buildStaticField() {
         /* Do a + 1 do avoid rounding errors */
-        float width = (Integer) map.getAttribute(Attribute.WIDTH) + 1;
-        float height = (Integer) map.getAttribute(Attribute.HEIGHT) + 1;
-        float playerSize = 44; // FIXME: hardcoded
-        float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
+        final float width = (Integer) map.getAttribute(Attribute.WIDTH) + 1;
+        final float height = (Integer) map.getAttribute(Attribute.HEIGHT) + 1;
+        final float playerSize = 44; // FIXME: hardcoded
+        final float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
 
         staticField = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
                 * tileWidth / playerSize)];
-        List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
+        final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
         /*
          * Mark the filled tiles. TODO: if the tile width is greater than the
          * player size, multiple entries in the field should be set.
          */
-        for (Tile tile : tiles) {
+        for (final Tile tile : tiles) {
             if (tile.getType().isSolid()) {
                 staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
                         .getY() * tileWidth / playerSize)] = true;
@@ -409,16 +409,18 @@ public final class GameLogicManager {
      * @return True if walled in, else false.
      */
     private boolean detectWalledIn(final Entity player) {
-        float playerSize = 44; // FIXME: hardcoded
-        Vector2f playerPos = (Vector2f) player.getAttribute(Attribute.POSITION);
+        final float playerSize = 44; // FIXME: hardcoded
+        final Vector2f playerPos = (Vector2f) player
+                .getAttribute(Attribute.POSITION);
 
         /* Use the static field as a base for new field. */
-        boolean[][] field = Utils.clone2DArray(staticField);
+        final boolean[][] field = Utils.clone2DArray(staticField);
 
         /* Check the foam particles. */
-        for (Entity ent : entityManager.getEntities().values()) {
+        for (final Entity ent : entityManager.getEntities().values()) {
             if (ent.getFamily() == Family.FOAM_PARTICLE) {
-                Vector2f pos = (Vector2f) ent.getAttribute(Attribute.POSITION);
+                final Vector2f pos = (Vector2f) ent
+                        .getAttribute(Attribute.POSITION);
                 field[(int) (pos.getX() / playerSize)][(int) (pos.getY() / playerSize)] = true;
             }
         }
@@ -448,13 +450,13 @@ public final class GameLogicManager {
      */
     private void outputMobilityMap(final boolean[][] field) {
         try {
-            FileWriter fstream = new FileWriter("mobmap.txt");
-            BufferedWriter out = new BufferedWriter(fstream);
+            final FileWriter fstream = new FileWriter("mobmap.txt");
+            final BufferedWriter out = new BufferedWriter(fstream);
 
             // print map
             for (int j = 0; j < field[0].length; j++) {
-                for (int i = 0; i < field.length; i++) {
-                    if (field[i][j]) {
+                for (final boolean[] element : field) {
+                    if (element[j]) {
                         out.write("#");
                     } else {
                         out.write(" ");
@@ -465,7 +467,7 @@ public final class GameLogicManager {
 
             out.close();
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.error("Error while writing mobility map: ", e);
         }
     }

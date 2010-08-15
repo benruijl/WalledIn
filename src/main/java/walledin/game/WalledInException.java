@@ -21,16 +21,24 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game;
 
 /**
- * Game teams. Used in team deathmatch, etc.
+ * Custom exception for WalledIn.
  * 
  * @author Ben Ruijl
  * 
  */
-public enum Teams {
-    /** No team selected. */
-    UNSELECTED,
-    /** Red team. */
-    RED,
-    /** Blue team. */
-    BLUE;
+public class WalledInException extends Exception {
+    /**
+     * Serial ID.
+     */
+    private static final long serialVersionUID = -5392195441733476397L;
+
+    /**
+     * Creates a new WalledIn exception.
+     * 
+     * @param message
+     *            Message to print
+     */
+    public WalledInException(final String message) {
+        super(message);
+    }
 }

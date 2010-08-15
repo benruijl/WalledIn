@@ -18,23 +18,38 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package walledin.engine;
 
 /**
+ * This interface contains the listener functions for a renderer.
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public interface RenderListener {
 
-    void init();
+    /**
+     * Called when the renderer is initializing.
+     */
+    void initialize();
 
+    /**
+     * Called when the renderer should update.
+     * 
+     * @param delta
+     *            Delta time
+     */
     void update(double delta);
 
+    /**
+     * Called when the renderer should draw.
+     * 
+     * @param renderer
+     *            Renderer
+     */
     void draw(Renderer renderer);
 
+    /**
+     * Called when the renderer is disposed of.
+     */
     void dispose();
 }
