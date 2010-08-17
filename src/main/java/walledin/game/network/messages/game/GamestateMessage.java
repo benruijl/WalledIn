@@ -13,10 +13,25 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.server.ChangeSet;
 
-public class GamestateMessage extends MasterServerProtocolMessage {
+public class GamestateMessage extends GameMessage {
     private ChangeSet changeSet;
     private int knownClientVersion;
     private int currentVersion;
+
+    public GamestateMessage() {
+    }
+
+    public ChangeSet getChangeSet() {
+        return changeSet;
+    }
+
+    public int getKnownClientVersion() {
+        return knownClientVersion;
+    }
+
+    public int getCurrentVersion() {
+        return currentVersion;
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {

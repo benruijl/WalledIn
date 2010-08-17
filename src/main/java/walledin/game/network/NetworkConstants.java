@@ -45,7 +45,7 @@ public class NetworkConstants {
     public static final byte GAMESTATE_MESSAGE_END = 3;
 
     /** Network error code lists. */
-    public enum ErrorCodes {
+    public enum ErrorCode {
         ERROR_SUCCESSFULL,
         ERROR_LOGIN_FAILED,
         ERROR_SERVER_IS_FULL,

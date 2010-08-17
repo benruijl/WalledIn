@@ -43,36 +43,30 @@ public interface NetworkEventListener {
 
     void entityCreated(Entity entity);
 
-    void receivedMessage(SocketAddress address,
-            ChallengeResponseMessage challengeResponseMessage);
+    void receivedMessage(SocketAddress address, ChallengeResponseMessage message);
+
+    void receivedMessage(SocketAddress address, GetPlayerInfoMessage message);
+
+    void receivedMessage(SocketAddress address, GamestateMessage message);
+
+    void receivedMessage(SocketAddress address, TeamSelectMessage message);
+
+    void receivedMessage(SocketAddress address, ServersMessage message);
 
     void receivedMessage(SocketAddress address,
-            GetPlayerInfoMessage getPlayerInfoMessage);
+            ServerNotificationResponseMessage message);
 
     void receivedMessage(SocketAddress address,
-            GamestateMessage gamestateMessage);
+            ServerNotificationMessage message);
+
+    void receivedMessage(SocketAddress address, LogoutMessage message);
+
+    void receivedMessage(SocketAddress address, LoginResponseMessage message);
+
+    void receivedMessage(SocketAddress address, InputMessage message);
+
+    void receivedMessage(SocketAddress address, GetServersMessage message);
 
     void receivedMessage(SocketAddress address,
-            TeamSelectMessage teamSelectMessage);
-
-    void receivedMessage(SocketAddress address, ServersMessage serversMessage);
-
-    void receivedMessage(SocketAddress address,
-            ServerNotificationResponseMessage serverNotificationResponseMessage);
-
-    void receivedMessage(SocketAddress address,
-            ServerNotificationMessage serverNotificationMessage);
-
-    void receivedMessage(SocketAddress address, LogoutMessage logoutMessage);
-
-    void receivedMessage(SocketAddress address,
-            LoginResponseMessage loginResponseMessage);
-
-    void receivedMessage(SocketAddress address, InputMessage inputMessage);
-
-    void receivedMessage(SocketAddress address,
-            GetServersMessage getServersMessage);
-
-    void receivedMessage(SocketAddress address,
-            GetPlayerInfoResponseMessage getPlayerInfoResponseMessage);
+            GetPlayerInfoResponseMessage message);
 }

@@ -40,17 +40,29 @@ import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.game.GameLogicManager;
 import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.PlayerAction;
 import walledin.game.PlayerActionManager;
 import walledin.game.Team;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
-import walledin.game.network.NetworkConstants.ErrorCodes;
+import walledin.game.network.NetworkConstants.ErrorCode;
+import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
-import walledin.game.network.NetworkEventListener;
 import walledin.game.network.ServerData;
+import walledin.game.network.messages.game.GamestateMessage;
+import walledin.game.network.messages.game.GetPlayerInfoMessage;
+import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
+import walledin.game.network.messages.game.InputMessage;
+import walledin.game.network.messages.game.LoginMessage;
+import walledin.game.network.messages.game.LoginResponseMessage;
+import walledin.game.network.messages.game.LogoutMessage;
+import walledin.game.network.messages.game.TeamSelectMessage;
+import walledin.game.network.messages.masterserver.ChallengeResponseMessage;
+import walledin.game.network.messages.masterserver.GetServersMessage;
+import walledin.game.network.messages.masterserver.ServerNotificationMessage;
+import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
+import walledin.game.network.messages.masterserver.ServersMessage;
 import walledin.util.SettingsManager;
 
 public final class Client implements NetworkEventListener {
@@ -121,8 +133,8 @@ public final class Client implements NetworkEventListener {
         }
 
         try {
-            networkWriter.prepareGetServersMessage();
-            networkWriter.sendBuffer(masterServerChannel);
+            networkWriter.sendMessage(masterServerChannel,
+                    new GetServersMessage());
             lanServerList.clear();
         } catch (final IOException e) {
             LOG.error("IOException", e);
@@ -157,94 +169,6 @@ public final class Client implements NetworkEventListener {
     }
 
     /**
-     * Called when the gamestate has been updated. We only send a new input when
-     * we receive the net game state.
-     */
-    @Override
-    public boolean receivedGamestateMessage(final SocketAddress address,
-            final int oldVersion, final int newVersion) {
-        lastLoginTry = -1;
-        boolean result = false;
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("version:" + newVersion + " receivedVersion:"
-                    + receivedVersion + " oldversion: " + oldVersion);
-        }
-        if (receivedVersion == oldVersion && newVersion > receivedVersion) {
-            receivedVersion = newVersion;
-            result = true;
-        }
-        try {
-            networkWriter.prepareInputMessage(receivedVersion,
-                    PlayerActionManager.getInstance().getPlayerActions(),
-                    renderer.screenToWorld(Input.getInstance().getMousePos()));
-            networkWriter.sendBuffer(channel);
-        } catch (final IOException e) {
-            LOG.error("IO exception during network event", e);
-            dispose();
-        }
-        return result;
-    }
-
-    @Override
-    public void receivedServersMessage(final SocketAddress address,
-            final Set<ServerData> servers) {
-        LOG.info("Received server list. " + servers.size()
-                + " servers available.");
-        internetServerList = servers;
-    }
-
-    @Override
-    public void receivedLoginMessage(final SocketAddress address,
-            final String name) {
-        // ignore
-    }
-
-    @Override
-    public void receivedLogoutMessage(final SocketAddress address) {
-        // ignore
-    }
-
-    @Override
-    public void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<PlayerAction> playerActions,
-            final Vector2f cursorPos) {
-        // ignore
-    }
-
-    @Override
-    public void receivedChallengeMessage(final SocketAddress address,
-            final long challengeData) {
-        // ignore
-    }
-
-    @Override
-    public void receivedLoginReponseMessage(final SocketAddress address,
-            final ErrorCodes errorCode, final String playerEntityName) {
-
-        if (errorCode == ErrorCodes.ERROR_SUCCESSFULL) {
-            clientLogicManager.setPlayerName(playerEntityName);
-            LOG.info("Player entity name received: " + playerEntityName);
-            return;
-        }
-
-        switch (errorCode) {
-        case ERROR_SERVER_IS_FULL:
-            clientLogicManager.displayErrorAndDisconnect("The server is full.");
-            break;
-        default:
-            clientLogicManager
-                    .displayErrorAndDisconnect("Could not login to the server.");
-            break;
-        }
-    }
-
-    @Override
-    public void receivedServerNotificationMessage(final SocketAddress address,
-            final ServerData server) {
-        lanServerList.add(server);
-    }
-
-    /**
      * Update the current game state.
      * 
      * @param delta
@@ -258,8 +182,8 @@ public final class Client implements NetworkEventListener {
                 if (lastLoginTry >= 0
                         && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
                     lastLoginTry = System.currentTimeMillis();
-                    networkWriter.prepareLoginMessage(username);
-                    networkWriter.sendBuffer(channel);
+                    networkWriter.sendMessage(channel, new LoginMessage(
+                            username));
                 }
                 // Read messages.
                 SocketAddress address = networkReader.readMessage(channel);
@@ -288,8 +212,7 @@ public final class Client implements NetworkEventListener {
                 while (address != null) {
                     networkReader.processMessage(address,
                             clientLogicManager.getEntityManager());
-                    address = networkReader
-                            .readMessage(masterServerChannel);
+                    address = networkReader.readMessage(masterServerChannel);
                 }
             }
             if (boundServerNotifyChannel) {
@@ -298,8 +221,7 @@ public final class Client implements NetworkEventListener {
                 while (address != null) {
                     networkReader.processMessage(address,
                             clientLogicManager.getEntityManager());
-                    address = networkReader
-                            .readMessage(serverNotifyChannel);
+                    address = networkReader.readMessage(serverNotifyChannel);
                 }
             }
         } catch (final PortUnreachableException e) {
@@ -420,32 +342,12 @@ public final class Client implements NetworkEventListener {
     public void dispose() {
         if (connected) {
             try {
-                networkWriter.prepareLogoutMessage();
-                networkWriter.sendBuffer(channel);
+                networkWriter.sendMessage(channel, new LogoutMessage());
                 connected = false;
             } catch (final IOException e) {
                 LOG.fatal("IOException during logout", e);
             }
         }
-    }
-
-    @Override
-    public void receivedGetPlayerInfoResponseMessage(
-            final SocketAddress address, final Set<PlayerClientInfo> players) {
-        playerList.clear();
-        playerList.addAll(players);
-    }
-
-    @Override
-    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
-        // ignore
-
-    }
-
-    @Override
-    public void receivedTeamSelectMessage(final SocketAddress address,
-            final Team team) {
-        // ignore
     }
 
     /**
@@ -463,8 +365,7 @@ public final class Client implements NetworkEventListener {
     public void refreshPlayerList() {
         if (connected) {
             try {
-                networkWriter.prepareGetPlayerInfoMessage();
-                networkWriter.sendBuffer(channel);
+                networkWriter.sendMessage(channel, new GetPlayerInfoMessage());
             } catch (final IOException e) {
                 LOG.error("IOException", e);
             }
@@ -472,11 +373,133 @@ public final class Client implements NetworkEventListener {
     }
 
     public void selectTeam(final Team team) {
-        networkWriter.prepareTeamSelectMessage(team);
         try {
-            networkWriter.sendBuffer(channel);
+            networkWriter.sendMessage(channel, new TeamSelectMessage());
         } catch (final IOException e) {
             LOG.error("IOException", e);
         }
+    }
+
+    /**
+     * Called when the gamestate has been updated. We only send a new input when
+     * we receive the net game state.
+     */
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GamestateMessage message) {
+        lastLoginTry = -1;
+        boolean result = false;
+        // FIXME check if this is correct .. version could be swaped
+        final int newVersion = message.getCurrentVersion();
+        final int oldVersion = message.getKnownClientVersion();
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("version:" + newVersion + " receivedVersion:"
+                    + receivedVersion + " oldversion: " + oldVersion);
+        }
+        if (receivedVersion == oldVersion && newVersion > receivedVersion) {
+            receivedVersion = newVersion;
+            result = true;
+        }
+        try {
+            networkWriter.sendMessage(
+                    channel,
+                    new InputMessage(receivedVersion, PlayerActionManager
+                            .getInstance().getPlayerActions(), renderer
+                            .screenToWorld(Input.getInstance().getMousePos())));
+        } catch (final IOException e) {
+            LOG.error("IO exception during network event", e);
+            dispose();
+        }
+        return result;
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ServersMessage message) {
+        final Set<ServerData> servers = message.getServers();
+        LOG.info("Received server list. " + servers.size()
+                + " servers available.");
+        internetServerList = servers;
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final LoginResponseMessage message) {
+        if (message.getErrorCode() == ErrorCode.ERROR_SUCCESSFULL) {
+            clientLogicManager.setPlayerName(message.getEntityName());
+            LOG.info("Player entity name received: " + message.getEntityName());
+            return;
+        }
+
+        switch (message.getErrorCode()) {
+        case ERROR_SERVER_IS_FULL:
+            clientLogicManager.displayErrorAndDisconnect("The server is full.");
+            break;
+        default:
+            clientLogicManager
+                    .displayErrorAndDisconnect("Could not login to the server.");
+            break;
+        }
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ServerNotificationMessage message) {
+        lanServerList.add(message.getServer());
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GetPlayerInfoResponseMessage message) {
+        playerList.clear();
+        playerList.addAll(message.getPlayers());
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final LoginMessage loginMessage) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ChallengeResponseMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GetPlayerInfoMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final TeamSelectMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ServerNotificationResponseMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final LogoutMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final InputMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GetServersMessage message) {
+        // ignore
     }
 }

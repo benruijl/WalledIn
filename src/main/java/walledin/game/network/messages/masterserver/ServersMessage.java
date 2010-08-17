@@ -12,9 +12,16 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.ServerData;
 
-public class ServersMessage extends MasterServerProtocolMessage {
+public class ServersMessage extends MasterServerMessage {
     private static final Logger LOG = Logger.getLogger(ServersMessage.class);
     private Set<ServerData> servers;
+
+    public ServersMessage() {
+    }
+
+    public Set<ServerData> getServers() {
+        return servers;
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {

@@ -9,8 +9,15 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.ServerData;
 
-public class ServerNotificationMessage extends MasterServerProtocolMessage {
+public class ServerNotificationMessage extends MasterServerMessage {
     private ServerData server;
+
+    public ServerNotificationMessage() {
+    }
+
+    public ServerData getServer() {
+        return server;
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {

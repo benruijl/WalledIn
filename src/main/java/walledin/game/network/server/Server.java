@@ -33,20 +33,28 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import walledin.engine.math.Vector2f;
 import walledin.game.GameLogicManager;
-import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.PlayerAction;
-import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 import walledin.game.network.NetworkConstants;
-import walledin.game.network.NetworkConstants.ErrorCodes;
+import walledin.game.network.NetworkConstants.ErrorCode;
+import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
-import walledin.game.network.NetworkEventListener;
-import walledin.game.network.ServerData;
+import walledin.game.network.messages.game.GamestateMessage;
+import walledin.game.network.messages.game.GetPlayerInfoMessage;
+import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
+import walledin.game.network.messages.game.InputMessage;
+import walledin.game.network.messages.game.LoginMessage;
+import walledin.game.network.messages.game.LoginResponseMessage;
+import walledin.game.network.messages.game.LogoutMessage;
+import walledin.game.network.messages.game.TeamSelectMessage;
+import walledin.game.network.messages.masterserver.ChallengeResponseMessage;
+import walledin.game.network.messages.masterserver.GetServersMessage;
+import walledin.game.network.messages.masterserver.ServerNotificationMessage;
+import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
+import walledin.game.network.messages.masterserver.ServersMessage;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
 
@@ -110,8 +118,7 @@ public class Server implements NetworkEventListener {
                 "network.challengeTimeOut");
         broadcastInterval = SettingsManager.getInstance().getInteger(
                 "network.lanBroadcastInterval");
-        serverName = SettingsManager.getInstance()
-                .getString("game.serverName");
+        serverName = SettingsManager.getInstance().getString("game.serverName");
         maxPlayers = SettingsManager.getInstance()
                 .getInteger("game.maxPlayers");
 
@@ -165,9 +172,10 @@ public class Server implements NetworkEventListener {
         lastChallenge = System.currentTimeMillis();
         lastBroadcast = System.currentTimeMillis();
 
-        networkWriter.prepareServerNotificationResponse(port, serverName,
-                players.size(), maxPlayers, gameLogicManager.getGameMode());
-        networkWriter.sendBuffer(masterServerChannel);
+        networkWriter.sendMessage(
+                masterServerChannel,
+                new ServerNotificationResponseMessage(port, serverName, players
+                        .size(), maxPlayers, gameLogicManager.getGameMode()));
 
         currentTime = System.nanoTime(); // initialize
         running = true;
@@ -210,17 +218,20 @@ public class Server implements NetworkEventListener {
             LOG.warn("Did not recieve challenge from master server yet! "
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
-            networkWriter.prepareServerNotificationResponse(port, serverName,
-                    players.size(), maxPlayers, gameLogicManager.getGameMode());
-            networkWriter.sendBuffer(masterServerChannel);
-
+            networkWriter.sendMessage(
+                    masterServerChannel,
+                    new ServerNotificationResponseMessage(port, serverName,
+                            players.size(), maxPlayers, gameLogicManager
+                                    .getGameMode()));
         }
 
         if (lastBroadcast < System.currentTimeMillis() - broadcastInterval) {
-            networkWriter.prepareServerNotificationResponse(port, serverName,
-                    players.size(), maxPlayers, gameLogicManager.getGameMode());
-            networkWriter.sendBuffer(serverNotifySocket,
-                    NetworkConstants.BROADCAST_ADDRESS);
+            networkWriter.sendMessage(
+                    serverNotifySocket,
+                    NetworkConstants.BROADCAST_ADDRESS,
+                    new ServerNotificationResponseMessage(port, serverName,
+                            players.size(), maxPlayers, gameLogicManager
+                                    .getGameMode()));
             lastBroadcast = System.currentTimeMillis();
         }
 
@@ -310,149 +321,6 @@ public class Server implements NetworkEventListener {
         gameLogicManager.removePlayer(connection.getPlayer().getName());
     }
 
-    @Override
-    public final boolean receivedGamestateMessage(final SocketAddress address,
-            final int oldVersion, final int newVersion) {
-        // ignore .. should not happen
-        return false;
-    }
-
-    /**
-     * Creates a connection to a new client.
-     * 
-     * @param name
-     *            Player name
-     * @param address
-     *            Player socket address
-     */
-    @Override
-    public final void receivedLoginMessage(final SocketAddress address,
-            final String name) {
-
-        final String entityName = NetworkConstants
-                .getAddressRepresentation(address);
-        ErrorCodes error = ErrorCodes.ERROR_LOGIN_FAILED;
-
-        // Check if this player is already logged in
-        if (!players.containsKey(address) && players.size() < maxPlayers) {
-            final Entity player = gameLogicManager.createPlayer(entityName,
-                    name);
-
-            final PlayerConnection con = new PlayerConnection(address, player,
-                    gameLogicManager.getEntityManager().getCurrentVersion());
-            players.put(address, con);
-
-            LOG.info("new player " + name + " @ " + address);
-            error = ErrorCodes.ERROR_SUCCESSFULL;
-
-        }
-
-        if (players.size() >= maxPlayers) {
-            error = ErrorCodes.ERROR_SERVER_IS_FULL;
-        }
-
-        // send the client the unique entity name of the player
-        try {
-            networkWriter.prepareLoginResponseMessage(error, entityName);
-            networkWriter.sendBuffer(channel, address);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public final void receivedChallengeMessage(final SocketAddress address,
-            final long challengeData) {
-        try {
-            lastChallenge = System.currentTimeMillis();
-            networkWriter.prepareChallengeResponse(challengeData);
-            networkWriter.sendBuffer(channel, address);
-        } catch (final IOException e) {
-            LOG.error("IOException during challengeResponse", e);
-        }
-    }
-
-    @Override
-    public void receivedServersMessage(final SocketAddress address,
-            final Set<ServerData> servers) {
-        // ignore .. should not happen
-    }
-
-    /**
-     * Log the player out.
-     */
-    @Override
-    public final void receivedLogoutMessage(final SocketAddress address) {
-        LOG.info("Player " + address.toString() + " left the game.");
-        removePlayer(address);
-    }
-
-    @Override
-    public final void receivedInputMessage(final SocketAddress address,
-            final int newVersion, final Set<PlayerAction> playerActions,
-            final Vector2f cursorPos) {
-        final PlayerConnection connection = players.get(address);
-        if (connection != null && newVersion > connection.getReceivedVersion()) {
-            connection.setNew();
-            connection.setPlayerActions(playerActions);
-            connection.setMousePos(cursorPos);
-
-            // also send the received data to the player
-            connection.getPlayer().setAttribute(Attribute.PLAYER_ACTIONS,
-                    playerActions);
-
-            connection.getPlayer()
-                    .setAttribute(Attribute.CURSOR_POS, cursorPos);
-            connection.setReceivedVersion(newVersion);
-        }
-    }
-
-    @Override
-    public void receivedLoginReponseMessage(final SocketAddress address,
-            final ErrorCodes errorCode, final String playerEntityName) {
-        // ignore .. should not happen
-    }
-
-    @Override
-    public void receivedServerNotificationMessage(final SocketAddress address,
-            final ServerData server) {
-        // ignore
-    }
-
-    @Override
-    public void receivedGetPlayerInfoMessage(final SocketAddress address) {
-        try {
-            networkWriter.prepareGetPlayerInfoReponseMessage(gameLogicManager
-                    .getPlayers().values());
-            networkWriter.sendBuffer(channel, address);
-        } catch (final IOException e) {
-            LOG.error("IOException during GetPlayerInfo", e);
-        }
-
-    }
-
-    @Override
-    public void receivedGetPlayerInfoResponseMessage(
-            final SocketAddress address, final Set<PlayerClientInfo> players) {
-        // ignore
-    }
-
-    @Override
-    public void receivedTeamSelectMessage(final SocketAddress address,
-            final Team team) {
-        final PlayerConnection connection = players.get(address);
-
-        /*
-         * Sometimes the login process takes longer than for this message to
-         * arrive. Then the connection is not made yet, so we check it.
-         */
-        if (connection != null) {
-            final String entityName = connection.getPlayer().getName();
-            gameLogicManager.setTeam(entityName, team);
-        }
-
-    }
-
     /**
      * Initializes the game. It reads the default map and initializes the entity
      * manager.
@@ -471,6 +339,157 @@ public class Server implements NetworkEventListener {
 
     @Override
     public void entityCreated(final Entity entity) {
+        // ignore
+    }
+
+    /**
+     * Creates a connection to a new client.
+     * 
+     * @param address
+     *            Player socket address
+     */
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final LoginMessage message) {
+        final String entityName = NetworkConstants
+                .getAddressRepresentation(address);
+        ErrorCode error = ErrorCode.ERROR_LOGIN_FAILED;
+
+        // Check if this player is already logged in
+        if (!players.containsKey(address) && players.size() < maxPlayers) {
+            final Entity player = gameLogicManager.createPlayer(entityName,
+                    message.getName());
+
+            final PlayerConnection con = new PlayerConnection(address, player,
+                    gameLogicManager.getEntityManager().getCurrentVersion());
+            players.put(address, con);
+
+            LOG.info("new player " + message.getName() + " @ " + address);
+            error = ErrorCode.ERROR_SUCCESSFULL;
+
+        }
+
+        if (players.size() >= maxPlayers) {
+            error = ErrorCode.ERROR_SERVER_IS_FULL;
+        }
+
+        // send the client the unique entity name of the player
+        try {
+            networkWriter.sendMessage(channel, address,
+                    new LoginResponseMessage(error, entityName));
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ChallengeResponseMessage message) {
+        try {
+            lastChallenge = System.currentTimeMillis();
+            networkWriter.sendMessage(channel, address, message);
+        } catch (final IOException e) {
+            LOG.error("IOException during challengeResponse", e);
+        }
+    }
+
+    /**
+     * Log the player out.
+     */
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final LogoutMessage message) {
+        LOG.info("Player " + address.toString() + " left the game.");
+        removePlayer(address);
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final InputMessage message) {
+        final PlayerConnection connection = players.get(address);
+        if (connection != null
+                && message.getVersion() > connection.getReceivedVersion()) {
+            connection.setNew();
+            connection.setPlayerActions(message.getPlayerActions());
+            connection.setMousePos(message.getMousePos());
+
+            // also send the received data to the player
+            connection.getPlayer().setAttribute(Attribute.PLAYER_ACTIONS,
+                    message.getPlayerActions());
+
+            connection.getPlayer().setAttribute(Attribute.CURSOR_POS,
+                    message.getMousePos());
+            connection.setReceivedVersion(message.getVersion());
+        }
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GetPlayerInfoMessage message) {
+        try {
+            networkWriter.sendMessage(channel, address,
+                    new GetPlayerInfoResponseMessage(gameLogicManager
+                            .getPlayers().values()));
+        } catch (final IOException e) {
+            LOG.error("IOException during GetPlayerInfo", e);
+        }
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final TeamSelectMessage message) {
+        final PlayerConnection connection = players.get(address);
+
+        /*
+         * Sometimes the login process takes longer than for this message to
+         * arrive. Then the connection is not made yet, so we check it.
+         */
+        if (connection != null) {
+            final String entityName = connection.getPlayer().getName();
+            gameLogicManager.setTeam(entityName, message.getTeam());
+        }
+
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GamestateMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ServersMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ServerNotificationResponseMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final ServerNotificationMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final LoginResponseMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GetServersMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(final SocketAddress address,
+            final GetPlayerInfoResponseMessage message) {
         // ignore
     }
 }

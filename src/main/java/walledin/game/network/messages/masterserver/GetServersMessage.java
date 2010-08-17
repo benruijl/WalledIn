@@ -5,9 +5,11 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
-import walledin.game.network.messages.game.MasterServerProtocolMessage;
 
-public class GetServersMessage extends MasterServerProtocolMessage {
+public class GetServersMessage extends MasterServerMessage {
+
+    public GetServersMessage() {
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {

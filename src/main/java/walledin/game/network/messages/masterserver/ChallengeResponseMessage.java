@@ -6,8 +6,11 @@ import java.nio.ByteBuffer;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class ChallengeResponseMessage extends MasterServerProtocolMessage {
+public class ChallengeResponseMessage extends MasterServerMessage {
     private long challengeData;
+
+    public ChallengeResponseMessage() {
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {

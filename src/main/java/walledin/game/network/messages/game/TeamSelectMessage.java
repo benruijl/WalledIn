@@ -7,8 +7,11 @@ import walledin.game.Team;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class TeamSelectMessage extends MasterServerProtocolMessage {
+public class TeamSelectMessage extends GameMessage {
     private Team team;
+
+    public TeamSelectMessage() {
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
@@ -26,5 +29,9 @@ public class TeamSelectMessage extends MasterServerProtocolMessage {
     public void fireEvent(final NetworkEventListener listener,
             final SocketAddress address) {
         listener.receivedMessage(address, this);
+    }
+
+    public Team getTeam() {
+        return team;
     }
 }

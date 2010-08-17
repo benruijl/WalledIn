@@ -41,6 +41,8 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
+import walledin.game.network.messages.game.GameMessage;
+import walledin.game.network.messages.masterserver.MasterServerMessage;
 import walledin.util.Utils;
 
 /**
@@ -231,61 +233,32 @@ public class NetworkMessageReader {
      * 
      * @param entityManager
      *            the entity manager to process the changes in
-     * @throws UnknownHostException
      */
     public void processMessage(final SocketAddress address,
-            final EntityManager entityManager) throws UnknownHostException {
+            final EntityManager entityManager) {
         int ident = -1;
         ident = buffer.getInt();
         if (ident == NetworkConstants.DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
-            switch (type) {
-            case NetworkConstants.GAMESTATE_MESSAGE:
-                processGamestateMessage(entityManager, address);
-                break;
-            case NetworkConstants.LOGIN_MESSAGE:
-                processLoginMessage(address);
-                break;
-            case NetworkConstants.LOGIN_RESPONSE_MESSAGE:
-                processLoginResponseMessage(address);
-                break;
-            case NetworkConstants.LOGOUT_MESSAGE:
-                processLogoutMessage(address);
-                break;
-            case NetworkConstants.INPUT_MESSAGE:
-                processInputMessage(address);
-                break;
-            case NetworkConstants.GET_PLAYER_INFO_MESSAGE:
-                processGetPlayerInfoMessage(address);
-                break;
-            case NetworkConstants.GET_PLAYER_INFO_RESPONSE_MESSAGE:
-                processGetPlayerInfoResponseMessage(address);
-                break;
-            case NetworkConstants.TEAM_SELECT_MESSAGE:
-                processTeamSelectMessage(address);
-                break;
-            default:
+            final GameMessage message = GameMessage.getMessage(type);
+            if (message == null) {
                 LOG.warn("Received unhandled message");
-                break;
+            } else {
+                message.read(buffer, address);
+                message.fireEvent(listener, address);
             }
         } else if (ident == NetworkConstants.MS_DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
-            switch (type) {
-            case NetworkConstants.CHALLENGE_MESSAGE:
-                processChallengeMessage(address);
-                break;
-            case NetworkConstants.SERVERS_MESSAGE:
-                processServersMessage(address);
-                break;
-            case NetworkConstants.SERVER_NOTIFICATION_MESSAGE:
-                processServerNotificationMessage(address);
-                break;
-            default:
+            final MasterServerMessage message = MasterServerMessage
+                    .getMessage(type);
+            if (message == null) {
                 LOG.warn("Received unhandled message");
-                break;
+            } else {
+                message.read(buffer, address);
+                message.fireEvent(listener, address);
             }
         } else {
-            LOG.warn("Unknown ident");
+            LOG.warn("Unknown datagram identification");
             // else ignore the datagram, incorrect format
         }
     }

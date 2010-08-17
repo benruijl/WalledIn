@@ -8,8 +8,15 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class LoginMessage extends MasterServerProtocolMessage {
+public class LoginMessage extends GameMessage {
     private String name;
+
+    public LoginMessage() {
+    }
+
+    public LoginMessage(final String name) {
+        this.name = name;
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
@@ -27,5 +34,9 @@ public class LoginMessage extends MasterServerProtocolMessage {
     public void fireEvent(final NetworkEventListener listener,
             final SocketAddress address) {
         listener.receivedMessage(address, this);
+    }
+
+    public String getName() {
+        return name;
     }
 }

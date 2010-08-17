@@ -10,10 +10,20 @@ import walledin.game.PlayerAction;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class InputMessage extends MasterServerProtocolMessage {
+public class InputMessage extends GameMessage {
     private int version;
     private Set<PlayerAction> playerActions;
     private Vector2f mousePos;
+
+    public InputMessage() {
+    }
+
+    public InputMessage(final int version,
+            final Set<PlayerAction> playerActions, final Vector2f mousePos) {
+        this.version = version;
+        this.playerActions = playerActions;
+        this.mousePos = mousePos;
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
@@ -43,5 +53,17 @@ public class InputMessage extends MasterServerProtocolMessage {
     public void fireEvent(final NetworkEventListener listener,
             final SocketAddress address) {
         listener.receivedMessage(address, this);
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public Set<PlayerAction> getPlayerActions() {
+        return playerActions;
+    }
+
+    public Vector2f getMousePos() {
+        return mousePos;
     }
 }

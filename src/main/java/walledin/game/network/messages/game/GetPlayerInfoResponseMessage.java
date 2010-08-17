@@ -13,8 +13,15 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class GetPlayerInfoResponseMessage extends MasterServerProtocolMessage {
+public class GetPlayerInfoResponseMessage extends GameMessage {
     private Collection<PlayerInfo> players;
+
+    public GetPlayerInfoResponseMessage() {
+    }
+
+    public GetPlayerInfoResponseMessage(final Collection<PlayerInfo> players) {
+        this.players = players;
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
@@ -46,5 +53,9 @@ public class GetPlayerInfoResponseMessage extends MasterServerProtocolMessage {
     public void fireEvent(final NetworkEventListener listener,
             final SocketAddress address) {
         listener.receivedMessage(address, this);
+    }
+
+    public Collection<PlayerClientInfo> getPlayers() {
+        return players;
     }
 }

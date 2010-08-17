@@ -7,15 +7,25 @@ import walledin.game.GameMode;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageWriter;
-import walledin.game.network.messages.game.MasterServerProtocolMessage;
 
-public class ServerNotificationResponseMessage extends
-        MasterServerProtocolMessage {
+public class ServerNotificationResponseMessage extends MasterServerMessage {
     private int port;
     private String name;
     private int players;
     private int maxPlayers;
     private GameMode gameMode;
+
+    public ServerNotificationResponseMessage() {
+    }
+
+    public ServerNotificationResponseMessage(final int port, final String name,
+            final int players, final int maxPlayers, final GameMode gameMode) {
+        this.port = port;
+        this.name = name;
+        this.players = players;
+        this.maxPlayers = maxPlayers;
+        this.gameMode = gameMode;
+    }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
