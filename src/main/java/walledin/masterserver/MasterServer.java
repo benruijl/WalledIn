@@ -126,7 +126,7 @@ public class MasterServer implements NetworkEventListener {
     }
 
     @Override
-    public void receivedChallengeResponseMessage(final SocketAddress address,
+    public void receivedChallengeMessage(final SocketAddress address,
             final long challengeData) {
         final ServerData server = servers.get(address);
         if (server != null && this.challengeData == challengeData) {

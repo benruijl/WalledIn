@@ -26,6 +26,5 @@ public class NetworkConstants {
     public static final byte GET_SERVERS_MESSAGE = 0;
     public static final byte SERVER_NOTIFICATION_MESSAGE = 1;
     public static final byte SERVERS_MESSAGE = 2;
-    public static final byte CHALLENGE_RESPONSE_MESSAGE = 3;
-    public static final byte CHALLENGE_MESSAGE = 4;
+    public static final byte CHALLENGE_MESSAGE = 3;
 }

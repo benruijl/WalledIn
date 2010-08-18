@@ -76,5 +76,4 @@ public class NetworkWriter {
         buffer.put(address.getAddress().getAddress());
         buffer.putInt(address.getPort());
     }
-
 }

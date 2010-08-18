@@ -62,8 +62,8 @@ public class NetworkReader {
         case NetworkConstants.SERVER_NOTIFICATION_MESSAGE:
             processServerNotificationMessage(address);
             break;
-        case NetworkConstants.CHALLENGE_RESPONSE_MESSAGE:
-            processChallengeResponseMessage(address);
+        case NetworkConstants.CHALLENGE_MESSAGE:
+            processChallengeMessage(address);
             break;
         default:
             LOG.warn("Received unhandled message");
@@ -72,9 +72,9 @@ public class NetworkReader {
         return true;
     }
 
-    private void processChallengeResponseMessage(final SocketAddress address) {
+    private void processChallengeMessage(final SocketAddress address) {
         final long challengeData = buffer.getLong();
-        listener.receivedChallengeResponseMessage(address, challengeData);
+        listener.receivedChallengeMessage(address, challengeData);
     }
 
     private void processServerNotificationMessage(final SocketAddress address)
