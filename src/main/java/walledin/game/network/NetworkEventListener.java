@@ -34,7 +34,6 @@ import walledin.game.network.messages.game.TeamSelectMessage;
 import walledin.game.network.messages.masterserver.ChallengeMessage;
 import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
-import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
 import walledin.game.network.messages.masterserver.ServersMessage;
 
 public interface NetworkEventListener {
@@ -52,9 +51,6 @@ public interface NetworkEventListener {
     void receivedMessage(SocketAddress address, TeamSelectMessage message);
 
     void receivedMessage(SocketAddress address, ServersMessage message);
-
-    void receivedMessage(SocketAddress address,
-            ServerNotificationResponseMessage message);
 
     void receivedMessage(SocketAddress address,
             ServerNotificationMessage message);

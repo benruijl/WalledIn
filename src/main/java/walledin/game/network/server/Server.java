@@ -41,6 +41,7 @@ import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
+import walledin.game.network.ServerData;
 import walledin.game.network.messages.game.GamestateMessage;
 import walledin.game.network.messages.game.GetPlayerInfoMessage;
 import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
@@ -53,7 +54,6 @@ import walledin.game.network.messages.game.TeamSelectMessage;
 import walledin.game.network.messages.masterserver.ChallengeMessage;
 import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
-import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
 import walledin.game.network.messages.masterserver.ServersMessage;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
@@ -172,10 +172,8 @@ public class Server implements NetworkEventListener {
         lastChallenge = System.currentTimeMillis();
         lastBroadcast = System.currentTimeMillis();
 
-        networkWriter.sendMessage(
-                masterServerChannel,
-                new ServerNotificationResponseMessage(port, serverName, players
-                        .size(), maxPlayers, gameLogicManager.getGameMode()));
+        networkWriter.sendMessage(masterServerChannel,
+                new ServerNotificationMessage(createServerData()));
 
         currentTime = System.nanoTime(); // initialize
         running = true;
@@ -218,20 +216,14 @@ public class Server implements NetworkEventListener {
             LOG.warn("Did not recieve challenge from master server yet! "
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
-            networkWriter.sendMessage(
-                    masterServerChannel,
-                    new ServerNotificationResponseMessage(port, serverName,
-                            players.size(), maxPlayers, gameLogicManager
-                                    .getGameMode()));
+            networkWriter.sendMessage(masterServerChannel,
+                    new ServerNotificationMessage(createServerData()));
         }
 
         if (lastBroadcast < System.currentTimeMillis() - broadcastInterval) {
-            networkWriter.sendMessage(
-                    serverNotifySocket,
+            networkWriter.sendMessage(serverNotifySocket,
                     NetworkConstants.BROADCAST_ADDRESS,
-                    new ServerNotificationResponseMessage(port, serverName,
-                            players.size(), maxPlayers, gameLogicManager
-                                    .getGameMode()));
+                    new ServerNotificationMessage(createServerData()));
             lastBroadcast = System.currentTimeMillis();
         }
 
@@ -246,6 +238,13 @@ public class Server implements NetworkEventListener {
         processChanges();
         // Write to all the clients
         sendGamestate(channel);
+    }
+
+    private ServerData createServerData() {
+        final SocketAddress address = new InetSocketAddress(port);
+        final ServerData data = new ServerData(address, serverName,
+                players.size(), maxPlayers, gameLogicManager.getGameMode());
+        return data;
     }
 
     private void processChanges() {
@@ -460,12 +459,6 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedMessage(final SocketAddress address,
             final ServersMessage message) {
-        // ignore
-    }
-
-    @Override
-    public void receivedMessage(final SocketAddress address,
-            final ServerNotificationResponseMessage message) {
         // ignore
     }
 

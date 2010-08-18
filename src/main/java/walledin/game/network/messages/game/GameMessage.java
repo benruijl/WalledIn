@@ -33,7 +33,7 @@ import walledin.util.Utils;
 public abstract class GameMessage extends NetworkMessage {
     private static final Logger LOG = Logger
             .getLogger(NetworkMessageReader.class);
-    private static final int DATAGRAM_IDENTIFICATION = 0x47583454;
+    public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
     private static final Map<Byte, Class<? extends GameMessage>> MESSAGE_CLASSES = initializeMessageClasses();
     private static final Map<Class<? extends GameMessage>, Byte> MESSAGE_BYTES = Utils
             .reverseMap(MESSAGE_CLASSES);

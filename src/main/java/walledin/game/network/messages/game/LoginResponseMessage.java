@@ -30,7 +30,7 @@ import walledin.game.network.NetworkMessageWriter;
 public class LoginResponseMessage extends GameMessage {
     private ErrorCode errorCode;
     private String entityName;
-    
+
     /** Network error code lists. */
     public enum ErrorCode {
         ERROR_SUCCESSFULL,

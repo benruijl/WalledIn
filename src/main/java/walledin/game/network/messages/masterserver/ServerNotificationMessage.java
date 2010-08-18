@@ -35,6 +35,10 @@ public class ServerNotificationMessage extends MasterServerMessage {
     public ServerNotificationMessage() {
     }
 
+    public ServerNotificationMessage(final ServerData server) {
+        this.server = server;
+    }
+
     public ServerData getServer() {
         return server;
     }
@@ -56,6 +60,7 @@ public class ServerNotificationMessage extends MasterServerMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
+        // FIXME .... we need this
         throw new IllegalStateException("Not yet implemented");
     }
 

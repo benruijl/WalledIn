@@ -61,7 +61,6 @@ import walledin.game.network.messages.game.TeamSelectMessage;
 import walledin.game.network.messages.masterserver.ChallengeMessage;
 import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
-import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
 import walledin.game.network.messages.masterserver.ServersMessage;
 import walledin.util.SettingsManager;
 
@@ -476,12 +475,6 @@ public final class Client implements NetworkEventListener {
     @Override
     public void receivedMessage(final SocketAddress address,
             final TeamSelectMessage message) {
-        // ignore
-    }
-
-    @Override
-    public void receivedMessage(final SocketAddress address,
-            final ServerNotificationResponseMessage message) {
         // ignore
     }
 
