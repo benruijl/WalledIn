@@ -1,5 +1,6 @@
 package walledin.game.network.messages.masterserver;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,19 +8,22 @@ import org.apache.log4j.Logger;
 
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.messages.NetworkMessage;
+import walledin.util.Utils;
 
-public abstract class MasterServerMessage implements NetworkMessage {
+public abstract class MasterServerMessage extends NetworkMessage {
     private static final Logger LOG = Logger
             .getLogger(NetworkMessageReader.class);
+    public static final int DATAGRAM_IDENTIFICATION = 0x174BC126;
     private static final Map<Byte, Class<? extends MasterServerMessage>> MESSAGE_CLASSES = initializeMessageClasses();
+    private static final Map<Class<? extends MasterServerMessage>, Byte> MESSAGE_BYTES = Utils
+            .reverseMap(MESSAGE_CLASSES);
 
     private static Map<Byte, Class<? extends MasterServerMessage>> initializeMessageClasses() {
         final Map<Byte, Class<? extends MasterServerMessage>> result = new HashMap<Byte, Class<? extends MasterServerMessage>>();
-        result.put((byte) 0, ChallengeResponseMessage.class);
-        result.put((byte) 1, GetServersMessage.class);
-        result.put((byte) 2, ServerNotificationMessage.class);
-        result.put((byte) 3, ServerNotificationResponseMessage.class);
-        result.put((byte) 4, ServersMessage.class);
+        result.put((byte) 0, GetServersMessage.class);
+        result.put((byte) 1, ServerNotificationMessage.class);
+        result.put((byte) 2, ServersMessage.class);
+        result.put((byte) 3, ChallengeMessage.class);
         return result;
     }
 
@@ -37,5 +41,11 @@ public abstract class MasterServerMessage implements NetworkMessage {
                     + ") could not be instantiated", e);
             return null;
         }
+    }
+
+    @Override
+    public void writeHeader(final ByteBuffer buffer) {
+        buffer.putInt(DATAGRAM_IDENTIFICATION);
+        buffer.put(MESSAGE_BYTES.get(getClass()));
     }
 }

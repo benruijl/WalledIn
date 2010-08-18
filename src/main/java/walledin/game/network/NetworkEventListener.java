@@ -31,7 +31,7 @@ import walledin.game.network.messages.game.LoginMessage;
 import walledin.game.network.messages.game.LoginResponseMessage;
 import walledin.game.network.messages.game.LogoutMessage;
 import walledin.game.network.messages.game.TeamSelectMessage;
-import walledin.game.network.messages.masterserver.ChallengeResponseMessage;
+import walledin.game.network.messages.masterserver.ChallengeMessage;
 import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
@@ -43,7 +43,7 @@ public interface NetworkEventListener {
 
     void entityCreated(Entity entity);
 
-    void receivedMessage(SocketAddress address, ChallengeResponseMessage message);
+    void receivedMessage(SocketAddress address, ChallengeMessage message);
 
     void receivedMessage(SocketAddress address, GetPlayerInfoMessage message);
 

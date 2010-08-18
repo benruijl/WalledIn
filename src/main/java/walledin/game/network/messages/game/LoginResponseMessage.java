@@ -3,8 +3,6 @@ package walledin.game.network.messages.game;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
-import walledin.game.network.NetworkConstants;
-import walledin.game.network.NetworkConstants.ErrorCode;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
@@ -12,6 +10,14 @@ import walledin.game.network.NetworkMessageWriter;
 public class LoginResponseMessage extends GameMessage {
     private ErrorCode errorCode;
     private String entityName;
+    
+    /** Network error code lists. */
+    public enum ErrorCode {
+        ERROR_SUCCESSFULL,
+        ERROR_LOGIN_FAILED,
+        ERROR_SERVER_IS_FULL,
+        ERROR_ALREADY_LOGGED_IN;
+    }
 
     public LoginResponseMessage() {
     }
@@ -38,8 +44,6 @@ public class LoginResponseMessage extends GameMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
-        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.LOGIN_RESPONSE_MESSAGE);
         NetworkMessageWriter.writeIntegerData(errorCode.ordinal(), buffer);
         NetworkMessageWriter.writeStringData(entityName, buffer);
     }

@@ -45,7 +45,6 @@ import walledin.game.Team;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
-import walledin.game.network.NetworkConstants.ErrorCode;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
@@ -56,9 +55,10 @@ import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
 import walledin.game.network.messages.game.InputMessage;
 import walledin.game.network.messages.game.LoginMessage;
 import walledin.game.network.messages.game.LoginResponseMessage;
+import walledin.game.network.messages.game.LoginResponseMessage.ErrorCode;
 import walledin.game.network.messages.game.LogoutMessage;
 import walledin.game.network.messages.game.TeamSelectMessage;
-import walledin.game.network.messages.masterserver.ChallengeResponseMessage;
+import walledin.game.network.messages.masterserver.ChallengeMessage;
 import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationResponseMessage;
@@ -436,8 +436,8 @@ public final class Client implements NetworkEventListener {
             clientLogicManager.displayErrorAndDisconnect("The server is full.");
             break;
         default:
-            clientLogicManager
-                    .displayErrorAndDisconnect("Could not login to the server.");
+            clientLogicManager.displayErrorAndDisconnect("Could not login to"
+                    + " the server.");
             break;
         }
     }
@@ -463,7 +463,7 @@ public final class Client implements NetworkEventListener {
 
     @Override
     public void receivedMessage(final SocketAddress address,
-            final ChallengeResponseMessage message) {
+            final ChallengeMessage message) {
         // ignore
     }
 

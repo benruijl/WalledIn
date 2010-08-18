@@ -3,13 +3,12 @@ package walledin.game.network.messages.masterserver;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
-import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
-public class ChallengeResponseMessage extends MasterServerMessage {
+public class ChallengeMessage extends MasterServerMessage {
     private long challengeData;
 
-    public ChallengeResponseMessage() {
+    public ChallengeMessage() {
     }
 
     @Override
@@ -19,8 +18,6 @@ public class ChallengeResponseMessage extends MasterServerMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
-        buffer.putInt(NetworkConstants.MS_DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.CHALLENGE_RESPONSE_MESSAGE);
         buffer.putLong(challengeData);
     }
 

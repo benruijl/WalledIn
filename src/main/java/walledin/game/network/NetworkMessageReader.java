@@ -238,7 +238,7 @@ public class NetworkMessageReader {
             final EntityManager entityManager) {
         int ident = -1;
         ident = buffer.getInt();
-        if (ident == NetworkConstants.DATAGRAM_IDENTIFICATION) {
+        if (ident == GameMessage.DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
             final GameMessage message = GameMessage.getMessage(type);
             if (message == null) {
@@ -247,7 +247,7 @@ public class NetworkMessageReader {
                 message.read(buffer, address);
                 message.fireEvent(listener, address);
             }
-        } else if (ident == NetworkConstants.MS_DATAGRAM_IDENTIFICATION) {
+        } else if (ident == MasterServerMessage.DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
             final MasterServerMessage message = MasterServerMessage
                     .getMessage(type);

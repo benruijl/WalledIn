@@ -52,6 +52,7 @@ public class NetworkMessageWriter {
 
     private void writeMessage(final NetworkMessage message) {
         buffer.clear();
+        message.writeHeader(buffer);
         message.write(buffer);
         buffer.flip();
     }

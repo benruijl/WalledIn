@@ -8,7 +8,6 @@ import java.util.HashSet;
 import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.GameLogicManager.PlayerInfo;
 import walledin.game.Team;
-import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
@@ -38,8 +37,6 @@ public class GetPlayerInfoResponseMessage extends GameMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
-        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.GET_PLAYER_INFO_RESPONSE_MESSAGE);
         buffer.putInt(players.size());
 
         for (final PlayerInfo player : players) {

@@ -71,8 +71,6 @@ public class GamestateMessage extends GameMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
-        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.GAMESTATE_MESSAGE);
         buffer.putInt(knownClientVersion);
         buffer.putInt(currentVersion);
         for (final String name : changeSet.getRemoved()) {

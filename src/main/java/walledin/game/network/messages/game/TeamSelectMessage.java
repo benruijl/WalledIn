@@ -4,7 +4,6 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 import walledin.game.Team;
-import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
 public class TeamSelectMessage extends GameMessage {
@@ -20,8 +19,6 @@ public class TeamSelectMessage extends GameMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
-        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.TEAM_SELECT_MESSAGE);
         buffer.putInt(team.ordinal());
     }
 

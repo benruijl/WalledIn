@@ -7,7 +7,6 @@ import java.util.Set;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.PlayerAction;
-import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 
 public class InputMessage extends GameMessage {
@@ -38,8 +37,6 @@ public class InputMessage extends GameMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
-        buffer.putInt(NetworkConstants.DATAGRAM_IDENTIFICATION);
-        buffer.put(NetworkConstants.INPUT_MESSAGE);
         buffer.putInt(version);
         buffer.putShort((short) playerActions.size());
         for (final PlayerAction actions : playerActions) {
