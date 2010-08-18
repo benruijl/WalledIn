@@ -38,9 +38,8 @@ import walledin.engine.Renderer;
 import walledin.engine.audio.Audio;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
-import walledin.game.GameLogicManager;
-import walledin.game.GameLogicManager.PlayerClientInfo;
 import walledin.game.PlayerActionManager;
+import walledin.game.PlayerClientInfo;
 import walledin.game.Team;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -113,7 +112,7 @@ public final class Client implements NetworkEventListener {
         networkReader = new NetworkMessageReader(this);
         internetServerList = new HashSet<ServerData>();
         lanServerList = new HashSet<ServerData>();
-        playerList = new HashSet<GameLogicManager.PlayerClientInfo>();
+        playerList = new HashSet<PlayerClientInfo>();
 
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();

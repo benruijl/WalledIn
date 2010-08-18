@@ -24,22 +24,23 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
-import walledin.game.GameLogicManager.PlayerClientInfo;
-import walledin.game.GameLogicManager.PlayerInfo;
+import walledin.game.PlayerClientInfo;
 import walledin.game.Team;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
 public class GetPlayerInfoResponseMessage extends GameMessage {
-    private Collection<PlayerInfo> players;
+    private Set<PlayerClientInfo> players;
 
     public GetPlayerInfoResponseMessage() {
     }
 
-    public GetPlayerInfoResponseMessage(final Collection<PlayerInfo> players) {
-        this.players = players;
+    public GetPlayerInfoResponseMessage(
+            final Collection<? extends PlayerClientInfo> players) {
+        this.players = new HashSet<PlayerClientInfo>(players);
     }
 
     @Override
@@ -59,9 +60,9 @@ public class GetPlayerInfoResponseMessage extends GameMessage {
     public void write(final ByteBuffer buffer) {
         buffer.putInt(players.size());
 
-        for (final PlayerInfo player : players) {
-            NetworkMessageWriter.writeStringData(player.getPlayer().getName(),
-                    buffer);
+        for (final PlayerClientInfo player : players) {
+            NetworkMessageWriter
+                    .writeStringData(player.getEntityName(), buffer);
             buffer.putInt(player.getTeam().ordinal());
         }
     }
@@ -72,7 +73,7 @@ public class GetPlayerInfoResponseMessage extends GameMessage {
         listener.receivedMessage(address, this);
     }
 
-    public Collection<PlayerClientInfo> getPlayers() {
+    public Set<PlayerClientInfo> getPlayers() {
         return players;
     }
 }
