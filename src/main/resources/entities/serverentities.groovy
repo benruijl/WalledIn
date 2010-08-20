@@ -35,6 +35,10 @@ import walledin.game.entity.behaviors.physics.*
 
 (Family.FOAM_PARTICLE): { entity ->
     def destRect = new Circle(new Vector2f(16, 16), 16)
+    
+    entity.addBehavior(new FoamParticleBehavior(entity));
+   entity.addBehavior(new HealthBehavior(entity, 100, 80));    
+    
     entity.addBehavior(new PhysicsBehavior(entity, 2e4, false, false));
     //entity.addBehavior(new StaticObjectCollisionBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
