@@ -90,6 +90,25 @@ public class Vector2f {
         return x * vec.x + y * vec.y;
     }
 
+    /**
+     * Returns the <b>length</b> of the cross product.
+     * 
+     * @param vec
+     *            Vector2
+     * @return Length of cross product
+     */
+    public float cross(final Vector2f vec) {
+        return x * vec.y - y * vec.x;
+    }
+    
+    public Vector2f scaleTo(float size) {
+        return scale(size / length());        
+    }
+    
+    public float length() {
+        return (float) Math.sqrt(lengthSquared());
+    }
+
     public float lengthSquared() {
         return dot(this);
     }

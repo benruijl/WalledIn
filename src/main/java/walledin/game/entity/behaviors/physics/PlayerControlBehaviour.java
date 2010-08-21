@@ -31,6 +31,7 @@ import walledin.game.PlayerAction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends Behavior {
@@ -126,6 +127,22 @@ public class PlayerControlBehaviour extends Behavior {
 
                 weapon.sendMessage(MessageType.SHOOT, getOwner());
             }
+        }
+
+        /* Create a grenade. */
+        if (playerActions.contains(PlayerAction.THROW_GRENADE)) {
+            float maxLength = 60.0f;
+            Vector2f dir = ((Vector2f) getAttribute(Attribute.CURSOR_POS))
+                    .sub((Vector2f) getAttribute(Attribute.POSITION));
+            if (dir.lengthSquared() > maxLength * maxLength) {
+                dir = dir.scaleTo(maxLength);
+            }
+
+            Entity foamNade = getOwner().getEntityManager().create(
+                    Family.FOAMNADE);
+            foamNade.setAttribute(Attribute.POSITION,
+                    getAttribute(Attribute.POSITION));
+            foamNade.setAttribute(Attribute.VELOCITY, dir);
         }
 
         getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));

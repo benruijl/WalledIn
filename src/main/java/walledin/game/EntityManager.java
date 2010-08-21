@@ -72,6 +72,20 @@ public class EntityManager {
     }
 
     /**
+     * Creates a new entity with a unique name and adds it to the entity list.
+     * 
+     * @param family
+     *            Family of the entity
+     * @return Entity or null on failure
+     */
+    public Entity create(Family family) {
+        final Entity entity = factory.create(this, family,
+                generateUniqueName(family));
+        add(entity);
+        return entity;
+    }
+
+    /**
      * Generates a unique name for an object. Useful when generating entities in
      * runtime. The entities will be named in the following format:
      * ENT_<i>familyname</i>_<i>num</i>, where <i>familyname</i> is the family
