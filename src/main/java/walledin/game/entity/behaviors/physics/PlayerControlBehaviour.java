@@ -131,7 +131,7 @@ public class PlayerControlBehaviour extends Behavior {
 
         /* Create a grenade. */
         if (playerActions.contains(PlayerAction.THROW_GRENADE)) {
-            float maxLength = 60.0f;
+            float maxLength = 200.0f;
             Vector2f dir = ((Vector2f) getAttribute(Attribute.CURSOR_POS))
                     .sub((Vector2f) getAttribute(Attribute.POSITION));
             if (dir.lengthSquared() > maxLength * maxLength) {
@@ -142,7 +142,7 @@ public class PlayerControlBehaviour extends Behavior {
                     Family.FOAMNADE);
             foamNade.setAttribute(Attribute.POSITION,
                     getAttribute(Attribute.POSITION));
-            foamNade.setAttribute(Attribute.VELOCITY, dir);
+            foamNade.sendMessage(MessageType.APPLY_FORCE, dir.scale(1000.0f));
         }
 
         getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));

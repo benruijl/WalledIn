@@ -19,7 +19,7 @@ texturePartManager.createTexturePart("armorkit", itemsTexture, new Rectangle(384
 texturePartManager.createTexturePart("healthkit", itemsTexture, new Rectangle(320, 64, 64, 64))
 texturePartManager.createTexturePart("handgun", itemsTexture, new Rectangle(64, 132, 120, 63))
 texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 194, 240, 63))
-texturePartManager.createTexturePart("foamnade", itemsTexture, new Rectangle(320, 320, 64, 64))
+texturePartManager.createTexturePart("foamnade", itemsTexture, new Rectangle(320, 256, 64, 64))
 
 [
 (Family.PLAYER): { entity ->
