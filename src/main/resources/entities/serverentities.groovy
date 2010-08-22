@@ -5,15 +5,17 @@ import walledin.game.entity.behaviors.physics.*
 
 [
 (Family.PLAYER): { entity ->
-    entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f); // start looking to
-    // the right
-
+    entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f);
     entity.addBehavior(new HealthBehavior(entity, 100, 100));
     entity.addBehavior(new PlayerControlBehaviour(entity));
     entity.addBehavior(new PlayerParentBehavior(entity));
     entity.addBehavior(new PlayerWeaponInventoryBehavior(entity));
 
-    // FIXME correct the drawing instead of the hack the bounding box
+    // create grenade launcher
+    def grenLauncher = entity.getEntityManager().create(Family.GRENADE_LAUNCHER);
+    entity.setAttribute(Attribute.GRENADE_LAUNCHER, grenLauncher);
+
+    // FIXME correct the drawing instead of the hacking the bounding box
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY,
     new Rectangle(0, 0, 44, 43));
 } as EntityFunction,
@@ -68,11 +70,23 @@ import walledin.game.entity.behaviors.physics.*
     entity.addBehavior(new WeaponBehavior(entity, 10, Family.HANDGUN_BULLET));
 } as EntityFunction,
 
+(Family.GRENADE_LAUNCHER): { entity ->
+    entity.addBehavior(new WeaponBehavior(entity, 10, 200000.0f, Family.FOAMNADE));
+} as EntityFunction,
+
 (Family.FOAMGUN): { entity ->
     def destRect = new Rectangle(0, 0, 80, 21)
     // entity.addBehavior(new PhysicsBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
     entity.addBehavior(new WeaponBehavior(entity, 4, Family.FOAMGUN_BULLET));
+} as EntityFunction,
+
+(Family.FOAMNADE): { entity ->
+    def destRect = new Rectangle(0, 0, 32, 32)
+    entity.addBehavior(new PhysicsBehavior(entity, 10, true, false));
+    entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
+    entity.setAttribute(Attribute.VELOCITY, new Vector2f());
+    entity.addBehavior(new GrenadeBehavior(entity));
 } as EntityFunction,
 ]

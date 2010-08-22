@@ -19,6 +19,7 @@ texturePartManager.createTexturePart("armorkit", itemsTexture, new Rectangle(384
 texturePartManager.createTexturePart("healthkit", itemsTexture, new Rectangle(320, 64, 64, 64))
 texturePartManager.createTexturePart("handgun", itemsTexture, new Rectangle(64, 132, 120, 63))
 texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 194, 240, 63))
+texturePartManager.createTexturePart("foamnade", itemsTexture, new Rectangle(320, 256, 64, 64))
 
 [
 (Family.PLAYER): { entity ->
@@ -41,6 +42,11 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
 (Family.FOAMGUN_BULLET): { entity ->
     def destRect = new Circle(new Vector2f(8, 8), 8)
     entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
+} as EntityFunction,
+
+(Family.FOAMNADE): { entity ->
+    def destRect = new Rectangle(0, 0, 32, 32)
+    entity.addBehavior(new ItemRenderBehavior(entity, "foamnade", destRect));
 } as EntityFunction,
 
 (Family.HANDGUN_BULLET): { entity ->

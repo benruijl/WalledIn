@@ -100,6 +100,10 @@ public final class Vector2f {
     public float cross(final Vector2f vec) {
         return x * vec.y - y * vec.x;
     }
+    
+    public Vector2f scaleTo(float size) {
+        return scale(size / length());        
+    }
 
     public float lengthSquared() {
         return dot(this);
