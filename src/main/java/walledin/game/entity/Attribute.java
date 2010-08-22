@@ -47,6 +47,8 @@ public enum Attribute {
     /** Orientation angle. */
     ORIENTATION_ANGLE(Float.class, true),
     ACTIVE_WEAPON(Entity.class),
+    /** An invisible grenade launcher. Useful for keeping track of the grenades. */
+    GRENADE_LAUNCHER(Entity.class),
     PICKED_UP(Boolean.class),
     CURSOR_POS(Vector2f.class),
     PLAYER_ACTIONS(Set.class),
@@ -55,7 +57,7 @@ public enum Attribute {
     Z_INDEX(Integer.class),
     MASS(Float.class),
     TARGET(Vector2f.class),
-    /** Counter between zero and one that takes track of how blocked you are */
+    /** Counter between zero and one that takes track of how blocked you are. */
     WALLEDIN_IN(Float.class, true);
 
     public final Class<?> clazz;

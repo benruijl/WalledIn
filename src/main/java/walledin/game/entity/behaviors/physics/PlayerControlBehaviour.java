@@ -116,12 +116,15 @@ public class PlayerControlBehaviour extends Behavior {
         }
 
         // change orientation if shooting in other directory
-        if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)) {
+        if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)
+                || playerActions.contains(PlayerAction.THROW_GRENADE)) {
             setAttribute(
                     Attribute.ORIENTATION_ANGLE,
                     ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))
                             .getX() ? (float) Math.PI : 0.0f);
+        }
 
+        if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)) {
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                 final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
 
@@ -129,20 +132,10 @@ public class PlayerControlBehaviour extends Behavior {
             }
         }
 
-        /* Create a grenade. */
+        /* Launch a grenade. */
         if (playerActions.contains(PlayerAction.THROW_GRENADE)) {
-            float maxLength = 200.0f;
-            Vector2f dir = ((Vector2f) getAttribute(Attribute.CURSOR_POS))
-                    .sub((Vector2f) getAttribute(Attribute.POSITION));
-            if (dir.lengthSquared() > maxLength * maxLength) {
-                dir = dir.scaleTo(maxLength);
-            }
-
-            Entity foamNade = getOwner().getEntityManager().create(
-                    Family.FOAMNADE);
-            foamNade.setAttribute(Attribute.POSITION,
-                    getAttribute(Attribute.POSITION));
-            foamNade.sendMessage(MessageType.APPLY_FORCE, dir.scale(1000.0f));
+            final Entity weapon = (Entity) getAttribute(Attribute.GRENADE_LAUNCHER);
+            weapon.sendMessage(MessageType.SHOOT, getOwner());
         }
 
         getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));

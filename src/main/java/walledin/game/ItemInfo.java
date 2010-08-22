@@ -76,8 +76,7 @@ public class ItemInfo {
             waitTime += delta;
 
             if (waitTime >= respawnTime) {
-                associatedEntity = entityManager.create(family,
-                        entityManager.generateUniqueName(family));
+                associatedEntity = entityManager.create(family);
 
                 LOG.info("Respawned item of family " + family);
 
