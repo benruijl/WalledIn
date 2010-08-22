@@ -90,6 +90,6 @@ import walledin.game.entity.behaviors.physics.*
     entity.addBehavior(new PhysicsBehavior(entity, 10, true, false));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
-    //entity.addBehavior(new WeaponBehavior(entity, 4, Family.FOAMGUN_BULLET));
+    entity.addBehavior(new GrenadeBehavior(entity));
 } as EntityFunction,
 ]
