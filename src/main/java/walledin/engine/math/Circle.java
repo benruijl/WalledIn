@@ -109,7 +109,7 @@ public class Circle extends Geometry {
 
     @Override
     public boolean containsPoint(final Vector2f point) {
-        return pos.sub(pos).lengthSquared() < radius * radius;
+        return pos.sub(point).lengthSquared() < radius * radius;
     }
 
     /**

@@ -74,9 +74,10 @@ public class Polygon2f {
 
         /* Check if it is already colliding. */
         final Vector2f closest = closestPointOnPolygon(circle.getPos());
-        final float t = circle.pointCollision(closest, velocity);
-        if (t >= 0) {
-            return t;
+
+        if (circle.containsPoint(closest)
+                || pointInsidePolygon(circle.getPos())) {
+            return 0;
         }
 
         for (final Line2f edge : edges) {
@@ -124,7 +125,6 @@ public class Polygon2f {
         Vector2f penetration = polygonPoint.sub(circlePoint);
 
         if (pointInsidePolygon(circlePos)) {
-
             /* We are deep in the polygon! */
             if (!(new Circle(circlePos, circle.getRadius()))
                     .isPointInCircle(polygonPoint)) {

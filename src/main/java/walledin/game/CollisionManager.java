@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
-import java.awt.LinearGradientPaint;
 import java.util.Collection;
 import java.util.List;
 
@@ -180,6 +179,7 @@ public class CollisionManager {
     public static boolean resolvePolygonCircleCollision(
             final Entity polygonEntity, final Entity circleEntity,
             final double delta) {
+
         final Vector2f theoreticalPolygonPosition = (Vector2f) polygonEntity
                 .getAttribute(Attribute.POSITION);
 
@@ -316,7 +316,6 @@ public class CollisionManager {
 
             }
         }
-
     }
 
     /**
