@@ -49,8 +49,7 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
 
     public final void spawnBullet() {
         final EntityManager manager = getEntityManager();
-        final Entity particle = manager.create(Family.FOAM_PARTICLE,
-                manager.generateUniqueName(Family.FOAM_PARTICLE));
+        final Entity particle = manager.create(Family.FOAM_PARTICLE);
 
         particle.setAttribute(Attribute.POSITION,
                 getAttribute(Attribute.POSITION));

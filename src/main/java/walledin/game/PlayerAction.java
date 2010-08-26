@@ -27,5 +27,6 @@ public enum PlayerAction {
     SHOOT_PRIMARY,
     SHOOT_SECUNDARY,
     SELECT_WEAPON_1,
-    SELECT_WEAPON_2;
+    SELECT_WEAPON_2,
+    THROW_GRENADE;
 }
