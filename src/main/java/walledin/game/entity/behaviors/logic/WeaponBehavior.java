@@ -34,9 +34,9 @@ import walledin.util.Utils;
 public class WeaponBehavior extends Behavior {
     private static final Logger LOG = Logger.getLogger(WeaponBehavior.class);
 
-    private final float bulletAccelerationConstant = 30000.0f;
-    private final Vector2f bulletStartPositionRight = new Vector2f(50.0f, 20.0f);
-    private final Vector2f bulletStartPositionLeft = new Vector2f(-30.0f, 20.0f);
+    private final float bulletAccelerationConstant;
+    private final Vector2f bulletStartPositionRight = new Vector2f(50.0f, 10.0f);
+    private final Vector2f bulletStartPositionLeft = new Vector2f(-30.0f, 10.0f);
 
     private Entity owner; // entity that carries the gun
     private final int fireLag;
@@ -51,6 +51,20 @@ public class WeaponBehavior extends Behavior {
         lastShot = fireLag;
         canShoot = true;
         this.bulletFamily = bulletFamily;
+        bulletAccelerationConstant = 30000.0f;
+
+        setAttribute(Attribute.PICKED_UP, Boolean.FALSE);
+        setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
+    }
+    
+    public WeaponBehavior(final Entity owner, final int fireLag, final float bulletAcceleration,
+            final Family bulletFamily) {
+        super(owner);
+        this.fireLag = fireLag;
+        lastShot = fireLag;
+        canShoot = true;
+        this.bulletFamily = bulletFamily;
+        bulletAccelerationConstant = bulletAcceleration;
 
         setAttribute(Attribute.PICKED_UP, Boolean.FALSE);
         setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
@@ -83,13 +97,12 @@ public class WeaponBehavior extends Behavior {
                     bulletPosition = playerPos.add(bulletStartPositionLeft);
                 }
 
-                final Vector2f target = (Vector2f) getAttribute(Attribute.CURSOR_POS);
+                final Vector2f target = (Vector2f) player.getAttribute(Attribute.CURSOR_POS);
                 final Vector2f bulletAcceleration = target.sub(bulletPosition)
-                        .normalize().scale(bulletAccelerationConstant);
+                        .scaleTo(bulletAccelerationConstant);
 
                 final EntityManager manager = getEntityManager();
-                final Entity bullet = manager.create(bulletFamily,
-                        manager.generateUniqueName(bulletFamily));
+                final Entity bullet = manager.create(bulletFamily);
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.setAttribute(Attribute.TARGET, target);

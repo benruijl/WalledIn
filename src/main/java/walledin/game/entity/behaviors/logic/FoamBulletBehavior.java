@@ -49,8 +49,7 @@ public class FoamBulletBehavior extends BulletBehavior {
                                 .equals(Family.FOAM_PARTICLE)) {
                     final EntityManager manager = getEntityManager();
                     final Entity particle = manager.create(
-                            Family.FOAM_PARTICLE,
-                            manager.generateUniqueName(Family.FOAM_PARTICLE));
+                            Family.FOAM_PARTICLE);
 
                     particle.setAttribute(Attribute.POSITION,
                             getAttribute(Attribute.POSITION));

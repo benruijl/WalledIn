@@ -31,6 +31,7 @@ import walledin.game.PlayerAction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends Behavior {
@@ -115,17 +116,26 @@ public class PlayerControlBehaviour extends Behavior {
         }
 
         // change orientation if shooting in other directory
-        if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)) {
+        if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)
+                || playerActions.contains(PlayerAction.THROW_GRENADE)) {
             setAttribute(
                     Attribute.ORIENTATION_ANGLE,
                     ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))
                             .getX() ? (float) Math.PI : 0.0f);
+        }
 
+        if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)) {
             if (getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
                 final Entity weapon = (Entity) getAttribute(Attribute.ACTIVE_WEAPON);
 
                 weapon.sendMessage(MessageType.SHOOT, getOwner());
             }
+        }
+
+        /* Launch a grenade. */
+        if (playerActions.contains(PlayerAction.THROW_GRENADE)) {
+            final Entity weapon = (Entity) getAttribute(Attribute.GRENADE_LAUNCHER);
+            weapon.sendMessage(MessageType.SHOOT, getOwner());
         }
 
         getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
