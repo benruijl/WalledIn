@@ -37,7 +37,7 @@ import walledin.game.entity.MessageType;
 public class PlayerControlBehaviour extends Behavior {
     private static final Logger LOG = Logger
             .getLogger(PlayerControlBehaviour.class);
-    private static final float MOVE_SPEED = 240.0f;
+    private static final float MOVE_SPEED = 500.0f;
     private static final float JUMP_SPEED = 8000.0f;
     private boolean canJump;
     private Set<PlayerAction> playerActions;
