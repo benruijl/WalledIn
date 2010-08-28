@@ -43,14 +43,14 @@ public class ChangeSet {
     private final int version;
     private final Map<String, Family> created;
     private final Set<String> removed;
-    private final Map<String, Set<Attribute>> updated;
+    private final Map<String, Map<Attribute, Object>> updated;
 
     public ChangeSet(final int version, final Set<Entity> created,
             final Set<Entity> removed, final Map<String, Entity> entities) {
         this.version = version;
         this.created = new HashMap<String, Family>();
         this.removed = new HashSet<String>();
-        updated = new HashMap<String, Set<Attribute>>();
+        updated = new HashMap<String, Map<Attribute, Object>>();
         initialize(created, removed, entities);
     }
 
@@ -72,7 +72,7 @@ public class ChangeSet {
         for (final Entity entity : entities.values()) {
             final Set<Attribute> changes = entity.getChangedAttributes();
             if (!changes.isEmpty()) {
-                updated.put(entity.getName(), changes);
+                updated.put(entity.getName(), entity.getAttributes(changes));
             }
         }
     }
@@ -86,20 +86,20 @@ public class ChangeSet {
     public void merge(final ChangeSet changeSet) {
         // Add created to our created
         created.putAll(changeSet.created);
-        // Add removed to our remved
+        // Add removed to our removed
         removed.addAll(changeSet.removed);
 
         // Add updates to our updates
-        for (final Entry<String, Set<Attribute>> entry : changeSet.updated
+        for (final Entry<String, Map<Attribute, Object>> entry : changeSet.updated
                 .entrySet()) {
             final String name = entry.getKey();
-            Set<Attribute> ourChanges = updated.get(name);
+            Map<Attribute, Object> ourChanges = updated.get(name);
             if (ourChanges == null) {
-                // Create new changes if we done have it yet
-                ourChanges = new HashSet<Attribute>();
+                // Create new changes if we dont have it yet
+                ourChanges = new HashMap<Attribute, Object>();
             }
             // Add changes to our changes
-            ourChanges.addAll(entry.getValue());
+            ourChanges.putAll(entry.getValue());
             updated.put(name, ourChanges);
         }
 
@@ -142,7 +142,7 @@ public class ChangeSet {
         return removed;
     }
 
-    public Map<String, Set<Attribute>> getUpdated() {
+    public Map<String, Map<Attribute, Object>> getUpdated() {
         return updated;
     }
 }

@@ -27,8 +27,6 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -39,11 +37,9 @@ import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
-import walledin.game.map.GameMapIO;
-import walledin.game.map.GameMapIOXML;
 import walledin.game.network.messages.game.GameMessage;
 import walledin.game.network.messages.masterserver.MasterServerMessage;
-import walledin.util.Utils;
+import walledin.game.network.server.ChangeSet;
 
 /**
  * Reads network messages
@@ -134,14 +130,13 @@ public class NetworkMessageReader {
         }
     }
 
-    /**
-     * Read data for a entity.
-     * 
-     * @param entityManager
-     * @param buffer
-     * @return true if there is more in the list
-     */
-    public static boolean readEntityData(final EntityManager entityManager,
+    public static ChangeSet readChangeSet(final ByteBuffer buffer) {
+        while (hasMore) {
+            hasMore = readEntityData(a, buffer);
+        }
+    }
+
+    private static boolean readEntityData(final EntityManager entityManager,
             final ByteBuffer buffer) {
         final int type = buffer.get();
         if (type == NetworkConstants.GAMESTATE_MESSAGE_END) {
@@ -169,35 +164,6 @@ public class NetworkMessageReader {
         return true;
     }
 
-    public static void readFamilySpecificData(final Family family,
-            final Entity entity) {
-        switch (family) {
-        case MAP:
-            final String mapName = readStringData(buffer);
-            entity.setAttribute(Attribute.MAP_NAME, mapName);
-
-            // load the tiles
-            final GameMapIO mapIO = new GameMapIOXML();
-            entity.setAttribute(Attribute.TILES,
-                    mapIO.readTilesFromURL(Utils.getClasspathURL(mapName)));
-            break;
-        default:
-            break;
-        }
-    }
-
-    public static Object readEntityListData(final ByteBuffer buffer,
-            final EntityManager entityManager) {
-        final int size = buffer.getInt();
-        final List<Entity> entities = new ArrayList<Entity>();
-        for (int i = 0; i < size; i++) {
-            final String name = readStringData(buffer);
-            final Entity entity = entityManager.get(name);
-            entities.add(entity);
-        }
-        return entities;
-    }
-
     public static String readStringData(final ByteBuffer buffer) {
         final int size = buffer.getInt();
         final byte[] bytes = new byte[size];
@@ -205,7 +171,7 @@ public class NetworkMessageReader {
         return new String(bytes);
     }
 
-    public static Object readVector2fData(final ByteBuffer buffer) {
+    public static Vector2f readVector2fData(final ByteBuffer buffer) {
         final float x = buffer.getFloat();
         final float y = buffer.getFloat();
         return new Vector2f(x, y);

@@ -25,15 +25,16 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.network.messages.NetworkMessage;
+import walledin.game.network.server.ChangeSet;
 
 /**
  * Writes network messages
@@ -111,15 +112,38 @@ public class NetworkMessageWriter {
         }
     }
 
-    public static void writeAttributesData(final Entity entity,
-            final Set<Attribute> attributes, final ByteBuffer buffer) {
-        buffer.put(NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES);
-        writeStringData(entity.getName(), buffer);
-        final Map<Attribute, Object> values = entity.getAttributes(attributes);
-        buffer.putInt(attributes.size());
-        for (final Map.Entry<Attribute, Object> entry : values.entrySet()) {
-            writeAttributeData(entry.getKey(), entry.getValue(), buffer);
+    public static void writeChangeSet(final ChangeSet changeSet,
+            final ByteBuffer buffer) {
+        for (final String name : changeSet.getRemoved()) {
+            buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
+            NetworkMessageWriter.writeStringData(name, buffer);
         }
+
+        for (final Entry<String, Family> entry : changeSet.getCreated()
+                .entrySet()) {
+            buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
+            // write name of entity
+            NetworkMessageWriter.writeStringData(entry.getKey(), buffer);
+            // write family of entity
+            NetworkMessageWriter.writeStringData(entry.getValue().toString(),
+                    buffer);
+        }
+
+        for (final Entry<String, Map<Attribute, Object>> entry : changeSet
+                .getUpdated().entrySet()) {
+            buffer.put(NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES);
+            NetworkMessageWriter.writeStringData(entry.getKey(), buffer);
+            final Map<Attribute, Object> attributes = entry.getValue();
+            buffer.putInt(attributes.size());
+            for (final Map.Entry<Attribute, Object> attributeEntry : attributes
+                    .entrySet()) {
+                NetworkMessageWriter.writeAttributeData(
+                        attributeEntry.getKey(), attributeEntry.getValue(),
+                        buffer);
+            }
+        }
+        // write end
+        buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
     }
 
     public static void writeIntegerData(final int data, final ByteBuffer buffer) {
@@ -141,4 +165,5 @@ public class NetworkMessageWriter {
         buffer.putFloat(data.getX());
         buffer.putFloat(data.getY());
     }
+
 }
