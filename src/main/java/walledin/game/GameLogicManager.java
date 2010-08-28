@@ -23,6 +23,7 @@ package walledin.game;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -197,11 +198,18 @@ public final class GameLogicManager {
     /** Minimum Walled In space in player size units. */
     private final int minimalWalledInSpace;
 
+    /* Cluster forming */
+    /** Clusters of foam particles. */
+    private final List<List<Entity>> clusters;
+    /** Maximum distance between foam to be in the same cluster. */
+    private final float maxFoamDistance;
+
     public GameLogicManager(final Server server) {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
         teams = new HashMap<Team, Set<PlayerInfo>>();
+        clusters = new ArrayList<List<Entity>>();
 
         /* Initialize the map */
         for (final Team team : Team.values()) {
@@ -222,6 +230,8 @@ public final class GameLogicManager {
                 "game.walledInTime");
         minimalWalledInSpace = SettingsManager.getInstance().getInteger(
                 "game.mininmalWalledInSpace");
+        maxFoamDistance = SettingsManager.getInstance().getFloat(
+                "game.foamConnectionDistance");
     }
 
     public Server getServer() {
@@ -322,6 +332,63 @@ public final class GameLogicManager {
         }
 
         players.remove(entityName);
+    }
+    
+    public boolean inCluster(final Entity foam) {
+        for (List<Entity> cluster : clusters) {
+           if (cluster.contains(foam)) {
+               return true;
+           }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Adds a foam particle to the closest cluster. This will create connecting
+     * foam particles to smoothen out the track.
+     * 
+     * @param foam
+     *            Foam particle
+     */
+    public void addToCluster(final Entity foam) {
+        float closestFoamClusterDistance = Float.MAX_VALUE;
+        List<Entity> closestCluster = null;
+        Entity closestFoamParticle = null;
+        Vector2f foamPos = (Vector2f) foam.getAttribute(Attribute.POSITION);
+
+        /* Find closest cluster. */
+        for (List<Entity> cluster : clusters) {
+            for (Entity clusterdFoam : cluster) {
+                float length = ((Vector2f) clusterdFoam
+                        .getAttribute(Attribute.POSITION)).sub(foamPos)
+                        .lengthSquared();
+                if (length < maxFoamDistance * maxFoamDistance
+                        && length < closestFoamClusterDistance) {
+                    closestFoamClusterDistance = length;
+                    closestCluster = cluster;
+                    closestFoamParticle = clusterdFoam;
+                }
+            }
+        }
+
+        /* If none closest, create a new cluster. */
+        if (closestCluster == null) {
+            List<Entity> cluster = new ArrayList<Entity>();
+            cluster.add(foam);
+            clusters.add(cluster);
+        } else {
+            LOG.info("particle added to cluster");
+            
+            /* Create intermediary foam particles. */
+            Entity newFoam = entityManager.create(Family.FOAM_PARTICLE);
+            Vector2f clusteredFoamPos = (Vector2f) closestFoamParticle
+                    .getAttribute(Attribute.POSITION);
+            newFoam.setAttribute(Attribute.POSITION,
+                    foamPos.add(clusteredFoamPos.sub(foamPos).scale(0.5f)));
+            closestCluster.add(foam);
+            closestCluster.add(newFoam);
+        }
     }
 
     /**
@@ -473,7 +540,7 @@ public final class GameLogicManager {
     }
 
     /**
-     * Update the gamestate, removes disconnected players and does collision
+     * Updates the gamestate, removes disconnected players and does collision
      * detection.
      * 
      * @param delta
@@ -507,6 +574,15 @@ public final class GameLogicManager {
 
             info.getPlayer().setAttribute(Attribute.WALLEDIN_IN,
                     info.getWalledInTime() / maxWalledInTime);
+        }
+        
+        /* Update clusters.*/
+        for (Entity ent : entityManager.getEntities().values()) {
+            if (ent.getFamily() == Family.FOAM_PARTICLE) {
+                if (!inCluster(ent)) {
+                    addToCluster(ent);
+                }
+            }
         }
 
         /* Do collision detection */
