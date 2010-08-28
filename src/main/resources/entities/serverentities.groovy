@@ -5,20 +5,17 @@ import walledin.game.entity.behaviors.physics.*
 
 [
 (Family.PLAYER): { entity ->
-    entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f); // start looking to
-    // the right
-
+    entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f);
     entity.addBehavior(new HealthBehavior(entity, 100, 100));
     entity.addBehavior(new PlayerControlBehaviour(entity));
     entity.addBehavior(new PlayerParentBehavior(entity));
     entity.addBehavior(new PlayerWeaponInventoryBehavior(entity));
-    //entity.addBehavior(new StandardCollisionResponseBehavior(entity));
-    
+
     // create grenade launcher
     def grenLauncher = entity.getEntityManager().create(Family.GRENADE_LAUNCHER);
     entity.setAttribute(Attribute.GRENADE_LAUNCHER, grenLauncher);
 
-    // FIXME correct the drawing instead of the hack the bounding box
+    // FIXME correct the drawing instead of the hacking the bounding box
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY,
     new Rectangle(0, 0, 44, 43));
 } as EntityFunction,
@@ -45,7 +42,7 @@ import walledin.game.entity.behaviors.physics.*
    entity.addBehavior(new HealthBehavior(entity, 100, 80));    
     
     entity.addBehavior(new PhysicsBehavior(entity, 2e4, false, false));
-    entity.addBehavior(new StaticObjectCollisionResponse(entity));
+    //entity.addBehavior(new StaticObjectCollisionBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
 } as EntityFunction,

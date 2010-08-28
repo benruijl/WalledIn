@@ -25,13 +25,18 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import walledin.engine.math.Circle;
 import walledin.engine.math.Geometry;
+import walledin.engine.math.Polygon2f;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
+import walledin.game.map.TileType;
+import walledin.util.SettingsManager;
 
 /**
  * CollisionManager checks for collisions between all non-map entities and
@@ -42,6 +47,41 @@ import walledin.game.map.Tile;
  */
 public class CollisionManager {
     private static final Logger LOG = Logger.getLogger(CollisionManager.class);
+    private static final float FLOOR_DAMPING = SettingsManager.getInstance()
+            .getFloat("game.floorDamping");
+
+    public static class GeometricalCollisionData {
+        private final boolean collided;
+        private final float time;
+        private final Vector2f normal;
+        private final Vector2f penetration;
+
+        public GeometricalCollisionData(final boolean collided,
+                final float time, final Vector2f normal,
+                final Vector2f penetration) {
+            super();
+            this.collided = collided;
+            this.time = time;
+            this.normal = normal;
+            this.penetration = penetration;
+        }
+
+        public boolean isCollided() {
+            return collided;
+        }
+
+        public float getTime() {
+            return time;
+        }
+
+        public Vector2f getNormal() {
+            return normal;
+        }
+
+        public Vector2f getPenetration() {
+            return penetration;
+        }
+    }
 
     public static class CollisionData {
         private final Vector2f newPos;
@@ -98,7 +138,8 @@ public class CollisionManager {
     }
 
     /**
-     * Calculates the tile containing the point <code>pos</code>.
+     * Calculates the tile containing the point <code>pos</code>. If the
+     * coordinates are illegal, a solid tile is returned and a warning is given.
      * 
      * @param map
      *            Map
@@ -115,15 +156,85 @@ public class CollisionManager {
         final int y = (int) (pos.getY() / tileSize);
 
         if (x < 0 || y < 0 || x >= width || y >= height) {
-            LOG.fatal("Illegal tile requested! "
+            LOG.warn("Illegal tile requested! "
                     + "Tried to access tile at coordinates (" + x + "," + y
                     + "), but the boundaries are (0,0) - (" + width + ","
                     + height + ").");
-            throw new IllegalArgumentException("Illegal tile requested.");
+
+            return new Tile(TileType.TILE_FILLED, x, y);
         }
 
         return tiles.get((int) (pos.getX() / tileSize) + width
                 * (int) (pos.getY() / tileSize));
+    }
+
+    /**
+     * Resolved the collision between a moving polygon and a stationary circle.
+     * 
+     * @param polygonEntity
+     *            The entity with a polygonal bounding geometry
+     * @param circleEntity
+     *            The entity with a circular bounding geometry
+     * @param delta
+     *            Delta time. Used for conversion of the velocity.
+     * @return true if colliding, else false.
+     */
+    public static boolean resolvePolygonCircleCollision(
+            final Entity polygonEntity, final Entity circleEntity,
+            final double delta) {
+
+        final Vector2f theoreticalPolygonPosition = (Vector2f) polygonEntity
+                .getAttribute(Attribute.POSITION);
+
+        final Vector2f circlePosition = (Vector2f) circleEntity
+                .getAttribute(Attribute.POSITION);
+
+        final Vector2f polygonVelocity = ((Vector2f) polygonEntity
+                .getAttribute(Attribute.VELOCITY)).scale((float) delta);
+
+        final Vector2f polygonOldPos = theoreticalPolygonPosition
+                .sub(polygonVelocity);
+
+        /* Polygon and circle at old position. */
+        final Polygon2f polygon = ((Geometry) polygonEntity
+                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
+                .translate(polygonOldPos).asPolygon();
+        final Circle circle = ((Geometry) circleEntity
+                .getAttribute(Attribute.BOUNDING_GEOMETRY))
+                .asCircumscribedCircle().translate(circlePosition);
+
+        /* The circle velocity is -PolygonVelocity. */
+        final GeometricalCollisionData data = polygon.circleCollisionData(
+                circle, polygonVelocity.scale(-1.0f));
+
+        if (!data.isCollided()) {
+            return false;
+        }
+
+        Vector2f newPolygonPos = polygonOldPos.add(data.getPenetration().scale(
+                -1.0f));
+
+        final float dn = polygonVelocity.dot(data.getNormal().scale(-1.0f));
+
+        if (dn < 0) {
+            newPolygonPos = newPolygonPos.add(polygonVelocity.scale(data
+                    .getTime()));
+
+            // slide
+            Vector2f slideVel = polygonVelocity.scale(1.0f - data.getTime());
+            slideVel = slideVel.sub(data.getNormal().scale(-1.0f)
+                    .scale(slideVel.dot(data.getNormal().scale(-1.0f))));
+            newPolygonPos = newPolygonPos.add(slideVel);
+        } else {
+            /* Moving away from collision. Allow. */
+            newPolygonPos = newPolygonPos.add(polygonVelocity);
+        }
+
+        polygonEntity.setAttribute(Attribute.VELOCITY,
+                newPolygonPos.sub(polygonOldPos).scale(1.0f / (float) delta));
+        polygonEntity.setAttribute(Attribute.POSITION, newPolygonPos);
+
+        return true;
     }
 
     /**
@@ -135,9 +246,8 @@ public class CollisionManager {
      *            Delta time, used for interpolation
      */
     public static void calculateEntityCollisions(
-            final Collection<Entity> entities, final double delta) {
-        Entity[] entArray = new Entity[0];
-        entArray = entities.toArray(entArray);
+            final Collection<Entity> entities, double delta) {
+        Entity[] entArray = entities.toArray(new Entity[0]);
 
         for (int i = 0; i < entArray.length - 1; i++) {
             for (int j = i + 1; j < entArray.length; j++) {
@@ -154,39 +264,54 @@ public class CollisionManager {
                     continue;
                 }
 
-                Geometry boundsA = (Geometry) entArray[i]
-                        .getAttribute(Attribute.BOUNDING_GEOMETRY);
-                Geometry boundsB = (Geometry) entArray[j]
-                        .getAttribute(Attribute.BOUNDING_GEOMETRY);
+                /* Gather some information for the collision event. */
+                final Vector2f theorPosA = (Vector2f) entArray[i]
+                        .getAttribute(Attribute.POSITION);
+                final Vector2f theorPosB = (Vector2f) entArray[j]
+                        .getAttribute(Attribute.POSITION);
 
-                boundsA = boundsA.translate((Vector2f) entArray[i]
-                        .getAttribute(Attribute.POSITION));
-                boundsB = boundsB.translate((Vector2f) entArray[j]
-                        .getAttribute(Attribute.POSITION));
+                final Vector2f oldPosA = theorPosA
+                        .sub(((Vector2f) entArray[i]
+                                .getAttribute(Attribute.VELOCITY))
+                                .scale((float) delta));
+                final Vector2f oldPosB = theorPosA
+                        .sub(((Vector2f) entArray[j]
+                                .getAttribute(Attribute.VELOCITY))
+                                .scale((float) delta));
 
-                if (!boundsA.intersects(boundsB)) {
-                    continue;
+                /* Only check the player and the foam for now. */
+                if (entArray[i].getFamily() == Family.PLAYER
+                        && entArray[j].getFamily() == Family.FOAM_PARTICLE) {
+                    resolvePolygonCircleCollision(entArray[i], entArray[j],
+                            delta);
+                } else if (entArray[j].getFamily() == Family.PLAYER
+                        && entArray[i].getFamily() == Family.FOAM_PARTICLE) {
+                    resolvePolygonCircleCollision(entArray[j], entArray[i],
+                            delta);
                 }
 
+                /* Kind of a hack. */
                 final Vector2f posA = (Vector2f) entArray[i]
                         .getAttribute(Attribute.POSITION);
                 final Vector2f posB = (Vector2f) entArray[j]
                         .getAttribute(Attribute.POSITION);
 
-                final Vector2f velA = ((Vector2f) entArray[i]
-                        .getAttribute(Attribute.VELOCITY)).scale((float) delta);
-                final Vector2f velB = ((Vector2f) entArray[j]
-                        .getAttribute(Attribute.VELOCITY)).scale((float) delta);
+                final Geometry boundsA = ((Geometry) entArray[i]
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
+                        .asRectangle().translate(theorPosA);
+                final Geometry boundsB = ((Geometry) entArray[j]
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
+                        .asRectangle().translate(theorPosB);
 
-                final Vector2f oldPosA = posA.sub(velA);
-                final Vector2f oldPosB = posB.sub(velB);
+                if (boundsA.intersects(boundsB)) {
+                    entArray[i].sendMessage(MessageType.COLLIDED,
+                            new CollisionData(posA, oldPosA, theorPosA, delta,
+                                    entArray[j]));
+                    entArray[j].sendMessage(MessageType.COLLIDED,
+                            new CollisionData(posB, oldPosB, theorPosB, delta,
+                                    entArray[i]));
+                }
 
-                entArray[i].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posA, oldPosA, posA, delta,
-                                entArray[j]));
-                entArray[j].sendMessage(MessageType.COLLIDED,
-                        new CollisionData(posB, oldPosB, posB, delta,
-                                entArray[i]));
             }
         }
     }
@@ -239,11 +364,19 @@ public class CollisionManager {
                 Tile rt = tileFromPixel(map, rect.getRightTop());
                 Tile rb = tileFromPixel(map, rect.getRightBottom());
 
+                /*
+                 * If the object is touching the floor, lower its horizontal
+                 * speed. If there is no collision, the damping factor is 1.
+                 */
+                float damping = 1.0f;
+
                 // bottom check
                 if (vel.getY() > 0
                         && (lb.getType().isSolid() || rb.getType().isSolid())) {
                     final int rest = (int) (rect.getBottom() / tileSize);
                     y = rest * tileSize - rect.getHeight() - eps;
+
+                    damping = FLOOR_DAMPING;
                 } else
                 // top check
                 if (vel.getY() < 0
@@ -274,9 +407,10 @@ public class CollisionManager {
                 }
 
                 ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-                ent.setAttribute(Attribute.VELOCITY,
-                        new Vector2f(x - oldPos.getX(), y - oldPos.getY())
-                                .scale((float) (1 / delta)));
+                ent.setAttribute(
+                        Attribute.VELOCITY,
+                        new Vector2f((x - oldPos.getX()) * damping, y
+                                - oldPos.getY()).scale((float) (1 / delta)));
 
                 // if there is no difference, there has been no collision
                 if (Math.abs(x - curPos.getX()) > eps
@@ -288,4 +422,5 @@ public class CollisionManager {
         }
 
     }
+
 }

@@ -50,6 +50,19 @@ public class Circle extends Geometry {
         this.radius = radius;
     }
 
+    /**
+     * Returns the 'depth' of the intersection.
+     * 
+     * @param circ
+     *            Circle
+     * @return Depth of collision. Can be negative if there is no collision.
+     */
+    public float intersectionDepth(final Circle circ) {
+        return (getRadius() + circ.getRadius())
+                * (getRadius() + circ.getRadius())
+                - getPos().sub(circ.getPos()).lengthSquared();
+    }
+
     @Override
     public Circle translate(final Vector2f pos) {
         return new Circle(this.pos.add(pos), radius);
@@ -96,7 +109,64 @@ public class Circle extends Geometry {
 
     @Override
     public boolean containsPoint(final Vector2f point) {
-        return pos.sub(pos).lengthSquared() < radius * radius;
+        return pos.sub(point).lengthSquared() < radius * radius;
+    }
+
+    /**
+     * Returns the time at which a moving point collides with the circle.
+     * 
+     * @param point
+     *            Point
+     * @param velocity
+     *            Velocity of point
+     * @return time at which collision happened. Is negative when none happened.
+     */
+    public float pointCollision(final Vector2f point, final Vector2f velocity) {
+        final Vector2f h = pos.sub(point);
+
+        final float a = velocity.lengthSquared();
+        final float b = 2.0f * velocity.dot(h);
+        final float c = h.dot(h) - radius * radius;
+        float d = b * b - 4.0f * a * c;
+
+        // point missed by infinite ray
+        if (d < 0.0f) {
+            return -1.0f;
+        }
+
+        d = (float) Math.sqrt(d);
+        float t0 = (-b - d) / (2.0f * a);
+        float t1 = (-b + d) / (2.0f * a);
+
+        // sort times
+        if (t0 > t1) {
+            final float temp = t0;
+            t0 = t1;
+            t1 = temp;
+        }
+
+        // point missed by ray range
+        if (t0 > 1.0f || t1 < 0.0f) {
+            return -1.0f;
+        }
+
+        return t0;
+    }
+
+    public Vector2f closestPointOnCircle(final Vector2f point) {
+        Vector2f delta = point.sub(pos);
+        final float dist = delta.length();
+
+        /* Prevent division by zero. */
+        if (dist > 0.0000001f) {
+            delta = delta.scale(1.0f / dist);
+        }
+
+        return pos.add(delta.scale(radius));
+    }
+    
+    public boolean isPointInCircle(final Vector2f point) {
+        return point.sub(pos).lengthSquared() <= radius * radius;
     }
 
 }

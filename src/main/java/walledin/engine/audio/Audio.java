@@ -78,7 +78,7 @@ public final class Audio {
     private Audio() {
         samples = new HashMap<String, Integer>();
         sources = new LinkedList<Integer>();
-        
+
         if (!SettingsManager.getInstance().getBoolean("game.audio")) {
             enabled = false;
             return;

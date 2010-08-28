@@ -24,6 +24,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * @author Ben Ruijl
@@ -146,5 +149,15 @@ public class Rectangle extends Geometry {
     public boolean containsPoint(final Vector2f point) {
         return getRight() > point.getX() && getLeft() < point.getX()
                 && getBottom() > point.getY() && getTop() < point.getY();
+    }
+
+    public Polygon2f asPolygon() {
+        final List<Line2f> edges = new ArrayList<Line2f>();
+        edges.add(new Line2f(getLeftTop(), getLeftBottom(), true));
+        edges.add(new Line2f(getLeftBottom(), getRightBottom(), true));
+        edges.add(new Line2f(getRightBottom(), getRightTop(), true));
+        edges.add(new Line2f(getRightTop(), getLeftTop(), true));
+
+        return new Polygon2f(edges, new Vector2f());
     }
 }

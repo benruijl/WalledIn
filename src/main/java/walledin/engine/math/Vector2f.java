@@ -27,10 +27,10 @@ import walledin.util.Utils;
  * 
  * @author Ben Ruijl
  */
-public class Vector2f {
-    /** X component of the vector */
+public final class Vector2f {
+    /** X component of the vector. */
     private final float x;
-    /** Y component of the vector */
+    /** Y component of the vector. */
     private final float y;
 
     public Vector2f() {
@@ -104,13 +104,13 @@ public class Vector2f {
     public Vector2f scaleTo(float size) {
         return scale(size / length());        
     }
-    
-    public float length() {
-        return (float) Math.sqrt(lengthSquared());
-    }
 
     public float lengthSquared() {
         return dot(this);
+    }
+
+    public float length() {
+        return (float) Math.sqrt(lengthSquared());
     }
 
     public Vector2f scale(final float amount) {

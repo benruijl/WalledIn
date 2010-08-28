@@ -42,14 +42,14 @@ public class GrenadeBehavior extends Behavior {
                         getAttribute(Attribute.POSITION));
 
                 foamBullet.sendMessage(MessageType.APPLY_FORCE, new Matrix2f(-i
-                        * Math.PI / (double) numberOfParticles)
+                        * Math.PI / (double) (numberOfParticles - 1))
                         .apply(particleAcc));
 
                 foamBullet
                         .setAttribute(Attribute.TARGET, ((Vector2f) foamBullet
                                 .getAttribute(Attribute.POSITION))
                                 .add(new Matrix2f(-i * Math.PI
-                                        / (double) numberOfParticles)
+                                        / (double) (numberOfParticles - 1))
                                         .apply(particleTarget)));
             }
 

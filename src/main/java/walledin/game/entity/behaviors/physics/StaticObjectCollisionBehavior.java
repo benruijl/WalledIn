@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.physics;
 
+import walledin.engine.math.Circle;
 import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
@@ -37,7 +38,7 @@ import walledin.util.SettingsManager;
  * @author Ben Ruijl
  * 
  */
-public class StaticObjectCollisionResponse extends Behavior {
+public class StaticObjectCollisionBehavior extends Behavior {
     /** The maximum depth of a collision resolving search. */
     private final int maxCollisionSearchDepth;
 
@@ -47,7 +48,7 @@ public class StaticObjectCollisionResponse extends Behavior {
      * @param owner
      *            Owner of this behavior
      */
-    public StaticObjectCollisionResponse(final Entity owner) {
+    public StaticObjectCollisionBehavior(final Entity owner) {
         super(owner);
 
         maxCollisionSearchDepth = SettingsManager.getInstance().getInteger(
@@ -125,10 +126,45 @@ public class StaticObjectCollisionResponse extends Behavior {
         final Vector2f resolvedPosX = doBinarySearch(maxCollisionSearchDepth,
                 oldPosB, oldPosB.getYVector().add(endPosB.getXVector()),
                 boundsA, boundsB);
-        final Vector2f resolvedPos = doBinarySearch(maxCollisionSearchDepth,
+        Vector2f resolvedPos = doBinarySearch(maxCollisionSearchDepth,
                 resolvedPosX,
                 resolvedPosX.getXVector().add(endPosB.getYVector()), boundsA,
                 boundsB);
+
+        /*
+         * Check if the old position is colliding. This is the case if the
+         * resolved position is colliding, because then they are the same. If it
+         * is, check if the new collision depth is smaller than the old one. If
+         * so, allow the movement. This will prevent objects from getting stuck.
+         */
+        if (boundsA.intersects(boundsB.translate(oldPosB))) {
+            final Circle circA = boundsA.asCircumscribedCircle();
+            final Circle newCircB = boundsB.asCircumscribedCircle().translate(
+                    endPosB);
+            final Circle oldCircB = boundsB.asCircumscribedCircle().translate(
+                    oldPosB);
+
+            /*
+             * Only allow the movement if it doesn't move over the center of the
+             * object, else you will get tunneling.
+             */
+            if (newCircB.getPos().sub(oldCircB.getPos()).lengthSquared() < circA
+                    .getPos().sub(oldCircB.getPos()).lengthSquared()) {
+
+                final float newColDepth = boundsA.asCircumscribedCircle()
+                        .intersectionDepth(
+                                boundsB.asCircumscribedCircle().translate(
+                                        endPosB));
+                final float oldColDepth = boundsA.asCircumscribedCircle()
+                        .intersectionDepth(
+                                boundsB.asCircumscribedCircle().translate(
+                                        oldPosB));
+
+                if (newColDepth < oldColDepth) {
+                    resolvedPos = endPosB;
+                }
+            }
+        }
 
         data.getCollisionEntity().setAttribute(Attribute.POSITION, resolvedPos);
 
