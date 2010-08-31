@@ -77,14 +77,12 @@ public class NetworkReader {
         listener.receivedChallengeResponseMessage(address, challengeData);
     }
 
-    private void processServerNotificationMessage(final SocketAddress address)
-            throws UnknownHostException {
+    private void processServerNotificationMessage(final SocketAddress address) {
         final InetSocketAddress inetAddress = (InetSocketAddress) address;
         // only read port. ip is derived from connection
         final int port = buffer.getInt();
         final SocketAddress serverAddress = new InetSocketAddress(
-                InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
-                port);
+                inetAddress.getAddress(), port);
         final String name = readStringData();
         final int players = buffer.getInt();
         final int maxPlayers = buffer.getInt();
