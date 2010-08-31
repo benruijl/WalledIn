@@ -164,7 +164,7 @@ public class Circle extends Geometry {
 
         return pos.add(delta.scale(radius));
     }
-    
+
     public boolean isPointInCircle(final Vector2f point) {
         return point.sub(pos).lengthSquared() <= radius * radius;
     }

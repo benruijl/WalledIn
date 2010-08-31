@@ -47,7 +47,8 @@ public class BulletBehavior extends Behavior {
                 getOwner().remove();
             }
 
-            // if collided with entity that has a health component, remove and do damage
+            // if collided with entity that has a health component, remove and
+            // do damage
             if (colData.getCollisionEntity().hasAttribute(Attribute.HEALTH)) {
                 colData.getCollisionEntity().sendMessage(
                         MessageType.TAKE_DAMAGE, Integer.valueOf(damage));

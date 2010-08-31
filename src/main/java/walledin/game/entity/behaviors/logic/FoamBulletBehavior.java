@@ -48,8 +48,8 @@ public class FoamBulletBehavior extends BulletBehavior {
                         || colData.getCollisionEntity().getFamily()
                                 .equals(Family.FOAM_PARTICLE)) {
                     final EntityManager manager = getEntityManager();
-                    final Entity particle = manager.create(
-                            Family.FOAM_PARTICLE);
+                    final Entity particle = manager
+                            .create(Family.FOAM_PARTICLE);
 
                     particle.setAttribute(Attribute.POSITION,
                             getAttribute(Attribute.POSITION));

@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
-
 /**
  * This class describes a 2-dimensional line or line segment.
  * 
@@ -55,7 +54,7 @@ public class Line2f {
     public Vector2f getDir() {
         return dir;
     }
-    
+
     public boolean isBackFacing(final Vector2f point) {
         return point.sub(begin).cross(dir) <= 0;
     }

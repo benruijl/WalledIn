@@ -36,6 +36,7 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
+import walledin.util.SettingsManager;
 
 /**
  * CollisionManager checks for collisions between all non-map entities and
@@ -46,6 +47,8 @@ import walledin.game.map.TileType;
  */
 public class CollisionManager {
     private static final Logger LOG = Logger.getLogger(CollisionManager.class);
+    private static final float FLOOR_DAMPING = SettingsManager.getInstance()
+            .getFloat("game.floorDamping");
 
     public static class GeometricalCollisionData {
         private final boolean collided;
@@ -222,18 +225,13 @@ public class CollisionManager {
             slideVel = slideVel.sub(data.getNormal().scale(-1.0f)
                     .scale(slideVel.dot(data.getNormal().scale(-1.0f))));
             newPolygonPos = newPolygonPos.add(slideVel);
-
-            polygonEntity.setAttribute(Attribute.VELOCITY,
-                    slideVel.scale(1.0f / (float) delta));
-
         } else {
             /* Moving away from collision. Allow. */
             newPolygonPos = newPolygonPos.add(polygonVelocity);
-            polygonEntity.setAttribute(Attribute.VELOCITY,
-                    newPolygonPos.sub(polygonOldPos)
-                            .scale(1.0f / (float) delta));
         }
 
+        polygonEntity.setAttribute(Attribute.VELOCITY,
+                newPolygonPos.sub(polygonOldPos).scale(1.0f / (float) delta));
         polygonEntity.setAttribute(Attribute.POSITION, newPolygonPos);
 
         return true;
@@ -248,8 +246,8 @@ public class CollisionManager {
      *            Delta time, used for interpolation
      */
     public static void calculateEntityCollisions(
-            final Collection<Entity> entities, double delta) {
-        Entity[] entArray = entities.toArray(new Entity[0]);
+            final Collection<Entity> entities, final double delta) {
+        final Entity[] entArray = entities.toArray(new Entity[0]);
 
         for (int i = 0; i < entArray.length - 1; i++) {
             for (int j = i + 1; j < entArray.length; j++) {
@@ -366,11 +364,19 @@ public class CollisionManager {
                 Tile rt = tileFromPixel(map, rect.getRightTop());
                 Tile rb = tileFromPixel(map, rect.getRightBottom());
 
+                /*
+                 * If the object is touching the floor, lower its horizontal
+                 * speed. If there is no collision, the damping factor is 1.
+                 */
+                float damping = 1.0f;
+
                 // bottom check
                 if (vel.getY() > 0
                         && (lb.getType().isSolid() || rb.getType().isSolid())) {
                     final int rest = (int) (rect.getBottom() / tileSize);
                     y = rest * tileSize - rect.getHeight() - eps;
+
+                    damping = FLOOR_DAMPING;
                 } else
                 // top check
                 if (vel.getY() < 0
@@ -401,9 +407,10 @@ public class CollisionManager {
                 }
 
                 ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
-                ent.setAttribute(Attribute.VELOCITY,
-                        new Vector2f(x - oldPos.getX(), y - oldPos.getY())
-                                .scale((float) (1 / delta)));
+                ent.setAttribute(
+                        Attribute.VELOCITY,
+                        new Vector2f((x - oldPos.getX()) * damping, y
+                                - oldPos.getY()).scale((float) (1 / delta)));
 
                 // if there is no difference, there has been no collision
                 if (Math.abs(x - curPos.getX()) > eps

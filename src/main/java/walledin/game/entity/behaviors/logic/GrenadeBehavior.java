@@ -1,3 +1,23 @@
+/*  Copyright 2010 Ben Ruijl, Wouter Smeenk
+
+This file is part of Walled In.
+
+Walled In is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3, or (at your option)
+any later version.
+
+Walled In is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Walled In; see the file LICENSE.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+ */
 package walledin.game.entity.behaviors.logic;
 
 import walledin.engine.math.Matrix2f;
@@ -17,39 +37,40 @@ public class GrenadeBehavior extends Behavior {
      */
     private final int numberOfParticles = 5;
     private double time = 0;
-    private Vector2f particleTarget = new Vector2f(100.0f, 0);
-    private Vector2f particleAcc = new Vector2f(30000.0f, 0);
+    private final Vector2f particleTarget = new Vector2f(100.0f, 0);
+    private final Vector2f particleAcc = new Vector2f(30000.0f, 0);
 
-    public GrenadeBehavior(Entity owner) {
+    public GrenadeBehavior(final Entity owner) {
         super(owner);
     }
 
     @Override
-    public void onMessage(MessageType messageType, Object data) {
+    public void onMessage(final MessageType messageType, final Object data) {
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
         time += delta;
 
         if (time > explodeTime) {
             /* Explode! */
 
             for (int i = 0; i < numberOfParticles; i++) {
-                Entity foamBullet = getOwner().getEntityManager().create(
+                final Entity foamBullet = getOwner().getEntityManager().create(
                         Family.FOAMGUN_BULLET);
                 foamBullet.setAttribute(Attribute.POSITION,
                         getAttribute(Attribute.POSITION));
 
-                foamBullet.sendMessage(MessageType.APPLY_FORCE, new Matrix2f(-i
-                        * Math.PI / (double) (numberOfParticles - 1))
-                        .apply(particleAcc));
+                foamBullet
+                        .sendMessage(MessageType.APPLY_FORCE, new Matrix2f(-i
+                                * Math.PI / (numberOfParticles - 1))
+                                .apply(particleAcc));
 
                 foamBullet
                         .setAttribute(Attribute.TARGET, ((Vector2f) foamBullet
                                 .getAttribute(Attribute.POSITION))
                                 .add(new Matrix2f(-i * Math.PI
-                                        / (double) (numberOfParticles - 1))
+                                        / (numberOfParticles - 1))
                                         .apply(particleTarget)));
             }
 

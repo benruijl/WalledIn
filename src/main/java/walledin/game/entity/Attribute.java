@@ -28,35 +28,24 @@ import walledin.engine.math.Vector2f;
 import walledin.game.Team;
 
 public enum Attribute {
-    POSITION(Vector2f.class, true),
-    VELOCITY(Vector2f.class, true),
-    WIDTH(Integer.class, true),
-    HEIGHT(Integer.class, true),
+    POSITION(Vector2f.class, true), VELOCITY(Vector2f.class, true), WIDTH(
+            Integer.class, true), HEIGHT(Integer.class, true),
     /**
      * Map tiles. Tiles do not get sent over network, but will be read locally.
      */
-    TILES(List.class, false),
-    TILE_WIDTH(Float.class, true),
+    TILES(List.class, false), TILE_WIDTH(Float.class, true),
     /** Map name will be sent separately at entity creation. */
     MAP_NAME(String.class, false),
     /** Spawn points of a map. */
-    SPAWN_POINTS(List.class, false),
-    HEALTH(Integer.class, true),
-    PLAYER_NAME(String.class, true),
-    PLAYER_TEAM(Team.class, true),
+    SPAWN_POINTS(List.class, false), HEALTH(Integer.class, true), PLAYER_NAME(
+            String.class, true), PLAYER_TEAM(Team.class, true),
     /** Orientation angle. */
-    ORIENTATION_ANGLE(Float.class, true),
-    ACTIVE_WEAPON(Entity.class),
+    ORIENTATION_ANGLE(Float.class, true), ACTIVE_WEAPON(Entity.class),
     /** An invisible grenade launcher. Useful for keeping track of the grenades. */
-    GRENADE_LAUNCHER(Entity.class),
-    PICKED_UP(Boolean.class),
-    CURSOR_POS(Vector2f.class),
-    PLAYER_ACTIONS(Set.class),
-    WALK_ANIM_FRAME(Float.class),
-    BOUNDING_GEOMETRY(Geometry.class),
-    Z_INDEX(Integer.class),
-    MASS(Float.class),
-    TARGET(Vector2f.class),
+    GRENADE_LAUNCHER(Entity.class), PICKED_UP(Boolean.class), CURSOR_POS(
+            Vector2f.class), PLAYER_ACTIONS(Set.class), WALK_ANIM_FRAME(
+            Float.class), BOUNDING_GEOMETRY(Geometry.class), Z_INDEX(
+            Integer.class), MASS(Float.class), TARGET(Vector2f.class),
     /** Counter between zero and one that takes track of how blocked you are. */
     WALLEDIN_IN(Float.class, true);
 
