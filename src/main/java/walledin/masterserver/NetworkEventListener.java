@@ -28,6 +28,5 @@ public interface NetworkEventListener {
     void receivedServerNotificationMessage(SocketAddress address,
             ServerData server);
 
-    void receivedChallengeMessage(SocketAddress address,
-            long challengeData);
+    void receivedChallengeMessage(SocketAddress address, long challengeData);
 }
