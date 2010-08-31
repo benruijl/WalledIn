@@ -78,7 +78,7 @@ public class EntityManager {
      *            Family of the entity
      * @return Entity or null on failure
      */
-    public Entity create(Family family) {
+    public Entity create(final Family family) {
         final Entity entity = factory.create(this, family,
                 generateUniqueName(family));
         add(entity);

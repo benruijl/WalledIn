@@ -246,8 +246,8 @@ public class CollisionManager {
      *            Delta time, used for interpolation
      */
     public static void calculateEntityCollisions(
-            final Collection<Entity> entities, double delta) {
-        Entity[] entArray = entities.toArray(new Entity[0]);
+            final Collection<Entity> entities, final double delta) {
+        final Entity[] entArray = entities.toArray(new Entity[0]);
 
         for (int i = 0; i < entArray.length - 1; i++) {
             for (int j = i + 1; j < entArray.length; j++) {

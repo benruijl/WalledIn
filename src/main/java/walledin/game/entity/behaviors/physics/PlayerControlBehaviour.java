@@ -31,7 +31,6 @@ import walledin.game.PlayerAction;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends Behavior {
