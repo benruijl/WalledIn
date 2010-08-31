@@ -61,6 +61,7 @@ import walledin.game.network.messages.masterserver.ChallengeMessage;
 import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
 import walledin.game.network.messages.masterserver.ServersMessage;
+import walledin.game.network.server.ChangeSet;
 import walledin.util.SettingsManager;
 
 public final class Client implements NetworkEventListener {
@@ -386,9 +387,9 @@ public final class Client implements NetworkEventListener {
     public void receivedMessage(final SocketAddress address,
             final GamestateMessage message) {
         lastLoginTry = -1;
-        boolean result = false;
         // FIXME check if this is correct .. version could be swaped
-        final int newVersion = message.getCurrentVersion();
+        final ChangeSet changeSet = message.getChangeSet();
+        final int newVersion = changeSet.getVersion();
         final int oldVersion = message.getKnownClientVersion();
         if (LOG.isTraceEnabled()) {
             LOG.trace("version:" + newVersion + " receivedVersion:"
@@ -396,7 +397,7 @@ public final class Client implements NetworkEventListener {
         }
         if (receivedVersion == oldVersion && newVersion > receivedVersion) {
             receivedVersion = newVersion;
-            result = true;
+            // FIXME process the changeset
         }
         try {
             networkWriter.sendMessage(
@@ -408,7 +409,6 @@ public final class Client implements NetworkEventListener {
             LOG.error("IO exception during network event", e);
             dispose();
         }
-        return result;
     }
 
     @Override

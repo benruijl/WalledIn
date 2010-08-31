@@ -241,7 +241,7 @@ public class Server implements NetworkEventListener {
     }
 
     private ServerData createServerData() {
-        final SocketAddress address = new InetSocketAddress(port);
+        final InetSocketAddress address = new InetSocketAddress(port);
         final ServerData data = new ServerData(address, serverName,
                 players.size(), maxPlayers, gameLogicManager.getGameMode());
         return data;
@@ -302,10 +302,8 @@ public class Server implements NetworkEventListener {
                         + " " + changeSet.getRemoved() + " "
                         + changeSet.getUpdated());
             }
-            networkWriter.prepareGamestateMessage(
-                    gameLogicManager.getEntityManager(), changeSet,
-                    changeSet.getVersion(), currentVersion);
-            networkWriter.sendBuffer(channel, connection.getAddress());
+            networkWriter.sendMessage(channel, connection.getAddress(),
+                    new GamestateMessage(changeSet, currentVersion));
         }
     }
 

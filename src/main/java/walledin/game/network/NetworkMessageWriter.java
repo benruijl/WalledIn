@@ -114,36 +114,42 @@ public class NetworkMessageWriter {
 
     public static void writeChangeSet(final ChangeSet changeSet,
             final ByteBuffer buffer) {
+        buffer.putInt(changeSet.getVersion());
+        // Write the size of the changeset
+        buffer.putInt(changeSet.getRemoved().size());
+        buffer.putInt(changeSet.getCreated().size());
+        buffer.putInt(changeSet.getUpdated().size());
         for (final String name : changeSet.getRemoved()) {
-            buffer.put(NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY);
             NetworkMessageWriter.writeStringData(name, buffer);
         }
-
         for (final Entry<String, Family> entry : changeSet.getCreated()
                 .entrySet()) {
-            buffer.put(NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY);
             // write name of entity
-            NetworkMessageWriter.writeStringData(entry.getKey(), buffer);
+            writeStringData(entry.getKey(), buffer);
             // write family of entity
-            NetworkMessageWriter.writeStringData(entry.getValue().toString(),
-                    buffer);
+            writeFamilyData(entry.getValue(), buffer);
         }
-
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {
-            buffer.put(NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES);
-            NetworkMessageWriter.writeStringData(entry.getKey(), buffer);
-            final Map<Attribute, Object> attributes = entry.getValue();
-            buffer.putInt(attributes.size());
-            for (final Map.Entry<Attribute, Object> attributeEntry : attributes
-                    .entrySet()) {
-                NetworkMessageWriter.writeAttributeData(
-                        attributeEntry.getKey(), attributeEntry.getValue(),
-                        buffer);
-            }
+            // write name of entity
+            writeStringData(entry.getKey(), buffer);
+            writeAttributes(entry.getValue(), buffer);
         }
-        // write end
-        buffer.put(NetworkConstants.GAMESTATE_MESSAGE_END);
+    }
+
+    private static void writeAttributes(
+            final Map<Attribute, Object> attributes, final ByteBuffer buffer) {
+        buffer.putInt(attributes.size());
+        for (final Map.Entry<Attribute, Object> attributeEntry : attributes
+                .entrySet()) {
+            writeAttributeData(attributeEntry.getKey(),
+                    attributeEntry.getValue(), buffer);
+        }
+    }
+
+    private static void writeFamilyData(final Family family,
+            final ByteBuffer buffer) {
+        writeStringData(family.toString(), buffer);
     }
 
     public static void writeIntegerData(final int data, final ByteBuffer buffer) {
@@ -166,4 +172,14 @@ public class NetworkMessageWriter {
         buffer.putFloat(data.getY());
     }
 
+    public static void writeServerData(final ServerData server,
+            final ByteBuffer buffer) {
+        // TODO check size? not ipv6 safe?
+        buffer.put(server.getAddress().getAddress().getAddress());
+        buffer.putInt(server.getAddress().getPort());
+        writeStringData(server.getName(), buffer);
+        buffer.putInt(server.getPlayers());
+        buffer.putInt(server.getMaxPlayers());
+        buffer.putInt(server.getGameMode().ordinal());
+    }
 }

@@ -188,7 +188,7 @@ public final class GameLogicManager {
     public Entity createPlayer(final String entityName, final String name) {
         final Entity player = entityManager.create(Family.PLAYER, entityName);
         player.setAttribute(Attribute.PLAYER_NAME, name);
-        players.put(entityName, new PlayerInfo(this, player));
+        players.put(entityName, new PlayerInfo(player));
         spawnPlayer(player);
 
         return player;

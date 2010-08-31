@@ -31,9 +31,8 @@ import walledin.game.network.server.ChangeSet;
 public class GamestateMessage extends GameMessage {
     private ChangeSet changeSet;
     private int knownClientVersion;
-    private int currentVersion;
 
-    public GamestateMessage() {
+    public GamestateMessage(final ChangeSet changeSet, final int currentVersion) {
     }
 
     public ChangeSet getChangeSet() {
@@ -44,21 +43,15 @@ public class GamestateMessage extends GameMessage {
         return knownClientVersion;
     }
 
-    public int getCurrentVersion() {
-        return currentVersion;
-    }
-
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
         knownClientVersion = buffer.getInt();
-        currentVersion = buffer.getInt();
         changeSet = NetworkMessageReader.readChangeSet(buffer);
     }
 
     @Override
     public void write(final ByteBuffer buffer) {
         buffer.putInt(knownClientVersion);
-        buffer.putInt(currentVersion);
         NetworkMessageWriter.writeChangeSet(changeSet, buffer);
     }
 

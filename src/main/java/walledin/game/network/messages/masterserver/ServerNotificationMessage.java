@@ -20,16 +20,20 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network.messages.masterserver;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
-import walledin.game.GameMode;
+import org.apache.log4j.Logger;
+
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
+import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.ServerData;
 
 public class ServerNotificationMessage extends MasterServerMessage {
+    private static final Logger LOG = Logger
+            .getLogger(ServerNotificationMessage.class);
     private ServerData server;
 
     public ServerNotificationMessage() {
@@ -45,23 +49,16 @@ public class ServerNotificationMessage extends MasterServerMessage {
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
-        final InetSocketAddress inetAddress = (InetSocketAddress) address;
-        // only read port. ip is derived from connection
-        final int port = buffer.getInt();
-        final SocketAddress serverAddress = new InetSocketAddress(
-                inetAddress.getAddress(), port);
-        final String name = NetworkMessageReader.readStringData(buffer);
-        final int players = buffer.getInt();
-        final int maxPlayers = buffer.getInt();
-        final GameMode gameMode = GameMode.values()[buffer.getInt()];
-        server = new ServerData(serverAddress, name, players, maxPlayers,
-                gameMode);
+        try {
+            server = NetworkMessageReader.readServerData(buffer);
+        } catch (final UnknownHostException e) {
+            LOG.warn("UnknownHostException when reader server", e);
+        }
     }
 
     @Override
     public void write(final ByteBuffer buffer) {
-        // FIXME .... we need this
-        throw new IllegalStateException("Not yet implemented");
+        NetworkMessageWriter.writeServerData(server, buffer);
     }
 
     @Override

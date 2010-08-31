@@ -27,6 +27,10 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +39,6 @@ import walledin.game.EntityManager;
 import walledin.game.GameMode;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.messages.game.GameMessage;
 import walledin.game.network.messages.masterserver.MasterServerMessage;
@@ -67,7 +70,7 @@ public class NetworkMessageReader {
         final byte[] ip = new byte[4];
         buffer.get(ip);
         final int port = buffer.getInt();
-        final SocketAddress serverAddress = new InetSocketAddress(
+        final InetSocketAddress serverAddress = new InetSocketAddress(
                 InetAddress.getByAddress(ip), port);
         final String name = readStringData(buffer);
         final int players = buffer.getInt();
@@ -77,8 +80,8 @@ public class NetworkMessageReader {
                 gameMode);
     }
 
-    public static void readAttributeData(final Entity entity,
-            final ByteBuffer buffer, final EntityManager entityManager) {
+    private static void readAttributeData(
+            final Map<Attribute, Object> attributes, final ByteBuffer buffer) {
         // Write attribute identification
         final short ord = buffer.getShort();
         // FIXME don't use ordinal
@@ -119,49 +122,76 @@ public class NetworkMessageReader {
             LOG.error("Could not process attribute " + attribute);
             break;
         }
-        entity.setAttribute(attribute, data);
+        attributes.put(attribute, data);
     }
 
-    public static void readAttributesData(final Entity entity,
-            final ByteBuffer buffer, final EntityManager entityManager) {
+    public static Map<Attribute, Object> readAttributesData(
+            final ByteBuffer buffer) {
         final int num = buffer.getInt();
+        final Map<Attribute, Object> attributes = new HashMap<Attribute, Object>(
+                num);
         for (int i = 0; i < num; i++) {
-            readAttributeData(entity, buffer, entityManager);
+            readAttributeData(attributes, buffer);
         }
+        return attributes;
     }
 
     public static ChangeSet readChangeSet(final ByteBuffer buffer) {
-        while (hasMore) {
-            hasMore = readEntityData(a, buffer);
+        final int version = buffer.getInt();
+        final int numRemoved = buffer.getInt();
+        final int numCreated = buffer.getInt();
+        final int numUpdated = buffer.getInt();
+        final Set<String> removed = new HashSet<String>(numRemoved);
+        final Map<String, Family> created = new HashMap<String, Family>(
+                numCreated);
+        final Map<String, Map<Attribute, Object>> updated = new HashMap<String, Map<Attribute, Object>>(
+                numUpdated);
+        for (int i = 0; i < numRemoved; i++) {
+            removed.add(readStringData(buffer));
         }
+        for (int i = 0; i < numCreated; i++) {
+            final String name = readStringData(buffer);
+            final Family family = readFamilyData(buffer);
+            created.put(name, family);
+        }
+        for (int i = 0; i < numUpdated; i++) {
+            final String name = readStringData(buffer);
+            final Map<Attribute, Object> attributes = readAttributesData(buffer);
+            updated.put(name, attributes);
+        }
+        return new ChangeSet(version, created, removed, updated);
     }
 
-    private static boolean readEntityData(final EntityManager entityManager,
-            final ByteBuffer buffer) {
-        final int type = buffer.get();
-        if (type == NetworkConstants.GAMESTATE_MESSAGE_END) {
-            return false;
-        }
-        final String name = readStringData(buffer);
-        Entity entity = null;
-        switch (type) {
-        case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
-            final String familyName = readStringData(buffer);
-            final Family family = Enum.valueOf(Family.class, familyName);
+    // private static void readEntityData(final ByteBuffer buffer) {
+    // final int type = buffer.get();
+    // if (type == NetworkConstants.GAMESTATE_MESSAGE_END) {
+    // return false;
+    // }
+    // final String name = readStringData(buffer);
+    // Entity entity = null;
+    // switch (type) {
+    // case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
+    // final String familyName = readStringData(buffer);
+    // final Family family = Enum.valueOf(Family.class, familyName);
+    //
+    // entity = entityManager.create(family, name);
+    // readFamilySpecificData(family, entity);
+    // listener.entityCreated(entity);
+    // break;
+    // case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
+    // entityManager.remove(name);
+    // break;
+    // case NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES:
+    // entity = entityManager.get(name);
+    // readAttributesData(entity, buffer, entityManager);
+    // break;
+    // }
+    // return true;
+    // }
 
-            entity = entityManager.create(family, name);
-            readFamilySpecificData(family, entity);
-            listener.entityCreated(entity);
-            break;
-        case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
-            entityManager.remove(name);
-            break;
-        case NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES:
-            entity = entityManager.get(name);
-            readAttributesData(entity, buffer, entityManager);
-            break;
-        }
-        return true;
+    public static Family readFamilyData(final ByteBuffer buffer) {
+        final String name = readStringData(buffer);
+        return Family.valueOf(name.toUpperCase());
     }
 
     public static String readStringData(final ByteBuffer buffer) {

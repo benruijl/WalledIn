@@ -29,12 +29,6 @@ public class NetworkConstants {
     // TODO: what is max upd size?
     public static final int BUFFER_SIZE = 1024 * 1024;
 
-    // TODO move to gamestate message and make enum
-    public static final byte GAMESTATE_MESSAGE_CREATE_ENTITY = 0;
-    public static final byte GAMESTATE_MESSAGE_REMOVE_ENTITY = 1;
-    public static final byte GAMESTATE_MESSAGE_ATTRIBUTES = 2;
-    public static final byte GAMESTATE_MESSAGE_END = 3;
-
     public static final int MASTER_PROTOCOL_PORT = SettingsManager
             .getInstance().getInteger("network.masterServerPort");
     public static final SocketAddress MASTERSERVER_ADDRESS = new InetSocketAddress(

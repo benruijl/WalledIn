@@ -54,6 +54,15 @@ public class ChangeSet {
         initialize(created, removed, entities);
     }
 
+    public ChangeSet(final int version, final Map<String, Family> created,
+            final Set<String> removed,
+            final Map<String, Map<Attribute, Object>> updated) {
+        this.version = version;
+        this.created = created;
+        this.removed = removed;
+        this.updated = updated;
+    }
+
     /**
      * creates the initial change set
      * 
