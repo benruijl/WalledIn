@@ -56,9 +56,9 @@ public class WeaponBehavior extends Behavior {
         setAttribute(Attribute.PICKED_UP, Boolean.FALSE);
         setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
     }
-    
-    public WeaponBehavior(final Entity owner, final int fireLag, final float bulletAcceleration,
-            final Family bulletFamily) {
+
+    public WeaponBehavior(final Entity owner, final int fireLag,
+            final float bulletAcceleration, final Family bulletFamily) {
         super(owner);
         this.fireLag = fireLag;
         lastShot = fireLag;
@@ -97,7 +97,8 @@ public class WeaponBehavior extends Behavior {
                     bulletPosition = playerPos.add(bulletStartPositionLeft);
                 }
 
-                final Vector2f target = (Vector2f) player.getAttribute(Attribute.CURSOR_POS);
+                final Vector2f target = (Vector2f) player
+                        .getAttribute(Attribute.CURSOR_POS);
                 final Vector2f bulletAcceleration = target.sub(bulletPosition)
                         .scaleTo(bulletAccelerationConstant);
 

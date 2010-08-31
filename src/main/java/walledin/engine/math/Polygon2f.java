@@ -1,3 +1,23 @@
+/*  Copyright 2010 Ben Ruijl, Wouter Smeenk
+
+This file is part of Walled In.
+
+Walled In is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3, or (at your option)
+any later version.
+
+Walled In is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Walled In; see the file LICENSE.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+ */
 package walledin.engine.math;
 
 import java.util.ArrayList;
@@ -50,9 +70,9 @@ public class Polygon2f {
 
         for (int i = 0; i < edges.size(); i++) {
             if (edges.get(i).isBackFacing(point)) {
-                ccwPartition |= (1 << i);
+                ccwPartition |= 1 << i;
             } else {
-                cwPartition |= (1 << i);
+                cwPartition |= 1 << i;
             }
         }
 
@@ -116,8 +136,8 @@ public class Polygon2f {
             return new GeometricalCollisionData(false, 0, null, null);
         }
 
-        Vector2f circlePos = circle.getPos().add(velocity.scale(time));
-        Vector2f polygonPoint = closestPointOnPolygon(circlePos);
+        final Vector2f circlePos = circle.getPos().add(velocity.scale(time));
+        final Vector2f polygonPoint = closestPointOnPolygon(circlePos);
         Vector2f circlePoint = new Circle(circlePos, circle.getRadius())
                 .closestPointOnCircle(polygonPoint);
 
@@ -126,7 +146,7 @@ public class Polygon2f {
 
         if (pointInsidePolygon(circlePos)) {
             /* We are deep in the polygon! */
-            if (!(new Circle(circlePos, circle.getRadius()))
+            if (!new Circle(circlePos, circle.getRadius())
                     .isPointInCircle(polygonPoint)) {
                 normal = normal.scale(-1.0f);
             }
