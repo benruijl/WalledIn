@@ -53,10 +53,13 @@ public class MasterServer implements NetworkEventListener {
     }
 
     public static void main(final String[] args) {
-        try {
-            new MasterServer().run();
-        } catch (final Exception e) {
-            LOG.fatal("Exception: ", e);
+        while (true) {
+            try {
+                new MasterServer().run();
+            } catch (final Exception e) {
+                LOG.fatal("Exception: ", e);
+            }
+            LOG.fatal("Restarting server");
         }
     }
 
