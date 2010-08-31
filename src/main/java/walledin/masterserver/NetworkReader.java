@@ -80,7 +80,9 @@ public class NetworkReader {
     private void processServerNotificationMessage(final SocketAddress address)
             throws UnknownHostException {
         final InetSocketAddress inetAddress = (InetSocketAddress) address;
-        // only read port. ip is derived from connection
+        final byte[] ip = new byte[4];
+        // Read the ip addr but dont use it
+        buffer.get(ip);
         final int port = buffer.getInt();
         final SocketAddress serverAddress = new InetSocketAddress(
                 InetAddress.getByAddress(inetAddress.getAddress().getAddress()),
