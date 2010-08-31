@@ -32,7 +32,13 @@ public class GamestateMessage extends GameMessage {
     private ChangeSet changeSet;
     private int knownClientVersion;
 
+    public GamestateMessage() {
+
+    }
+
     public GamestateMessage(final ChangeSet changeSet, final int currentVersion) {
+        this.changeSet = changeSet;
+        this.knownClientVersion = currentVersion;
     }
 
     public ChangeSet getChangeSet() {
