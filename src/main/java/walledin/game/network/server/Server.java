@@ -210,10 +210,14 @@ public class Server implements NetworkEventListener {
             LOG.warn("Did not recieve challenge from master server yet! "
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
-            networkWriter.prepareServerNotificationResponse(PORT, SERVER_NAME,
-                    players.size(), maxPlayers, gameLogicManager.getGameMode());
-            networkWriter.sendBuffer(masterServerChannel);
-
+            try {
+                networkWriter.prepareServerNotificationResponse(PORT,
+                        SERVER_NAME, players.size(), maxPlayers,
+                        gameLogicManager.getGameMode());
+                networkWriter.sendBuffer(masterServerChannel);
+            } catch (IOException e) {
+                LOG.warn("IOException in communication with master server", e);
+            }
         }
 
         if (lastBroadcast < System.currentTimeMillis() - BROADCAST_INTERVAL) {
