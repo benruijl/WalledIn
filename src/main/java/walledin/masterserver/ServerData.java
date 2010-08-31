@@ -58,10 +58,10 @@ public class ServerData {
     public int getMaxPlayers() {
         return maxPlayers;
     }
-    
+
     public int getGameMode() {
-		return gameMode;
-	}
+        return gameMode;
+    }
 
     public void setTimeLastSeen(final long timeLastSeen) {
         this.timeLastSeen = timeLastSeen;
