@@ -216,8 +216,12 @@ public class Server implements NetworkEventListener {
             LOG.warn("Did not recieve challenge from master server yet! "
                     + "Sending new notification.");
             lastChallenge = System.currentTimeMillis();
-            networkWriter.sendMessage(masterServerChannel,
-                    new ServerNotificationMessage(createServerData()));
+            try {
+                networkWriter.sendMessage(masterServerChannel,
+                        new ServerNotificationMessage(createServerData()));
+            } catch (IOException e) {
+                LOG.warn("IOException in communication with master server", e);
+            }
         }
 
         if (lastBroadcast < System.currentTimeMillis() - broadcastInterval) {
