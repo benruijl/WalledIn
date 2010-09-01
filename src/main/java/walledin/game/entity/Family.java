@@ -20,6 +20,13 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity;
 
+/**
+ * Family of the entities. Contains a tree-like structure to recursively build
+ * an entity.
+ * 
+ * @author Ben Ruijl
+ * 
+ */
 public enum Family {
     ROOT(null),
     WEAPON(ROOT),

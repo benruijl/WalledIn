@@ -216,7 +216,7 @@ public class Server implements NetworkEventListener {
                         gameLogicManager.getGameMode());
                 networkWriter.sendBuffer(masterServerChannel);
             } catch (IOException e) {
-                LOG.warn("IOException in communication with master server", e);
+                LOG.error("IOException in communication with master server", e);
             }
         }
 
@@ -310,7 +310,6 @@ public class Server implements NetworkEventListener {
      */
     private void removePlayer(final SocketAddress address) {
         final PlayerConnection connection = players.remove(address);
-        connection.getPlayer().sendMessage(MessageType.DROP, null);
         gameLogicManager.removePlayer(connection.getPlayer().getName());
     }
 

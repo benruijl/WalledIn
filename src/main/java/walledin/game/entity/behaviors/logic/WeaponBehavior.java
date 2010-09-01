@@ -37,8 +37,9 @@ public class WeaponBehavior extends Behavior {
     private final float bulletAccelerationConstant;
     private final Vector2f bulletStartPositionRight = new Vector2f(50.0f, 10.0f);
     private final Vector2f bulletStartPositionLeft = new Vector2f(-30.0f, 10.0f);
+    /** The mass of the weapon. */
+    private static final float WEAPON_MASS = 0.5f;
 
-    private Entity owner; // entity that carries the gun
     private final int fireLag;
     private final Family bulletFamily;
     private boolean canShoot;
@@ -72,10 +73,22 @@ public class WeaponBehavior extends Behavior {
 
     @Override
     public final void onMessage(final MessageType messageType, final Object data) {
+        if (messageType == MessageType.ATTRIBUTE_SET
+                && (Attribute) data == Attribute.PICKED_UP) {
+            if ((Boolean) getAttribute(Attribute.PICKED_UP)) {
+                /**
+                 * The weapon cannot collide anymore when it is attached to the
+                 * player.
+                 */
+                getOwner().setAttribute(Attribute.NO_COLLIDE, true);
+            } else {
+                getOwner().setAttribute(Attribute.NO_COLLIDE, null);
+            }
+        }
+
         if (messageType == MessageType.DROP) { // to be called by Player only
             LOG.info("Weapon " + getOwner().getName() + " dropped.");
             setAttribute(Attribute.PICKED_UP, Boolean.FALSE);
-            owner = null;
         }
 
         if (messageType == MessageType.SHOOT) {

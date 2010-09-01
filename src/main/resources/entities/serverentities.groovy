@@ -64,7 +64,6 @@ import walledin.game.entity.behaviors.physics.*
 
 (Family.HANDGUN): { entity ->
     def destRect = new Rectangle(0, 0, 40, 21)
-    // entity.addBehavior(new PhysicsBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
     entity.addBehavior(new WeaponBehavior(entity, 10, Family.HANDGUN_BULLET));
@@ -76,7 +75,6 @@ import walledin.game.entity.behaviors.physics.*
 
 (Family.FOAMGUN): { entity ->
     def destRect = new Rectangle(0, 0, 80, 21)
-    // entity.addBehavior(new PhysicsBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
     entity.addBehavior(new WeaponBehavior(entity, 4, Family.FOAMGUN_BULLET));

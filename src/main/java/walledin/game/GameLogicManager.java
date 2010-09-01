@@ -159,7 +159,6 @@ public final class GameLogicManager {
             if (!dead && (Integer) player.getAttribute(Attribute.HEALTH) == 0) {
                 dead = true;
                 respawn = false;
-                player.remove(); // remove the player
             }
 
             if (dead && !respawn) {
@@ -316,11 +315,16 @@ public final class GameLogicManager {
      *            Player name
      */
     public void removePlayer(final String entityName) {
+        if (!players.containsKey(entityName)) {
+            return;
+        }
+        
         /* If the player is dead, he is already removed from the entity list. */
         if (!players.get(entityName).isDead()) {
             entityManager.remove(entityName);
         }
 
+        players.get(entityName).getPlayer().sendMessage(MessageType.DEATH, null);
         players.remove(entityName);
     }
 
@@ -486,6 +490,10 @@ public final class GameLogicManager {
         /* Update the players */
         for (final PlayerInfo info : players.values()) {
             info.update(delta);
+
+            if (info.isDead()) {
+                removePlayer(info.getPlayer().getName());
+            }
 
             if (info.shouldRespawn()) {
                 spawnPlayer(info.getPlayer());

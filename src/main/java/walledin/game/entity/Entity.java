@@ -137,8 +137,6 @@ public final class Entity {
      *            The attribute to check
      * @return True if entity has a non-null attribute, else false
      */
-    // TODO: remove this function
-    @Deprecated
     public boolean hasAttribute(final Attribute attribute) {
         return attributes.containsKey(attribute)
                 && attributes.get(attribute) != null;
@@ -161,6 +159,16 @@ public final class Entity {
     }
 
     /**
+     * Checks if this entity has a behavior of a given class.
+     * @param behaviorClass The class of the behavior.
+     * @return True if entity has behavior, else false
+     */
+    public boolean hasBehavior(final Class<? extends Behavior> behaviorClass) {
+        return behaviors.containsKey(behaviorClass)
+                && behaviors.get(behaviorClass) != null;
+    }
+
+    /**
      * Binds the object to the attribute and returns the old object.
      * 
      * @param attribute
@@ -180,7 +188,7 @@ public final class Entity {
             final T result = (T) attributes.put(attribute, newObject);
 
             // Only add it if it is actually changed
-            if (attribute.sendOverNetwork && !newObject.equals(result)) {
+            if (attribute.canSendOverNetwork() && !newObject.equals(result)) {
                 changedAttributes.add(attribute);
             }
             sendMessage(MessageType.ATTRIBUTE_SET, attribute);
@@ -197,7 +205,7 @@ public final class Entity {
      */
     public void resetAttributes() {
         for (final Attribute attribute : attributes.keySet()) {
-            if (attribute.sendOverNetwork) {
+            if (attribute.canSendOverNetwork()) {
                 changedAttributes.add(attribute);
             }
         }
