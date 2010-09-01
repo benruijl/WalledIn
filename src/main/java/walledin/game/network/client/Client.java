@@ -199,8 +199,7 @@ public final class Client implements NetworkEventListener {
                 }
 
                 while (address != null) {
-                    networkReader.processMessage(address,
-                            clientLogicManager.getEntityManager());
+                    networkReader.processMessage(address);
                     address = networkReader.readMessage(channel);
                 }
             }
@@ -209,8 +208,7 @@ public final class Client implements NetworkEventListener {
                 SocketAddress address = networkReader
                         .readMessage(masterServerChannel);
                 while (address != null) {
-                    networkReader.processMessage(address,
-                            clientLogicManager.getEntityManager());
+                    networkReader.processMessage(address);
                     address = networkReader.readMessage(masterServerChannel);
                 }
             }
@@ -218,8 +216,7 @@ public final class Client implements NetworkEventListener {
                 SocketAddress address = networkReader
                         .readMessage(serverNotifyChannel);
                 while (address != null) {
-                    networkReader.processMessage(address,
-                            clientLogicManager.getEntityManager());
+                    networkReader.processMessage(address);
                     address = networkReader.readMessage(serverNotifyChannel);
                 }
             }

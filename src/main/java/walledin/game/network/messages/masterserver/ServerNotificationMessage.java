@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network.messages.masterserver;
 
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -53,6 +54,13 @@ public class ServerNotificationMessage extends MasterServerMessage {
             server = NetworkMessageReader.readServerData(buffer);
         } catch (final UnknownHostException e) {
             LOG.warn("UnknownHostException when reader server", e);
+        }
+        if (server.getAddress().getAddress().isAnyLocalAddress()) {
+            InetSocketAddress inetAddress = (InetSocketAddress) address;
+            // If the address we got is 0.0.0.0 use the address from the
+            // connection
+            server.setAddress(new InetSocketAddress(inetAddress.getAddress(),
+                    server.getAddress().getPort()));
         }
     }
 

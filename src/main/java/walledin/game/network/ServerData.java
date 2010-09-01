@@ -25,7 +25,7 @@ import java.net.InetSocketAddress;
 import walledin.game.GameMode;
 
 public class ServerData {
-    private final InetSocketAddress address;
+    private InetSocketAddress address;
     private final String name;
     private final int players;
     private final int maxPlayers;
@@ -88,5 +88,9 @@ public class ServerData {
             return false;
         }
         return true;
+    }
+
+    public void setAddress(InetSocketAddress address) {
+        this.address = address;
     }
 }

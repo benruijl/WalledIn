@@ -230,8 +230,7 @@ public class NetworkMessageReader {
      * @param entityManager
      *            the entity manager to process the changes in
      */
-    public void processMessage(final SocketAddress address,
-            final EntityManager entityManager) {
+    public void processMessage(final SocketAddress address) {
         int ident = -1;
         ident = buffer.getInt();
         if (ident == GameMessage.DATAGRAM_IDENTIFICATION) {

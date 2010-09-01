@@ -207,8 +207,7 @@ public class Server implements NetworkEventListener {
         // Read input messages and login messages
         SocketAddress address = networkReader.readMessage(channel);
         while (address != null) {
-            networkReader.processMessage(address,
-                    gameLogicManager.getEntityManager());
+            networkReader.processMessage(address);
             address = networkReader.readMessage(channel);
         }
 
