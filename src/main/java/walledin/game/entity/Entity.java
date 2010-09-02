@@ -265,8 +265,11 @@ public final class Entity {
      * Calls onUpdate on all the behaviors of this entity.
      */
     public void sendUpdate(final double delta) {
-        for (final Behavior behavior : behaviors.values()) {
-            behavior.onUpdate(delta);
+        List<Behavior> behaviorList = new ArrayList<Behavior>(
+                behaviors.values());
+
+        for (int i = 0; i < behaviorList.size(); i++) {
+            behaviorList.get(i).onUpdate(delta);
         }
     }
 

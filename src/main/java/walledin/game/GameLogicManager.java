@@ -159,6 +159,7 @@ public final class GameLogicManager {
             if (!dead && (Integer) player.getAttribute(Attribute.HEALTH) == 0) {
                 dead = true;
                 respawn = false;
+                LOG.info("you dead");
             }
 
             if (dead && !respawn) {
@@ -309,6 +310,28 @@ public final class GameLogicManager {
     }
 
     /**
+     * Kills a player by removing him from the entity list and by sending the
+     * death event.
+     * 
+     * @param entityName
+     *            Player name
+     */
+    public void killPlayer(final String entityName) {
+        if (!players.containsKey(entityName)) {
+            LOG.info("Tried to remove player that is not in the list.");
+            return;
+        }
+
+        /* If the player is dead, he is already removed from the entity list. */
+        if (!players.get(entityName).isDead()) {
+            entityManager.remove(entityName);
+        }
+
+        players.get(entityName).getPlayer()
+                .sendMessage(MessageType.DEATH, null);
+    }
+
+    /**
      * Removes a player from the player list and from the entity list.
      * 
      * @param entityName
@@ -316,15 +339,11 @@ public final class GameLogicManager {
      */
     public void removePlayer(final String entityName) {
         if (!players.containsKey(entityName)) {
+            LOG.info("Tried to remove player that is not in the list.");
             return;
         }
-        
-        /* If the player is dead, he is already removed from the entity list. */
-        if (!players.get(entityName).isDead()) {
-            entityManager.remove(entityName);
-        }
 
-        players.get(entityName).getPlayer().sendMessage(MessageType.DEATH, null);
+        killPlayer(entityName);
         players.remove(entityName);
     }
 
@@ -492,7 +511,7 @@ public final class GameLogicManager {
             info.update(delta);
 
             if (info.isDead()) {
-                removePlayer(info.getPlayer().getName());
+                killPlayer(info.getPlayer().getName());
             }
 
             if (info.shouldRespawn()) {
