@@ -92,14 +92,14 @@ public class Server implements NetworkEventListener {
     /**
      * Creates a new server. Initializes variables to their default values.
      */
-    public Server() {
+    public Server(final GameLogicManager gameLogicManager) {
         players = new HashMap<SocketAddress, PlayerConnection>();
         running = false;
         networkWriter = new NetworkDataWriter();
         networkReader = new NetworkDataReader(this);
         changeSetLookup = new HashMap<Integer, ChangeSet>();
         changeSets = new LinkedList<ChangeSet>();
-        gameLogicManager = new GameLogicManager(this);
+        this.gameLogicManager = gameLogicManager;
 
         /* Load settings */
         UPDATES_PER_SECOND = SettingsManager.getInstance().getInteger(
@@ -120,29 +120,6 @@ public class Server implements NetworkEventListener {
         final ChangeSet firstChangeSet = gameLogicManager.getEntityManager()
                 .getChangeSet();
         changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
-    }
-
-    /**
-     * Start of application. It runs the server.
-     * 
-     * @param args
-     *            Command line arguments
-     * @throws IOException
-     */
-    public static void main(final String[] args) {
-        /* First load the settings file */
-        try {
-            SettingsManager.getInstance().loadSettings(
-                    Utils.getClasspathURL("server_settings.ini"));
-        } catch (final IOException e) {
-            LOG.error("Could not read configuration file.", e);
-        }
-
-        try {
-            new Server().run();
-        } catch (final IOException e) {
-            LOG.fatal("IOException during network loop", e);
-        }
     }
 
     /**

@@ -197,7 +197,7 @@ public final class GameLogicManager {
     /** Minimum Walled In space in player size units. */
     private final int minimalWalledInSpace;
 
-    public GameLogicManager(final Server server) {
+    public GameLogicManager() {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
@@ -207,8 +207,8 @@ public final class GameLogicManager {
         for (final Team team : Team.values()) {
             teams.put(team, new HashSet<GameLogicManager.PlayerInfo>());
         }
-
-        this.server = server;
+        
+        server = new Server(this);
 
         /* Initialize random number generator */
         rng = new Random();
@@ -222,6 +222,36 @@ public final class GameLogicManager {
                 "game.walledInTime");
         minimalWalledInSpace = SettingsManager.getInstance().getInteger(
                 "game.mininmalWalledInSpace");
+    }
+    
+    /**
+     * Start of application. It runs the server.
+     * 
+     * @param args
+     *            Command line arguments
+     * @throws IOException
+     */
+    public static void main(final String[] args) {
+        /* First load the settings file */
+        try {
+            SettingsManager.getInstance().loadSettings(
+                    Utils.getClasspathURL("server_settings.ini"));
+        } catch (final IOException e) {
+            LOG.error("Could not read configuration file.", e);
+        }
+
+        new GameLogicManager().run();
+    }
+    
+    /**
+     * Runs the server.
+     */
+    private void run() {
+        try {
+            server.run();
+        } catch (IOException e) {
+            LOG.fatal("A fatal network error occured.", e);
+        }
     }
 
     public Server getServer() {
