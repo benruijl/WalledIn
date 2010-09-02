@@ -22,6 +22,7 @@ package walledin.game.network.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.PortUnreachableException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.util.HashMap;
@@ -215,6 +216,10 @@ public class Server implements NetworkEventListener {
                         SERVER_NAME, players.size(), maxPlayers,
                         gameLogicManager.getGameMode());
                 networkWriter.sendBuffer(masterServerChannel);
+            } catch (PortUnreachableException e) {
+                LOG.warn("The port of the master server is unreachable. "
+                        + "This means that either the master server is down, "
+                        + "or you haven't opened the correct ports.");
             } catch (IOException e) {
                 LOG.error("IOException in communication with master server", e);
             }
@@ -231,7 +236,7 @@ public class Server implements NetworkEventListener {
         double delta = System.nanoTime() - currentTime;
         currentTime = System.nanoTime();
         // convert to sec
-        delta /= 1000000000;
+        delta /= 1000000000.0;
 
         // Update game state
         gameLogicManager.update(delta);
