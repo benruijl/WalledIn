@@ -22,6 +22,7 @@ package walledin.game.network.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.PortUnreachableException;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.util.HashMap;
@@ -99,14 +100,14 @@ public class Server implements NetworkEventListener {
     /**
      * Creates a new server. Initializes variables to their default values.
      */
-    public Server() {
+    public Server(final GameLogicManager gameLogicManager) {
         players = new HashMap<SocketAddress, PlayerConnection>();
         running = false;
         networkWriter = new NetworkMessageWriter();
         networkReader = new NetworkMessageReader(this);
         changeSetLookup = new HashMap<Integer, ChangeSet>();
         changeSets = new LinkedList<ChangeSet>();
-        gameLogicManager = new GameLogicManager(this);
+        this.gameLogicManager = gameLogicManager;
 
         /* Load settings */
         updatesPerSecond = SettingsManager.getInstance().getInteger(
@@ -126,29 +127,6 @@ public class Server implements NetworkEventListener {
         final ChangeSet firstChangeSet = gameLogicManager.getEntityManager()
                 .getChangeSet();
         changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
-    }
-
-    /**
-     * Start of application. It runs the server.
-     * 
-     * @param args
-     *            Command line arguments
-     * @throws IOException
-     */
-    public static void main(final String[] args) {
-        /* First load the settings file */
-        try {
-            SettingsManager.getInstance().loadSettings(
-                    Utils.getClasspathURL("server_settings.ini"));
-        } catch (final IOException e) {
-            LOG.error("Could not read configuration file.", e);
-        }
-
-        try {
-            new Server().run();
-        } catch (final IOException e) {
-            LOG.fatal("IOException during network loop", e);
-        }
     }
 
     /**
@@ -218,8 +196,12 @@ public class Server implements NetworkEventListener {
             try {
                 networkWriter.sendMessage(masterServerChannel,
                         new ServerNotificationMessage(createServerData()));
+            } catch (PortUnreachableException e) {
+                LOG.warn("The port of the master server is unreachable. "
+                        + "This means that either the master server is down, "
+                        + "or you haven't opened the correct ports.");
             } catch (IOException e) {
-                LOG.warn("IOException in communication with master server", e);
+                LOG.error("IOException in communication with master server", e);
             }
         }
 
@@ -233,7 +215,7 @@ public class Server implements NetworkEventListener {
         double delta = System.nanoTime() - currentTime;
         currentTime = System.nanoTime();
         // convert to sec
-        delta /= 1000000000;
+        delta /= 1000000000.0;
 
         // Update game state
         gameLogicManager.update(delta);
@@ -317,7 +299,6 @@ public class Server implements NetworkEventListener {
      */
     private void removePlayer(final SocketAddress address) {
         final PlayerConnection connection = players.remove(address);
-        connection.getPlayer().sendMessage(MessageType.DROP, null);
         gameLogicManager.removePlayer(connection.getPlayer().getName());
     }
 

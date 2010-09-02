@@ -85,7 +85,7 @@ public final class GameLogicManager {
     /** Minimum Walled In space in player size units. */
     private final int minimalWalledInSpace;
 
-    public GameLogicManager(final Server server) {
+    public GameLogicManager() {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
@@ -95,8 +95,8 @@ public final class GameLogicManager {
         for (final Team team : Team.values()) {
             teams.put(team, new HashSet<PlayerInfo>());
         }
-
-        this.server = server;
+        
+        server = new Server(this);
 
         /* Initialize random number generator */
         rng = new Random();
@@ -107,6 +107,36 @@ public final class GameLogicManager {
                 "game.walledInTime");
         minimalWalledInSpace = SettingsManager.getInstance().getInteger(
                 "game.mininmalWalledInSpace");
+    }
+    
+    /**
+     * Start of application. It runs the server.
+     * 
+     * @param args
+     *            Command line arguments
+     * @throws IOException
+     */
+    public static void main(final String[] args) {
+        /* First load the settings file */
+        try {
+            SettingsManager.getInstance().loadSettings(
+                    Utils.getClasspathURL("server_settings.ini"));
+        } catch (final IOException e) {
+            LOG.error("Could not read configuration file.", e);
+        }
+
+        new GameLogicManager().run();
+    }
+    
+    /**
+     * Runs the server.
+     */
+    private void run() {
+        try {
+            server.run();
+        } catch (IOException e) {
+            LOG.fatal("A fatal network error occured.", e);
+        }
     }
 
     public Server getServer() {
@@ -195,17 +225,40 @@ public final class GameLogicManager {
     }
 
     /**
+     * Kills a player by removing him from the entity list and by sending the
+     * death event.
+     * 
+     * @param entityName
+     *            Player name
+     */
+    public void killPlayer(final String entityName) {
+        if (!players.containsKey(entityName)) {
+            LOG.info("Tried to remove player that is not in the list.");
+            return;
+        }
+
+        /* If the player is dead, he is already removed from the entity list. */
+        if (!players.get(entityName).isDead()) {
+            entityManager.remove(entityName);
+        }
+
+        players.get(entityName).getPlayer()
+                .sendMessage(MessageType.DEATH, null);
+    }
+
+    /**
      * Removes a player from the player list and from the entity list.
      * 
      * @param entityName
      *            Player name
      */
     public void removePlayer(final String entityName) {
-        /* If the player is dead, he is already removed from the entity list. */
-        if (!players.get(entityName).isDead()) {
-            entityManager.remove(entityName);
+        if (!players.containsKey(entityName)) {
+            LOG.info("Tried to remove player that is not in the list.");
+            return;
         }
 
+        killPlayer(entityName);
         players.remove(entityName);
     }
 
@@ -371,6 +424,10 @@ public final class GameLogicManager {
         /* Update the players */
         for (final PlayerInfo info : players.values()) {
             info.update(delta);
+
+            if (info.isDead()) {
+                killPlayer(info.getPlayer().getName());
+            }
 
             if (info.shouldRespawn()) {
                 spawnPlayer(info.getPlayer());

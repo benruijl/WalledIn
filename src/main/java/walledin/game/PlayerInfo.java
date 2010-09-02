@@ -20,12 +20,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game;
 
+import org.apache.log4j.Logger;
+
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.util.SettingsManager;
 
 /** This class contains all information about the player. */
 public final class PlayerInfo extends PlayerClientInfo {
+    /** Logger. */
+    private static final Logger LOG = Logger.getLogger(PlayerInfo.class);
     private final static float RESPAWN_TIME = SettingsManager.getInstance()
             .getFloat("game.respawnTime");
     private final Entity player;
@@ -78,6 +82,7 @@ public final class PlayerInfo extends PlayerClientInfo {
             dead = true;
             respawn = false;
             player.remove(); // remove the player
+            LOG.info("you dead");
         }
 
         if (dead && !respawn) {

@@ -16,9 +16,15 @@
 			<param name="ConversionPattern" value="[%d{ISO8601}] %-5p [%c %M] %m %n" />
 		</layout>
 	</appender>
+	<appender name="remote" class="org.apache.log4j.net.SocketAppender">
+        <param name="RemoteHost" value="localhost" />
+        <param name="Port" value="1236" />
+        <param name="LocationInfo" value="true" />
+    </appender>
 	<root>
 		<priority value="debug" />
 		<appender-ref ref="stdout" />
 		<appender-ref ref="rolling" />
+		<appender-ref ref="remote" />
 	</root>
 </log4j:configuration>

@@ -257,6 +257,11 @@ public class CollisionManager {
                     continue;
                 }
 
+                if (entArray[i].hasAttribute(Attribute.NO_COLLIDE)
+                        || entArray[j].hasAttribute(Attribute.NO_COLLIDE)) {
+                    continue;
+                }
+
                 if (entArray[j].getAttribute(Attribute.VELOCITY).equals(
                         new Vector2f(0, 0))
                         && entArray[i].getAttribute(Attribute.VELOCITY).equals(
@@ -333,6 +338,10 @@ public class CollisionManager {
         for (final Entity ent : entities) {
             if (ent.hasAttribute(Attribute.BOUNDING_GEOMETRY)
                     && !ent.equals(map)) {
+
+                if (ent.hasAttribute(Attribute.NO_COLLIDE)) {
+                    continue;
+                }
 
                 Vector2f vel = (Vector2f) ent.getAttribute(Attribute.VELOCITY);
 
@@ -422,5 +431,4 @@ public class CollisionManager {
         }
 
     }
-
 }
