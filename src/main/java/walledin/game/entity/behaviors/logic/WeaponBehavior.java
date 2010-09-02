@@ -29,6 +29,7 @@ import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.game.entity.behaviors.physics.PhysicsBehavior;
 import walledin.util.Utils;
 
 public class WeaponBehavior extends Behavior {
@@ -38,7 +39,7 @@ public class WeaponBehavior extends Behavior {
     private final Vector2f bulletStartPositionRight = new Vector2f(50.0f, 10.0f);
     private final Vector2f bulletStartPositionLeft = new Vector2f(-30.0f, 10.0f);
     /** The mass of the weapon. */
-    private static final float WEAPON_MASS = 0.5f;
+    private static final float WEAPON_MASS = 1.0f;
 
     private final int fireLag;
     private final Family bulletFamily;
@@ -78,11 +79,15 @@ public class WeaponBehavior extends Behavior {
             if ((Boolean) getAttribute(Attribute.PICKED_UP)) {
                 /**
                  * The weapon cannot collide anymore when it is attached to the
-                 * player.
+                 * player. The physics are also removed.
                  */
                 getOwner().setAttribute(Attribute.NO_COLLIDE, true);
+                getOwner().removeBehavior(PhysicsBehavior.class);
+
             } else {
                 getOwner().setAttribute(Attribute.NO_COLLIDE, null);
+                getOwner().addBehavior(
+                        new PhysicsBehavior(getOwner(), WEAPON_MASS));
             }
         }
 
