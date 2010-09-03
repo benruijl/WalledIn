@@ -159,7 +159,6 @@ public final class GameLogicManager {
             if (!dead && (Integer) player.getAttribute(Attribute.HEALTH) == 0) {
                 dead = true;
                 respawn = false;
-                LOG.info("you dead");
             }
 
             if (dead && !respawn) {
