@@ -81,8 +81,6 @@ public final class PlayerInfo extends PlayerClientInfo {
         if (!dead && (Integer) player.getAttribute(Attribute.HEALTH) == 0) {
             dead = true;
             respawn = false;
-            player.remove(); // remove the player
-            LOG.info("you dead");
         }
 
         if (dead && !respawn) {
