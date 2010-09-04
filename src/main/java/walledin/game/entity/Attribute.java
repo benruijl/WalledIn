@@ -86,7 +86,17 @@ public enum Attribute {
     /** Target position of a bullet particle or something else. */
     TARGET(Vector2f.class),
     /** Counter between zero and one that takes track of how blocked you are. */
-    WALLEDIN_IN(Float.class, true);
+    WALLEDIN_IN(Float.class, true),
+    /**
+     * The entity that did the last damage. If it is a bullet, the player that
+     * shot the bullet is the last one to do damage.
+     */
+    LAST_DAMAGE(Entity.class, true),
+    /**
+     * The entity that owns this entity. A bullet is owned by the player that
+     * shoots it.
+     */
+    OWNED_BY(Entity.class, true);
 
     /** Class of the attribute. */
     public final Class<?> clazz;

@@ -34,12 +34,12 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
 import walledin.game.GameLogicManager.PlayerInfo;
-import walledin.game.GameMode;
 import walledin.game.PlayerAction;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
+import walledin.game.gamemode.GameMode;
 import walledin.game.network.NetworkConstants.ErrorCodes;
 import walledin.game.network.server.ChangeSet;
 
@@ -262,6 +262,12 @@ public class NetworkDataWriter {
             break;
         case VELOCITY:
             writeVector2fData((Vector2f) data, buffer);
+            break;
+        case OWNED_BY:
+            writeStringData(((Entity) data).getName(), buffer);
+            break;
+        case LAST_DAMAGE:
+            writeStringData(((Entity) data).getName(), buffer);
             break;
         default:
             LOG.error("Could not process attribute " + attribute);

@@ -22,7 +22,7 @@ package walledin.game.network;
 
 import java.net.SocketAddress;
 
-import walledin.game.GameMode;
+import walledin.game.gamemode.GameMode;
 
 public class ServerData {
     private final SocketAddress address;

@@ -18,24 +18,21 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity;
+package walledin.game.gamemode;
 
 /**
- * All the possible messages that can be send to behaviors
+ * An enumeration of all the game modes.
  * 
- * @author Wouter Smeenk
+ * @author Ben Ruijl
  * 
  */
-public enum MessageType {
-    RENDER,
-    ATTRIBUTE_SET,
-    COLLIDED,
-    RESTORE_HEALTH,
-    SHOOT,
-    APPLY_FORCE,
-    DEATH,
-    PICK_UP,
-    DROP,
-    SELECT_WEAPON,
-    TAKE_DAMAGE;
+public enum GameMode {
+    /** Deathmatch, everyone for himself. No teams. */
+    DEATHMATCH,
+    /** Team deathmatch, team vs. other team. */
+    TEAM_DEATHMATCH,
+    /** Deathmatch where walling someone is is a fatality. */
+    WALLED_IN,
+    /** Get to a certain position with your team, before the other team does. */
+    BRIDGE_BUILDER;
 }

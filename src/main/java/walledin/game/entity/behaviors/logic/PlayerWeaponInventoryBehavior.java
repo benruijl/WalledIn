@@ -78,7 +78,8 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                         return;
                     }
 
-                    weapon.setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
+                    /* Tell the item that it will be picked up. */
+                    weapon.sendMessage(MessageType.PICK_UP, getOwner());
 
                     weapons.put(weapon.getFamily(), weapon);
                     LOG.info("Adding weapon of family "
