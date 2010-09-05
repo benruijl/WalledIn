@@ -242,11 +242,14 @@ public final class ClientLogicManager implements RenderListener {
      * Resets the game by removing assets and by resetting other values.
      */
     public void resetGame() {
-        LOG.info("Cleaing up game assets.");
-        
+        LOG.info("Cleaning up game assets.");
+
         /* Remove the game assets. */
         client.resetReceivedVersion();
-        entityManager.getEntities().values().removeAll(gameAssets);
+
+        for (Entity asset : gameAssets) {
+            entityManager.remove(asset.getName());
+        }
     }
 
     /**

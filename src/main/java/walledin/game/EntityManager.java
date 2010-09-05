@@ -100,7 +100,7 @@ public class EntityManager {
         return "ENT_" + family.toString() + "_"
                 + Integer.toString(uniqueNameCount);
     }
-    
+
     /**
      * Resets the entity manager. This sets the current gamestate back to 0.
      */
@@ -198,7 +198,8 @@ public class EntityManager {
     }
 
     /**
-     * Returns the entity list.
+     * Returns the entity list. Do not edit this list directly, but use the add
+     * and remove functions.
      * 
      * @return Entity list
      */
