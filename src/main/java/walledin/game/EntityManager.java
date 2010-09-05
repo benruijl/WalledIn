@@ -100,6 +100,13 @@ public class EntityManager {
         return "ENT_" + family.toString() + "_"
                 + Integer.toString(uniqueNameCount);
     }
+    
+    /**
+     * Resets the entity manager. This sets the current gamestate back to 0.
+     */
+    public void resetEntityManager() {
+        currentVersion = 0;
+    }
 
     /**
      * Adds an entity to the list.

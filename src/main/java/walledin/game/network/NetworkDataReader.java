@@ -255,7 +255,7 @@ public class NetworkDataReader {
             listener.entityCreated(entity);
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
-            entityManager.remove(name);
+            listener.entityRemoved(entityManager.remove(name));
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES:
             entity = entityManager.get(name);

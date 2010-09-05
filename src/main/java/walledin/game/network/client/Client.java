@@ -138,22 +138,14 @@ public final class Client implements NetworkEventListener {
 
     @Override
     public void entityCreated(final Entity entity) {
-        // TODO: move to a better place
-        /* Play a sound when a bullet is created */
-        final Random generator = new Random();
-        final int num = generator.nextInt(4) + 1;
-
-        if (Audio.getInstance().isEnabled()) {
-            if (entity.getFamily() == Family.HANDGUN_BULLET) {
-                Audio.getInstance().playSample("handgun" + num, new Vector2f(),
-                        false);
-            }
-
-            if (entity.getFamily() == Family.FOAMGUN_BULLET) {
-                Audio.getInstance().playSample("foamgun" + num, new Vector2f(),
-                        false);
-            }
-        }
+        clientLogicManager.onGameEntityCreated(entity);
+    }
+    
+    /**
+     * Resets the received version.
+     */
+    public void resetReceivedVersion() {
+        receivedVersion = 0;
     }
 
     /**
@@ -354,7 +346,7 @@ public final class Client implements NetworkEventListener {
      * it will do nothing.
      */
     public void connectToServer(final ServerData server) {
-        if (channel.socket().getRemoteSocketAddress() == server.getAddress()) {
+        if (connected && channel.socket().getRemoteSocketAddress() == server.getAddress()) {
             return;
         }
 
@@ -365,6 +357,9 @@ public final class Client implements NetworkEventListener {
             host = server.getAddress();
             username = System.getProperty("user.name");
 
+            /* Reset some variables. */
+            clientLogicManager.resetGame();
+            
             // always try to disconnect. Does nothing if not connected
             channel.disconnect();
             channel.configureBlocking(false);
@@ -478,6 +473,11 @@ public final class Client implements NetworkEventListener {
         } catch (final IOException e) {
             LOG.error("IOException", e);
         }
+    }
+
+    @Override
+    public void entityRemoved(Entity entity) {
+        clientLogicManager.onGameEntityRemoved(entity);        
     }
 
 }

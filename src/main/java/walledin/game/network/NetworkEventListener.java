@@ -52,6 +52,7 @@ public interface NetworkEventListener {
             ServerData server);
 
     void entityCreated(Entity entity);
+    void entityRemoved(Entity entity);
 
     void receivedGetPlayerInfoMessage(SocketAddress address);
 

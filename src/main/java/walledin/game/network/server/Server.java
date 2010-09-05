@@ -272,6 +272,11 @@ public class Server implements NetworkEventListener {
 
             final ChangeSet changeSet = changeSetLookup.get(sendVersion);
 
+            if (changeSet == null) {
+                LOG.error("Could not find changeset with version " + sendVersion);
+                continue;
+            }
+
             if (LOG.isTraceEnabled()) {
                 LOG.trace("currentVersion: " + currentVersion + " changeset: "
                         + changeSet.getVersion() + " " + changeSet.getCreated()
@@ -457,5 +462,11 @@ public class Server implements NetworkEventListener {
     @Override
     public void entityCreated(final Entity entity) {
         // ignore
+    }
+
+    @Override
+    public void entityRemoved(Entity entity) {
+        // TODO Auto-generated method stub
+        
     }
 }
