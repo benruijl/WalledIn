@@ -22,7 +22,6 @@ package walledin.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -40,6 +39,7 @@ import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
@@ -47,6 +47,9 @@ import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.SelectTeamScreen;
 import walledin.game.gui.ServerListScreen;
+import walledin.game.map.GameMapIO;
+import walledin.game.map.GameMapIOXML;
+import walledin.game.map.Tile;
 import walledin.game.network.client.Client;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
@@ -235,6 +238,18 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
                         false);
             }
         }
+
+        if (entity.getFamily() == Family.MAP) {
+            final GameMapIO mapIO = new GameMapIOXML();
+            String mapName = (String) entity.getAttribute(Attribute.MAP_NAME);
+            if (mapName != null) {
+                List<Tile> tiles = mapIO.readTilesFromURL(Utils
+                        .getClasspathURL(mapName));
+                entity.setAttribute(Attribute.TILES, tiles);
+            } else {
+                LOG.warn("map name is null!");
+            }
+        }
     }
 
     /**
@@ -257,7 +272,7 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
         /* Remove the game assets. */
         client.resetReceivedVersion();
 
-        for (Entity asset : new ArrayList<Entity>(gameAssets)) {
+        for (Entity asset : gameAssets) {
             entityManager.remove(asset.getName());
         }
     }

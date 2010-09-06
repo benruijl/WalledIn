@@ -388,6 +388,10 @@ public class Server implements NetworkEventListener {
     public void receivedMessage(final SocketAddress address,
             final InputMessage message) {
         final PlayerConnection connection = players.get(address);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Input message: " + message.getVersion() + " recieved: "
+                    + connection.getReceivedVersion());
+        }
         if (connection != null
                 && message.getVersion() > connection.getReceivedVersion()) {
             connection.setNew();

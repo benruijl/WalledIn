@@ -74,9 +74,6 @@ public class EntityManager {
     public Entity create(final Family family, final String entityName) {
         final Entity entity = factory.create(this, family, entityName);
         add(entity);
-        if (listener != null) {
-            listener.entityCreated(entity);
-        }
         return entity;
     }
 
@@ -192,9 +189,6 @@ public class EntityManager {
 
         entity.resetMarkedRemoved();
         entity.resetAttributes();
-        if (listener != null) {
-            listener.entityRemoved(entity);
-        }
         return entity;
     }
 
@@ -267,11 +261,13 @@ public class EntityManager {
     }
 
     public void applyChangeSet(ChangeSet changeSet) {
+        Set<Entity> removed = new HashSet<Entity>();
+        Set<Entity> created = new HashSet<Entity>();
         for (String name : changeSet.getRemoved()) {
-            remove(name);
+            removed.add(remove(name));
         }
         for (Entry<String, Family> entry : changeSet.getCreated().entrySet()) {
-            create(entry.getValue(), entry.getKey());
+            created.add(create(entry.getValue(), entry.getKey()));
         }
         for (Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {
@@ -279,6 +275,14 @@ public class EntityManager {
             for (Entry<Attribute, Object> attribute : entry.getValue()
                     .entrySet()) {
                 entity.setAttribute(attribute.getKey(), attribute.getValue());
+            }
+        }
+        if (listener != null) {
+            for (Entity entity : created) {
+                listener.entityCreated(entity);
+            }
+            for (Entity entity : removed) {
+                listener.entityRemoved(entity);
             }
         }
     }

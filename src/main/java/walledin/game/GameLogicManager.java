@@ -436,13 +436,14 @@ public final class GameLogicManager implements GameStateListener  {
             if (info.isDead()) {
                 killPlayer(info.getPlayer().getName());
 
-                Entity killer = (Entity) info.getPlayer().getAttribute(
+                String killerName = (String) info.getPlayer().getAttribute(
                         Attribute.LAST_DAMAGE);
 
-                if (killer != null && killer != info.getPlayer()) {
+                if (killerName != null
+                        && !killerName.equals(info.getPlayer().getName())) {
                     /* Add points to the killer of this player. */
                     for (final PlayerInfo killerInfo : players.values()) {
-                        if (killerInfo.getPlayer() == killer) {
+                        if (killerInfo.getPlayer().getName().equals(killerName)) {
                             killerInfo.increaseKillCount();
                         }
                     }

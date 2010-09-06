@@ -76,46 +76,17 @@ public class NetworkMessageWriter {
             final Object data, final ByteBuffer buffer) {
         // Write attribute identification
         buffer.putShort((short) attribute.ordinal());
-        switch (attribute) {
-        case HEIGHT:
+        if (data instanceof Integer) {
             writeIntegerData((Integer) data, buffer);
-            break;
-        case WIDTH:
-            writeIntegerData((Integer) data, buffer);
-            break;
-        case HEALTH:
-            writeIntegerData((Integer) data, buffer);
-            break;
-        case ORIENTATION_ANGLE:
+        } else if (data instanceof Float) {
             writeFloatData((Float) data, buffer);
-            break;
-        case TILE_WIDTH:
-            writeFloatData((Float) data, buffer);
-            break;
-        case PLAYER_NAME:
+        } else if (data instanceof String) {
             writeStringData((String) data, buffer);
-            break;
-        case PLAYER_TEAM:
-            writeIntegerData(((Team) data).ordinal(), buffer);
-            break;
-        case WALLEDIN_IN:
-            writeFloatData((Float) data, buffer);
-            break;
-        case POSITION:
+        } else if (data instanceof Vector2f) {
             writeVector2fData((Vector2f) data, buffer);
-            break;
-        case VELOCITY:
-            writeVector2fData((Vector2f) data, buffer);
-            break;
-        case OWNED_BY:
-            writeStringData(((Entity) data).getName(), buffer);
-            break;
-        case LAST_DAMAGE:
-            writeStringData(((Entity) data).getName(), buffer);
-            break;
-        default:
-            LOG.error("Could not process attribute " + attribute);
-            break;
+        } else {
+            LOG.error("Could not process attribute " + attribute
+                    + " with data of class " + data.getClass());
         }
     }
 

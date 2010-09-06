@@ -50,7 +50,7 @@ public enum Attribute {
     /** Width of a tile. This is also the height. */
     TILE_WIDTH(Float.class, true),
     /** Map name will be sent separately at entity creation. */
-    MAP_NAME(String.class, false),
+    MAP_NAME(String.class, true),
     /** Spawn points of a map. */
     SPAWN_POINTS(List.class, false),
     /** Health of the entity. */
@@ -58,7 +58,7 @@ public enum Attribute {
     /** Name of the player that controls the entity. */
     PLAYER_NAME(String.class, true),
     /** The team of the player entity. */
-    PLAYER_TEAM(Team.class, true),
+    PLAYER_TEAM(Team.class, false),
     /** Orientation angle. */
     ORIENTATION_ANGLE(Float.class, true),
     /** The active weapon of a player entity. */
@@ -91,12 +91,12 @@ public enum Attribute {
      * The entity that did the last damage. If it is a bullet, the player that
      * shot the bullet is the last one to do damage.
      */
-    LAST_DAMAGE(Entity.class, true),
+    LAST_DAMAGE(String.class, true),
     /**
      * The entity that owns this entity. A bullet is owned by the player that
      * shoots it.
      */
-    OWNED_BY(Entity.class, true);
+    OWNED_BY(String.class, true);
 
     /** Class of the attribute. */
     public final Class<?> clazz;

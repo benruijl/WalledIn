@@ -86,48 +86,16 @@ public class NetworkMessageReader {
         // FIXME don't use ordinal
         final Attribute attribute = Attribute.values()[ord];
         Object data = null;
-        switch (attribute) {
-        case HEIGHT:
+        if (data instanceof Integer) {
             data = buffer.getInt();
-            break;
-        case WIDTH:
-            data = buffer.getInt();
-            break;
-        case HEALTH:
-            data = buffer.getInt();
-            break;
-        case ORIENTATION_ANGLE:
+        } else if (data instanceof Float) {
             data = buffer.getFloat();
-            break;
-        case PLAYER_NAME:
+        } else if (data instanceof String) {
             data = readStringData(buffer);
-            break;
-        case PLAYER_TEAM:
-            data = Team.values()[buffer.getInt()];
-            break;
-        case WALLEDIN_IN:
-            data = buffer.getFloat();
-            break;
-        case POSITION:
+        } else if (data instanceof Vector2f) {
             data = readVector2fData(buffer);
-            break;
-        case VELOCITY:
-            data = readVector2fData(buffer);
-            break;
-        case TILE_WIDTH:
-            data = buffer.getFloat();
-            break;
-        case OWNED_BY:
-            String name = readStringData(buffer);
-            //data = entityManager.get(name);
-            break;
-        case LAST_DAMAGE:
-            name = readStringData(buffer);
-            //data = entityManager.get(name);
-            break;
-        default:
+        } else {
             LOG.error("Could not process attribute " + attribute);
-            break;
         }
         attributes.put(attribute, data);
     }
@@ -168,33 +136,6 @@ public class NetworkMessageReader {
         }
         return new ChangeSet(version, created, removed, updated);
     }
-
-    // private static void readEntityData(final ByteBuffer buffer) {
-    // final int type = buffer.get();
-    // if (type == NetworkConstants.GAMESTATE_MESSAGE_END) {
-    // return false;
-    // }
-    // final String name = readStringData(buffer);
-    // Entity entity = null;
-    // switch (type) {
-    // case NetworkConstants.GAMESTATE_MESSAGE_CREATE_ENTITY:
-    // final String familyName = readStringData(buffer);
-    // final Family family = Enum.valueOf(Family.class, familyName);
-    //
-    // entity = entityManager.create(family, name);
-    // readFamilySpecificData(family, entity);
-    // listener.entityCreated(entity);
-    // break;
-    // case NetworkConstants.GAMESTATE_MESSAGE_REMOVE_ENTITY:
-    // entityManager.remove(name);
-    // break;
-    // case NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES:
-    // entity = entityManager.get(name);
-    // readAttributesData(entity, buffer, entityManager);
-    // break;
-    // }
-    // return true;
-    // }
 
     public static Family readFamilyData(final ByteBuffer buffer) {
         final String name = readStringData(buffer);

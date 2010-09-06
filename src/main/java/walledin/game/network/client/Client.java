@@ -371,8 +371,8 @@ public final class Client implements NetworkEventListener {
         lastLoginTry = -1;
         // FIXME check if this is correct .. version could be swaped
         final ChangeSet changeSet = message.getChangeSet();
-        final int newVersion = changeSet.getVersion();
-        final int oldVersion = message.getKnownClientVersion();
+        final int oldVersion = changeSet.getVersion();
+        final int newVersion = message.getKnownClientVersion();
         if (LOG.isTraceEnabled()) {
             LOG.trace("version:" + newVersion + " receivedVersion:"
                     + receivedVersion + " oldversion: " + oldVersion);
