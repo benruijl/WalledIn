@@ -38,6 +38,7 @@ public class FoamBulletBehavior extends BulletBehavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         super.onMessage(messageType, data);
+        
         if (messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
             if (!blownUp) {
@@ -53,6 +54,8 @@ public class FoamBulletBehavior extends BulletBehavior {
 
                     particle.setAttribute(Attribute.POSITION,
                             getAttribute(Attribute.POSITION));
+                    particle.setAttribute(Attribute.ORIENTATION_ANGLE,
+                            getAttribute(Attribute.ORIENTATION_ANGLE));
                     blownUp = true;
 
                     getOwner().remove(); // remove the foam bullet

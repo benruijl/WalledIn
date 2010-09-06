@@ -34,6 +34,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
 import walledin.game.entity.Attribute;
@@ -59,7 +60,7 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class GameLogicManager implements GameStateListener  {
+public final class GameLogicManager implements GameStateListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -71,6 +72,8 @@ public final class GameLogicManager implements GameStateListener  {
     private final EntityManager entityManager;
     /** Entity factory. */
     private final EntityFactory entityFactory;
+    /** Quadtree of static objects for collision detection. */
+    private QuadTree staticObjectsTree;
 
     /**
      * This class contains all information the client should know about the
@@ -615,8 +618,26 @@ public final class GameLogicManager implements GameStateListener  {
         /* Update the game mode specific routines */
         gameModeHandler.update(delta);
 
+        /* Update quadtree */
+        for (String name : entityManager.getChangeSet().getCreated().keySet()) {
+            Entity ent = entityManager.get(name);
+
+            /* For now, add just foam particles. */
+            if (ent != null && ent.getFamily() == Family.FOAM_PARTICLE) {
+                staticObjectsTree.add(ent);
+            }
+        }
+
+        /*   for (String name : entityManager.getChangeSet().getRemoved()) {
+            Entity ent = entityManager.get(name);
+
+            if (ent != null && ent.getFamily() == Family.FOAM_PARTICLE) {
+                staticObjectsTree.remove(ent);
+            }
+        }*/
+
         /* Do collision detection */
-        entityManager.doCollisionDetection(map, delta);
+        entityManager.doCollisionDetection(map, staticObjectsTree, delta);
     }
 
     /**
@@ -644,12 +665,18 @@ public final class GameLogicManager implements GameStateListener  {
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, mapName);
 
+        staticObjectsTree = new QuadTree(new Rectangle(0, 0,
+                (Integer) map.getAttribute(Attribute.WIDTH)
+                        * (Float) map.getAttribute(Attribute.TILE_WIDTH),
+                (Integer) map.getAttribute(Attribute.HEIGHT)
+                        * (Float) map.getAttribute(Attribute.TILE_WIDTH)));
+
         /* Build the static movability field. */
         buildStaticField();
     }
 
     @Override
-    public void onGameOver() {        
+    public void onGameOver() {
     }
 
     @Override

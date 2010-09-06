@@ -242,11 +242,13 @@ public class CollisionManager {
      * 
      * @param entities
      *            Entities to check
+     * @param staticMap
      * @param delta
      *            Delta time, used for interpolation
      */
     public static void calculateEntityCollisions(
-            final Collection<Entity> entities, final double delta) {
+            final Collection<Entity> entities, QuadTree staticMap,
+            final double delta) {
         final Entity[] entArray = entities.toArray(new Entity[0]);
 
         for (int i = 0; i < entArray.length - 1; i++) {
@@ -254,6 +256,11 @@ public class CollisionManager {
                 if (!entArray[i].hasAttribute(Attribute.BOUNDING_GEOMETRY)
                         || !entArray[j]
                                 .hasAttribute(Attribute.BOUNDING_GEOMETRY)) {
+                    continue;
+                }
+
+                if (entArray[i].getFamily() == Family.FOAM_PARTICLE
+                        || entArray[j].getFamily() == Family.FOAM_PARTICLE) {
                     continue;
                 }
 
@@ -284,17 +291,6 @@ public class CollisionManager {
                                 .getAttribute(Attribute.VELOCITY))
                                 .scale((float) delta));
 
-                /* Only check the player and the foam for now. */
-                if (entArray[i].getFamily() == Family.PLAYER
-                        && entArray[j].getFamily() == Family.FOAM_PARTICLE) {
-                    resolvePolygonCircleCollision(entArray[i], entArray[j],
-                            delta);
-                } else if (entArray[j].getFamily() == Family.PLAYER
-                        && entArray[i].getFamily() == Family.FOAM_PARTICLE) {
-                    resolvePolygonCircleCollision(entArray[j], entArray[i],
-                            delta);
-                }
-
                 /* Kind of a hack. */
                 final Vector2f posA = (Vector2f) entArray[i]
                         .getAttribute(Attribute.POSITION);
@@ -317,6 +313,31 @@ public class CollisionManager {
                                     entArray[i]));
                 }
 
+            }
+        }
+
+        /* Only check the player and the foam for now. */
+        for (int i = 0; i < entArray.length; i++) {
+            if (entArray[i].getFamily() == Family.PLAYER) {
+
+                /* TODO: check the old pos too! */
+                Rectangle rect = ((Geometry) entArray[i]
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
+                        .asRectangle().translate(
+                                (Vector2f) entArray[i]
+                                        .getAttribute(Attribute.POSITION));
+
+                List<Entity> targetList = staticMap
+                        .getObjectsFromRectangle(rect);
+
+                if (targetList != null) {
+                    for (Entity target : targetList) {
+                        resolvePolygonCircleCollision(entArray[i], target,
+                                delta);
+                    }
+                }
+
+                break;
             }
         }
     }

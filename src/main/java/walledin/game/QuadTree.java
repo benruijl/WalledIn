@@ -24,7 +24,11 @@ public class QuadTree {
     private int depth;
     private boolean leaf;
 
-    public QuadTree(Rectangle rect, int depth) {
+    public QuadTree(Rectangle rect) {
+        this(rect, 0);
+    }
+
+    private QuadTree(Rectangle rect, int depth) {
         children = new QuadTree[4];
         objects = new ArrayList<Entity>();
         rectangle = rect;
@@ -86,26 +90,28 @@ public class QuadTree {
 
         return null;
     }
-    
+
     public List<Entity> getObjectsFromRectangle(Rectangle rect) {
         List<Entity> objectList = new ArrayList<Entity>();
-        
+
         if (rectangle.containsFully(rect)) {
             objectList.addAll(getObjects());
         }
-        
-        for (int i = 0; i < 4; i++) {
-            if (children[i].containsFully(rect)) {
-                List<Entity> tree = getObjectsFromRectangle(rect);
 
-                if (tree != null) {
-                    objectList.addAll(tree);
-                    return objectList;
+        if (!leaf) {
+            for (int i = 0; i < 4; i++) {
+                if (children[i].containsFully(rect)) {
+                    List<Entity> tree = getObjectsFromRectangle(rect);
+
+                    if (tree != null) {
+                        objectList.addAll(tree);
+                        return objectList;
+                    }
                 }
             }
         }
-        
-        return null;
+
+        return objectList;
     }
 
     public List<Entity> getObjects() {
@@ -114,7 +120,7 @@ public class QuadTree {
 
     public void remove(Entity object) {
         QuadTree tree = getQuadTreeContainingObject(object);
-        
+
         if (tree != null) {
             tree.removeObject(object);
         }
