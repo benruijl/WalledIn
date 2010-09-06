@@ -119,11 +119,11 @@ public class NetworkMessageReader {
             break;
         case OWNED_BY:
             String name = readStringData(buffer);
-            data = entityManager.get(name);
+            //data = entityManager.get(name);
             break;
         case LAST_DAMAGE:
             name = readStringData(buffer);
-            data = entityManager.get(name);
+            //data = entityManager.get(name);
             break;
         default:
             LOG.error("Could not process attribute " + attribute);

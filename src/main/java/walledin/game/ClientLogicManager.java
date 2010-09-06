@@ -22,6 +22,7 @@ package walledin.game;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -56,7 +57,7 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class ClientLogicManager implements RenderListener {
+public final class ClientLogicManager implements RenderListener, EntityUpdateListener {
     /** Logger. */
     private static final Logger LOG = Logger
             .getLogger(ClientLogicManager.class);
@@ -98,6 +99,7 @@ public final class ClientLogicManager implements RenderListener {
         renderer = new Renderer();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
+        entityManager.setListener(this);
         screenManager = new ScreenManager(renderer);
         gameAssets = new ArrayList<Entity>();
 
@@ -214,7 +216,8 @@ public final class ClientLogicManager implements RenderListener {
      * @param entity
      *            Game entity
      */
-    public void onGameEntityCreated(final Entity entity) {
+    @Override
+    public void entityCreated(final Entity entity) {
         gameAssets.add(entity);
 
         /* Play a sound when a bullet is created */
@@ -240,7 +243,8 @@ public final class ClientLogicManager implements RenderListener {
      * @param entity
      *            Game entity
      */
-    public void onGameEntityRemoved(final Entity entity) {
+    @Override
+    public void entityRemoved(final Entity entity) {
         gameAssets.remove(entity);
     }
 
@@ -253,7 +257,7 @@ public final class ClientLogicManager implements RenderListener {
         /* Remove the game assets. */
         client.resetReceivedVersion();
 
-        for (Entity asset : gameAssets) {
+        for (Entity asset : new ArrayList<Entity>(gameAssets)) {
             entityManager.remove(asset.getName());
         }
     }

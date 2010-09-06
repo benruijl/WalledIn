@@ -63,8 +63,4 @@ public interface NetworkEventListener {
 
     void receivedMessage(SocketAddress address,
             GetPlayerInfoResponseMessage message);
-
-    void entityCreated(Entity entity);
-
-    void entityRemoved(Entity entity);
 }

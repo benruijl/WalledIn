@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,6 +47,7 @@ public class EntityManager {
     private final Set<Entity> removed;
     private final Set<Entity> created;
     private int currentVersion;
+    private EntityUpdateListener listener;
 
     public EntityManager(final EntityFactory factory) {
         entities = new ConcurrentHashMap<String, Entity>();
@@ -55,19 +57,26 @@ public class EntityManager {
         drawOrderManager = new DrawOrderManager();
         currentVersion = 0;
     }
+    
+    public void setListener(EntityUpdateListener listener) {
+        this.listener = listener;
+    }
 
     /**
      * Creates a new Entity and adds it to the entities list.
      * 
-     * @param familyName
-     *            Family name
+     * @param family
+     *            Family of the entity
      * @param entityName
      *            Name of the entity
      * @return The created entity or null on failure
      */
-    public Entity create(final Family familyName, final String entityName) {
-        final Entity entity = factory.create(this, familyName, entityName);
+    public Entity create(final Family family, final String entityName) {
+        final Entity entity = factory.create(this, family, entityName);
         add(entity);
+        if (listener != null) {
+            listener.entityCreated(entity);
+        }
         return entity;
     }
 
@@ -79,10 +88,7 @@ public class EntityManager {
      * @return Entity or null on failure
      */
     public Entity create(final Family family) {
-        final Entity entity = factory.create(this, family,
-                generateUniqueName(family));
-        add(entity);
-        return entity;
+        return create(family, generateUniqueName(family));
     }
 
     /**
@@ -186,6 +192,9 @@ public class EntityManager {
 
         entity.resetMarkedRemoved();
         entity.resetAttributes();
+        if (listener != null) {
+            listener.entityRemoved(entity);
+        }
         return entity;
     }
 
@@ -255,5 +264,22 @@ public class EntityManager {
 
     public int getCurrentVersion() {
         return currentVersion;
+    }
+
+    public void applyChangeSet(ChangeSet changeSet) {
+        for (String name : changeSet.getRemoved()) {
+            remove(name);
+        }
+        for (Entry<String, Family> entry : changeSet.getCreated().entrySet()) {
+            create(entry.getValue(), entry.getKey());
+        }
+        for (Entry<String, Map<Attribute, Object>> entry : changeSet
+                .getUpdated().entrySet()) {
+            Entity entity = entities.get(entry.getKey());
+            for (Entry<Attribute, Object> attribute : entry.getValue()
+                    .entrySet()) {
+                entity.setAttribute(attribute.getKey(), attribute.getValue());
+            }
+        }
     }
 }

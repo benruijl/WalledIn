@@ -28,21 +28,16 @@ import java.nio.channels.DatagramChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import walledin.engine.Input;
 import walledin.engine.Renderer;
-import walledin.engine.audio.Audio;
-import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerClientInfo;
 import walledin.game.Team;
-import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
@@ -145,16 +140,6 @@ public final class Client implements NetworkEventListener {
                 lanServerList);
         servers.addAll(internetServerList);
         return servers;
-    }
-
-    @Override
-    public void entityCreated(final Entity entity) {
-        clientLogicManager.onGameEntityCreated(entity);
-    }
-    
-    @Override
-    public void entityRemoved(Entity entity) {
-        clientLogicManager.onGameEntityRemoved(entity);        
     }
     
     /**
@@ -394,7 +379,7 @@ public final class Client implements NetworkEventListener {
         }
         if (receivedVersion == oldVersion && newVersion > receivedVersion) {
             receivedVersion = newVersion;
-            // FIXME process the changeset
+            clientLogicManager.getEntityManager().applyChangeSet(changeSet);
         }
         try {
             networkWriter.sendMessage(

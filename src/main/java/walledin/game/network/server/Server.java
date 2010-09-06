@@ -323,11 +323,6 @@ public class Server implements NetworkEventListener {
         gameLogicManager.initialize();
     }
 
-    @Override
-    public void entityCreated(final Entity entity) {
-        // ignore
-    }
-
     /**
      * Creates a connection to a new client.
      * 
@@ -471,11 +466,5 @@ public class Server implements NetworkEventListener {
     public void receivedMessage(final SocketAddress address,
             final GetPlayerInfoResponseMessage message) {
         // ignore
-    }
-
-    @Override
-    public void entityRemoved(Entity entity) {
-        // TODO Auto-generated method stub
-        
     }
 }
