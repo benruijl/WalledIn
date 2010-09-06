@@ -90,6 +90,11 @@ public class WeaponBehavior extends Behavior {
                         new PhysicsBehavior(getOwner(), WEAPON_MASS));
             }
         }
+        
+        if (messageType == messageType.PICK_UP) {
+            setAttribute(Attribute.OWNED_BY, data);
+            setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
+        }
 
         if (messageType == MessageType.DROP) { // to be called by Player only
             LOG.info("Weapon " + getOwner().getName() + " dropped.");
@@ -125,6 +130,8 @@ public class WeaponBehavior extends Behavior {
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.setAttribute(Attribute.TARGET, target);
+                bullet.setAttribute(Attribute.OWNED_BY,
+                        getAttribute(Attribute.OWNED_BY));
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);
 
                 canShoot = false;

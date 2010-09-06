@@ -18,24 +18,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity;
+package walledin.game.gamemode;
 
 /**
- * All the possible messages that can be send to behaviors
- * 
- * @author Wouter Smeenk
- * 
+ * A collection of messages that signal changes in game state.
+ * @author Ben Ruijl
+ *
  */
-public enum MessageType {
-    RENDER,
-    ATTRIBUTE_SET,
-    COLLIDED,
-    RESTORE_HEALTH,
-    SHOOT,
-    APPLY_FORCE,
-    DEATH,
-    PICK_UP,
-    DROP,
-    SELECT_WEAPON,
-    TAKE_DAMAGE;
+public interface GameStateListener {
+    void onGameOver();
+
+    void onMatchOver();
 }

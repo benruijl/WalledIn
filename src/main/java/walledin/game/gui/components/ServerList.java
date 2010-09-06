@@ -34,7 +34,7 @@ import walledin.engine.gui.components.Button;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
-import walledin.game.GameMode;
+import walledin.game.gamemode.GameMode;
 import walledin.game.network.ServerData;
 
 public class ServerList extends Screen implements ScreenMouseEventListener {

@@ -191,8 +191,9 @@ public final class Entity {
         if (attribute.clazz.isInstance(newObject) || newObject == null) {
             final T result = (T) attributes.put(attribute, newObject);
 
-            // Only add it if it is actually changed
-            if (attribute.canSendOverNetwork() && !newObject.equals(result)) {
+            // Only add it if it has actually changed
+            if (attribute.canSendOverNetwork()
+                    && (newObject == null || !newObject.equals(result))) {
                 changedAttributes.add(attribute);
             }
             sendMessage(MessageType.ATTRIBUTE_SET, attribute);

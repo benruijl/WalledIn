@@ -37,12 +37,17 @@ public final class PlayerInfo extends PlayerClientInfo {
     private boolean dead;
     private boolean respawn;
     private float walledInTime;
+    private int killCount;
+    private int deathCount;
 
     public PlayerInfo(final Entity player) {
         super(player.getName(), Team.UNSELECTED);
         this.player = player;
         dead = false;
         respawn = false;
+
+        deathCount = 0;
+        killCount = 0;
     }
 
     public Entity getPlayer() {
@@ -95,5 +100,25 @@ public final class PlayerInfo extends PlayerClientInfo {
 
     public boolean shouldRespawn() {
         return respawn;
+    }
+    
+    public int getKillCount() {
+        return killCount;
+    }
+
+    public int getDeathCount() {
+        return deathCount;
+    }
+
+    public void setDeathCount(int deathCount) {
+        this.deathCount = deathCount;
+    }
+
+    public void setKillCount(int killCount) {
+        this.killCount = killCount;
+    }
+
+    public void increaseKillCount() {
+        killCount++;
     }
 }

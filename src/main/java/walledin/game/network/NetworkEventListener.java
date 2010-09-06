@@ -40,8 +40,6 @@ public interface NetworkEventListener {
 
     void receivedMessage(SocketAddress address, LoginMessage loginMessage);
 
-    void entityCreated(Entity entity);
-
     void receivedMessage(SocketAddress address, ChallengeMessage message);
 
     void receivedMessage(SocketAddress address, GetPlayerInfoMessage message);
@@ -65,4 +63,8 @@ public interface NetworkEventListener {
 
     void receivedMessage(SocketAddress address,
             GetPlayerInfoResponseMessage message);
+
+    void entityCreated(Entity entity);
+
+    void entityRemoved(Entity entity);
 }

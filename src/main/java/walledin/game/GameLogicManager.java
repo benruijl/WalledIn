@@ -41,6 +41,10 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.game.gamemode.GameMode;
+import walledin.game.gamemode.GameModeHandler;
+import walledin.game.gamemode.GameModeHandlerFactory;
+import walledin.game.gamemode.GameStateListener;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.map.SpawnPoint;
@@ -55,7 +59,7 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class GameLogicManager {
+public final class GameLogicManager implements GameStateListener  {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -76,6 +80,8 @@ public final class GameLogicManager {
     private final Map<Team, Set<PlayerInfo>> teams;
     /** Current game mode. */
     private final GameMode gameMode;
+    /** Current game mode handler. */
+    private final GameModeHandler gameModeHandler;
 
     /* Walled In checks */
     /** Mobility field of the map. */
@@ -95,7 +101,7 @@ public final class GameLogicManager {
         for (final Team team : Team.values()) {
             teams.put(team, new HashSet<PlayerInfo>());
         }
-        
+
         server = new Server(this);
 
         /* Initialize random number generator */
@@ -107,8 +113,10 @@ public final class GameLogicManager {
                 "game.walledInTime");
         minimalWalledInSpace = SettingsManager.getInstance().getInteger(
                 "game.mininmalWalledInSpace");
+
+        gameModeHandler = GameModeHandlerFactory.createHandler(gameMode, this);
     }
-    
+
     /**
      * Start of application. It runs the server.
      * 
@@ -127,7 +135,7 @@ public final class GameLogicManager {
 
         new GameLogicManager().run();
     }
-    
+
     /**
      * Runs the server.
      */
@@ -427,6 +435,18 @@ public final class GameLogicManager {
 
             if (info.isDead()) {
                 killPlayer(info.getPlayer().getName());
+
+                Entity killer = (Entity) info.getPlayer().getAttribute(
+                        Attribute.LAST_DAMAGE);
+
+                if (killer != null && killer != info.getPlayer()) {
+                    /* Add points to the killer of this player. */
+                    for (final PlayerInfo killerInfo : players.values()) {
+                        if (killerInfo.getPlayer() == killer) {
+                            killerInfo.increaseKillCount();
+                        }
+                    }
+                }
             }
 
             if (info.shouldRespawn()) {
@@ -450,6 +470,9 @@ public final class GameLogicManager {
             info.getPlayer().setAttribute(Attribute.WALLEDIN_IN,
                     info.getWalledInTime() / maxWalledInTime);
         }
+
+        /* Update the game mode specific routines */
+        gameModeHandler.update(delta);
 
         /* Do collision detection */
         entityManager.doCollisionDetection(map, delta);
@@ -482,6 +505,15 @@ public final class GameLogicManager {
 
         /* Build the static movability field. */
         buildStaticField();
+    }
+
+    @Override
+    public void onGameOver() {        
+    }
+
+    @Override
+    public void onMatchOver() {
+        LOG.info("The match has ended.");
     }
 
 }

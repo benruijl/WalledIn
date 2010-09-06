@@ -21,6 +21,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -68,6 +71,10 @@ public final class ClientLogicManager implements RenderListener {
     private final EntityManager entityManager;
     /** Client entity factory. */
     private final EntityFactory entityFactory;
+    /**
+     * Game dependent assets. These should be removed when the game is finished.
+     */
+    private final List<Entity> gameAssets;
     /** Screen manager. */
     private final ScreenManager screenManager;
     /** Renderer. */
@@ -92,6 +99,7 @@ public final class ClientLogicManager implements RenderListener {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         screenManager = new ScreenManager(renderer);
+        gameAssets = new ArrayList<Entity>();
 
         try {
             client = new Client(renderer, this);
@@ -166,7 +174,7 @@ public final class ClientLogicManager implements RenderListener {
      * @param name
      *            Name of player
      */
-    public final void setPlayerName(final String name) {
+    public void setPlayerName(final String name) {
         playerName = name;
     }
 
@@ -175,7 +183,7 @@ public final class ClientLogicManager implements RenderListener {
      * 
      * @return Player entity name
      */
-    public final String getPlayerName() {
+    public String getPlayerName() {
         return playerName;
     }
 
@@ -195,6 +203,61 @@ public final class ClientLogicManager implements RenderListener {
         return screenManager;
     }
 
+    public List<Entity> getGameAssets() {
+        return gameAssets;
+    }
+
+    /**
+     * Called when a new game entity is created. These entities are stored in a
+     * separate list.
+     * 
+     * @param entity
+     *            Game entity
+     */
+    public void onGameEntityCreated(final Entity entity) {
+        gameAssets.add(entity);
+
+        /* Play a sound when a bullet is created */
+        final Random generator = new Random();
+        final int num = generator.nextInt(4) + 1;
+
+        if (Audio.getInstance().isEnabled()) {
+            if (entity.getFamily() == Family.HANDGUN_BULLET) {
+                Audio.getInstance().playSample("handgun" + num, new Vector2f(),
+                        false);
+            }
+
+            if (entity.getFamily() == Family.FOAMGUN_BULLET) {
+                Audio.getInstance().playSample("foamgun" + num, new Vector2f(),
+                        false);
+            }
+        }
+    }
+
+    /**
+     * Called when an entity gets removed from the game.
+     * 
+     * @param entity
+     *            Game entity
+     */
+    public void onGameEntityRemoved(final Entity entity) {
+        gameAssets.remove(entity);
+    }
+
+    /**
+     * Resets the game by removing assets and by resetting other values.
+     */
+    public void resetGame() {
+        LOG.info("Cleaning up game assets.");
+
+        /* Remove the game assets. */
+        client.resetReceivedVersion();
+
+        for (Entity asset : gameAssets) {
+            entityManager.remove(asset.getName());
+        }
+    }
+
     /**
      * Displays an error message, disconnects from the server and returns to the
      * server list.
@@ -206,6 +269,7 @@ public final class ClientLogicManager implements RenderListener {
         screenManager.createDialog(message);
         LOG.error(message);
 
+        resetGame();
         try {
             client.disconnectFromServer();
         } catch (final IOException e) {

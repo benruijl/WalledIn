@@ -35,11 +35,10 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.EntityManager;
-import walledin.game.GameMode;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Family;
+import walledin.game.gamemode.GameMode;
 import walledin.game.network.messages.game.GameMessage;
 import walledin.game.network.messages.masterserver.MasterServerMessage;
 import walledin.game.network.server.ChangeSet;
@@ -117,6 +116,14 @@ public class NetworkMessageReader {
             break;
         case TILE_WIDTH:
             data = buffer.getFloat();
+            break;
+        case OWNED_BY:
+            String name = readStringData(buffer);
+            data = entityManager.get(name);
+            break;
+        case LAST_DAMAGE:
+            name = readStringData(buffer);
+            data = entityManager.get(name);
             break;
         default:
             LOG.error("Could not process attribute " + attribute);
