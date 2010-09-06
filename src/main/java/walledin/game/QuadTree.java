@@ -87,21 +87,24 @@ public class QuadTree {
         return null;
     }
     
-    public QuadTree getObjectsFromRectangle(Rectangle rect) {        
+    public List<Entity> getObjectsFromRectangle(Rectangle rect) {
+        List<Entity> objectList = new ArrayList<Entity>();
+        
+        if (rectangle.containsFully(rect)) {
+            objectList.addAll(getObjects());
+        }
+        
         for (int i = 0; i < 4; i++) {
             if (children[i].containsFully(rect)) {
-                QuadTree tree = getObjectsFromRectangle(rect);
+                List<Entity> tree = getObjectsFromRectangle(rect);
 
                 if (tree != null) {
-                    return tree;
+                    objectList.addAll(tree);
+                    return objectList;
                 }
             }
         }
         
-        if (rectangle.containsFully(rect)) {
-            return this;
-        }
-
         return null;
     }
 
