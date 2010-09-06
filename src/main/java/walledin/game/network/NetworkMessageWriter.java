@@ -77,9 +77,9 @@ public class NetworkMessageWriter {
         // Write attribute identification
         buffer.putShort((short) attribute.ordinal());
         if (data instanceof Integer) {
-            writeIntegerData((Integer) data, buffer);
+            buffer.putInt((Integer) data);
         } else if (data instanceof Float) {
-            writeFloatData((Float) data, buffer);
+            buffer.putFloat((Float) data);
         } else if (data instanceof String) {
             writeStringData((String) data, buffer);
         } else if (data instanceof Vector2f) {
@@ -128,14 +128,6 @@ public class NetworkMessageWriter {
     private static void writeFamilyData(final Family family,
             final ByteBuffer buffer) {
         writeStringData(family.toString(), buffer);
-    }
-
-    public static void writeIntegerData(final int data, final ByteBuffer buffer) {
-        buffer.putInt(data);
-    }
-
-    public static void writeFloatData(final float data, final ByteBuffer buffer) {
-        buffer.putFloat(data);
     }
 
     public static void writeStringData(final String data,

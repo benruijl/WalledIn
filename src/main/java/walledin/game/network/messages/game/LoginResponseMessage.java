@@ -64,7 +64,7 @@ public class LoginResponseMessage extends GameMessage {
 
     @Override
     public void write(final ByteBuffer buffer) {
-        NetworkMessageWriter.writeIntegerData(errorCode.ordinal(), buffer);
+        buffer.putInt(errorCode.ordinal());
         NetworkMessageWriter.writeStringData(entityName, buffer);
     }
 

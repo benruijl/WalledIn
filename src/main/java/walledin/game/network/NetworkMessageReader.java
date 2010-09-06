@@ -86,13 +86,13 @@ public class NetworkMessageReader {
         // FIXME don't use ordinal
         final Attribute attribute = Attribute.values()[ord];
         Object data = null;
-        if (data instanceof Integer) {
+        if (attribute.clazz.equals(Integer.class)) {
             data = buffer.getInt();
-        } else if (data instanceof Float) {
+        } else if (attribute.clazz.equals(Float.class)) {
             data = buffer.getFloat();
-        } else if (data instanceof String) {
+        } else if (attribute.clazz.equals(String.class)) {
             data = readStringData(buffer);
-        } else if (data instanceof Vector2f) {
+        } else if (attribute.clazz.equals(Vector2f.class)) {
             data = readVector2fData(buffer);
         } else {
             LOG.error("Could not process attribute " + attribute);
