@@ -75,6 +75,12 @@ public class EntityManager {
             listener.onEntityCreated(entity);
         }
     }
+    
+    private void fireOnEntityUpdated(Entity entity) {
+        for (EntityUpdateListener listener : listeners) {
+            listener.onEntityUpdated(entity);
+        }
+    }
 
     /**
      * Creates a new Entity and adds it to the entities list.
@@ -307,6 +313,7 @@ public class EntityManager {
                     .entrySet()) {
                 entity.setAttribute(attribute.getKey(), attribute.getValue());
             }
+            fireOnEntityUpdated(entity);
         }
     }
 }

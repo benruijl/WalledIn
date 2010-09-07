@@ -212,13 +212,6 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
         return gameAssets;
     }
 
-    /**
-     * Called when a new game entity is created. These entities are stored in a
-     * separate list.
-     * 
-     * @param entity
-     *            Game entity
-     */
     @Override
     public void onEntityCreated(final Entity entity) {
         gameAssets.add(entity);
@@ -238,7 +231,10 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
                         false);
             }
         }
+    }
 
+    @Override
+    public void onEntityUpdated(Entity entity) {
         if (entity.getFamily() == Family.MAP) {
             final GameMapIO mapIO = new GameMapIOXML();
             String mapName = (String) entity.getAttribute(Attribute.MAP_NAME);
@@ -252,12 +248,6 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
         }
     }
 
-    /**
-     * Called when an entity gets removed from the game.
-     * 
-     * @param entity
-     *            Game entity
-     */
     @Override
     public void onEntityRemoved(final Entity entity) {
         gameAssets.remove(entity);

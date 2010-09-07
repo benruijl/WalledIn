@@ -541,4 +541,9 @@ public final class GameLogicManager implements GameStateListener, EntityUpdateLi
             staticObjectsTree.remove(entity);
         }
     }
+
+    @Override
+    public void onEntityUpdated(Entity entity) {
+        // do nothing
+    }
 }
