@@ -3,7 +3,7 @@ package walledin.game;
 import walledin.game.entity.Entity;
 
 public interface EntityUpdateListener {
-    void entityCreated(Entity entity);
+    void onEntityCreated(Entity entity);
 
-    void entityRemoved(Entity entity);
+    void onEntityRemoved(Entity entity);
 }

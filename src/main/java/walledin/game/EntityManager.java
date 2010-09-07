@@ -48,7 +48,7 @@ public class EntityManager {
     private final Set<Entity> removed;
     private final Set<Entity> created;
     private int currentVersion;
-    private EntityUpdateListener listener;
+    private List<EntityUpdateListener> listeners;
 
     public EntityManager(final EntityFactory factory) {
         entities = new ConcurrentHashMap<String, Entity>();
@@ -57,10 +57,23 @@ public class EntityManager {
         this.factory = factory;
         drawOrderManager = new DrawOrderManager();
         currentVersion = 0;
+        listeners = new ArrayList<EntityUpdateListener>();
     }
-    
-    public void setListener(EntityUpdateListener listener) {
-        this.listener = listener;
+
+    public void addListener(EntityUpdateListener listener) {
+        listeners.add(listener);
+    }
+
+    private void fireOnEntityRemoved(Entity entity) {
+        for (EntityUpdateListener listener : listeners) {
+            listener.onEntityRemoved(entity);
+        }
+    }
+
+    private void fireOnEntityCreated(Entity entity) {
+        for (EntityUpdateListener listener : listeners) {
+            listener.onEntityCreated(entity);
+        }
     }
 
     /**
@@ -75,6 +88,7 @@ public class EntityManager {
     public Entity create(final Family family, final String entityName) {
         final Entity entity = factory.create(this, family, entityName);
         add(entity);
+        fireOnEntityCreated(entity);
         return entity;
     }
 
@@ -190,6 +204,7 @@ public class EntityManager {
 
         entity.resetMarkedRemoved();
         entity.resetAttributes();
+        fireOnEntityRemoved(entity);
         return entity;
     }
 
@@ -291,14 +306,6 @@ public class EntityManager {
             for (Entry<Attribute, Object> attribute : entry.getValue()
                     .entrySet()) {
                 entity.setAttribute(attribute.getKey(), attribute.getValue());
-            }
-        }
-        if (listener != null) {
-            for (Entity entity : created) {
-                listener.entityCreated(entity);
-            }
-            for (Entity entity : removed) {
-                listener.entityRemoved(entity);
             }
         }
     }

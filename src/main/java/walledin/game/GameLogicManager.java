@@ -60,7 +60,7 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class GameLogicManager implements GameStateListener {
+public final class GameLogicManager implements GameStateListener, EntityUpdateListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -97,6 +97,7 @@ public final class GameLogicManager implements GameStateListener {
     public GameLogicManager() {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
+        entityManager.addListener(this);
         players = new HashMap<String, PlayerInfo>();
         teams = new HashMap<Team, Set<PlayerInfo>>();
 
@@ -478,25 +479,6 @@ public final class GameLogicManager implements GameStateListener {
         /* Update the game mode specific routines */
         gameModeHandler.update(delta);
 
-        /* Update quadtree */
-        for (String name : entityManager.getCurrentChangeSet().getCreated()
-                .keySet()) {
-            Entity ent = entityManager.get(name);
-
-            /* For now, add just foam particles. */
-            if (ent != null && ent.getFamily() == Family.FOAM_PARTICLE) {
-                staticObjectsTree.add(ent);
-            }
-        }
-
-        for (String name : entityManager.getCurrentChangeSet().getRemoved()) {
-            Entity ent = entityManager.get(name);
-
-            if (ent != null && ent.getFamily() == Family.FOAM_PARTICLE) {
-                staticObjectsTree.remove(ent);
-            }
-        }
-
         /* Do collision detection */
         entityManager.doCollisionDetection(map, staticObjectsTree, delta);
     }
@@ -545,4 +527,18 @@ public final class GameLogicManager implements GameStateListener {
         LOG.info("The match has ended.");
     }
 
+    @Override
+    public void onEntityCreated(Entity entity) {
+        /* For now, add just foam particles. */
+        if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
+            staticObjectsTree.add(entity);
+        }
+    }
+
+    @Override
+    public void onEntityRemoved(Entity entity) {
+        if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
+            staticObjectsTree.remove(entity);
+        }
+    }
 }

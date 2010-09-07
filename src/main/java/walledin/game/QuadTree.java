@@ -81,12 +81,15 @@ public class QuadTree {
 
     private QuadTree getSmallestQuadTreeContainingRectangle(Rectangle rect) {
         /* If this is a leaf and it does not contain the object, return null. */
-        for (int i = 0; i < 4; i++) {
-            if (children[i].containsFully(rect)) {
-                QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
+        
+        if (!leaf) {
+            for (int i = 0; i < 4; i++) {
+                if (children[i].containsFully(rect)) {
+                    QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
 
-                if (tree != null) {
-                    return tree;
+                    if (tree != null) {
+                        return tree;
+                    }
                 }
             }
         }

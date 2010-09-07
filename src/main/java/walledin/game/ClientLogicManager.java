@@ -102,7 +102,7 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
         renderer = new Renderer();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
-        entityManager.setListener(this);
+        entityManager.addListener(this);
         screenManager = new ScreenManager(renderer);
         gameAssets = new ArrayList<Entity>();
 
@@ -220,7 +220,7 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
      *            Game entity
      */
     @Override
-    public void entityCreated(final Entity entity) {
+    public void onEntityCreated(final Entity entity) {
         gameAssets.add(entity);
 
         /* Play a sound when a bullet is created */
@@ -259,7 +259,7 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
      *            Game entity
      */
     @Override
-    public void entityRemoved(final Entity entity) {
+    public void onEntityRemoved(final Entity entity) {
         gameAssets.remove(entity);
     }
 
@@ -272,7 +272,7 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
         /* Remove the game assets. */
         client.resetReceivedVersion();
 
-        for (Entity asset : gameAssets) {
+        for (Entity asset : new ArrayList<Entity>(gameAssets)) {
             entityManager.remove(asset.getName());
         }
     }
