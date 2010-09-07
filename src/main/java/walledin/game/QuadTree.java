@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Geometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -11,6 +13,9 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 
 public class QuadTree {
+    /** Logger. */
+    private static final Logger LOG = Logger.getLogger(QuadTree.class);
+
     /** Maximum depth of the tree. */
     public static final int MAX_DEPTH = 5;
     /**
@@ -38,6 +43,10 @@ public class QuadTree {
 
     private void addObject(Entity object) {
         objects.add(object);
+
+        if (objects.size() > MAX_OBJECTS) {
+            subdivide();
+        }
     }
 
     private void removeObject(Entity object) {
@@ -57,11 +66,36 @@ public class QuadTree {
     }
 
     public void add(Entity object) {
-        addObject(object);
+        Rectangle rect = ((Geometry) object
+                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
+                .translate((Vector2f) object.getAttribute(Attribute.POSITION));
 
-        if (objects.size() > MAX_OBJECTS) {
-            subdivide();
+        QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
+
+        if (tree == null) {
+            LOG.warn("Could not add object to the quadtree, because it is out of the bounds.");
+        } else {
+            addObject(object);
         }
+    }
+
+    private QuadTree getSmallestQuadTreeContainingRectangle(Rectangle rect) {
+        /* If this is a leaf and it does not contain the object, return null. */
+        for (int i = 0; i < 4; i++) {
+            if (children[i].containsFully(rect)) {
+                QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
+
+                if (tree != null) {
+                    return tree;
+                }
+            }
+        }
+
+        if (containsFully(rect)) {
+            return this;
+        }
+
+        return null;
     }
 
     public QuadTree getQuadTreeContainingObject(Entity object) {
