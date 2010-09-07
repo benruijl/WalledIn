@@ -18,40 +18,32 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game;
+package walledin.game.network.messages.masterserver;
 
-/**
- * Custom exception for WalledIn.
- * 
- * @author Ben Ruijl
- * 
- */
-public class WalledInException extends Exception {
-    /**
-     * Serial ID.
-     */
-    private static final long serialVersionUID = -5392195441733476397L;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 
-    /**
-     * Creates a new WalledIn exception.
-     * 
-     * @param message
-     *            Message to print
-     */
-    public WalledInException(final String message) {
-        super(message);
+import walledin.game.network.NetworkEventListener;
+
+public class ChallengeMessage extends MasterServerMessage {
+    private long challengeData;
+
+    public ChallengeMessage() {
     }
 
-    /**
-     * Creates a new WalledIn exception.
-     * 
-     * @param message
-     *            Message to print
-     * 
-     * @param cause
-     *            The cause
-     */
-    public WalledInException(final String message, final Throwable cause) {
-        super(message, cause);
+    @Override
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
+        challengeData = buffer.getLong();
+    }
+
+    @Override
+    public void write(final ByteBuffer buffer) {
+        buffer.putLong(challengeData);
+    }
+
+    @Override
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
+        listener.receivedMessage(address, this);
     }
 }

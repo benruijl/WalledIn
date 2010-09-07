@@ -21,6 +21,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.util;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * A helper library for WalledIn.
@@ -110,4 +113,22 @@ public final class Utils {
         return newArray;
     }
 
+    /**
+     * Reverses the mapping
+     * 
+     * @param <V>
+     *            Value of the original map, key of the new map
+     * @param <K>
+     *            Key of the original map, value of the new map
+     * @param map
+     *            The map to be reversed
+     * @return A reversed map
+     */
+    public static <V, K> Map<V, K> reverseMap(final Map<K, V> map) {
+        final Map<V, K> result = new HashMap<V, K>();
+        for (final Entry<K, V> entry : map.entrySet()) {
+            result.put(entry.getValue(), entry.getKey());
+        }
+        return result;
+    }
 }

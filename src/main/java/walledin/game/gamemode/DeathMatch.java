@@ -21,7 +21,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.gamemode;
 
 import walledin.game.GameLogicManager;
-import walledin.game.GameLogicManager.PlayerInfo;
+import walledin.game.PlayerInfo;
 import walledin.util.SettingsManager;
 
 public class DeathMatch implements GameModeHandler {
