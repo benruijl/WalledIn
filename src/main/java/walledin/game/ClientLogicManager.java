@@ -39,6 +39,7 @@ import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
@@ -46,6 +47,9 @@ import walledin.game.gui.GameScreen;
 import walledin.game.gui.MainMenuScreen;
 import walledin.game.gui.SelectTeamScreen;
 import walledin.game.gui.ServerListScreen;
+import walledin.game.map.GameMapIO;
+import walledin.game.map.GameMapIOXML;
+import walledin.game.map.Tile;
 import walledin.game.network.client.Client;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
@@ -56,7 +60,7 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class ClientLogicManager implements RenderListener {
+public final class ClientLogicManager implements RenderListener, EntityUpdateListener {
     /** Logger. */
     private static final Logger LOG = Logger
             .getLogger(ClientLogicManager.class);
@@ -98,6 +102,7 @@ public final class ClientLogicManager implements RenderListener {
         renderer = new Renderer();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
+        entityManager.setListener(this);
         screenManager = new ScreenManager(renderer);
         gameAssets = new ArrayList<Entity>();
 
@@ -105,7 +110,7 @@ public final class ClientLogicManager implements RenderListener {
             client = new Client(renderer, this);
         } catch (final IOException e) {
             LOG.fatal("IO exception while creating client.", e);
-            throw new WalledInException("Could not initialize the client.");
+            throw new WalledInException("Could not initialize the client.", e);
         }
         LOG.info("Initializing renderer");
 
@@ -116,8 +121,6 @@ public final class ClientLogicManager implements RenderListener {
                 settings.getInteger("engine.window.height"),
                 settings.getBoolean("engine.window.fullScreen"));
         renderer.addListener(this);
-        LOG.info("Starting renderer");
-        renderer.beginLoop();
     }
 
     /**
@@ -159,6 +162,14 @@ public final class ClientLogicManager implements RenderListener {
         font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
                 630, 20));
         renderer.stopHUDRendering();
+    }
+
+    /**
+     * Starts the render loop
+     */
+    public void start() {
+        LOG.info("Starting renderer");
+        renderer.beginLoop();
     }
 
     /**
@@ -208,7 +219,8 @@ public final class ClientLogicManager implements RenderListener {
      * @param entity
      *            Game entity
      */
-    public void onGameEntityCreated(final Entity entity) {
+    @Override
+    public void entityCreated(final Entity entity) {
         gameAssets.add(entity);
 
         /* Play a sound when a bullet is created */
@@ -226,6 +238,18 @@ public final class ClientLogicManager implements RenderListener {
                         false);
             }
         }
+
+        if (entity.getFamily() == Family.MAP) {
+            final GameMapIO mapIO = new GameMapIOXML();
+            String mapName = (String) entity.getAttribute(Attribute.MAP_NAME);
+            if (mapName != null) {
+                List<Tile> tiles = mapIO.readTilesFromURL(Utils
+                        .getClasspathURL(mapName));
+                entity.setAttribute(Attribute.TILES, tiles);
+            } else {
+                LOG.warn("map name is null!");
+            }
+        }
     }
 
     /**
@@ -234,7 +258,8 @@ public final class ClientLogicManager implements RenderListener {
      * @param entity
      *            Game entity
      */
-    public void onGameEntityRemoved(final Entity entity) {
+    @Override
+    public void entityRemoved(final Entity entity) {
         gameAssets.remove(entity);
     }
 
@@ -380,7 +405,6 @@ public final class ClientLogicManager implements RenderListener {
         if (!quitting) {
             quitting = true;
             renderer.dispose();
-
             client.dispose();
         }
     }
@@ -401,6 +425,7 @@ public final class ClientLogicManager implements RenderListener {
         }
 
         final ClientLogicManager logicManager = new ClientLogicManager();
+        logicManager.start();
     }
 
     private void createTextureParts() {

@@ -72,150 +72,12 @@ public final class GameLogicManager implements GameStateListener  {
     /** Entity factory. */
     private final EntityFactory entityFactory;
 
-    /**
-     * This class contains all information the client should know about the
-     * player.
-     */
-    public static final class PlayerClientInfo {
-        private final String entityName;
-        private Team team;
-
-        public PlayerClientInfo(final String entityName, final Team team) {
-            this.entityName = entityName;
-            this.team = team;
-        }
-
-        public PlayerClientInfo(final String entityName) {
-            this.entityName = entityName;
-        }
-
-        public String getEntityName() {
-            return entityName;
-        }
-
-        public Team getTeam() {
-            return team;
-        }
-
-        public void setTeam(final Team team) {
-            this.team = team;
-        }
-    }
-
-    /** This class contains all information about the player. */
-    public final class PlayerInfo {
-        private float currentRespawnTime;
-        private final Entity player;
-        private boolean dead;
-        private boolean respawn;
-        private Team team;
-        private float walledInTime;
-        private int killCount;
-        private int deathCount;
-
-        public PlayerInfo(final Entity player) {
-            super();
-            this.player = player;
-            dead = false;
-            respawn = false;
-            team = Team.UNSELECTED;
-
-            deathCount = 0;
-            killCount = 0;
-        }
-
-        public Team getTeam() {
-            return team;
-        }
-
-        public void setTeam(final Team team) {
-            this.team = team;
-        }
-
-        public Entity getPlayer() {
-            return player;
-        }
-
-        public boolean isDead() {
-            return dead;
-        }
-
-        public void setWalledInTime(final float walledInTime) {
-            this.walledInTime = walledInTime;
-        }
-
-        public float getWalledInTime() {
-            return walledInTime;
-        }
-
-        /**
-         * Should be called when the player has been respawned.
-         */
-        public void hasRespawned() {
-            dead = false;
-            respawn = false;
-        }
-
-        /**
-         * Checks if the player died and determines if the player should be
-         * respawned.
-         * 
-         * @param delta
-         *            Delta time since last update
-         */
-        public void update(final double delta) {
-            /* Check if the player died */
-            if (!dead && (Integer) player.getAttribute(Attribute.HEALTH) == 0) {
-                dead = true;
-                respawn = false;
-
-                deathCount++;
-            }
-
-            if (dead && !respawn) {
-                currentRespawnTime += delta;
-
-                if (currentRespawnTime > respawnTime) {
-                    currentRespawnTime = 0;
-                    respawn = true;
-                }
-            }
-        }
-
-        public boolean shouldRespawn() {
-            return respawn;
-        }
-
-        public int getKillCount() {
-            return killCount;
-        }
-
-        public int getDeathCount() {
-            return deathCount;
-        }
-
-        public void setDeathCount(int deathCount) {
-            this.deathCount = deathCount;
-        }
-
-        public void setKillCount(int killCount) {
-            this.killCount = killCount;
-        }
-
-        public void increaseKillCount() {
-            killCount++;
-        }
-
-    }
-
     /** Active map. */
     private Entity map;
     /** A map from the player entity name to the player info. */
     private final Map<String, PlayerInfo> players;
     /** A map to from a team to the players in it. */
     private final Map<Team, Set<PlayerInfo>> teams;
-    /** Respawn time in seconds. */
-    private final float respawnTime;
     /** Current game mode. */
     private final GameMode gameMode;
     /** Current game mode handler. */
@@ -237,7 +99,7 @@ public final class GameLogicManager implements GameStateListener  {
 
         /* Initialize the map */
         for (final Team team : Team.values()) {
-            teams.put(team, new HashSet<GameLogicManager.PlayerInfo>());
+            teams.put(team, new HashSet<PlayerInfo>());
         }
 
         server = new Server(this);
@@ -245,9 +107,6 @@ public final class GameLogicManager implements GameStateListener  {
         /* Initialize random number generator */
         rng = new Random();
 
-        /* Load settings. */
-        respawnTime = SettingsManager.getInstance()
-                .getFloat("game.respawnTime");
         gameMode = GameMode.valueOf(SettingsManager.getInstance().getString(
                 "game.gameMode"));
         maxWalledInTime = SettingsManager.getInstance().getFloat(
@@ -577,13 +436,14 @@ public final class GameLogicManager implements GameStateListener  {
             if (info.isDead()) {
                 killPlayer(info.getPlayer().getName());
 
-                Entity killer = (Entity) info.getPlayer().getAttribute(
+                String killerName = (String) info.getPlayer().getAttribute(
                         Attribute.LAST_DAMAGE);
 
-                if (killer != null && killer != info.getPlayer()) {
+                if (killerName != null
+                        && !killerName.equals(info.getPlayer().getName())) {
                     /* Add points to the killer of this player. */
                     for (final PlayerInfo killerInfo : players.values()) {
-                        if (killerInfo.getPlayer() == killer) {
+                        if (killerInfo.getPlayer().getName().equals(killerName)) {
                             killerInfo.increaseKillCount();
                         }
                     }

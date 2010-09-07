@@ -92,7 +92,7 @@ public class WeaponBehavior extends Behavior {
         }
         
         if (messageType == messageType.PICK_UP) {
-            setAttribute(Attribute.OWNED_BY, data);
+            setAttribute(Attribute.OWNED_BY, ((Entity) data).getName());
             setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
         }
 
