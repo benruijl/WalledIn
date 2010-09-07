@@ -36,7 +36,7 @@ import walledin.engine.gui.components.Button;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
-import walledin.game.GameLogicManager.PlayerClientInfo;
+import walledin.game.PlayerClientInfo;
 import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;

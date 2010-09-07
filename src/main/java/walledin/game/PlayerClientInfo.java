@@ -21,37 +21,26 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game;
 
 /**
- * Custom exception for WalledIn.
- * 
- * @author Ben Ruijl
- * 
+ * This class contains all information the client should know about the player.
  */
-public class WalledInException extends Exception {
-    /**
-     * Serial ID.
-     */
-    private static final long serialVersionUID = -5392195441733476397L;
+public class PlayerClientInfo {
+    private final String entityName;
+    private Team team;
 
-    /**
-     * Creates a new WalledIn exception.
-     * 
-     * @param message
-     *            Message to print
-     */
-    public WalledInException(final String message) {
-        super(message);
+    public PlayerClientInfo(final String entityName, final Team team) {
+        this.entityName = entityName;
+        this.team = team;
     }
 
-    /**
-     * Creates a new WalledIn exception.
-     * 
-     * @param message
-     *            Message to print
-     * 
-     * @param cause
-     *            The cause
-     */
-    public WalledInException(final String message, final Throwable cause) {
-        super(message, cause);
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(final Team team) {
+        this.team = team;
     }
 }

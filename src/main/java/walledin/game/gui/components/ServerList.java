@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui.components;
 
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,13 +66,10 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
         serverButtons.clear();
 
         for (int i = 0; i < serverList.size(); i++) {
-            final Screen server = new Button(this,
-                    serverList.get(i).getName()
-                            + " ("
-                            + ((InetSocketAddress) serverList.get(i)
-                                    .getAddress()).getAddress() + ")" + " "
-                            + serverList.get(i).getPlayers() + "/"
-                            + serverList.get(i).getMaxPlayers() + " players",
+            final Screen server = new Button(this, serverList.get(i).getName()
+                    + " (" + (serverList.get(i).getAddress()).getAddress()
+                    + ")" + " " + serverList.get(i).getPlayers() + "/"
+                    + serverList.get(i).getMaxPlayers() + " players",
                     new Vector2f(10, 65 + i * 20));
             server.registerScreenManager(getManager());
             server.addMouseEventListener(this);
