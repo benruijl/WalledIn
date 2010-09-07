@@ -22,6 +22,7 @@ package walledin.game;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +205,7 @@ public class EntityManager {
      * @return Entity list
      */
     public Map<String, Entity> getEntities() {
-        return entities;
+        return Collections.unmodifiableMap(entities);
     }
 
     /**
@@ -235,22 +236,37 @@ public class EntityManager {
         }
     }
 
-    public void doCollisionDetection(final Entity curMap, final QuadTree staticMap, final double delta) {
+    public void doCollisionDetection(final Entity curMap,
+            final QuadTree staticMap, final double delta) {
         CollisionManager.calculateMapCollisions(curMap, entities.values(),
                 delta);
-        CollisionManager.calculateEntityCollisions(entities.values(), staticMap, delta);
+        CollisionManager.calculateEntityCollisions(entities.values(),
+                staticMap, delta);
     }
 
     public void init() {
     }
 
-    public ChangeSet getChangeSet() {
+    /**
+     * Creates a new change set and resets the current internal values.
+     * 
+     * @return New changeset
+     */
+    public ChangeSet createChangeSet() {
         final ChangeSet result = new ChangeSet(currentVersion, created,
                 removed, entities);
         created.clear();
         removed.clear();
         currentVersion++;
         return result;
+    }
+
+    /**
+     * Returns the current changeset.
+     * @return Current changeset
+     */
+    public ChangeSet getCurrentChangeSet() {
+        return new ChangeSet(currentVersion, created, removed, entities);
     }
 
     public int getCurrentVersion() {

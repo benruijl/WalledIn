@@ -619,7 +619,8 @@ public final class GameLogicManager implements GameStateListener {
         gameModeHandler.update(delta);
 
         /* Update quadtree */
-        for (String name : entityManager.getChangeSet().getCreated().keySet()) {
+        for (String name : entityManager.getCurrentChangeSet().getCreated()
+                .keySet()) {
             Entity ent = entityManager.get(name);
 
             /* For now, add just foam particles. */
@@ -628,13 +629,13 @@ public final class GameLogicManager implements GameStateListener {
             }
         }
 
-        /*   for (String name : entityManager.getChangeSet().getRemoved()) {
+        for (String name : entityManager.getCurrentChangeSet().getRemoved()) {
             Entity ent = entityManager.get(name);
 
             if (ent != null && ent.getFamily() == Family.FOAM_PARTICLE) {
                 staticObjectsTree.remove(ent);
             }
-        }*/
+        }
 
         /* Do collision detection */
         entityManager.doCollisionDetection(map, staticObjectsTree, delta);

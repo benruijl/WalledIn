@@ -258,7 +258,7 @@ public class NetworkDataReader {
             listener.entityRemoved(entityManager.remove(name));
             break;
         case NetworkConstants.GAMESTATE_MESSAGE_ATTRIBUTES:
-            entity = entityManager.get(name);
+            entity = entityManager.get(name);           
             readAttributesData(entity, buffer, entityManager);
             break;
         }
