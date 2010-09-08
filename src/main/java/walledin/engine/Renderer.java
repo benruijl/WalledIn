@@ -94,7 +94,7 @@ public class Renderer implements GLEventListener {
      * @author Ben Ruijl
      * 
      */
-    public class ColorRGB {
+    private static final class ColorRGB {
         private final float r, g, b;
 
         public ColorRGB(final float r, final float g, final float b) {
@@ -123,7 +123,7 @@ public class Renderer implements GLEventListener {
      * @author Ben Ruijl
      * 
      */
-    public class ColorRGBA {
+    private static final class ColorRGBA {
         private final ColorRGB rgb;
         private final float a;
 
