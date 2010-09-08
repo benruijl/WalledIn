@@ -25,8 +25,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Circle;
-import walledin.engine.math.Geometry;
 import walledin.engine.math.Polygon2f;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -45,7 +45,7 @@ import walledin.util.SettingsManager;
  * @author Ben Ruijl
  * 
  */
-public class CollisionManager {
+public final class CollisionManager {
     private static final Logger LOG = Logger.getLogger(CollisionManager.class);
     private static final float FLOOR_DAMPING = SettingsManager.getInstance()
             .getFloat("game.floorDamping");
@@ -138,6 +138,13 @@ public class CollisionManager {
     }
 
     /**
+     * This class should not be created
+     */
+    private CollisionManager() {
+
+    }
+
+    /**
      * Calculates the tile containing the point <code>pos</code>. If the
      * coordinates are illegal, a solid tile is returned and a warning is given.
      * 
@@ -196,10 +203,10 @@ public class CollisionManager {
                 .sub(polygonVelocity);
 
         /* Polygon and circle at old position. */
-        final Polygon2f polygon = ((Geometry) polygonEntity
+        final Polygon2f polygon = ((AbstractGeometry) polygonEntity
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
                 .translate(polygonOldPos).asPolygon();
-        final Circle circle = ((Geometry) circleEntity
+        final Circle circle = ((AbstractGeometry) circleEntity
                 .getAttribute(Attribute.BOUNDING_GEOMETRY))
                 .asCircumscribedCircle().translate(circlePosition);
 
@@ -301,10 +308,10 @@ public class CollisionManager {
                 final Vector2f posB = (Vector2f) entArray[j]
                         .getAttribute(Attribute.POSITION);
 
-                final Geometry boundsA = ((Geometry) entArray[i]
+                final AbstractGeometry boundsA = ((AbstractGeometry) entArray[i]
                         .getAttribute(Attribute.BOUNDING_GEOMETRY))
                         .asRectangle().translate(theorPosA);
-                final Geometry boundsB = ((Geometry) entArray[j]
+                final AbstractGeometry boundsB = ((AbstractGeometry) entArray[j]
                         .getAttribute(Attribute.BOUNDING_GEOMETRY))
                         .asRectangle().translate(theorPosB);
 
@@ -351,7 +358,7 @@ public class CollisionManager {
                 }
 
                 vel = vel.scale((float) delta); // velocity per frame
-                final Geometry bounds = (Geometry) ent
+                final AbstractGeometry bounds = (AbstractGeometry) ent
                         .getAttribute(Attribute.BOUNDING_GEOMETRY);
                 Rectangle rect = bounds.asRectangle();
                 final Vector2f curPos = (Vector2f) ent

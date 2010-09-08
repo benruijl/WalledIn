@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.Input;
 import walledin.engine.Renderer;
-import walledin.engine.gui.Screen;
+import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenKeyEvent;
 import walledin.engine.gui.ScreenKeyEventListener;
 import walledin.engine.gui.ScreenManager;
@@ -36,9 +36,10 @@ import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.game.gui.components.ServerList;
 
-public class ServerListScreen extends Screen implements ScreenKeyEventListener {
+public class ServerListScreen extends AbstractScreen implements
+        ScreenKeyEventListener {
     private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
-    private final Screen serverListWidget;
+    private final AbstractScreen serverListWidget;
     private final ClientLogicManager clientLogicManager;
 
     public ServerListScreen(final ScreenManager manager,

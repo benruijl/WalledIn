@@ -56,6 +56,7 @@ import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
 import walledin.game.network.messages.masterserver.ServersMessage;
 import walledin.util.SettingsManager;
+import walledin.util.Utils;
 
 /**
  * This class provides the server for the game. All gamestate updates happen
@@ -331,8 +332,7 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedMessage(final SocketAddress address,
             final LoginMessage message) {
-        final String entityName = NetworkConstants
-                .getAddressRepresentation(address);
+        final String entityName = Utils.getAddressRepresentation(address);
         ErrorCode error = ErrorCode.ERROR_LOGIN_FAILED;
 
         // Check if this player is already logged in

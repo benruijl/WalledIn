@@ -30,16 +30,16 @@ import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.messages.NetworkMessage;
 import walledin.util.Utils;
 
-public abstract class GameMessage extends NetworkMessage {
+public abstract class AbstractGameMessage implements NetworkMessage {
+    public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
     private static final Logger LOG = Logger
             .getLogger(NetworkMessageReader.class);
-    public static final int DATAGRAM_IDENTIFICATION = 0x47583454;
-    private static final Map<Byte, Class<? extends GameMessage>> MESSAGE_CLASSES = initializeMessageClasses();
-    private static final Map<Class<? extends GameMessage>, Byte> MESSAGE_BYTES = Utils
+    private static final Map<Byte, Class<? extends AbstractGameMessage>> MESSAGE_CLASSES = initializeMessageClasses();
+    private static final Map<Class<? extends AbstractGameMessage>, Byte> MESSAGE_BYTES = Utils
             .reverseMap(MESSAGE_CLASSES);
 
-    private static Map<Byte, Class<? extends GameMessage>> initializeMessageClasses() {
-        final Map<Byte, Class<? extends GameMessage>> result = new HashMap<Byte, Class<? extends GameMessage>>();
+    private static Map<Byte, Class<? extends AbstractGameMessage>> initializeMessageClasses() {
+        final Map<Byte, Class<? extends AbstractGameMessage>> result = new HashMap<Byte, Class<? extends AbstractGameMessage>>();
         result.put((byte) 0, GamestateMessage.class);
         result.put((byte) 1, GetPlayerInfoMessage.class);
         result.put((byte) 2, GetPlayerInfoResponseMessage.class);
@@ -51,8 +51,9 @@ public abstract class GameMessage extends NetworkMessage {
         return result;
     }
 
-    public static GameMessage getMessage(final byte type) {
-        final Class<? extends GameMessage> clazz = MESSAGE_CLASSES.get(type);
+    public static AbstractGameMessage getMessage(final byte type) {
+        final Class<? extends AbstractGameMessage> clazz = MESSAGE_CLASSES
+                .get(type);
         if (clazz == null) {
             LOG.error("Message of requested type (" + type + ") is unknown");
             return null;

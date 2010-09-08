@@ -20,6 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.util;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,14 +34,13 @@ import java.util.Map.Entry;
  * 
  */
 public final class Utils {
+    /** A small value to prevent rounding errors. */
+    private static final float EPSILON = 0.00001f;
 
     /** Private constructor. Never called. */
     private Utils() {
 
     }
-
-    /** A small value to prevent rounding errors. */
-    private static final float EPSILON = 0.00001f;
 
     /**
      * Gets the class path of a resource.
@@ -130,5 +131,18 @@ public final class Utils {
             result.put(entry.getValue(), entry.getKey());
         }
         return result;
+    }
+
+    /**
+     * Represents the address as string
+     * 
+     * @param address
+     *            The address
+     * @return The string that represends the address
+     */
+    public static String getAddressRepresentation(final SocketAddress address) {
+        final InetSocketAddress inetAddr = (InetSocketAddress) address;
+        return inetAddr.getAddress().getHostAddress() + "@"
+                + inetAddr.getPort();
     }
 }

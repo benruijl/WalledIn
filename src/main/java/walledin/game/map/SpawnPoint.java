@@ -23,7 +23,7 @@ package walledin.game.map;
 import walledin.engine.math.Vector2f;
 
 public class SpawnPoint {
-    final Vector2f pos;
+    private final Vector2f pos;
 
     public SpawnPoint(final Vector2f pos) {
         super();

@@ -223,7 +223,8 @@ public final class Audio {
 
             final IntBuffer buffer = IntBuffer.allocate(1);
             al.alGenBuffers(1, buffer);
-            final int format = stream.getFormat().getChannels() > 1 ? ALConstants.AL_FORMAT_STEREO16
+            final boolean stereo = stream.getFormat().getChannels() > 1;
+            final int format = stereo ? ALConstants.AL_FORMAT_STEREO16
                     : ALConstants.AL_FORMAT_MONO16;
             al.alBufferData(buffer.get(0), format, ByteBuffer.wrap(data),
                     data.length, (int) audioFormat.getSampleRate());

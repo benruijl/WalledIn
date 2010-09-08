@@ -38,8 +38,8 @@ import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Family;
 import walledin.game.gamemode.GameMode;
-import walledin.game.network.messages.game.GameMessage;
-import walledin.game.network.messages.masterserver.MasterServerMessage;
+import walledin.game.network.messages.game.AbstractGameMessage;
+import walledin.game.network.messages.masterserver.AbstractMasterServerMessage;
 import walledin.game.network.server.ChangeSet;
 
 /**
@@ -85,13 +85,13 @@ public class NetworkMessageReader {
         // FIXME don't use ordinal
         final Attribute attribute = Attribute.values()[ord];
         Object data = null;
-        if (attribute.clazz.equals(Integer.class)) {
+        if (attribute.getClazz().equals(Integer.class)) {
             data = buffer.getInt();
-        } else if (attribute.clazz.equals(Float.class)) {
+        } else if (attribute.getClazz().equals(Float.class)) {
             data = buffer.getFloat();
-        } else if (attribute.clazz.equals(String.class)) {
+        } else if (attribute.getClazz().equals(String.class)) {
             data = readStringData(buffer);
-        } else if (attribute.clazz.equals(Vector2f.class)) {
+        } else if (attribute.getClazz().equals(Vector2f.class)) {
             data = readVector2fData(buffer);
         } else {
             LOG.error("Could not process attribute " + attribute);
@@ -174,24 +174,25 @@ public class NetworkMessageReader {
     /**
      * Processes the message in the buffer
      * 
-     * @param entityManager
-     *            the entity manager to process the changes in
+     * @param address
+     *            The address the message was send from
      */
     public void processMessage(final SocketAddress address) {
         int ident = -1;
         ident = buffer.getInt();
-        if (ident == GameMessage.DATAGRAM_IDENTIFICATION) {
+        if (ident == AbstractGameMessage.DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
-            final GameMessage message = GameMessage.getMessage(type);
+            final AbstractGameMessage message = AbstractGameMessage
+                    .getMessage(type);
             if (message == null) {
                 LOG.warn("Received unhandled message");
             } else {
                 message.read(buffer, address);
                 message.fireEvent(listener, address);
             }
-        } else if (ident == MasterServerMessage.DATAGRAM_IDENTIFICATION) {
+        } else if (ident == AbstractMasterServerMessage.DATAGRAM_IDENTIFICATION) {
             final byte type = buffer.get();
-            final MasterServerMessage message = MasterServerMessage
+            final AbstractMasterServerMessage message = AbstractMasterServerMessage
                     .getMessage(type);
             if (message == null) {
                 LOG.warn("Received unhandled message");

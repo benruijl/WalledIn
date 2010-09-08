@@ -24,10 +24,16 @@ import org.apache.log4j.Logger;
 
 import walledin.game.GameLogicManager;
 
-public class GameModeHandlerFactory {
+public final class GameModeHandlerFactory {
     /** Logger. */
     private static final Logger LOG = Logger
             .getLogger(GameModeHandlerFactory.class);
+
+    /**
+     * Class should not be created
+     */
+    private GameModeHandlerFactory() {
+    }
 
     /**
      * Creates and returns a new game mode handler.

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import walledin.engine.math.Geometry;
+import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
@@ -61,7 +61,7 @@ public class QuadTree {
     }
 
     private boolean containsFully(final Entity object) {
-        final Rectangle rect = ((Geometry) object
+        final Rectangle rect = ((AbstractGeometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
                 .translate((Vector2f) object.getAttribute(Attribute.POSITION));
 
@@ -81,7 +81,7 @@ public class QuadTree {
     }
 
     public QuadTree getQuadTreeContainingObject(final Entity object) {
-        final Rectangle rect = ((Geometry) object
+        final Rectangle rect = ((AbstractGeometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
                 .translate((Vector2f) object.getAttribute(Attribute.POSITION));
 

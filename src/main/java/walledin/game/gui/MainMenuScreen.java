@@ -23,7 +23,7 @@ package walledin.game.gui;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
-import walledin.engine.gui.Screen;
+import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
@@ -34,9 +34,10 @@ import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.util.Utils;
 
-public class MainMenuScreen extends Screen implements ScreenMouseEventListener {
-    private Screen startButton;
-    private Screen quitButton;
+public class MainMenuScreen extends AbstractScreen implements
+        ScreenMouseEventListener {
+    private AbstractScreen startButton;
+    private AbstractScreen quitButton;
     private final ClientLogicManager clientLogicManager;
 
     public MainMenuScreen(final ScreenManager manager,

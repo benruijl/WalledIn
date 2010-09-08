@@ -48,6 +48,8 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
             case VELOCITY:
                 velocity = (Vector2f) getAttribute(attribute);
                 break;
+            default:
+                break;
             }
         }
     }

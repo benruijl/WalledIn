@@ -47,9 +47,9 @@ public class ScreenManager {
     }
 
     /** Map of typed screens. */
-    private final Map<ScreenType, Screen> typedScreens;
+    private final Map<ScreenType, AbstractScreen> typedScreens;
     /** Sorted list of screens. It is sorted on z-order. */
-    private final SortedSet<Screen> screens;
+    private final SortedSet<AbstractScreen> screens;
     /** Map of shared fonts. */
     private final Map<String, Font> fonts;
     /** Shared cursor. */
@@ -59,7 +59,7 @@ public class ScreenManager {
     /** Keeps track is the cursor has to be drawn. */
     private boolean drawCursor;
     /** Focused screen. Only one screen can be focused. */
-    private Screen focusedScreen;
+    private AbstractScreen focusedScreen;
 
     /**
      * Creates a screen manager.
@@ -68,11 +68,11 @@ public class ScreenManager {
      *            Renderer used by screen manager
      */
     public ScreenManager(final Renderer renderer) {
-        typedScreens = new ConcurrentHashMap<ScreenType, Screen>();
-        screens = new TreeSet<Screen>(new Comparator<Screen>() {
+        typedScreens = new ConcurrentHashMap<ScreenType, AbstractScreen>();
+        screens = new TreeSet<AbstractScreen>(new Comparator<AbstractScreen>() {
 
             @Override
-            public int compare(final Screen o1, final Screen o2) {
+            public int compare(final AbstractScreen o1, final AbstractScreen o2) {
                 final int z1 = o1.getZIndex();
                 final int z2 = o2.getZIndex();
 
@@ -132,7 +132,8 @@ public class ScreenManager {
      * @param screen
      *            Screen to add
      */
-    public final void addScreen(final ScreenType type, final Screen screen) {
+    public final void addScreen(final ScreenType type,
+            final AbstractScreen screen) {
         typedScreens.put(type, screen);
         screens.add(screen);
         screen.registerScreenManager(this);
@@ -144,7 +145,7 @@ public class ScreenManager {
      * @param screen
      *            Screen to add
      */
-    public final void addScreen(final Screen screen) {
+    public final void addScreen(final AbstractScreen screen) {
         screens.add(screen);
         screen.registerScreenManager(this);
     }
@@ -157,9 +158,9 @@ public class ScreenManager {
      * @param screen
      *            Screen to remove
      * 
-     * @see Screen#dispose()
+     * @see AbstractScreen#dispose()
      */
-    public final void removeScreen(final Screen screen) {
+    public final void removeScreen(final AbstractScreen screen) {
         if (!screens.remove(screen)) {
             LOG.warn("Tried to remove screen that is not in the list");
         }
@@ -179,7 +180,7 @@ public class ScreenManager {
      *            Type of requested screen
      * @return Screen if exists, else null
      */
-    public final Screen getScreen(final ScreenType type) {
+    public final AbstractScreen getScreen(final ScreenType type) {
         return typedScreens.get(type);
     }
 
@@ -201,8 +202,9 @@ public class ScreenManager {
 
         final Set<Integer> keysDown = Input.getInstance().getKeysDown();
 
-        final Screen[] screenList = screens.toArray(new Screen[0]);
-        for (final Screen screen : screenList) {
+        final AbstractScreen[] screenList = screens
+                .toArray(new AbstractScreen[0]);
+        for (final AbstractScreen screen : screenList) {
             if (screen.isVisible()) {
                 screen.update(delta);
 
@@ -225,7 +227,7 @@ public class ScreenManager {
          * focused screen.
          */
         if (getFocusedScreen() != null) {
-            final Screen screen = getFocusedScreen()
+            final AbstractScreen screen = getFocusedScreen()
                     .getSmallestScreenContainingCursor();
 
             if (screen != null) {
@@ -249,8 +251,9 @@ public class ScreenManager {
      *            Renderer to draw with
      */
     public final void draw(final Renderer renderer) {
-        final Screen[] screenList = screens.toArray(new Screen[0]);
-        for (final Screen screen : screenList) {
+        final AbstractScreen[] screenList = screens
+                .toArray(new AbstractScreen[0]);
+        for (final AbstractScreen screen : screenList) {
             if (screen.isVisible()) {
                 renderer.pushMatrix();
                 renderer.translate(screen.getPosition());
@@ -309,7 +312,7 @@ public class ScreenManager {
      * @param screen
      *            Screen. Can be null.
      */
-    public final void setFocusedScreen(final Screen screen) {
+    public final void setFocusedScreen(final AbstractScreen screen) {
         focusedScreen = screen;
     }
 
@@ -319,7 +322,7 @@ public class ScreenManager {
      * 
      * @return Focused screen
      */
-    public final Screen getFocusedScreen() {
+    public final AbstractScreen getFocusedScreen() {
         return focusedScreen;
     }
 

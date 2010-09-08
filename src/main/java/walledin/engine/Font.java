@@ -46,7 +46,7 @@ public class Font {
      * @author Ben Ruijl
      * 
      */
-    private static class Glyph {
+    private static final class Glyph {
         private final int width;
         private final int height;
         private final int advance;
@@ -56,7 +56,7 @@ public class Font {
         private final int startY;
         private final char charCode;
 
-        public Glyph(final DataInputStream in) throws IOException {
+        private Glyph(final DataInputStream in) throws IOException {
             width = toBigEndian(in.readInt());
             height = toBigEndian(in.readInt());
             advance = toBigEndian(in.readInt());

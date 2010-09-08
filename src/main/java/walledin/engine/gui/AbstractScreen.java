@@ -35,7 +35,7 @@ import walledin.engine.math.Vector2f;
  * @author Ben Ruijl
  * 
  */
-public abstract class Screen {
+public abstract class AbstractScreen {
     /** Screen states. */
     public enum ScreenState {
         /** The screen is visible. */
@@ -45,10 +45,10 @@ public abstract class Screen {
     }
 
     /** Parent of this screen. */
-    private final Screen parent;
+    private final AbstractScreen parent;
 
     /** Child screens of this screen. */
-    private final List<Screen> children;
+    private final List<AbstractScreen> children;
 
     /** Manager of this screen. */
     private ScreenManager manager;
@@ -89,8 +89,9 @@ public abstract class Screen {
      * @param z
      *            z-index
      */
-    public Screen(final Screen parent, final Rectangle boudingRect, final int z) {
-        children = new ArrayList<Screen>();
+    public AbstractScreen(final AbstractScreen parent,
+            final Rectangle boudingRect, final int z) {
+        children = new ArrayList<AbstractScreen>();
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
         keyListeners = new ArrayList<ScreenKeyEventListener>();
@@ -112,9 +113,9 @@ public abstract class Screen {
      * @param z
      *            z-index
      */
-    public Screen(final ScreenManager manager, final Rectangle boudingRect,
-            final int z) {
-        children = new ArrayList<Screen>();
+    public AbstractScreen(final ScreenManager manager,
+            final Rectangle boudingRect, final int z) {
+        children = new ArrayList<AbstractScreen>();
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
         keyListeners = new ArrayList<ScreenKeyEventListener>();
@@ -136,11 +137,12 @@ public abstract class Screen {
      * 
      * @return Returns a Screen on success and null on failure.
      */
-    public final Screen getSmallestScreenContainingCursor() {
+    public final AbstractScreen getSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
-            for (final Screen screen : children) {
+            for (final AbstractScreen screen : children) {
                 if (screen.isVisible()) {
-                    final Screen b = screen.getSmallestScreenContainingCursor();
+                    final AbstractScreen b = screen
+                            .getSmallestScreenContainingCursor();
 
                     if (b != null) {
                         return b;
@@ -163,7 +165,7 @@ public abstract class Screen {
      */
     private boolean isSmallestScreenContainingCursor() {
         if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
-            for (final Screen screen : children) {
+            for (final AbstractScreen screen : children) {
                 if (screen.isVisible()) {
                     if (screen.isSmallestScreenContainingCursor()) {
                         return false;
@@ -211,7 +213,7 @@ public abstract class Screen {
 
         }
 
-        for (final Screen screen : children) {
+        for (final AbstractScreen screen : children) {
             if (screen.getState() == ScreenState.Visible) {
                 screen.update(delta);
             }
@@ -235,7 +237,7 @@ public abstract class Screen {
      *            Renderer to draw with
      */
     public void draw(final Renderer renderer) {
-        for (final Screen screen : children) {
+        for (final AbstractScreen screen : children) {
             if (screen.getState() == ScreenState.Visible) {
                 renderer.pushMatrix();
                 renderer.translate(screen.getPosition());
@@ -328,7 +330,7 @@ public abstract class Screen {
      * @param childScreen
      *            Child screen
      */
-    public final void addChild(final Screen childScreen) {
+    public final void addChild(final AbstractScreen childScreen) {
         children.add(childScreen);
     }
 
@@ -338,7 +340,7 @@ public abstract class Screen {
      * @param childScreen
      *            Child screen
      */
-    public final void removeChild(final Screen childScreen) {
+    public final void removeChild(final AbstractScreen childScreen) {
         children.remove(childScreen);
     }
 
@@ -381,7 +383,7 @@ public abstract class Screen {
         }
 
         // update all children
-        for (final Screen child : children) {
+        for (final AbstractScreen child : children) {
             child.updateAbsolutePosition();
         }
     }
@@ -403,7 +405,7 @@ public abstract class Screen {
      * 
      * @return Parent screen or null
      */
-    public final Screen getParent() {
+    public final AbstractScreen getParent() {
         return parent;
     }
 

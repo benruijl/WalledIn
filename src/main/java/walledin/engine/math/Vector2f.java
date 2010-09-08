@@ -61,7 +61,7 @@ public final class Vector2f {
      * 
      * @return Vector
      */
-    public final Vector2f getXVector() {
+    public Vector2f getXVector() {
         return new Vector2f(x, 0);
     }
 
@@ -70,7 +70,7 @@ public final class Vector2f {
      * 
      * @return Vector
      */
-    public final Vector2f getYVector() {
+    public Vector2f getYVector() {
         return new Vector2f(0, y);
     }
 

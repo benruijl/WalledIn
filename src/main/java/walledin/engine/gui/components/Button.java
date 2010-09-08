@@ -22,18 +22,19 @@ package walledin.engine.gui.components;
 
 import walledin.engine.Font;
 import walledin.engine.Renderer;
-import walledin.engine.gui.Screen;
+import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.math.Vector2f;
 
-public class Button extends Screen implements ScreenMouseEventListener {
+public class Button extends AbstractScreen implements ScreenMouseEventListener {
     /** Button text. */
     private String text;
     /** Keeps track if move is hovering over button. */
     private boolean selected;
 
-    public Button(final Screen parent, final String text, final Vector2f pos) {
+    public Button(final AbstractScreen parent, final String text,
+            final Vector2f pos) {
         super(parent, parent.getManager().getFont("arial20")
                 .getBoundingRect(text), 2);
         this.text = text;
