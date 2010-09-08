@@ -328,7 +328,7 @@ public final class CollisionManager {
             if (element.getFamily() == Family.PLAYER) {
 
                 /* TODO: check the old pos too! */
-                final Rectangle rect = ((Geometry) element
+                final Rectangle rect = ((AbstractGeometry) element
                         .getAttribute(Attribute.BOUNDING_GEOMETRY))
                         .asRectangle().translate(
                                 (Vector2f) element
