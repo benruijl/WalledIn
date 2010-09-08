@@ -278,14 +278,14 @@ public final class GameLogicManager implements GameStateListener {
         killPlayer(entityName);
         players.remove(entityName);
     }
-    
+
     public boolean inCluster(final Entity foam) {
-        for (List<Entity> cluster : clusters) {
-           if (cluster.contains(foam)) {
-               return true;
-           }
+        for (final List<Entity> cluster : clusters) {
+            if (cluster.contains(foam)) {
+                return true;
+            }
         }
-        
+
         return false;
     }
 
@@ -300,12 +300,13 @@ public final class GameLogicManager implements GameStateListener {
         float closestFoamClusterDistance = Float.MAX_VALUE;
         List<Entity> closestCluster = null;
         Entity closestFoamParticle = null;
-        Vector2f foamPos = (Vector2f) foam.getAttribute(Attribute.POSITION);
+        final Vector2f foamPos = (Vector2f) foam
+                .getAttribute(Attribute.POSITION);
 
         /* Find closest cluster. */
-        for (List<Entity> cluster : clusters) {
-            for (Entity clusterdFoam : cluster) {
-                float length = ((Vector2f) clusterdFoam
+        for (final List<Entity> cluster : clusters) {
+            for (final Entity clusterdFoam : cluster) {
+                final float length = ((Vector2f) clusterdFoam
                         .getAttribute(Attribute.POSITION)).sub(foamPos)
                         .lengthSquared();
                 if (length < maxFoamDistance * maxFoamDistance
@@ -319,15 +320,15 @@ public final class GameLogicManager implements GameStateListener {
 
         /* If none closest, create a new cluster. */
         if (closestCluster == null) {
-            List<Entity> cluster = new ArrayList<Entity>();
+            final List<Entity> cluster = new ArrayList<Entity>();
             cluster.add(foam);
             clusters.add(cluster);
         } else {
             LOG.info("particle added to cluster");
-            
+
             /* Create intermediary foam particles. */
-            Entity newFoam = entityManager.create(Family.FOAM_PARTICLE);
-            Vector2f clusteredFoamPos = (Vector2f) closestFoamParticle
+            final Entity newFoam = entityManager.create(Family.FOAM_PARTICLE);
+            final Vector2f clusteredFoamPos = (Vector2f) closestFoamParticle
                     .getAttribute(Attribute.POSITION);
             newFoam.setAttribute(Attribute.POSITION,
                     foamPos.add(clusteredFoamPos.sub(foamPos).scale(0.5f)));
@@ -537,9 +538,9 @@ public final class GameLogicManager implements GameStateListener {
             info.getPlayer().setAttribute(Attribute.WALLEDIN_IN,
                     info.getWalledInTime() / maxWalledInTime);
         }
-        
-        /* Update clusters.*/
-        for (Entity ent : entityManager.getEntities().values()) {
+
+        /* Update clusters. */
+        for (final Entity ent : entityManager.getEntities().values()) {
             if (ent.getFamily() == Family.FOAM_PARTICLE) {
                 if (!inCluster(ent)) {
                     addToCluster(ent);
