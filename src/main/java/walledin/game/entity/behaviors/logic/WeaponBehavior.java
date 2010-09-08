@@ -90,8 +90,8 @@ public class WeaponBehavior extends Behavior {
                         new PhysicsBehavior(getOwner(), WEAPON_MASS));
             }
         }
-        
-        if (messageType == messageType.PICK_UP) {
+
+        if (messageType == MessageType.PICK_UP) {
             setAttribute(Attribute.OWNED_BY, ((Entity) data).getName());
             setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
         }

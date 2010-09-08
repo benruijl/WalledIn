@@ -38,7 +38,7 @@ public class GamestateMessage extends GameMessage {
 
     public GamestateMessage(final ChangeSet changeSet, final int currentVersion) {
         this.changeSet = changeSet;
-        this.knownClientVersion = currentVersion;
+        knownClientVersion = currentVersion;
     }
 
     public ChangeSet getChangeSet() {

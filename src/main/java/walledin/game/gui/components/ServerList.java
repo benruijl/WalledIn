@@ -67,8 +67,8 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
 
         for (int i = 0; i < serverList.size(); i++) {
             final Screen server = new Button(this, serverList.get(i).getName()
-                    + " (" + (serverList.get(i).getAddress()).getAddress()
-                    + ")" + " " + serverList.get(i).getPlayers() + "/"
+                    + " (" + serverList.get(i).getAddress().getAddress() + ")"
+                    + " " + serverList.get(i).getPlayers() + "/"
                     + serverList.get(i).getMaxPlayers() + " players",
                     new Vector2f(10, 65 + i * 20));
             server.registerScreenManager(getManager());

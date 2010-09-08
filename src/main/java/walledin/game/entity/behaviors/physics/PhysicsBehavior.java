@@ -89,15 +89,15 @@ public class PhysicsBehavior extends Behavior {
 
         this.mass = mass;
         setAttribute(Attribute.MASS, mass);
-        
+
         if (!getOwner().hasAttribute(Attribute.POSITION)) {
             setAttribute(Attribute.POSITION, new Vector2f());
         }
-        
+
         if (!getOwner().hasAttribute(Attribute.VELOCITY)) {
             setAttribute(Attribute.VELOCITY, new Vector2f());
         }
-        
+
         position = (Vector2f) getAttribute(Attribute.POSITION);
         velocity = (Vector2f) getAttribute(Attribute.VELOCITY);
 

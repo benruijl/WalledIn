@@ -30,9 +30,7 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.Team;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.network.messages.NetworkMessage;
 import walledin.game.network.server.ChangeSet;

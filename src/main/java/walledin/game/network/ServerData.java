@@ -90,7 +90,7 @@ public class ServerData {
         return true;
     }
 
-    public void setAddress(InetSocketAddress address) {
+    public void setAddress(final InetSocketAddress address) {
         this.address = address;
     }
 }

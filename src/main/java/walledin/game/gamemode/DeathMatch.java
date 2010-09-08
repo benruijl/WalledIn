@@ -28,11 +28,11 @@ public class DeathMatch implements GameModeHandler {
     /** The game logic manager. */
     private final GameLogicManager gameLogicManager;
     /** Kill count at which the game is over. */
-    private int maxKills;
+    private final int maxKills;
     /** The current kill count. */
     private int currentMaxKills;
 
-    public DeathMatch(GameLogicManager gameLogicManager) {
+    public DeathMatch(final GameLogicManager gameLogicManager) {
         this.gameLogicManager = gameLogicManager;
 
         maxKills = SettingsManager.getInstance().getInteger(
@@ -42,7 +42,7 @@ public class DeathMatch implements GameModeHandler {
 
     @Override
     public void update(final double delta) {
-        for (PlayerInfo p : gameLogicManager.getPlayers().values()) {
+        for (final PlayerInfo p : gameLogicManager.getPlayers().values()) {
             currentMaxKills = Math.max(currentMaxKills, p.getKillCount());
         }
 

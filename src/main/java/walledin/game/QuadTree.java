@@ -21,10 +21,10 @@ public class QuadTree {
     private final QuadTree[] children;
     private final List<Entity> objects;
     private final Rectangle rectangle;
-    private int depth;
+    private final int depth;
     private boolean leaf;
 
-    public QuadTree(Rectangle rect, int depth) {
+    public QuadTree(final Rectangle rect, final int depth) {
         children = new QuadTree[4];
         objects = new ArrayList<Entity>();
         rectangle = rect;
@@ -32,27 +32,27 @@ public class QuadTree {
         this.depth = depth;
     }
 
-    private void addObject(Entity object) {
+    private void addObject(final Entity object) {
         objects.add(object);
     }
 
-    private void removeObject(Entity object) {
+    private void removeObject(final Entity object) {
         objects.remove(object);
     }
 
-    private boolean containsFully(Entity object) {
-        Rectangle rect = ((Geometry) object
+    private boolean containsFully(final Entity object) {
+        final Rectangle rect = ((Geometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
                 .translate((Vector2f) object.getAttribute(Attribute.POSITION));
 
         return rectangle.containsFully(rect);
     }
 
-    private boolean containsFully(Rectangle rect) {
+    private boolean containsFully(final Rectangle rect) {
         return rectangle.containsFully(rect);
     }
 
-    public void add(Entity object) {
+    public void add(final Entity object) {
         addObject(object);
 
         if (objects.size() > MAX_OBJECTS) {
@@ -60,8 +60,8 @@ public class QuadTree {
         }
     }
 
-    public QuadTree getQuadTreeContainingObject(Entity object) {
-        Rectangle rect = ((Geometry) object
+    public QuadTree getQuadTreeContainingObject(final Entity object) {
+        final Rectangle rect = ((Geometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
                 .translate((Vector2f) object.getAttribute(Attribute.POSITION));
 
@@ -76,7 +76,7 @@ public class QuadTree {
 
         for (int i = 0; i < 4; i++) {
             if (children[i].containsFully(rect)) {
-                QuadTree tree = getQuadTreeContainingObject(object);
+                final QuadTree tree = getQuadTreeContainingObject(object);
 
                 if (tree != null) {
                     return tree;
@@ -86,17 +86,17 @@ public class QuadTree {
 
         return null;
     }
-    
-    public List<Entity> getObjectsFromRectangle(Rectangle rect) {
-        List<Entity> objectList = new ArrayList<Entity>();
-        
+
+    public List<Entity> getObjectsFromRectangle(final Rectangle rect) {
+        final List<Entity> objectList = new ArrayList<Entity>();
+
         if (rectangle.containsFully(rect)) {
             objectList.addAll(getObjects());
         }
-        
+
         for (int i = 0; i < 4; i++) {
             if (children[i].containsFully(rect)) {
-                List<Entity> tree = getObjectsFromRectangle(rect);
+                final List<Entity> tree = getObjectsFromRectangle(rect);
 
                 if (tree != null) {
                     objectList.addAll(tree);
@@ -104,7 +104,7 @@ public class QuadTree {
                 }
             }
         }
-        
+
         return null;
     }
 
@@ -112,9 +112,9 @@ public class QuadTree {
         return objects;
     }
 
-    public void remove(Entity object) {
-        QuadTree tree = getQuadTreeContainingObject(object);
-        
+    public void remove(final Entity object) {
+        final QuadTree tree = getQuadTreeContainingObject(object);
+
         if (tree != null) {
             tree.removeObject(object);
         }
@@ -130,9 +130,9 @@ public class QuadTree {
 
         leaf = false;
 
-        Vector2f size = new Vector2f(rectangle.getWidth() / 2.0f,
+        final Vector2f size = new Vector2f(rectangle.getWidth() / 2.0f,
                 rectangle.getHeight() / 2.0f);
-        Vector2f middle = rectangle.getLeftTop().add(size);
+        final Vector2f middle = rectangle.getLeftTop().add(size);
 
         children[0] = new QuadTree(new Rectangle(rectangle.getLeft(),
                 rectangle.getTop(), size.getX(), size.getY()), depth + 1);
@@ -143,9 +143,9 @@ public class QuadTree {
         children[3] = new QuadTree(new Rectangle(middle.getX(),
                 rectangle.getTop(), size.getX(), size.getY()), depth + 1);
 
-        Iterator<Entity> it = objects.iterator();
+        final Iterator<Entity> it = objects.iterator();
         while (it.hasNext()) {
-            Entity object = it.next();
+            final Entity object = it.next();
             for (int i = 0; i < 4; i++) {
                 if (children[i].containsFully(object)) {
                     children[i].addObject(object);
