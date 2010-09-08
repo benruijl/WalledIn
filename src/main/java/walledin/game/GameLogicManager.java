@@ -59,7 +59,7 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class GameLogicManager implements GameStateListener  {
+public final class GameLogicManager implements GameStateListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -142,7 +142,7 @@ public final class GameLogicManager implements GameStateListener  {
     private void run() {
         try {
             server.run();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.fatal("A fatal network error occured.", e);
         }
     }
@@ -436,8 +436,8 @@ public final class GameLogicManager implements GameStateListener  {
             if (info.isDead()) {
                 killPlayer(info.getPlayer().getName());
 
-                String killerName = (String) info.getPlayer().getAttribute(
-                        Attribute.LAST_DAMAGE);
+                final String killerName = (String) info.getPlayer()
+                        .getAttribute(Attribute.LAST_DAMAGE);
 
                 if (killerName != null
                         && !killerName.equals(info.getPlayer().getName())) {
@@ -509,7 +509,7 @@ public final class GameLogicManager implements GameStateListener  {
     }
 
     @Override
-    public void onGameOver() {        
+    public void onGameOver() {
     }
 
     @Override

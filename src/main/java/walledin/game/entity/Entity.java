@@ -254,7 +254,7 @@ public final class Entity {
      * Calls onMessage on all the behaviors of this entity.
      */
     public void sendMessage(final MessageType messageType, final Object data) {
-        List<Behavior> behaviorList = new ArrayList<Behavior>(
+        final List<Behavior> behaviorList = new ArrayList<Behavior>(
                 behaviors.values());
 
         for (int i = 0; i < behaviorList.size(); i++) {
@@ -266,7 +266,7 @@ public final class Entity {
      * Calls onUpdate on all the behaviors of this entity.
      */
     public void sendUpdate(final double delta) {
-        List<Behavior> behaviorList = new ArrayList<Behavior>(
+        final List<Behavior> behaviorList = new ArrayList<Behavior>(
                 behaviors.values());
 
         for (int i = 0; i < behaviorList.size(); i++) {

@@ -22,8 +22,9 @@ package walledin.game.gamemode;
 
 /**
  * A collection of messages that signal changes in game state.
+ * 
  * @author Ben Ruijl
- *
+ * 
  */
 public interface GameStateListener {
     void onGameOver();
