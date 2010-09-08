@@ -35,7 +35,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.Team;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Family;
 import walledin.game.gamemode.GameMode;

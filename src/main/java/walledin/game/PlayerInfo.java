@@ -101,7 +101,7 @@ public final class PlayerInfo extends PlayerClientInfo {
     public boolean shouldRespawn() {
         return respawn;
     }
-    
+
     public int getKillCount() {
         return killCount;
     }
@@ -110,11 +110,11 @@ public final class PlayerInfo extends PlayerClientInfo {
         return deathCount;
     }
 
-    public void setDeathCount(int deathCount) {
+    public void setDeathCount(final int deathCount) {
         this.deathCount = deathCount;
     }
 
-    public void setKillCount(int killCount) {
+    public void setKillCount(final int killCount) {
         this.killCount = killCount;
     }
 

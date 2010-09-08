@@ -60,7 +60,8 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class ClientLogicManager implements RenderListener, EntityUpdateListener {
+public final class ClientLogicManager implements RenderListener,
+        EntityUpdateListener {
     /** Logger. */
     private static final Logger LOG = Logger
             .getLogger(ClientLogicManager.class);
@@ -237,9 +238,10 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
     public void onEntityUpdated(Entity entity) {
         if (entity.getFamily() == Family.MAP) {
             final GameMapIO mapIO = new GameMapIOXML();
-            String mapName = (String) entity.getAttribute(Attribute.MAP_NAME);
+            final String mapName = (String) entity
+                    .getAttribute(Attribute.MAP_NAME);
             if (mapName != null) {
-                List<Tile> tiles = mapIO.readTilesFromURL(Utils
+                final List<Tile> tiles = mapIO.readTilesFromURL(Utils
                         .getClasspathURL(mapName));
                 entity.setAttribute(Attribute.TILES, tiles);
             } else {
@@ -262,7 +264,7 @@ public final class ClientLogicManager implements RenderListener, EntityUpdateLis
         /* Remove the game assets. */
         client.resetReceivedVersion();
 
-        for (Entity asset : new ArrayList<Entity>(gameAssets)) {
+        for (final Entity asset : new ArrayList<Entity>(gameAssets)) {
             entityManager.remove(asset.getName());
         }
     }

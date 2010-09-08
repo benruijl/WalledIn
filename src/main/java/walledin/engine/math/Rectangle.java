@@ -160,9 +160,9 @@ public class Rectangle extends Geometry {
 
         return new Polygon2f(edges, new Vector2f());
     }
-    
+
     public boolean containsFully(final Rectangle rect) {
         return rect.getLeft() >= getLeft() && rect.getRight() <= getRight()
-        && rect.getBottom() >= getBottom() && rect.getTop() <= getTop();
+                && rect.getBottom() >= getBottom() && rect.getTop() <= getTop();
     }
 }

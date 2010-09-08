@@ -146,7 +146,7 @@ public final class GameLogicManager implements GameStateListener, EntityUpdateLi
     private void run() {
         try {
             server.run();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOG.fatal("A fatal network error occured.", e);
         }
     }
@@ -440,8 +440,8 @@ public final class GameLogicManager implements GameStateListener, EntityUpdateLi
             if (info.isDead()) {
                 killPlayer(info.getPlayer().getName());
 
-                String killerName = (String) info.getPlayer().getAttribute(
-                        Attribute.LAST_DAMAGE);
+                final String killerName = (String) info.getPlayer()
+                        .getAttribute(Attribute.LAST_DAMAGE);
 
                 if (killerName != null
                         && !killerName.equals(info.getPlayer().getName())) {

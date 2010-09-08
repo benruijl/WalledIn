@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 import walledin.game.GameLogicManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.MessageType;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
@@ -57,7 +56,6 @@ import walledin.game.network.messages.masterserver.GetServersMessage;
 import walledin.game.network.messages.masterserver.ServerNotificationMessage;
 import walledin.game.network.messages.masterserver.ServersMessage;
 import walledin.util.SettingsManager;
-import walledin.util.Utils;
 
 /**
  * This class provides the server for the game. All gamestate updates happen
@@ -196,11 +194,11 @@ public class Server implements NetworkEventListener {
             try {
                 networkWriter.sendMessage(masterServerChannel,
                         new ServerNotificationMessage(createServerData()));
-            } catch (PortUnreachableException e) {
+            } catch (final PortUnreachableException e) {
                 LOG.warn("The port of the master server is unreachable. "
                         + "This means that either the master server is down, "
                         + "or you haven't opened the correct ports.");
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 LOG.error("IOException in communication with master server", e);
             }
         }
@@ -282,7 +280,8 @@ public class Server implements NetworkEventListener {
             final ChangeSet changeSet = changeSetLookup.get(sendVersion);
 
             if (changeSet == null) {
-                LOG.error("Could not find changeset with version " + sendVersion);
+                LOG.error("Could not find changeset with version "
+                        + sendVersion);
                 continue;
             }
 

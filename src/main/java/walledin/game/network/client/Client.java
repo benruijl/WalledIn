@@ -141,7 +141,7 @@ public final class Client implements NetworkEventListener {
         servers.addAll(internetServerList);
         return servers;
     }
-    
+
     /**
      * Resets the received version.
      */
@@ -254,7 +254,9 @@ public final class Client implements NetworkEventListener {
      * it will do nothing.
      */
     public void connectToServer(final ServerData server) {
-        if (connected && channel.socket().getRemoteSocketAddress() == server.getAddress()) {
+        if (connected
+                && channel.socket().getRemoteSocketAddress() == server
+                        .getAddress()) {
             return;
         }
 
@@ -267,7 +269,7 @@ public final class Client implements NetworkEventListener {
 
             /* Reset some variables. */
             clientLogicManager.resetGame();
-            
+
             // always try to disconnect. Does nothing if not connected
             channel.disconnect();
             channel.configureBlocking(false);

@@ -60,7 +60,7 @@ public class EntityManager {
         listeners = new ArrayList<EntityUpdateListener>();
     }
 
-    public void addListener(EntityUpdateListener listener) {
+    public void addListener(final EntityUpdateListener listener) {
         listeners.add(listener);
     }
 
@@ -297,19 +297,20 @@ public class EntityManager {
         return currentVersion;
     }
 
-    public void applyChangeSet(ChangeSet changeSet) {
-        Set<Entity> removed = new HashSet<Entity>();
-        Set<Entity> created = new HashSet<Entity>();
-        for (String name : changeSet.getRemoved()) {
+    public void applyChangeSet(final ChangeSet changeSet) {
+        final Set<Entity> removed = new HashSet<Entity>();
+        final Set<Entity> created = new HashSet<Entity>();
+        for (final String name : changeSet.getRemoved()) {
             removed.add(remove(name));
         }
-        for (Entry<String, Family> entry : changeSet.getCreated().entrySet()) {
+        for (final Entry<String, Family> entry : changeSet.getCreated()
+                .entrySet()) {
             created.add(create(entry.getValue(), entry.getKey()));
         }
-        for (Entry<String, Map<Attribute, Object>> entry : changeSet
+        for (final Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {
-            Entity entity = entities.get(entry.getKey());
-            for (Entry<Attribute, Object> attribute : entry.getValue()
+            final Entity entity = entities.get(entry.getKey());
+            for (final Entry<Attribute, Object> attribute : entry.getValue()
                     .entrySet()) {
                 entity.setAttribute(attribute.getKey(), attribute.getValue());
             }

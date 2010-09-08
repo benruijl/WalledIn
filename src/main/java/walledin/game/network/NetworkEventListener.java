@@ -22,7 +22,6 @@ package walledin.game.network;
 
 import java.net.SocketAddress;
 
-import walledin.game.entity.Entity;
 import walledin.game.network.messages.game.GamestateMessage;
 import walledin.game.network.messages.game.GetPlayerInfoMessage;
 import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;

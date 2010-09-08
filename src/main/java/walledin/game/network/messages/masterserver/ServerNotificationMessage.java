@@ -56,7 +56,7 @@ public class ServerNotificationMessage extends MasterServerMessage {
             LOG.warn("UnknownHostException when reader server", e);
         }
         if (server.getAddress().getAddress().isAnyLocalAddress()) {
-            InetSocketAddress inetAddress = (InetSocketAddress) address;
+            final InetSocketAddress inetAddress = (InetSocketAddress) address;
             // If the address we got is 0.0.0.0 use the address from the
             // connection
             server.setAddress(new InetSocketAddress(inetAddress.getAddress(),
