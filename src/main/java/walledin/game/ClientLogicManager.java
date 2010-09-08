@@ -235,7 +235,7 @@ public final class ClientLogicManager implements RenderListener,
     }
 
     @Override
-    public void onEntityUpdated(Entity entity) {
+    public void onEntityUpdated(final Entity entity) {
         if (entity.getFamily() == Family.MAP) {
             final GameMapIO mapIO = new GameMapIOXML();
             final String mapName = (String) entity

@@ -21,6 +21,7 @@ public interface EntityUpdateListener {
 
     /**
      * Called when the entity is updated by a changeset.
+     * 
      * @param entity
      */
     void onEntityUpdated(Entity entity);

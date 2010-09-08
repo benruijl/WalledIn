@@ -60,7 +60,8 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class GameLogicManager implements GameStateListener, EntityUpdateListener {
+public final class GameLogicManager implements GameStateListener,
+        EntityUpdateListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -528,7 +529,7 @@ public final class GameLogicManager implements GameStateListener, EntityUpdateLi
     }
 
     @Override
-    public void onEntityCreated(Entity entity) {
+    public void onEntityCreated(final Entity entity) {
         /* For now, add just foam particles. */
         if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
             staticObjectsTree.add(entity);
@@ -536,14 +537,14 @@ public final class GameLogicManager implements GameStateListener, EntityUpdateLi
     }
 
     @Override
-    public void onEntityRemoved(Entity entity) {
+    public void onEntityRemoved(final Entity entity) {
         if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
             staticObjectsTree.remove(entity);
         }
     }
 
     @Override
-    public void onEntityUpdated(Entity entity) {
+    public void onEntityUpdated(final Entity entity) {
         // do nothing
     }
 }

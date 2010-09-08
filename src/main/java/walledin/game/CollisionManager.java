@@ -247,7 +247,7 @@ public class CollisionManager {
      *            Delta time, used for interpolation
      */
     public static void calculateEntityCollisions(
-            final Collection<Entity> entities, QuadTree staticMap,
+            final Collection<Entity> entities, final QuadTree staticMap,
             final double delta) {
         final Entity[] entArray = entities.toArray(new Entity[0]);
 
@@ -317,23 +317,22 @@ public class CollisionManager {
         }
 
         /* Only check the player and the foam for now. */
-        for (int i = 0; i < entArray.length; i++) {
-            if (entArray[i].getFamily() == Family.PLAYER) {
+        for (final Entity element : entArray) {
+            if (element.getFamily() == Family.PLAYER) {
 
                 /* TODO: check the old pos too! */
-                Rectangle rect = ((Geometry) entArray[i]
+                final Rectangle rect = ((Geometry) element
                         .getAttribute(Attribute.BOUNDING_GEOMETRY))
                         .asRectangle().translate(
-                                (Vector2f) entArray[i]
+                                (Vector2f) element
                                         .getAttribute(Attribute.POSITION));
 
-                List<Entity> targetList = staticMap
+                final List<Entity> targetList = staticMap
                         .getObjectsFromRectangle(rect);
 
                 if (targetList != null) {
-                    for (Entity target : targetList) {
-                        resolvePolygonCircleCollision(entArray[i], target,
-                                delta);
+                    for (final Entity target : targetList) {
+                        resolvePolygonCircleCollision(element, target, delta);
                     }
                 }
 

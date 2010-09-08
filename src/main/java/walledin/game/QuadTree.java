@@ -29,7 +29,7 @@ public class QuadTree {
     private final int depth;
     private boolean leaf;
 
-    public QuadTree(Rectangle rect) {
+    public QuadTree(final Rectangle rect) {
         this(rect, 0);
     }
 
@@ -66,11 +66,11 @@ public class QuadTree {
     }
 
     public void add(final Entity object) {
-        Rectangle rect = ((Geometry) object
+        final Rectangle rect = ((Geometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
                 .translate((Vector2f) object.getAttribute(Attribute.POSITION));
 
-        QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
+        final QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
 
         if (tree == null) {
             LOG.warn("Could not add object to the quadtree, because it is out of the bounds.");
@@ -79,13 +79,13 @@ public class QuadTree {
         }
     }
 
-    private QuadTree getSmallestQuadTreeContainingRectangle(Rectangle rect) {
+    private QuadTree getSmallestQuadTreeContainingRectangle(final Rectangle rect) {
         /* If this is a leaf and it does not contain the object, return null. */
-        
+
         if (!leaf) {
             for (int i = 0; i < 4; i++) {
                 if (children[i].containsFully(rect)) {
-                    QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
+                    final QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
 
                     if (tree != null) {
                         return tree;
@@ -138,7 +138,7 @@ public class QuadTree {
         if (!leaf) {
             for (int i = 0; i < 4; i++) {
                 if (children[i].containsFully(rect)) {
-                    List<Entity> tree = getObjectsFromRectangle(rect);
+                    final List<Entity> tree = getObjectsFromRectangle(rect);
 
                     if (tree != null) {
                         objectList.addAll(tree);

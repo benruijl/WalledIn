@@ -48,7 +48,7 @@ public class EntityManager {
     private final Set<Entity> removed;
     private final Set<Entity> created;
     private int currentVersion;
-    private List<EntityUpdateListener> listeners;
+    private final List<EntityUpdateListener> listeners;
 
     public EntityManager(final EntityFactory factory) {
         entities = new ConcurrentHashMap<String, Entity>();
@@ -64,20 +64,20 @@ public class EntityManager {
         listeners.add(listener);
     }
 
-    private void fireOnEntityRemoved(Entity entity) {
-        for (EntityUpdateListener listener : listeners) {
+    private void fireOnEntityRemoved(final Entity entity) {
+        for (final EntityUpdateListener listener : listeners) {
             listener.onEntityRemoved(entity);
         }
     }
 
-    private void fireOnEntityCreated(Entity entity) {
-        for (EntityUpdateListener listener : listeners) {
+    private void fireOnEntityCreated(final Entity entity) {
+        for (final EntityUpdateListener listener : listeners) {
             listener.onEntityCreated(entity);
         }
     }
-    
-    private void fireOnEntityUpdated(Entity entity) {
-        for (EntityUpdateListener listener : listeners) {
+
+    private void fireOnEntityUpdated(final Entity entity) {
+        for (final EntityUpdateListener listener : listeners) {
             listener.onEntityUpdated(entity);
         }
     }
@@ -287,6 +287,7 @@ public class EntityManager {
 
     /**
      * Returns the current changeset.
+     * 
      * @return Current changeset
      */
     public ChangeSet getCurrentChangeSet() {

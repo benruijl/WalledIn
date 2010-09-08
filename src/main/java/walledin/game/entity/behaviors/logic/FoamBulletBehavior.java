@@ -38,7 +38,7 @@ public class FoamBulletBehavior extends BulletBehavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         super.onMessage(messageType, data);
-        
+
         if (messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
             if (!blownUp) {
