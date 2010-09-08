@@ -163,6 +163,6 @@ public class Rectangle extends AbstractGeometry {
 
     public boolean containsFully(final Rectangle rect) {
         return rect.getLeft() >= getLeft() && rect.getRight() <= getRight()
-                && rect.getBottom() >= getBottom() && rect.getTop() <= getTop();
+                && rect.getBottom() <= getBottom() && rect.getTop() >= getTop();
     }
 }

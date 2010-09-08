@@ -93,7 +93,8 @@ public class QuadTree {
         final QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
 
         if (tree == null) {
-            LOG.warn("Could not add object to the quadtree, because it is out of the bounds.");
+            LOG.warn("Could not add object to the quadtree, because it is out of the bounds: "
+                    + rect.getLeftTop() + " - " + rect.getRightBottom());
         } else {
             addObject(object);
         }
@@ -105,7 +106,8 @@ public class QuadTree {
         if (!leaf) {
             for (int i = 0; i < 4; i++) {
                 if (children[i].containsFully(rect)) {
-                    final QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
+                    final QuadTree tree = children[i]
+                            .getSmallestQuadTreeContainingRectangle(rect);
 
                     if (tree != null) {
                         return tree;
@@ -137,7 +139,8 @@ public class QuadTree {
 
         for (int i = 0; i < 4; i++) {
             if (children[i].containsFully(rect)) {
-                final QuadTree tree = getQuadTreeContainingObject(object);
+                final QuadTree tree = children[i]
+                        .getQuadTreeContainingObject(object);
 
                 if (tree != null) {
                     return tree;
@@ -158,7 +161,8 @@ public class QuadTree {
         if (!leaf) {
             for (int i = 0; i < 4; i++) {
                 if (children[i].containsFully(rect)) {
-                    final List<Entity> tree = getObjectsFromRectangle(rect);
+                    final List<Entity> tree = children[i]
+                            .getObjectsFromRectangle(rect);
 
                     if (tree != null) {
                         objectList.addAll(tree);

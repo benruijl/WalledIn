@@ -318,4 +318,12 @@ public class EntityManager {
             fireOnEntityUpdated(entity);
         }
     }
+
+    public Set<Entity> getCreated() {
+        return Collections.unmodifiableSet(created);
+    }
+
+    public Set<Entity> getRemoved() {
+        return Collections.unmodifiableSet(removed);
+    }
 }

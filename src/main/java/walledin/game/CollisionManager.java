@@ -245,6 +245,53 @@ public final class CollisionManager {
     }
 
     /**
+     * Sends the collision message to both entities.
+     * 
+     * @param objectA
+     *            First object
+     * @param objectB
+     *            Second object
+     * @param delta
+     *            Delta time
+     * @param check
+     *            Check if they collide. Not wanted if the check is already
+     *            done.
+     */
+    public static void sendCollisionMessage(Entity objectA, Entity objectB,
+            double delta, boolean check) {
+        /* Gather some information for the collision event. */
+        final Vector2f theorPosA = (Vector2f) objectA
+                .getAttribute(Attribute.POSITION);
+        final Vector2f theorPosB = (Vector2f) objectB
+                .getAttribute(Attribute.POSITION);
+
+        final Vector2f oldPosA = theorPosA.sub(((Vector2f) objectA
+                .getAttribute(Attribute.VELOCITY)).scale((float) delta));
+        final Vector2f oldPosB = theorPosA.sub(((Vector2f) objectB
+                .getAttribute(Attribute.VELOCITY)).scale((float) delta));
+
+        /* Kind of a hack. */
+        final Vector2f posA = (Vector2f) objectA
+                .getAttribute(Attribute.POSITION);
+        final Vector2f posB = (Vector2f) objectB
+                .getAttribute(Attribute.POSITION);
+
+        final AbstractGeometry boundsA = ((AbstractGeometry) objectA
+                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
+                .translate(theorPosA);
+        final AbstractGeometry boundsB = ((AbstractGeometry) objectB
+                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
+                .translate(theorPosB);
+
+        if (!check || boundsA.intersects(boundsB)) {
+            objectA.sendMessage(MessageType.COLLIDED, new CollisionData(posA,
+                    oldPosA, theorPosA, delta, objectB));
+            objectB.sendMessage(MessageType.COLLIDED, new CollisionData(posB,
+                    oldPosB, theorPosB, delta, objectA));
+        }
+    }
+
+    /**
      * Performs collision detection between entities other than a map.
      * 
      * @param entities
@@ -283,43 +330,7 @@ public final class CollisionManager {
                     continue;
                 }
 
-                /* Gather some information for the collision event. */
-                final Vector2f theorPosA = (Vector2f) entArray[i]
-                        .getAttribute(Attribute.POSITION);
-                final Vector2f theorPosB = (Vector2f) entArray[j]
-                        .getAttribute(Attribute.POSITION);
-
-                final Vector2f oldPosA = theorPosA
-                        .sub(((Vector2f) entArray[i]
-                                .getAttribute(Attribute.VELOCITY))
-                                .scale((float) delta));
-                final Vector2f oldPosB = theorPosA
-                        .sub(((Vector2f) entArray[j]
-                                .getAttribute(Attribute.VELOCITY))
-                                .scale((float) delta));
-
-                /* Kind of a hack. */
-                final Vector2f posA = (Vector2f) entArray[i]
-                        .getAttribute(Attribute.POSITION);
-                final Vector2f posB = (Vector2f) entArray[j]
-                        .getAttribute(Attribute.POSITION);
-
-                final AbstractGeometry boundsA = ((AbstractGeometry) entArray[i]
-                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
-                        .asRectangle().translate(theorPosA);
-                final AbstractGeometry boundsB = ((AbstractGeometry) entArray[j]
-                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
-                        .asRectangle().translate(theorPosB);
-
-                if (boundsA.intersects(boundsB)) {
-                    entArray[i].sendMessage(MessageType.COLLIDED,
-                            new CollisionData(posA, oldPosA, theorPosA, delta,
-                                    entArray[j]));
-                    entArray[j].sendMessage(MessageType.COLLIDED,
-                            new CollisionData(posB, oldPosB, theorPosB, delta,
-                                    entArray[i]));
-                }
-
+                sendCollisionMessage(entArray[i], entArray[j], delta, true);
             }
         }
 
@@ -327,19 +338,32 @@ public final class CollisionManager {
         for (final Entity element : entArray) {
             if (element.getFamily() == Family.PLAYER) {
 
-                /* TODO: check the old pos too! */
+                /* TODO: check the old position too! */
                 final Rectangle rect = ((AbstractGeometry) element
                         .getAttribute(Attribute.BOUNDING_GEOMETRY))
                         .asRectangle().translate(
                                 (Vector2f) element
                                         .getAttribute(Attribute.POSITION));
 
+                final Vector2f theorPos = (Vector2f) element
+                        .getAttribute(Attribute.POSITION);
+                final Vector2f oldPos = theorPos.sub(((Vector2f) element
+                        .getAttribute(Attribute.VELOCITY))
+                        .scale(1 / (float) delta));
+
                 final List<Entity> targetList = staticMap
                         .getObjectsFromRectangle(rect);
 
                 if (targetList != null) {
                     for (final Entity target : targetList) {
-                        resolvePolygonCircleCollision(element, target, delta);
+                        if (resolvePolygonCircleCollision(element, target,
+                                delta)) {
+                            element.sendMessage(
+                                    MessageType.COLLIDED,
+                                    new CollisionData((Vector2f) element
+                                            .getAttribute(Attribute.POSITION),
+                                            oldPos, theorPos, delta, target));
+                        }
                     }
                 }
 

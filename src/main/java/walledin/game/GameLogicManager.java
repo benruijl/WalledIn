@@ -480,6 +480,21 @@ public final class GameLogicManager implements GameStateListener,
         /* Update the game mode specific routines */
         gameModeHandler.update(delta);
 
+        /* Get the created entities. By this point their attributes are set. */
+        for (Entity entity : entityManager.getCreated()) {
+            /* For now, add just foam particles. */
+            if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
+                staticObjectsTree.add(entity);
+            }
+        }
+
+        for (Entity entity : entityManager.getRemoved()) {
+            /* For now, add just foam particles. */
+            if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
+                staticObjectsTree.remove(entity);
+            }
+        }
+
         /* Do collision detection */
         entityManager.doCollisionDetection(map, staticObjectsTree, delta);
     }
@@ -530,17 +545,10 @@ public final class GameLogicManager implements GameStateListener,
 
     @Override
     public void onEntityCreated(final Entity entity) {
-        /* For now, add just foam particles. */
-        if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
-            staticObjectsTree.add(entity);
-        }
     }
 
     @Override
     public void onEntityRemoved(final Entity entity) {
-        if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
-            staticObjectsTree.remove(entity);
-        }
     }
 
     @Override
