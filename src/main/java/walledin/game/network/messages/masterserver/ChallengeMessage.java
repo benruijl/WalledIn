@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkEventListener;
 
-public class ChallengeMessage extends MasterServerMessage {
+public class ChallengeMessage extends AbstractMasterServerMessage {
     private long challengeData;
 
     public ChallengeMessage() {

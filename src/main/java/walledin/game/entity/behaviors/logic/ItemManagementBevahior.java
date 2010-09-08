@@ -23,7 +23,7 @@ package walledin.game.entity.behaviors.logic;
 import java.util.Set;
 
 import walledin.game.ItemInfo;
-import walledin.game.entity.Behavior;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
@@ -34,9 +34,9 @@ import walledin.game.entity.MessageType;
  * @author Ben Ruijl
  * 
  */
-public class ItemManagementBevahior extends Behavior {
+public class ItemManagementBevahior extends AbstractBehavior {
     /** Set of information about items */
-    Set<ItemInfo> items;
+    private final Set<ItemInfo> items;
 
     public ItemManagementBevahior(final Entity owner, final Set<ItemInfo> items) {
         super(owner);

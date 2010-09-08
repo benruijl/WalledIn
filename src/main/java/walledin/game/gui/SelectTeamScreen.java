@@ -27,7 +27,7 @@ import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
-import walledin.engine.gui.Screen;
+import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
@@ -42,12 +42,12 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.util.Utils;
 
-public class SelectTeamScreen extends Screen implements
+public class SelectTeamScreen extends AbstractScreen implements
         ScreenMouseEventListener {
-    private final Screen teamBlue;
-    private final Screen teamRed;
-    private final Screen teamUndefined;
-    private final Screen back;
+    private final AbstractScreen teamBlue;
+    private final AbstractScreen teamRed;
+    private final AbstractScreen teamUndefined;
+    private final AbstractScreen back;
     private Set<PlayerClientInfo> players;
     private final ClientLogicManager clientLogicManager;
 

@@ -20,7 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.math;
 
-public class Circle extends Geometry {
+public class Circle extends AbstractGeometry {
     private Vector2f pos;
     private float radius;
 
@@ -69,7 +69,7 @@ public class Circle extends Geometry {
     }
 
     @Override
-    public boolean intersects(final Geometry geometry) {
+    public boolean intersects(final AbstractGeometry geometry) {
         // uses double callback trick
         return geometry.intersects(this);
     }
@@ -83,7 +83,7 @@ public class Circle extends Geometry {
 
     @Override
     public boolean intersects(final Rectangle rect) {
-        return Geometry.intersects(rect, this);
+        return AbstractGeometry.intersects(rect, this);
     }
 
     @Override

@@ -22,13 +22,13 @@ package walledin.game.entity.behaviors.logic;
 
 import walledin.engine.math.Matrix2f;
 import walledin.engine.math.Vector2f;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
-public class GrenadeBehavior extends Behavior {
+public class GrenadeBehavior extends AbstractBehavior {
     /** Explode time in seconds. */
     private final double explodeTime = 2.0;
     /**

@@ -86,8 +86,8 @@ public final class Client implements NetworkEventListener {
     private long lastLoginTry;
     /** The time when the last update was received. */
     private long lastUpdate;
-    private final long LOGIN_RETRY_TIME;
-    private final long TIME_OUT_TIME;
+    private final long loginRetryTime;
+    private final long timeOutTime;
     /** The renderer. */
     private final Renderer renderer;
     private final ClientLogicManager clientLogicManager;
@@ -113,10 +113,10 @@ public final class Client implements NetworkEventListener {
         channel = DatagramChannel.open();
         masterServerChannel = DatagramChannel.open();
 
-        LOGIN_RETRY_TIME = SettingsManager.getInstance().getInteger(
+        loginRetryTime = SettingsManager.getInstance().getInteger(
                 "network.loginRetryTime");
 
-        TIME_OUT_TIME = SettingsManager.getInstance().getInteger(
+        timeOutTime = SettingsManager.getInstance().getInteger(
                 "network.timeOutTime");
     }
 
@@ -161,7 +161,7 @@ public final class Client implements NetworkEventListener {
             if (connected) {
 
                 if (lastLoginTry >= 0
-                        && System.currentTimeMillis() - lastLoginTry > LOGIN_RETRY_TIME) {
+                        && System.currentTimeMillis() - lastLoginTry > loginRetryTime) {
                     lastLoginTry = System.currentTimeMillis();
                     networkWriter.sendMessage(channel, new LoginMessage(
                             username));
@@ -171,7 +171,7 @@ public final class Client implements NetworkEventListener {
 
                 /* If the address is null, no message is received. */
                 if (address == null) {
-                    if (System.currentTimeMillis() - lastUpdate > TIME_OUT_TIME) {
+                    if (System.currentTimeMillis() - lastUpdate > timeOutTime) {
                         clientLogicManager
                                 .displayErrorAndDisconnect("The connection timed out.");
                     }

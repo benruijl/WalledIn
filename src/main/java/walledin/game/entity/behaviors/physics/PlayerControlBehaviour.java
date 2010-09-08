@@ -28,12 +28,12 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
 import walledin.game.PlayerAction;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class PlayerControlBehaviour extends Behavior {
+public class PlayerControlBehaviour extends AbstractBehavior {
     private static final Logger LOG = Logger
             .getLogger(PlayerControlBehaviour.class);
     private static final float MOVE_SPEED = 500.0f;

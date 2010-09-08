@@ -35,8 +35,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class XMLReader {
-    Document dom;
-    Element root;
+    private Document dom;
+    private Element root;
 
     public boolean open(final URL file) {
         // get the factory
@@ -111,7 +111,7 @@ public class XMLReader {
     /**
      * Calls getTextValue and returns a integer value
      * 
-     * @param ele
+     * @param el
      *            Current element
      * @param tag
      *            Tag name
@@ -132,7 +132,7 @@ public class XMLReader {
     /**
      * Calls getTextValue and returns a floating value
      * 
-     * @param ele
+     * @param el
      *            Current element
      * @param tag
      *            Tag name

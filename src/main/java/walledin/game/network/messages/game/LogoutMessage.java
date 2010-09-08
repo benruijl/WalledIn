@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkEventListener;
 
-public class LogoutMessage extends GameMessage {
+public class LogoutMessage extends AbstractGameMessage {
     public LogoutMessage() {
     }
 

@@ -32,7 +32,12 @@ import org.apache.log4j.Logger;
 /**
  * A generic resource manager.
  * 
- * @author ben
+ * @author Ben Ruijl
+ * 
+ * @param <U>
+ *            Keys of the resources
+ * @param <T>
+ *            The resources
  */
 public class ResourceManager<U, T> {
     private static final Logger LOG = Logger.getLogger(ResourceManager.class);

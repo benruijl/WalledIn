@@ -28,7 +28,7 @@ import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.server.ChangeSet;
 
-public class GamestateMessage extends GameMessage {
+public class GamestateMessage extends AbstractGameMessage {
     private ChangeSet changeSet;
     private int knownClientVersion;
 

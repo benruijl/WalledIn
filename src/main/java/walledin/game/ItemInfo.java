@@ -30,12 +30,12 @@ import walledin.game.entity.Family;
 public class ItemInfo {
     private static final Logger LOG = Logger.getLogger(ItemInfo.class);
 
-    Family family;
-    Vector2f position;
-    float respawnTime;
-    float waitTime;
-    Entity associatedEntity;
-    boolean removed;
+    private final Family family;
+    private final Vector2f position;
+    private final float respawnTime;
+    private float waitTime;
+    private Entity associatedEntity;
+    private boolean removed;
 
     public ItemInfo(final Family family, final Vector2f position,
             final float respawnTime) {

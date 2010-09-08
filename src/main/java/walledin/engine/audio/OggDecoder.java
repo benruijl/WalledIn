@@ -163,8 +163,8 @@ public class OggDecoder {
             vd.synthesis_init(vi);
             vb.init(vd);
 
-            final float[][][] _pcm = new float[1][][];
-            final int[] _index = new int[vi.channels];
+            final float[][][] pcmArray = new float[1][][];
+            final int[] indexArray = new int[vi.channels];
 
             while (eos == 0) {
                 while (eos == 0) {
@@ -174,7 +174,8 @@ public class OggDecoder {
                         break;
                     }
                     if (result == -1) {
-                        LOG.error("Corrupt or missing data in bitstream; continuing...");
+                        LOG.error("Corrupt or missing data "
+                                + "in bitstream; continuing...");
                     } else {
                         os.pagein(og);
 
@@ -185,7 +186,7 @@ public class OggDecoder {
                                 break;
                             }
                             if (result == -1) {
-
+                                // FIXME wtf!
                             } else {
 
                                 int samples;
@@ -193,9 +194,9 @@ public class OggDecoder {
                                     vd.synthesis_blockin(vb);
                                 }
 
-                                while ((samples = vd.synthesis_pcmout(_pcm,
-                                        _index)) > 0) {
-                                    final float[][] pcm = _pcm[0];
+                                while ((samples = vd.synthesis_pcmout(pcmArray,
+                                        indexArray)) > 0) {
+                                    final float[][] pcm = pcmArray[0];
 
                                     final int bout = samples < convsize ? samples
                                             : convsize;
@@ -203,7 +204,7 @@ public class OggDecoder {
                                     for (i = 0; i < vi.channels; i++) {
                                         int ptr = i * 2;
 
-                                        final int mono = _index[i];
+                                        final int mono = indexArray[i];
                                         for (int j = 0; j < bout; j++) {
                                             int val = (int) (pcm[i][mono + j] * 32767.);
 

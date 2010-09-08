@@ -20,11 +20,11 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
-import walledin.game.entity.Behavior;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class AnimationBehavior extends Behavior {
+public class AnimationBehavior extends AbstractBehavior {
 
     public AnimationBehavior(final Entity owner) {
         super(owner);

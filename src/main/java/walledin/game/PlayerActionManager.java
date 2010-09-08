@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 import walledin.engine.Input;
 import walledin.util.SettingsManager;
 
-public class PlayerActionManager {
+final public class PlayerActionManager {
     private static final Logger LOG = Logger
             .getLogger(PlayerActionManager.class);
     private static PlayerActionManager ref = null;

@@ -29,7 +29,7 @@ import walledin.engine.math.Vector2f;
 import walledin.game.PlayerAction;
 import walledin.game.network.NetworkEventListener;
 
-public class InputMessage extends GameMessage {
+public class InputMessage extends AbstractGameMessage {
     private int version;
     private Set<PlayerAction> playerActions;
     private Vector2f mousePos;

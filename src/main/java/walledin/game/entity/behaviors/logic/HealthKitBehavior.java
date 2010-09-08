@@ -23,13 +23,13 @@ package walledin.game.entity.behaviors.logic;
 import org.apache.log4j.Logger;
 
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
-public class HealthKitBehavior extends Behavior {
+public class HealthKitBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(HealthKitBehavior.class);
     private final int strength;
 

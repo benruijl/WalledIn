@@ -34,7 +34,7 @@ import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.audio.Audio;
-import walledin.engine.gui.Screen;
+import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
@@ -66,12 +66,12 @@ public final class ClientLogicManager implements RenderListener,
     private static final Logger LOG = Logger
             .getLogger(ClientLogicManager.class);
 
-    /** Flag to check if the assets are loaded. */
-    private boolean assetsLoaded = false;
     /** The tile size in the texture. */
     private static final int TILE_SIZE = 64;
     /** Number of tiles per row. */
     private static final int TILES_PER_LINE = 16;
+    /** Flag to check if the assets are loaded. */
+    private boolean assetsLoaded = false;
     /** Entity list of all screens together. */
     private final EntityManager entityManager;
     /** Client entity factory. */
@@ -87,7 +87,7 @@ public final class ClientLogicManager implements RenderListener,
     /** Network client. */
     private final Client client;
     /** The screen of the game (not the menus). */
-    private Screen gameScreen;
+    private AbstractScreen gameScreen;
     /** Is the client quitting? */
     private boolean quitting = false;
     /** The name of the player of this client. */
@@ -193,7 +193,7 @@ public final class ClientLogicManager implements RenderListener,
         return playerName;
     }
 
-    public Screen getGameScreen() {
+    public AbstractScreen getGameScreen() {
         return gameScreen;
     }
 
@@ -333,8 +333,8 @@ public final class ClientLogicManager implements RenderListener,
         font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
         screenManager.addFont(fontName, font);
 
-        final Screen serverListScreen = new ServerListScreen(screenManager,
-                this);
+        final AbstractScreen serverListScreen = new ServerListScreen(
+                screenManager, this);
         screenManager.addScreen(ScreenType.SERVER_LIST, serverListScreen);
 
         try {
@@ -383,10 +383,11 @@ public final class ClientLogicManager implements RenderListener,
         /* Create game screen and add it to the screen manager. */
         gameScreen = new GameScreen(screenManager, this);
         screenManager.addScreen(ScreenType.GAME, gameScreen);
-        final Screen selectTeamScreen = new SelectTeamScreen(screenManager,
-                this);
+        final AbstractScreen selectTeamScreen = new SelectTeamScreen(
+                screenManager, this);
         screenManager.addScreen(ScreenType.SELECT_TEAM, selectTeamScreen);
-        final Screen menuScreen = new MainMenuScreen(screenManager, this);
+        final AbstractScreen menuScreen = new MainMenuScreen(screenManager,
+                this);
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.show();

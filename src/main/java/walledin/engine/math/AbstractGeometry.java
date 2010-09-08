@@ -22,8 +22,8 @@ package walledin.engine.math;
 
 import walledin.util.Utils;
 
-public abstract class Geometry {
-    public abstract boolean intersects(Geometry geometry);
+public abstract class AbstractGeometry {
+    public abstract boolean intersects(AbstractGeometry geometry);
 
     public abstract boolean intersects(Rectangle rect);
 
@@ -47,7 +47,7 @@ public abstract class Geometry {
 
     public abstract Circle asInscribedCircle();
 
-    public abstract Geometry translate(final Vector2f pos);
+    public abstract AbstractGeometry translate(final Vector2f pos);
 
     public abstract boolean containsPoint(final Vector2f point);
 }

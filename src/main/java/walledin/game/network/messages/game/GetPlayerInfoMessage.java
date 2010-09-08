@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkEventListener;
 
-public class GetPlayerInfoMessage extends GameMessage {
+public class GetPlayerInfoMessage extends AbstractGameMessage {
     public GetPlayerInfoMessage() {
     }
 

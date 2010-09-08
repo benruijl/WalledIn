@@ -27,7 +27,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class LoginResponseMessage extends GameMessage {
+public class LoginResponseMessage extends AbstractGameMessage {
     private ErrorCode errorCode;
     private String entityName;
 

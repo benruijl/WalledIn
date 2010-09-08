@@ -23,12 +23,12 @@ package walledin.game.entity.behaviors.physics;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class PhysicsBehavior extends Behavior {
+public class PhysicsBehavior extends AbstractBehavior {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
     /** Standard acceleration by gravity. */

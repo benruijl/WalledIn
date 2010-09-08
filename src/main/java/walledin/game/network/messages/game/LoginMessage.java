@@ -27,7 +27,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class LoginMessage extends GameMessage {
+public class LoginMessage extends AbstractGameMessage {
     private String name;
 
     public LoginMessage() {

@@ -21,17 +21,17 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.game.entity.behaviors.render;
 
 import walledin.game.ZValue;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class RenderBehavior extends Behavior {
+public class RenderBehavior extends AbstractBehavior {
 
     public RenderBehavior(final Entity owner, final ZValue z) {
         super(owner);
 
-        setAttribute(Attribute.Z_INDEX, z.z);
+        setAttribute(Attribute.Z_INDEX, z.getZ());
     }
 
     @Override

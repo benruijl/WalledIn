@@ -33,7 +33,7 @@ import walledin.game.EntityManager;
 
 public final class Entity {
     private static final Logger LOG = Logger.getLogger(Entity.class.getName());
-    private final Map<Class<? extends Behavior>, Behavior> behaviors;
+    private final Map<Class<? extends AbstractBehavior>, AbstractBehavior> behaviors;
     private final Map<Attribute, Object> attributes;
     private Set<Attribute> changedAttributes;
     private String name;
@@ -53,7 +53,7 @@ public final class Entity {
      */
     public Entity(final EntityManager entityManager, final Family family,
             final String name) {
-        behaviors = new HashMap<Class<? extends Behavior>, Behavior>();
+        behaviors = new HashMap<Class<? extends AbstractBehavior>, AbstractBehavior>();
         attributes = new HashMap<Attribute, Object>();
         changedAttributes = new HashSet<Attribute>();
         this.name = name;
@@ -99,8 +99,8 @@ public final class Entity {
      *             Thrown when the entity already contains an behavior of this
      *             type
      */
-    public void addBehavior(final Behavior behavior) {
-        final Class<? extends Behavior> clazz = behavior.getClass();
+    public void addBehavior(final AbstractBehavior behavior) {
+        final Class<? extends AbstractBehavior> clazz = behavior.getClass();
         if (behaviors.containsKey(clazz)) {
             throw new IllegalArgumentException("Entity [" + toString()
                     + "] already contains Component of class: "
@@ -120,7 +120,7 @@ public final class Entity {
      *         behavior of this class
      */
     @SuppressWarnings("unchecked")
-    public <T extends Behavior> T getBehavior(final Class<T> clazz) {
+    public <T extends AbstractBehavior> T getBehavior(final Class<T> clazz) {
         if (!behaviors.containsKey(clazz)) {
             throw new IllegalArgumentException("Object " + name + "@"
                     + hashCode() + "does not have behaviour of class "
@@ -167,7 +167,8 @@ public final class Entity {
      *            The class of the behavior.
      * @return True if entity has behavior, else false
      */
-    public boolean hasBehavior(final Class<? extends Behavior> behaviorClass) {
+    public boolean hasBehavior(
+            final Class<? extends AbstractBehavior> behaviorClass) {
         return behaviors.containsKey(behaviorClass)
                 && behaviors.get(behaviorClass) != null;
     }
@@ -188,7 +189,7 @@ public final class Entity {
      */
     @SuppressWarnings("unchecked")
     public <T> T setAttribute(final Attribute attribute, final T newObject) {
-        if (attribute.clazz.isInstance(newObject) || newObject == null) {
+        if (attribute.getClazz().isInstance(newObject) || newObject == null) {
             final T result = (T) attributes.put(attribute, newObject);
 
             // Only add it if it has actually changed
@@ -200,7 +201,7 @@ public final class Entity {
             return result;
         } else {
             throw new IllegalArgumentException("Object should be of class: "
-                    + attribute.clazz.getName());
+                    + attribute.getClazz().getName());
         }
     }
 
@@ -245,8 +246,9 @@ public final class Entity {
      *            Class of the behavior to be removed
      * @return The behavior that was removed
      */
-    public Behavior removeBehavior(final Class<? extends Behavior> clazz) {
-        final Behavior behavior = behaviors.remove(clazz);
+    public AbstractBehavior removeBehavior(
+            final Class<? extends AbstractBehavior> clazz) {
+        final AbstractBehavior behavior = behaviors.remove(clazz);
         return behavior;
     }
 
@@ -254,7 +256,7 @@ public final class Entity {
      * Calls onMessage on all the behaviors of this entity.
      */
     public void sendMessage(final MessageType messageType, final Object data) {
-        final List<Behavior> behaviorList = new ArrayList<Behavior>(
+        final List<AbstractBehavior> behaviorList = new ArrayList<AbstractBehavior>(
                 behaviors.values());
 
         for (int i = 0; i < behaviorList.size(); i++) {
@@ -266,7 +268,7 @@ public final class Entity {
      * Calls onUpdate on all the behaviors of this entity.
      */
     public void sendUpdate(final double delta) {
-        final List<Behavior> behaviorList = new ArrayList<Behavior>(
+        final List<AbstractBehavior> behaviorList = new ArrayList<AbstractBehavior>(
                 behaviors.values());
 
         for (int i = 0; i < behaviorList.size(); i++) {
