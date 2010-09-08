@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -46,6 +47,7 @@ public class EntityManager {
     private final Set<Entity> removed;
     private final Set<Entity> created;
     private int currentVersion;
+    private EntityUpdateListener listener;
 
     public EntityManager(final EntityFactory factory) {
         entities = new ConcurrentHashMap<String, Entity>();
@@ -55,18 +57,22 @@ public class EntityManager {
         drawOrderManager = new DrawOrderManager();
         currentVersion = 0;
     }
+    
+    public void setListener(EntityUpdateListener listener) {
+        this.listener = listener;
+    }
 
     /**
      * Creates a new Entity and adds it to the entities list.
      * 
-     * @param familyName
-     *            Family name
+     * @param family
+     *            Family of the entity
      * @param entityName
      *            Name of the entity
      * @return The created entity or null on failure
      */
-    public Entity create(final Family familyName, final String entityName) {
-        final Entity entity = factory.create(this, familyName, entityName);
+    public Entity create(final Family family, final String entityName) {
+        final Entity entity = factory.create(this, family, entityName);
         add(entity);
         return entity;
     }
@@ -79,10 +85,7 @@ public class EntityManager {
      * @return Entity or null on failure
      */
     public Entity create(final Family family) {
-        final Entity entity = factory.create(this, family,
-                generateUniqueName(family));
-        add(entity);
-        return entity;
+        return create(family, generateUniqueName(family));
     }
 
     /**
@@ -99,6 +102,13 @@ public class EntityManager {
         uniqueNameCount++;
         return "ENT_" + family.toString() + "_"
                 + Integer.toString(uniqueNameCount);
+    }
+
+    /**
+     * Resets the entity manager. This sets the current gamestate back to 0.
+     */
+    public void resetEntityManager() {
+        currentVersion = 0;
     }
 
     /**
@@ -191,7 +201,8 @@ public class EntityManager {
     }
 
     /**
-     * Returns the entity list.
+     * Returns the entity list. Do not edit this list directly, but use the add
+     * and remove functions.
      * 
      * @return Entity list
      */
@@ -247,5 +258,32 @@ public class EntityManager {
 
     public int getCurrentVersion() {
         return currentVersion;
+    }
+
+    public void applyChangeSet(ChangeSet changeSet) {
+        Set<Entity> removed = new HashSet<Entity>();
+        Set<Entity> created = new HashSet<Entity>();
+        for (String name : changeSet.getRemoved()) {
+            removed.add(remove(name));
+        }
+        for (Entry<String, Family> entry : changeSet.getCreated().entrySet()) {
+            created.add(create(entry.getValue(), entry.getKey()));
+        }
+        for (Entry<String, Map<Attribute, Object>> entry : changeSet
+                .getUpdated().entrySet()) {
+            Entity entity = entities.get(entry.getKey());
+            for (Entry<Attribute, Object> attribute : entry.getValue()
+                    .entrySet()) {
+                entity.setAttribute(attribute.getKey(), attribute.getValue());
+            }
+        }
+        if (listener != null) {
+            for (Entity entity : created) {
+                listener.entityCreated(entity);
+            }
+            for (Entity entity : removed) {
+                listener.entityRemoved(entity);
+            }
+        }
     }
 }

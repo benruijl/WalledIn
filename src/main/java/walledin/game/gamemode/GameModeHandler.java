@@ -18,21 +18,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game;
+package walledin.game.gamemode;
 
-/**
- * An enumeration of all the game modes.
- * 
- * @author Ben Ruijl
- * 
- */
-public enum GameMode {
-    /** Deathmatch, everyone for himself. No teams. */
-    DEATHMATCH,
-    /** Team deathmatch, team vs. other team. */
-    TEAM_DEATHMATCH,
-    /** Deathmatch where walling someone is is a fatality. */
-    WALLED_IN,
-    /** Get to a certain position with your team, before the other team does. */
-    BRIDGE_BUILDER;
+public interface GameModeHandler {
+    void update(double delta);
 }

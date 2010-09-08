@@ -41,4 +41,17 @@ public class WalledInException extends Exception {
     public WalledInException(final String message) {
         super(message);
     }
+
+    /**
+     * Creates a new WalledIn exception.
+     * 
+     * @param message
+     *            Message to print
+     * 
+     * @param cause
+     *            The cause
+     */
+    public WalledInException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

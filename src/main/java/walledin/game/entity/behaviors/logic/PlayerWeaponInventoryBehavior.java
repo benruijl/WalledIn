@@ -51,6 +51,14 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
 
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
+        /* On death, drop the active weapon and remove the rest. */
+        if (messageType == MessageType.DEATH) {
+            getOwner().sendMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
+            setAttribute(Attribute.ACTIVE_WEAPON, null);
+            weapons.clear();
+            return;
+        }
+
         if (messageType == MessageType.COLLIDED) {
             final CollisionData colData = (CollisionData) data;
             final Entity weapon = colData.getCollisionEntity();
@@ -70,7 +78,8 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                         return;
                     }
 
-                    weapon.setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
+                    /* Tell the item that it will be picked up. */
+                    weapon.sendMessage(MessageType.PICK_UP, getOwner());
 
                     weapons.put(weapon.getFamily(), weapon);
                     LOG.info("Adding weapon of family "

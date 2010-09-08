@@ -42,6 +42,10 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.game.gamemode.GameMode;
+import walledin.game.gamemode.GameModeHandler;
+import walledin.game.gamemode.GameModeHandlerFactory;
+import walledin.game.gamemode.GameStateListener;
 import walledin.game.map.GameMapIO;
 import walledin.game.map.GameMapIOXML;
 import walledin.game.map.SpawnPoint;
@@ -56,7 +60,7 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class GameLogicManager {
+public final class GameLogicManager implements GameStateListener  {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -69,126 +73,16 @@ public final class GameLogicManager {
     /** Entity factory. */
     private final EntityFactory entityFactory;
 
-    /**
-     * This class contains all information the client should know about the
-     * player.
-     */
-    public static final class PlayerClientInfo {
-        private final String entityName;
-        private Team team;
-
-        public PlayerClientInfo(final String entityName, final Team team) {
-            this.entityName = entityName;
-            this.team = team;
-        }
-
-        public PlayerClientInfo(final String entityName) {
-            this.entityName = entityName;
-        }
-
-        public String getEntityName() {
-            return entityName;
-        }
-
-        public Team getTeam() {
-            return team;
-        }
-
-        public void setTeam(final Team team) {
-            this.team = team;
-        }
-    }
-
-    /** This class contains all information about the player. */
-    public final class PlayerInfo {
-        private float currentRespawnTime;
-        private final Entity player;
-        private boolean dead;
-        private boolean respawn;
-        private Team team;
-        private float walledInTime;
-
-        public PlayerInfo(final Entity player) {
-            super();
-            this.player = player;
-            dead = false;
-            respawn = false;
-            team = Team.UNSELECTED;
-        }
-
-        public Team getTeam() {
-            return team;
-        }
-
-        public void setTeam(final Team team) {
-            this.team = team;
-        }
-
-        public Entity getPlayer() {
-            return player;
-        }
-
-        public boolean isDead() {
-            return dead;
-        }
-
-        public void setWalledInTime(final float walledInTime) {
-            this.walledInTime = walledInTime;
-        }
-
-        public float getWalledInTime() {
-            return walledInTime;
-        }
-
-        /**
-         * Should be called when the player has been respawned.
-         */
-        public void hasRespawned() {
-            dead = false;
-            respawn = false;
-        }
-
-        /**
-         * Checks if the player died and determines if the player should be
-         * respawned.
-         * 
-         * @param delta
-         *            Delta time since last update
-         */
-        public void update(final double delta) {
-            /* Check if the player died */
-            if (!dead && (Integer) player.getAttribute(Attribute.HEALTH) == 0) {
-                dead = true;
-                respawn = false;
-                player.remove(); // remove the player
-            }
-
-            if (dead && !respawn) {
-                currentRespawnTime += delta;
-
-                if (currentRespawnTime > respawnTime) {
-                    currentRespawnTime = 0;
-                    respawn = true;
-                }
-            }
-        }
-
-        public boolean shouldRespawn() {
-            return respawn;
-        }
-
-    }
-
     /** Active map. */
     private Entity map;
     /** A map from the player entity name to the player info. */
     private final Map<String, PlayerInfo> players;
     /** A map to from a team to the players in it. */
     private final Map<Team, Set<PlayerInfo>> teams;
-    /** Respawn time in seconds. */
-    private final float respawnTime;
     /** Current game mode. */
     private final GameMode gameMode;
+    /** Current game mode handler. */
+    private final GameModeHandler gameModeHandler;
 
     /* Walled In checks */
     /** Mobility field of the map. */
@@ -197,14 +91,13 @@ public final class GameLogicManager {
     private final float maxWalledInTime;
     /** Minimum Walled In space in player size units. */
     private final int minimalWalledInSpace;
-
     /* Cluster forming */
     /** Clusters of foam particles. */
     private final List<List<Entity>> clusters;
     /** Maximum distance between foam to be in the same cluster. */
     private final float maxFoamDistance;
 
-    public GameLogicManager(final Server server) {
+    public GameLogicManager() {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
         players = new HashMap<String, PlayerInfo>();
@@ -213,17 +106,14 @@ public final class GameLogicManager {
 
         /* Initialize the map */
         for (final Team team : Team.values()) {
-            teams.put(team, new HashSet<GameLogicManager.PlayerInfo>());
+            teams.put(team, new HashSet<PlayerInfo>());
         }
 
-        this.server = server;
+        server = new Server(this);
 
         /* Initialize random number generator */
         rng = new Random();
 
-        /* Load settings. */
-        respawnTime = SettingsManager.getInstance()
-                .getFloat("game.respawnTime");
         gameMode = GameMode.valueOf(SettingsManager.getInstance().getString(
                 "game.gameMode"));
         maxWalledInTime = SettingsManager.getInstance().getFloat(
@@ -232,6 +122,38 @@ public final class GameLogicManager {
                 "game.mininmalWalledInSpace");
         maxFoamDistance = SettingsManager.getInstance().getFloat(
                 "game.foamConnectionDistance");
+
+        gameModeHandler = GameModeHandlerFactory.createHandler(gameMode, this);
+    }
+
+    /**
+     * Start of application. It runs the server.
+     * 
+     * @param args
+     *            Command line arguments
+     * @throws IOException
+     */
+    public static void main(final String[] args) {
+        /* First load the settings file */
+        try {
+            SettingsManager.getInstance().loadSettings(
+                    Utils.getClasspathURL("server_settings.ini"));
+        } catch (final IOException e) {
+            LOG.error("Could not read configuration file.", e);
+        }
+
+        new GameLogicManager().run();
+    }
+
+    /**
+     * Runs the server.
+     */
+    private void run() {
+        try {
+            server.run();
+        } catch (IOException e) {
+            LOG.fatal("A fatal network error occured.", e);
+        }
     }
 
     public Server getServer() {
@@ -320,17 +242,40 @@ public final class GameLogicManager {
     }
 
     /**
+     * Kills a player by removing him from the entity list and by sending the
+     * death event.
+     * 
+     * @param entityName
+     *            Player name
+     */
+    public void killPlayer(final String entityName) {
+        if (!players.containsKey(entityName)) {
+            LOG.info("Tried to remove player that is not in the list.");
+            return;
+        }
+
+        /* If the player is dead, he is already removed from the entity list. */
+        if (!players.get(entityName).isDead()) {
+            entityManager.remove(entityName);
+        }
+
+        players.get(entityName).getPlayer()
+                .sendMessage(MessageType.DEATH, null);
+    }
+
+    /**
      * Removes a player from the player list and from the entity list.
      * 
      * @param entityName
      *            Player name
      */
     public void removePlayer(final String entityName) {
-        /* If the player is dead, he is already removed from the entity list. */
-        if (!players.get(entityName).isDead()) {
-            entityManager.remove(entityName);
+        if (!players.containsKey(entityName)) {
+            LOG.info("Tried to remove player that is not in the list.");
+            return;
         }
 
+        killPlayer(entityName);
         players.remove(entityName);
     }
     
@@ -554,6 +499,23 @@ public final class GameLogicManager {
         for (final PlayerInfo info : players.values()) {
             info.update(delta);
 
+            if (info.isDead()) {
+                killPlayer(info.getPlayer().getName());
+
+                String killerName = (String) info.getPlayer().getAttribute(
+                        Attribute.LAST_DAMAGE);
+
+                if (killerName != null
+                        && !killerName.equals(info.getPlayer().getName())) {
+                    /* Add points to the killer of this player. */
+                    for (final PlayerInfo killerInfo : players.values()) {
+                        if (killerInfo.getPlayer().getName().equals(killerName)) {
+                            killerInfo.increaseKillCount();
+                        }
+                    }
+                }
+            }
+
             if (info.shouldRespawn()) {
                 spawnPlayer(info.getPlayer());
                 entityManager.add(info.getPlayer());
@@ -584,6 +546,9 @@ public final class GameLogicManager {
                 }
             }
         }
+
+        /* Update the game mode specific routines */
+        gameModeHandler.update(delta);
 
         /* Do collision detection */
         entityManager.doCollisionDetection(map, delta);
@@ -616,6 +581,15 @@ public final class GameLogicManager {
 
         /* Build the static movability field. */
         buildStaticField();
+    }
+
+    @Override
+    public void onGameOver() {        
+    }
+
+    @Override
+    public void onMatchOver() {
+        LOG.info("The match has ended.");
     }
 
 }

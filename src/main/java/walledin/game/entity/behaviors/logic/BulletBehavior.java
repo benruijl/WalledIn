@@ -53,6 +53,10 @@ public class BulletBehavior extends Behavior {
                 colData.getCollisionEntity().sendMessage(
                         MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
 
+                colData.getCollisionEntity()
+                        .setAttribute(Attribute.LAST_DAMAGE,
+                                getAttribute(Attribute.OWNED_BY));
+
                 getOwner().remove();
             }
         }

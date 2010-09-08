@@ -33,6 +33,8 @@ public enum MessageType {
     RESTORE_HEALTH,
     SHOOT,
     APPLY_FORCE,
+    DEATH,
+    PICK_UP,
     DROP,
     SELECT_WEAPON,
     TAKE_DAMAGE;

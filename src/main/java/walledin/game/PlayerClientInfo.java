@@ -18,42 +18,29 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity;
+package walledin.game;
 
 /**
- * Family of the entities. Contains a tree-like structure to recursively build
- * an entity.
- * 
- * @author Ben Ruijl
- * 
+ * This class contains all information the client should know about the player.
  */
-public enum Family {
-    ROOT(null),
-    WEAPON(ROOT),
-    PLAYER(ROOT),
-    ITEM(ROOT),
-    GRENADE(ROOT),
-    HANDGUN(WEAPON),
-    FOAMGUN(WEAPON),
-    GRENADE_LAUNCHER(WEAPON),
-    HEALTHKIT(ITEM),
-    ARMOURKIT(ITEM),
-    BULLET(ROOT),
-    HANDGUN_BULLET(BULLET),
-    FOAMGUN_BULLET(BULLET),
-    FOAMNADE(GRENADE),
-    MAP(ROOT),
-    BACKGROUND(ROOT),
-    FOAM_PARTICLE(BULLET),
-    CURSOR(ROOT);
+public class PlayerClientInfo {
+    private final String entityName;
+    private Team team;
 
-    private final Family parent;
-
-    private Family(final Family parent) {
-        this.parent = parent;
+    public PlayerClientInfo(final String entityName, final Team team) {
+        this.entityName = entityName;
+        this.team = team;
     }
 
-    public Family getParent() {
-        return parent;
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(final Team team) {
+        this.team = team;
     }
 }

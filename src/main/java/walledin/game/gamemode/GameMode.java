@@ -18,42 +18,21 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity;
+package walledin.game.gamemode;
 
 /**
- * Family of the entities. Contains a tree-like structure to recursively build
- * an entity.
+ * An enumeration of all the game modes.
  * 
  * @author Ben Ruijl
  * 
  */
-public enum Family {
-    ROOT(null),
-    WEAPON(ROOT),
-    PLAYER(ROOT),
-    ITEM(ROOT),
-    GRENADE(ROOT),
-    HANDGUN(WEAPON),
-    FOAMGUN(WEAPON),
-    GRENADE_LAUNCHER(WEAPON),
-    HEALTHKIT(ITEM),
-    ARMOURKIT(ITEM),
-    BULLET(ROOT),
-    HANDGUN_BULLET(BULLET),
-    FOAMGUN_BULLET(BULLET),
-    FOAMNADE(GRENADE),
-    MAP(ROOT),
-    BACKGROUND(ROOT),
-    FOAM_PARTICLE(BULLET),
-    CURSOR(ROOT);
-
-    private final Family parent;
-
-    private Family(final Family parent) {
-        this.parent = parent;
-    }
-
-    public Family getParent() {
-        return parent;
-    }
+public enum GameMode {
+    /** Deathmatch, everyone for himself. No teams. */
+    DEATHMATCH,
+    /** Team deathmatch, team vs. other team. */
+    TEAM_DEATHMATCH,
+    /** Deathmatch where walling someone is is a fatality. */
+    WALLED_IN,
+    /** Get to a certain position with your team, before the other team does. */
+    BRIDGE_BUILDER;
 }

@@ -20,18 +20,18 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network;
 
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 
-import walledin.game.GameMode;
+import walledin.game.gamemode.GameMode;
 
 public class ServerData {
-    private final SocketAddress address;
+    private InetSocketAddress address;
     private final String name;
     private final int players;
     private final int maxPlayers;
     private final GameMode gameMode;
 
-    public ServerData(final SocketAddress address, final String name,
+    public ServerData(final InetSocketAddress address, final String name,
             final int players, final int maxPlayers, final GameMode gameMode) {
         this.address = address;
         this.name = name;
@@ -40,7 +40,7 @@ public class ServerData {
         this.gameMode = gameMode;
     }
 
-    public SocketAddress getAddress() {
+    public InetSocketAddress getAddress() {
         return address;
     }
 
@@ -88,5 +88,9 @@ public class ServerData {
             return false;
         }
         return true;
+    }
+
+    public void setAddress(InetSocketAddress address) {
+        this.address = address;
     }
 }

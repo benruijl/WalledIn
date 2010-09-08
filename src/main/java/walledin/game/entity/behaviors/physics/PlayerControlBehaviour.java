@@ -66,12 +66,6 @@ public class PlayerControlBehaviour extends Behavior {
                 break;
             }
         } else if (messageType == MessageType.DROP) {
-            if (data == null) { // drop all
-                // FIXME: find better way to drop all entities
-                onMessage(MessageType.DROP, Attribute.ACTIVE_WEAPON);
-                return;
-            }
-
             final Attribute at = (Attribute) data;
 
             if (getOwner().hasAttribute(at)) {

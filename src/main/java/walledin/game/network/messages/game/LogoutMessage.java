@@ -18,42 +18,28 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity;
+package walledin.game.network.messages.game;
 
-/**
- * Family of the entities. Contains a tree-like structure to recursively build
- * an entity.
- * 
- * @author Ben Ruijl
- * 
- */
-public enum Family {
-    ROOT(null),
-    WEAPON(ROOT),
-    PLAYER(ROOT),
-    ITEM(ROOT),
-    GRENADE(ROOT),
-    HANDGUN(WEAPON),
-    FOAMGUN(WEAPON),
-    GRENADE_LAUNCHER(WEAPON),
-    HEALTHKIT(ITEM),
-    ARMOURKIT(ITEM),
-    BULLET(ROOT),
-    HANDGUN_BULLET(BULLET),
-    FOAMGUN_BULLET(BULLET),
-    FOAMNADE(GRENADE),
-    MAP(ROOT),
-    BACKGROUND(ROOT),
-    FOAM_PARTICLE(BULLET),
-    CURSOR(ROOT);
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 
-    private final Family parent;
+import walledin.game.network.NetworkEventListener;
 
-    private Family(final Family parent) {
-        this.parent = parent;
+public class LogoutMessage extends GameMessage {
+    public LogoutMessage() {
     }
 
-    public Family getParent() {
-        return parent;
+    @Override
+    public void read(final ByteBuffer buffer, final SocketAddress address) {
+    }
+
+    @Override
+    public void write(final ByteBuffer buffer) {
+    }
+
+    @Override
+    public void fireEvent(final NetworkEventListener listener,
+            final SocketAddress address) {
+        listener.receivedMessage(address, this);
     }
 }

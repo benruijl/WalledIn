@@ -18,42 +18,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity;
+package walledin.game.gamemode;
 
 /**
- * Family of the entities. Contains a tree-like structure to recursively build
- * an entity.
- * 
+ * A collection of messages that signal changes in game state.
  * @author Ben Ruijl
- * 
+ *
  */
-public enum Family {
-    ROOT(null),
-    WEAPON(ROOT),
-    PLAYER(ROOT),
-    ITEM(ROOT),
-    GRENADE(ROOT),
-    HANDGUN(WEAPON),
-    FOAMGUN(WEAPON),
-    GRENADE_LAUNCHER(WEAPON),
-    HEALTHKIT(ITEM),
-    ARMOURKIT(ITEM),
-    BULLET(ROOT),
-    HANDGUN_BULLET(BULLET),
-    FOAMGUN_BULLET(BULLET),
-    FOAMNADE(GRENADE),
-    MAP(ROOT),
-    BACKGROUND(ROOT),
-    FOAM_PARTICLE(BULLET),
-    CURSOR(ROOT);
+public interface GameStateListener {
+    void onGameOver();
 
-    private final Family parent;
-
-    private Family(final Family parent) {
-        this.parent = parent;
-    }
-
-    public Family getParent() {
-        return parent;
-    }
+    void onMatchOver();
 }
