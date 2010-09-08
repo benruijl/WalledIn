@@ -25,7 +25,13 @@ import java.net.SocketAddress;
 
 import walledin.util.SettingsManager;
 
-public class NetworkConstants {
+/**
+ * Constants for networking. TODO: We should move these...
+ * 
+ * @author Wouter Smeenk
+ * 
+ */
+public final class NetworkConstants {
     // TODO: what is max upd size?
     public static final int BUFFER_SIZE = 1024 * 1024;
 
@@ -37,10 +43,9 @@ public class NetworkConstants {
     public static final SocketAddress BROADCAST_ADDRESS = new InetSocketAddress(
             "255.255.255.255", MASTER_PROTOCOL_PORT);
 
-    public static String getAddressRepresentation(final SocketAddress address) {
-        final InetSocketAddress inetAddr = (InetSocketAddress) address;
-        return inetAddr.getAddress().getHostAddress() + "@"
-                + inetAddr.getPort();
+    /**
+     * Class should not be constructed
+     */
+    private NetworkConstants() {
     }
-
 }

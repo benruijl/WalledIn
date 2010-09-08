@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkEventListener;
 
-public abstract class NetworkMessage {
+public interface NetworkMessage {
     /**
      * Write the message body to the byte buffer. It should be possible to
      * restore the message by calling the read method on the buffer.
@@ -33,7 +33,7 @@ public abstract class NetworkMessage {
      * @param buffer
      *            The buffer the message is written to.
      */
-    public abstract void write(ByteBuffer buffer);
+    void write(ByteBuffer buffer);
 
     /**
      * Read the message body from the byte buffer. It should be possible to get
@@ -44,7 +44,7 @@ public abstract class NetworkMessage {
      * @param address
      *            The address the message was recieved from.
      */
-    public abstract void read(ByteBuffer buffer, SocketAddress address);
+    void read(ByteBuffer buffer, SocketAddress address);
 
     /**
      * Fire the corresponding event.
@@ -53,8 +53,7 @@ public abstract class NetworkMessage {
      * @param address
      *            The address the message was recieved from
      */
-    public abstract void fireEvent(NetworkEventListener listener,
-            SocketAddress address);
+    void fireEvent(NetworkEventListener listener, SocketAddress address);
 
     /**
      * Writes the header of the message.
@@ -62,5 +61,5 @@ public abstract class NetworkMessage {
      * @param buffer
      *            The buffer the header is written to.
      */
-    public abstract void writeHeader(ByteBuffer buffer);
+    void writeHeader(ByteBuffer buffer);
 }

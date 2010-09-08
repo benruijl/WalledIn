@@ -31,7 +31,7 @@ import java.util.List;
  * 
  * @author Ben Ruijl
  */
-public class Rectangle extends Geometry {
+public class Rectangle extends AbstractGeometry {
     private final float x;
     private final float y;
     private final float width;
@@ -111,7 +111,7 @@ public class Rectangle extends Geometry {
     }
 
     @Override
-    public boolean intersects(final Geometry geometry) {
+    public boolean intersects(final AbstractGeometry geometry) {
         // uses double callback trick
         return geometry.intersects(this);
     }
@@ -124,7 +124,7 @@ public class Rectangle extends Geometry {
 
     @Override
     public boolean intersects(final Circle circ) {
-        return Geometry.intersects(this, circ);
+        return AbstractGeometry.intersects(this, circ);
     }
 
     @Override

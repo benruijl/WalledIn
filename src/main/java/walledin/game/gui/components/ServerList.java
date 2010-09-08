@@ -26,7 +26,7 @@ import java.util.List;
 import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
-import walledin.engine.gui.Screen;
+import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
@@ -37,17 +37,18 @@ import walledin.game.ClientLogicManager;
 import walledin.game.gamemode.GameMode;
 import walledin.game.network.ServerData;
 
-public class ServerList extends Screen implements ScreenMouseEventListener {
-    private final Screen refreshButton;
+public class ServerList extends AbstractScreen implements
+        ScreenMouseEventListener {
+    private final AbstractScreen refreshButton;
     private List<ServerData> serverList; // list of servers
-    private final List<Screen> serverButtons; // list of buttons
+    private final List<AbstractScreen> serverButtons; // list of buttons
     private final ClientLogicManager clientLogicManager;
 
-    public ServerList(final Screen parent, final Rectangle boudingRect,
+    public ServerList(final AbstractScreen parent, final Rectangle boudingRect,
             final ClientLogicManager clientLogicManager) {
         super(parent, boudingRect, 1);
         this.clientLogicManager = clientLogicManager;
-        serverButtons = new ArrayList<Screen>();
+        serverButtons = new ArrayList<AbstractScreen>();
 
         refreshButton = new Button(this, "Refresh", new Vector2f(400, 40));
         refreshButton.addMouseEventListener(this);
@@ -66,9 +67,14 @@ public class ServerList extends Screen implements ScreenMouseEventListener {
         serverButtons.clear();
 
         for (int i = 0; i < serverList.size(); i++) {
-            final Screen server = new Button(this, serverList.get(i).getName()
-                    + " (" + serverList.get(i).getAddress().getAddress() + ")"
-                    + " " + serverList.get(i).getPlayers() + "/"
+            final AbstractScreen server = new Button(this, serverList.get(i)
+                    .getName()
+                    + " ("
+                    + serverList.get(i).getAddress().getAddress()
+                    + ")"
+                    + " "
+                    + serverList.get(i).getPlayers()
+                    + "/"
                     + serverList.get(i).getMaxPlayers() + " players",
                     new Vector2f(10, 65 + i * 20));
             server.registerScreenManager(getManager());

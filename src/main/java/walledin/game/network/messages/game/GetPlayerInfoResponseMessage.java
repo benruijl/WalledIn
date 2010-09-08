@@ -32,7 +32,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 
-public class GetPlayerInfoResponseMessage extends GameMessage {
+public class GetPlayerInfoResponseMessage extends AbstractGameMessage {
     private Set<PlayerClientInfo> players;
 
     public GetPlayerInfoResponseMessage() {

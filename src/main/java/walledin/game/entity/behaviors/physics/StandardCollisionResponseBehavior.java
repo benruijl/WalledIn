@@ -22,16 +22,16 @@ package walledin.game.entity.behaviors.physics;
 
 import org.apache.log4j.Logger;
 
-import walledin.engine.math.Geometry;
+import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
-public class StandardCollisionResponseBehavior extends Behavior {
+public class StandardCollisionResponseBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger
             .getLogger(StandardCollisionResponseBehavior.class);
 
@@ -77,10 +77,10 @@ public class StandardCollisionResponseBehavior extends Behavior {
         final float dx, dy; // position
 
         // do very basic collision response
-        final Geometry boundsA = (Geometry) getOwner().getAttribute(
-                Attribute.BOUNDING_GEOMETRY);
-        final Geometry boundsB = (Geometry) data.getCollisionEntity()
+        final AbstractGeometry boundsA = (AbstractGeometry) getOwner()
                 .getAttribute(Attribute.BOUNDING_GEOMETRY);
+        final AbstractGeometry boundsB = (AbstractGeometry) data
+                .getCollisionEntity().getAttribute(Attribute.BOUNDING_GEOMETRY);
 
         /*
          * if (boundsB.translate( new Vector2f(oldPosB.getX() + vel.getX(),

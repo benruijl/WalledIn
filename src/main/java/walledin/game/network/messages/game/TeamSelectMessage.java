@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
 import walledin.game.Team;
 import walledin.game.network.NetworkEventListener;
 
-public class TeamSelectMessage extends GameMessage {
+public class TeamSelectMessage extends AbstractGameMessage {
     private Team team;
 
     public TeamSelectMessage() {

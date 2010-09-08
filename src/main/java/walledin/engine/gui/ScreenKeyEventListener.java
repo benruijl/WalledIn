@@ -27,6 +27,6 @@ public interface ScreenKeyEventListener {
      * @param e
      *            Key event information
      */
-    public void onKeyDown(ScreenKeyEvent e);
+    void onKeyDown(ScreenKeyEvent e);
 
 }

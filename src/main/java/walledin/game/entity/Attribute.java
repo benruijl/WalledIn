@@ -23,7 +23,7 @@ package walledin.game.entity;
 import java.util.List;
 import java.util.Set;
 
-import walledin.engine.math.Geometry;
+import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Vector2f;
 import walledin.game.Team;
 
@@ -76,7 +76,7 @@ public enum Attribute {
     /** Frame of the player walking animation. */
     WALK_ANIM_FRAME(Float.class),
     /** Bounding geometry of a spatial entity. */
-    BOUNDING_GEOMETRY(Geometry.class),
+    BOUNDING_GEOMETRY(AbstractGeometry.class),
     /** Z-index of a visible entity. */
     Z_INDEX(Integer.class),
     /** Mass of the particle. */
@@ -99,18 +99,9 @@ public enum Attribute {
     OWNED_BY(String.class, true);
 
     /** Class of the attribute. */
-    public final Class<?> clazz;
+    private final Class<?> clazz;
     /** Checks if it can be sent over network. */
     private final boolean sendOverNetwork;
-
-    /**
-     * Returns if the entity can be sent over network.
-     * 
-     * @return See above.
-     */
-    public boolean canSendOverNetwork() {
-        return sendOverNetwork;
-    }
 
     /**
      * Creates a new attribute that cannot be sent over network.
@@ -134,4 +125,18 @@ public enum Attribute {
         this.clazz = clazz;
         this.sendOverNetwork = sendOverNetwork;
     }
+
+    /**
+     * Returns if the entity can be sent over network.
+     * 
+     * @return See above.
+     */
+    public boolean canSendOverNetwork() {
+        return sendOverNetwork;
+    }
+
+    public Class<?> getClazz() {
+        return clazz;
+    }
+
 }

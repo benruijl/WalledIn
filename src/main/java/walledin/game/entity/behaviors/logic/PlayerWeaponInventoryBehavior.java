@@ -26,13 +26,13 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
-public class PlayerWeaponInventoryBehavior extends Behavior {
+public class PlayerWeaponInventoryBehavior extends AbstractBehavior {
     private final static Logger LOG = Logger
             .getLogger(PlayerWeaponInventoryBehavior.class);
     private final Map<Family, Entity> weapons;
@@ -70,7 +70,7 @@ public class PlayerWeaponInventoryBehavior extends Behavior {
                     // is weapon already owned?
                     final Boolean hasWeapon = (Boolean) weapon
                             .getAttribute(Attribute.PICKED_UP);
-                    if (hasWeapon != null && hasWeapon == true) {
+                    if (hasWeapon != null && hasWeapon) {
                         return;
                     }
 

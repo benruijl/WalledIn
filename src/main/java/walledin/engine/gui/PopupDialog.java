@@ -25,7 +25,8 @@ import walledin.engine.gui.components.Button;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
-public class PopupDialog extends Screen implements ScreenMouseEventListener {
+public class PopupDialog extends AbstractScreen implements
+        ScreenMouseEventListener {
     private final String text;
     private final Button okButton;
 

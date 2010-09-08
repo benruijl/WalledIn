@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 
 import walledin.game.network.NetworkEventListener;
 
-public class GetServersMessage extends MasterServerMessage {
+public class GetServersMessage extends AbstractMasterServerMessage {
 
     public GetServersMessage() {
     }

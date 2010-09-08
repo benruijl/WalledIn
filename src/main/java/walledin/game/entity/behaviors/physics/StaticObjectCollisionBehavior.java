@@ -20,12 +20,12 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.physics;
 
+import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Circle;
-import walledin.engine.math.Geometry;
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
@@ -38,7 +38,7 @@ import walledin.util.SettingsManager;
  * @author Ben Ruijl
  * 
  */
-public class StaticObjectCollisionBehavior extends Behavior {
+public class StaticObjectCollisionBehavior extends AbstractBehavior {
     /** The maximum depth of a collision resolving search. */
     private final int maxCollisionSearchDepth;
 
@@ -72,21 +72,25 @@ public class StaticObjectCollisionBehavior extends Behavior {
      * @return The optimal position at which no collision occurs, given the
      *         maximum search depth.
      */
-    final Vector2f doBinarySearch(final int maxDepth, Vector2f left,
-            Vector2f right, final Geometry boundsA, final Geometry boundsB) {
+    final Vector2f doBinarySearch(final int maxDepth, final Vector2f left,
+            final Vector2f right, final AbstractGeometry boundsA,
+            final AbstractGeometry boundsB) {
         int depth = 0;
+        Vector2f currentLeft = left;
+        Vector2f currentRight = right;
         while (depth < maxDepth) {
-            final Vector2f mid = left.add(right.sub(left).scale(0.5f));
+            final Vector2f mid = currentLeft.add(currentRight.sub(currentLeft)
+                    .scale(0.5f));
 
             if (boundsB.translate(mid).intersects(boundsA)) {
-                right = mid;
+                currentLeft = mid;
             } else {
-                left = mid;
+                currentRight = mid;
             }
             depth++;
         }
 
-        return left;
+        return currentLeft;
     }
 
     /**
@@ -115,9 +119,9 @@ public class StaticObjectCollisionBehavior extends Behavior {
         final Vector2f oldPosB = ((Vector2f) data.getCollisionEntity()
                 .getAttribute(Attribute.POSITION)).sub(velB);
 
-        Geometry boundsA = (Geometry) getAttribute(Attribute.BOUNDING_GEOMETRY);
-        final Geometry boundsB = (Geometry) data.getCollisionEntity()
-                .getAttribute(Attribute.BOUNDING_GEOMETRY);
+        AbstractGeometry boundsA = (AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY);
+        final AbstractGeometry boundsB = (AbstractGeometry) data
+                .getCollisionEntity().getAttribute(Attribute.BOUNDING_GEOMETRY);
 
         boundsA = boundsA
                 .translate((Vector2f) getAttribute(Attribute.POSITION));

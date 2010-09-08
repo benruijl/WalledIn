@@ -22,13 +22,13 @@ package walledin.game.entity.behaviors.logic;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.CollisionManager.CollisionData;
+import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
-import walledin.game.entity.Behavior;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
-public class BulletBehavior extends Behavior {
+public class BulletBehavior extends AbstractBehavior {
     /** The damage the player takes from this bullet. */
     private final int damage;
 

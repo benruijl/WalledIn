@@ -27,7 +27,7 @@ public interface ScreenMouseEventListener {
      * @param e
      *            Mouse event information
      */
-    public void onMouseDown(ScreenMouseEvent e);
+    void onMouseDown(ScreenMouseEvent e);
 
     /**
      * Called when mouse hovers over screen.
@@ -35,5 +35,5 @@ public interface ScreenMouseEventListener {
      * @param e
      *            Mouse event information
      */
-    public void onMouseHover(ScreenMouseEvent e);
+    void onMouseHover(ScreenMouseEvent e);
 }

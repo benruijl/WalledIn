@@ -30,16 +30,16 @@ import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.messages.NetworkMessage;
 import walledin.util.Utils;
 
-public abstract class MasterServerMessage extends NetworkMessage {
+public abstract class AbstractMasterServerMessage implements NetworkMessage {
+    public static final int DATAGRAM_IDENTIFICATION = 0x174BC126;
     private static final Logger LOG = Logger
             .getLogger(NetworkMessageReader.class);
-    public static final int DATAGRAM_IDENTIFICATION = 0x174BC126;
-    private static final Map<Byte, Class<? extends MasterServerMessage>> MESSAGE_CLASSES = initializeMessageClasses();
-    private static final Map<Class<? extends MasterServerMessage>, Byte> MESSAGE_BYTES = Utils
+    private static final Map<Byte, Class<? extends AbstractMasterServerMessage>> MESSAGE_CLASSES = initializeMessageClasses();
+    private static final Map<Class<? extends AbstractMasterServerMessage>, Byte> MESSAGE_BYTES = Utils
             .reverseMap(MESSAGE_CLASSES);
 
-    private static Map<Byte, Class<? extends MasterServerMessage>> initializeMessageClasses() {
-        final Map<Byte, Class<? extends MasterServerMessage>> result = new HashMap<Byte, Class<? extends MasterServerMessage>>();
+    private static Map<Byte, Class<? extends AbstractMasterServerMessage>> initializeMessageClasses() {
+        final Map<Byte, Class<? extends AbstractMasterServerMessage>> result = new HashMap<Byte, Class<? extends AbstractMasterServerMessage>>();
         result.put((byte) 0, GetServersMessage.class);
         result.put((byte) 1, ServerNotificationMessage.class);
         result.put((byte) 2, ServersMessage.class);
@@ -47,8 +47,8 @@ public abstract class MasterServerMessage extends NetworkMessage {
         return result;
     }
 
-    public static MasterServerMessage getMessage(final byte type) {
-        final Class<? extends MasterServerMessage> clazz = MESSAGE_CLASSES
+    public static AbstractMasterServerMessage getMessage(final byte type) {
+        final Class<? extends AbstractMasterServerMessage> clazz = MESSAGE_CLASSES
                 .get(type);
         try {
             return clazz.newInstance();

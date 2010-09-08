@@ -38,17 +38,17 @@ public class Vector2i {
         y = 0;
     }
 
+    public Vector2i(final int x, final int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public int getX() {
         return x;
     }
 
     public int getY() {
         return y;
-    }
-
-    public Vector2i(final int x, final int y) {
-        this.x = x;
-        this.y = y;
     }
 
     public Vector2i add(final Vector2i vec) {

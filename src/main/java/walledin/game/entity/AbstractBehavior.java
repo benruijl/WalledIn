@@ -28,10 +28,10 @@ import walledin.game.EntityManager;
  * @author wouter
  * 
  */
-public abstract class Behavior {
+public abstract class AbstractBehavior {
     private final Entity owner;
 
-    public Behavior(final Entity owner) {
+    public AbstractBehavior(final Entity owner) {
         this.owner = owner;
     }
 

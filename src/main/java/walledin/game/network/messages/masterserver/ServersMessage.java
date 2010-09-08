@@ -32,7 +32,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.ServerData;
 
-public class ServersMessage extends MasterServerMessage {
+public class ServersMessage extends AbstractMasterServerMessage {
     private static final Logger LOG = Logger.getLogger(ServersMessage.class);
     private Set<ServerData> servers;
 

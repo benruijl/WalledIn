@@ -6,8 +6,7 @@
 -->
 <!--
     Checkstyle-Configuration: WalledIn
-    Description: 
-Checkstyle configuration that checks the sun coding conventions.
+    Description: none
 -->
 <module name="Checker">
   <property name="severity" value="warning"/>
@@ -45,11 +44,8 @@ Checkstyle configuration that checks the sun coding conventions.
     </module>
     <module name="EmptyForIteratorPad"/>
     <module name="MethodParamPad"/>
-    <module name="NoWhitespaceAfter"/>
     <module name="NoWhitespaceBefore"/>
     <module name="OperatorWrap"/>
-    <module name="ParenPad"/>
-    <module name="TypecastParenPad"/>
     <module name="WhitespaceAfter"/>
     <module name="WhitespaceAround"/>
     <module name="ModifierOrder"/>
@@ -63,6 +59,7 @@ Checkstyle configuration that checks the sun coding conventions.
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
     <module name="HiddenField">
+      <property name="tokens" value="VARIABLE_DEF"/>
       <property name="ignoreConstructorParameter" value="true"/>
       <property name="ignoreSetter" value="true"/>
     </module>
@@ -110,6 +107,12 @@ Checkstyle configuration that checks the sun coding conventions.
     <module name="AnonInnerLength"/>
     <module name="TodoComment">
       <property name="format" value="FIXME"/>
+    </module>
+    <module name="PackageAnnotation"/>
+    <module name="AbstractClassName"/>
+    <module name="ParenPad"/>
+    <module name="TypecastParenPad">
+      <property name="tokens" value="RPAREN,TYPECAST"/>
     </module>
   </module>
   <module name="NewlineAtEndOfFile"/>
