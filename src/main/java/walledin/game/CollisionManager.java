@@ -334,9 +334,10 @@ public final class CollisionManager {
             }
         }
 
-        /* Only check the player and the foam for now. */
+        /* Check some entities against static ones. */
         for (final Entity element : entArray) {
-            if (element.getFamily() == Family.PLAYER) {
+            if (element.getFamily() == Family.PLAYER
+                    || element.getFamily() == Family.HANDGUN_BULLET) {
 
                 /* TODO: check the old position too! */
                 final Rectangle rect = ((AbstractGeometry) element
@@ -363,6 +364,9 @@ public final class CollisionManager {
                                     new CollisionData((Vector2f) element
                                             .getAttribute(Attribute.POSITION),
                                             oldPos, theorPos, delta, target));
+                            target.sendMessage(MessageType.COLLIDED,
+                                    new CollisionData(null, null, null, delta,
+                                            element));
                         }
                     }
                 }

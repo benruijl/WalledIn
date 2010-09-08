@@ -156,6 +156,8 @@ public class QuadTree {
 
         if (rectangle.containsFully(rect)) {
             objectList.addAll(getObjects());
+        } else {
+            return null;
         }
 
         if (!leaf) {
