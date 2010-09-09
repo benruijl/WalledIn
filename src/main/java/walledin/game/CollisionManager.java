@@ -339,21 +339,30 @@ public final class CollisionManager {
             if (element.getFamily() == Family.PLAYER
                     || element.getFamily() == Family.HANDGUN_BULLET) {
 
-                /* TODO: check the old position too! */
-                final Rectangle rect = ((AbstractGeometry) element
-                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
-                        .asRectangle().translate(
-                                (Vector2f) element
-                                        .getAttribute(Attribute.POSITION));
-
+                /* Create a rectangle from the old and new position. */
                 final Vector2f theorPos = (Vector2f) element
                         .getAttribute(Attribute.POSITION);
                 final Vector2f oldPos = theorPos.sub(((Vector2f) element
                         .getAttribute(Attribute.VELOCITY))
                         .scale(1 / (float) delta));
 
+                final Rectangle theorRect = ((AbstractGeometry) element
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
+                        .asRectangle().translate(theorPos);
+                final Rectangle oldRect = ((AbstractGeometry) element
+                        .getAttribute(Attribute.BOUNDING_GEOMETRY))
+                        .asRectangle().translate(oldPos);
+
+                float left = Math.min(oldRect.getLeft(), theorRect.getLeft());
+                float right = Math
+                        .max(oldRect.getRight(), theorRect.getRight());
+                float top = Math.min(oldRect.getTop(), theorRect.getTop());
+                float bottom = Math.max(oldRect.getBottom(),
+                        theorRect.getBottom());
+
                 final List<Entity> targetList = staticMap
-                        .getObjectsFromRectangle(rect);
+                        .getObjectsFromRectangle(new Rectangle(left, top, right
+                                - left, bottom - top));
 
                 if (targetList != null) {
                     for (final Entity target : targetList) {

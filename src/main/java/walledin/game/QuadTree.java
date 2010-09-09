@@ -32,6 +32,12 @@ import walledin.engine.math.Vector2f;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 
+/**
+ * A quadtree for spatial partitioning.
+ * 
+ * @author Ben Ruijl
+ * 
+ */
 public class QuadTree {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(QuadTree.class);
@@ -43,16 +49,44 @@ public class QuadTree {
      */
     public static final int MAX_OBJECTS = 6;
 
+    /**
+     * Children quadtrees. There are either none or four, depending on whether
+     * this quadtree is a leaf or not.
+     */
     private final QuadTree[] children;
+
+    /** Objects in this node or leaf. */
     private final List<Entity> objects;
+
+    /** Bounding rectangle. */
     private final Rectangle rectangle;
+
+    /** Depth in the hierarchy. */
     private final int depth;
+
+    /** Is this quadtree a leaf? */
     private boolean leaf;
 
+    /**
+     * Is this quadtree a leaf? private boolean leaf;
+     * 
+     * /** Creates a new quadtree that begins a new hierarchy.
+     * 
+     * @param rect
+     *            Rectangle of this quadtree
+     */
     public QuadTree(final Rectangle rect) {
         this(rect, 0);
     }
 
+    /**
+     * Creates a new quadtree leaf or node.
+     * 
+     * @param rect
+     *            Rectangle of this quadtree
+     * @param depth
+     *            Position of this quadtree in the hierarchy.
+     */
     private QuadTree(final Rectangle rect, final int depth) {
         children = new QuadTree[4];
         objects = new ArrayList<Entity>();
@@ -61,6 +95,12 @@ public class QuadTree {
         this.depth = depth;
     }
 
+    /**
+     * Adds an object to the object list of the current node or leaf.
+     * 
+     * @param object
+     *            Object to add
+     */
     private void addObject(final Entity object) {
         objects.add(object);
 
@@ -69,10 +109,24 @@ public class QuadTree {
         }
     }
 
+    /**
+     * Removes an object from the object list of the current node or leaf.
+     * 
+     * @param object
+     *            Object to remove
+     */
     private void removeObject(final Entity object) {
         objects.remove(object);
     }
 
+    /**
+     * Checks if the object is fully contained in the rectangle of this node or
+     * leaf.
+     * 
+     * @param object
+     *            Object
+     * @return True if fully contained, else false
+     */
     private boolean containsFully(final Entity object) {
         final Rectangle rect = ((AbstractGeometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
@@ -81,10 +135,36 @@ public class QuadTree {
         return rectangle.containsFully(rect);
     }
 
+    /**
+     * Checks if a rectangle is fully contained in the rectangle of this node or
+     * leaf.
+     * 
+     * @param rect
+     *            Rectangle
+     * @return True if fully contained, else false
+     */
     private boolean containsFully(final Rectangle rect) {
         return rectangle.containsFully(rect);
     }
 
+    /**
+     * Checks if a rectangle is overlapping with the rectangle of this node or
+     * leaf.
+     * 
+     * @param rect
+     *            Rectangle
+     * @return True if it is overlapping, else false
+     */
+    private boolean contains(final Rectangle rect) {
+        return rectangle.intersects(rect);
+    }
+
+    /**
+     * Adds an object to the quadtree if it is fully contained.
+     * 
+     * @param object
+     *            Object to add
+     */
     public void add(final Entity object) {
         final Rectangle rect = ((AbstractGeometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
@@ -100,6 +180,13 @@ public class QuadTree {
         }
     }
 
+    /**
+     * Get the smallest quadtree that <i>fully</i> contains a rectangle.
+     * 
+     * @param rect
+     *            Rectangle to check
+     * @return Smallest quadtree or null if none is found
+     */
     private QuadTree getSmallestQuadTreeContainingRectangle(final Rectangle rect) {
         /* If this is a leaf and it does not contain the object, return null. */
 
@@ -123,6 +210,13 @@ public class QuadTree {
         return null;
     }
 
+    /**
+     * Finds the quadtree node or leaf that contains an object.
+     * 
+     * @param object
+     *            Object
+     * @return Quadtree or null on failure
+     */
     public QuadTree getQuadTreeContainingObject(final Entity object) {
         final Rectangle rect = ((AbstractGeometry) object
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
@@ -151,10 +245,17 @@ public class QuadTree {
         return null;
     }
 
+    /**
+     * Finds all the objects that could possibly be in the given rectangle.
+     * 
+     * @param rect
+     *            Rectangle
+     * @return List of entities
+     */
     public List<Entity> getObjectsFromRectangle(final Rectangle rect) {
         final List<Entity> objectList = new ArrayList<Entity>();
 
-        if (rectangle.containsFully(rect)) {
+        if (contains(rect)) {
             objectList.addAll(getObjects());
         } else {
             return null;
@@ -162,14 +263,11 @@ public class QuadTree {
 
         if (!leaf) {
             for (int i = 0; i < 4; i++) {
-                if (children[i].containsFully(rect)) {
-                    final List<Entity> tree = children[i]
-                            .getObjectsFromRectangle(rect);
+                final List<Entity> tree = children[i]
+                        .getObjectsFromRectangle(rect);
 
-                    if (tree != null) {
-                        objectList.addAll(tree);
-                        return objectList;
-                    }
+                if (tree != null) {
+                    objectList.addAll(tree);
                 }
             }
         }
@@ -177,10 +275,21 @@ public class QuadTree {
         return objectList;
     }
 
+    /**
+     * Returns the objects of the current node or leaf.
+     * 
+     * @return List of objects
+     */
     public List<Entity> getObjects() {
         return objects;
     }
 
+    /**
+     * Recursively removes an object from the quadtree.
+     * 
+     * @param object
+     *            Object to remove
+     */
     public void remove(final Entity object) {
         final QuadTree tree = getQuadTreeContainingObject(object);
 
@@ -190,7 +299,7 @@ public class QuadTree {
     }
 
     /**
-     * Subdivides this leaf into four rectangles.
+     * Subdivides this leaf into four children.
      */
     private void subdivide() {
         if (!leaf || depth + 1 >= MAX_DEPTH) {
