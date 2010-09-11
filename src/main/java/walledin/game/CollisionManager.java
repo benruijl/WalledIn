@@ -257,8 +257,8 @@ public final class CollisionManager {
      *            Check if they collide. Not wanted if the check is already
      *            done.
      */
-    public static void sendCollisionMessage(Entity objectA, Entity objectB,
-            double delta, boolean check) {
+    public static void sendCollisionMessage(final Entity objectA,
+            final Entity objectB, final double delta, final boolean check) {
         /* Gather some information for the collision event. */
         final Vector2f theorPosA = (Vector2f) objectA
                 .getAttribute(Attribute.POSITION);
@@ -353,11 +353,13 @@ public final class CollisionManager {
                         .getAttribute(Attribute.BOUNDING_GEOMETRY))
                         .asRectangle().translate(oldPos);
 
-                float left = Math.min(oldRect.getLeft(), theorRect.getLeft());
-                float right = Math
-                        .max(oldRect.getRight(), theorRect.getRight());
-                float top = Math.min(oldRect.getTop(), theorRect.getTop());
-                float bottom = Math.max(oldRect.getBottom(),
+                final float left = Math.min(oldRect.getLeft(),
+                        theorRect.getLeft());
+                final float right = Math.max(oldRect.getRight(),
+                        theorRect.getRight());
+                final float top = Math
+                        .min(oldRect.getTop(), theorRect.getTop());
+                final float bottom = Math.max(oldRect.getBottom(),
                         theorRect.getBottom());
 
                 final List<Entity> targetList = staticMap

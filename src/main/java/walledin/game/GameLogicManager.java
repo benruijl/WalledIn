@@ -481,14 +481,14 @@ public final class GameLogicManager implements GameStateListener,
         gameModeHandler.update(delta);
 
         /* Get the created entities. By this point their attributes are set. */
-        for (Entity entity : entityManager.getCreated()) {
+        for (final Entity entity : entityManager.getCreated()) {
             /* For now, add just foam particles. */
             if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
                 staticObjectsTree.add(entity);
             }
         }
 
-        for (Entity entity : entityManager.getRemoved()) {
+        for (final Entity entity : entityManager.getRemoved()) {
             /* For now, add just foam particles. */
             if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
                 staticObjectsTree.remove(entity);

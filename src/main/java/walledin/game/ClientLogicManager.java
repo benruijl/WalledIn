@@ -391,7 +391,7 @@ public final class ClientLogicManager implements RenderListener,
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.show();
-        
+
         client.initialize();
     }
 
