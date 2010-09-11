@@ -29,6 +29,7 @@ import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
+import walledin.engine.gui.components.Slider;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -64,6 +65,11 @@ public class MainMenuScreen extends AbstractScreen implements
         quitButton.addMouseEventListener(this);
         addChild(startButton);
         addChild(quitButton);
+        
+//        Slider testSlider = new Slider(this, new Rectangle(0, 0, 90, 30), 1, new Vector2f(20, 20));
+//        testSlider.addValue("testcase");
+//        testSlider.addValue("test2");
+//        addChild(testSlider);
     }
 
     @Override

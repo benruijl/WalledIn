@@ -51,7 +51,7 @@ public class ScreenManager {
     /** Sorted list of screens. It is sorted on z-order. */
     private final SortedSet<AbstractScreen> screens;
     /** Map of shared fonts. */
-    private final Map<String, Font> fonts;
+    private final Map<FontType, Font> fonts;
     /** Shared cursor. */
     private Entity cursor;
     /** Shared renderer. */
@@ -87,7 +87,7 @@ public class ScreenManager {
                 return z1 - z2;
             }
         });
-        fonts = new HashMap<String, Font>();
+        fonts = new HashMap<FontType, Font>();
         this.renderer = renderer;
         drawCursor = true;
     }
@@ -109,7 +109,7 @@ public class ScreenManager {
      * @param font
      *            Font object
      */
-    public final void addFont(final String name, final Font font) {
+    public final void addFont(final FontType name, final Font font) {
         fonts.put(name, font);
     }
 
@@ -120,7 +120,7 @@ public class ScreenManager {
      *            Name of the font
      * @return Font object if in list, else null.
      */
-    public final Font getFont(final String name) {
+    public final Font getFont(final FontType name) {
         return fonts.get(name);
     }
 

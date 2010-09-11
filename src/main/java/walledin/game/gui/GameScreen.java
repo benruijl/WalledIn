@@ -28,6 +28,7 @@ import walledin.engine.Font;
 import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenKeyEvent;
 import walledin.engine.gui.ScreenKeyEventListener;
 import walledin.engine.gui.ScreenManager;
@@ -60,7 +61,7 @@ public class GameScreen extends AbstractScreen implements
         entityManager.draw(renderer); // draw all entities in correct order
 
         renderer.startHUDRendering();
-        final Font font = getManager().getFont("arial20");
+        final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
         final Entity player = entityManager.get(clientLogicManager
                 .getPlayerName());
 

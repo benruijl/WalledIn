@@ -28,6 +28,7 @@ import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
@@ -92,7 +93,7 @@ public class ServerList extends AbstractScreen implements
 
     @Override
     public void draw(final Renderer renderer) {
-        final Font font = getManager().getFont("arial20");
+        final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
         font.renderText(renderer, "Server Name", new Vector2f(10, 40));
 
         renderer.drawRectOutline(getRectangle());

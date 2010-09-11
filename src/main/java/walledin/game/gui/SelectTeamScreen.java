@@ -28,6 +28,7 @@ import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
@@ -78,7 +79,7 @@ public class SelectTeamScreen extends AbstractScreen implements
         super.draw(renderer);
 
         renderer.drawRect("logo", new Rectangle(250, 50, 256, 128));
-        final Font font = getManager().getFont("arial20");
+        final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
 
         /* Output the player names under the correct team */
         int redCount = 0;

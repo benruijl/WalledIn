@@ -31,7 +31,7 @@ public class PopupDialog extends AbstractScreen implements
     private final Button okButton;
 
     public PopupDialog(final ScreenManager manager, final String text) {
-        super(manager, new Rectangle(-10, -20, manager.getFont("arial20")
+        super(manager, new Rectangle(-10, -20, manager.getFont(FontType.BUTTON_CAPTION)
                 .getTextWidth(text) + 20, 70), 4);
         setPosition(new Vector2f(300, 250));
         this.text = text;
@@ -39,7 +39,7 @@ public class PopupDialog extends AbstractScreen implements
         okButton = new Button(this, "OK", new Vector2f(getRectangle()
                 .getWidth()
                 / 2.0f
-                - manager.getFont("arial20").getTextWidth("OK") / 2.0f,
+                - manager.getFont(FontType.BUTTON_CAPTION).getTextWidth("OK") / 2.0f,
                 +getRectangle().getHeight() - 25));
         okButton.addMouseEventListener(this);
         addChild(okButton);
@@ -52,7 +52,7 @@ public class PopupDialog extends AbstractScreen implements
         renderer.drawFilledRect(getRectangle());
         renderer.setColorRGB(1.0f, 1.0f, 1.0f);
 
-        getManager().getFont("arial20").renderText(renderer, text,
+        getManager().getFont(FontType.BUTTON_CAPTION).renderText(renderer, text,
                 new Vector2f(0, 0));
 
         super.draw(renderer);

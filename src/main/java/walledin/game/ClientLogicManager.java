@@ -35,6 +35,7 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.audio.Audio;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
@@ -159,7 +160,7 @@ public final class ClientLogicManager implements RenderListener,
 
         /* Show FPS for debugging */
         renderer.startHUDRendering();
-        final Font font = screenManager.getFont("arial20");
+        final Font font = screenManager.getFont(FontType.BUTTON_CAPTION);
         font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
                 630, 20));
         renderer.stopHUDRendering();
@@ -331,7 +332,8 @@ public final class ClientLogicManager implements RenderListener,
         final String fontName = SettingsManager.getInstance().getString(
                 "game.font");
         font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
-        screenManager.addFont(fontName, font);
+        screenManager.addFont(FontType.BUTTON_CAPTION, font);
+        screenManager.addFont(FontType.MENU_MAIN, font);
 
         final AbstractScreen serverListScreen = new ServerListScreen(
                 screenManager, this);
