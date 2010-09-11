@@ -379,8 +379,6 @@ public final class CollisionManager {
                         }
                     }
                 }
-
-                break;
             }
         }
     }
