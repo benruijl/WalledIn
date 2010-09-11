@@ -73,6 +73,8 @@ public class Renderer implements GLEventListener {
     private long lastUpdate;
     private Texture lastTexture;
 
+    private boolean bulkDraw = false;
+
     /* HUD settings */
     private final int hudWidth = 800; // FIXME: adjust to aspect ratio
     private final int hudHeight = 600;
@@ -263,7 +265,7 @@ public class Renderer implements GLEventListener {
      */
     public final void beginLoop() {
         // setup the animator
-        anim = new FPSAnimator(mCanvas, 60);
+        anim = new Animator(mCanvas);//, 60);
         anim.start();
 
     }
@@ -336,6 +338,23 @@ public class Renderer implements GLEventListener {
     }
 
     /**
+     * Starts a bulk draw mode in which only texture coordinates, color changes
+     * and vertices can be sent to the graphics card.
+     */
+    public void startBulkDraw() {
+        gl.glBegin(GL.GL_QUADS);
+        bulkDraw = true;
+    }
+
+    /**
+     * Stops the bulk draw mode.
+     */
+    public void stopBulkDraw() {
+        gl.glEnd();
+        bulkDraw = false;
+    }
+
+    /**
      * Draws a textured rectangle to the screen. The full texture is used, and
      * the dimensions are kept.
      * 
@@ -357,10 +376,12 @@ public class Renderer implements GLEventListener {
      *            Destination rectangle
      */
     public final void drawRect(final String strTex, final Rectangle destRect) {
-        final Texture texture = TextureManager.getInstance().get(strTex);
-        bindTexture(texture);
-
-        gl.glBegin(GL.GL_QUADS);
+        if (!bulkDraw) {
+            final Texture texture = TextureManager.getInstance().get(strTex);
+            bindTexture(texture);
+            gl.glBegin(GL.GL_QUADS);
+        }
+        
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex2f(destRect.getLeft(), destRect.getTop());
         gl.glTexCoord2f(0.0f, 1.0f);
@@ -369,7 +390,10 @@ public class Renderer implements GLEventListener {
         gl.glVertex2f(destRect.getRight(), destRect.getBottom());
         gl.glTexCoord2f(1.0f, 0.0f);
         gl.glVertex2f(destRect.getRight(), destRect.getTop());
-        gl.glEnd();
+
+        if (!bulkDraw) {
+            gl.glEnd();
+        }
     }
 
     /**
@@ -378,7 +402,7 @@ public class Renderer implements GLEventListener {
      * @param texture
      *            Texture to bind
      */
-    private void bindTexture(final Texture texture) {
+    public void bindTexture(final Texture texture) {
         if (texture != lastTexture) {
             texture.bind();
             lastTexture = texture;
@@ -439,9 +463,12 @@ public class Renderer implements GLEventListener {
      */
     public final void drawRect(final Texture texture, final Rectangle texRect,
             final Rectangle destRect) {
-        bindTexture(texture);
+        
+        if (!bulkDraw) {
+            bindTexture(texture);
+            gl.glBegin(GL.GL_QUADS);
+        }
 
-        gl.glBegin(GL.GL_QUADS);
         gl.glTexCoord2f(texRect.getLeft(), texRect.getTop());
         gl.glVertex2f(destRect.getLeft(), destRect.getTop());
         gl.glTexCoord2f(texRect.getLeft(), texRect.getBottom());
@@ -450,7 +477,10 @@ public class Renderer implements GLEventListener {
         gl.glVertex2f(destRect.getRight(), destRect.getBottom());
         gl.glTexCoord2f(texRect.getRight(), texRect.getTop());
         gl.glVertex2f(destRect.getRight(), destRect.getTop());
-        gl.glEnd();
+
+        if (!bulkDraw) {
+            gl.glEnd();
+        }
     }
 
     /**
