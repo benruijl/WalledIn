@@ -32,8 +32,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.input.Input;
 import walledin.game.ClientLogicManager;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerClientInfo;

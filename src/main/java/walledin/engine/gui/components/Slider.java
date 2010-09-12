@@ -3,12 +3,12 @@ package walledin.engine.gui.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
+import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
@@ -60,12 +60,18 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
 
     @Override
     public void initialize() {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onMouseDown(ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseHover(ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseClicked(ScreenMouseEvent e) {
         if (new Rectangle(0, 0, 5, height).translate(getAbsolutePosition())
                 .containsPoint(e.getPos()) && currentIndex > 0) {
             currentIndex--;
@@ -76,14 +82,6 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
                 && currentIndex < sliderValues.size() - 1) {
             currentIndex++;
         }
-        
-        Input.getInstance().setButtonUp(1); // FIXME
-    }
-
-    @Override
-    public void onMouseHover(ScreenMouseEvent e) {
-        // TODO Auto-generated method stub
-
     }
 
 }

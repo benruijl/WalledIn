@@ -22,14 +22,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package walledin.engine;
+package walledin.engine.input;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -37,8 +39,9 @@ import org.apache.log4j.Logger;
 import walledin.engine.math.Vector2i;
 
 /**
+ * A low-level input manager.
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public final class Input implements KeyListener, MouseListener,
         MouseMotionListener {
@@ -47,11 +50,13 @@ public final class Input implements KeyListener, MouseListener,
     private final Set<Integer> keysDown;
     private final Set<Integer> buttonsDown;
     private Vector2i mousePos;
+    private List<MouseEventListener> listeners;
 
     private Input() {
         keysDown = new HashSet<Integer>();
         buttonsDown = new HashSet<Integer>();
         mousePos = new Vector2i();
+        listeners = new ArrayList<MouseEventListener>();
     }
 
     @Override
@@ -65,6 +70,10 @@ public final class Input implements KeyListener, MouseListener,
         }
 
         return ref;
+    }
+
+    public void addListener(MouseEventListener listener) {
+        listeners.add(listener);
     }
 
     @Override
@@ -85,6 +94,7 @@ public final class Input implements KeyListener, MouseListener,
      * Set the key to the up state.
      * 
      * @param key
+     *            Key
      */
     public void setKeyUp(final int key) {
         keysDown.remove(key);
@@ -137,8 +147,12 @@ public final class Input implements KeyListener, MouseListener,
 
     @Override
     public void mouseClicked(final MouseEvent e) {
-        // TODO Auto-generated method stub
+        mousePos = new Vector2i(e.getX(), e.getY());
 
+        for (MouseEventListener listener : listeners) {
+            listener.onMouseClicked(new walledin.engine.input.MouseEvent(
+                    mousePos));
+        }
     }
 
     @Override
@@ -148,8 +162,6 @@ public final class Input implements KeyListener, MouseListener,
 
     @Override
     public void mouseExited(final MouseEvent e) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -160,15 +172,6 @@ public final class Input implements KeyListener, MouseListener,
     @Override
     public void mouseReleased(final MouseEvent e) {
         buttonsDown.remove(e.getButton());
-    }
-
-    /**
-     * Set the mouse state to up.
-     * 
-     * FIXME: create a check if mouse clicked instead of this
-     */
-    public void setButtonUp(final int button) {
-        buttonsDown.remove(button);
     }
 
 }

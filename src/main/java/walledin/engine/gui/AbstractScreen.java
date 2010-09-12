@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
@@ -133,12 +133,15 @@ public abstract class AbstractScreen {
     public abstract void initialize();
 
     /**
-     * Finds the smallest screen containing the mouse cursor.
+     * Finds the smallest screen containing a certain position.
+     * 
+     * @param pos
+     *            Position to check
      * 
      * @return Returns a Screen on success and null on failure.
      */
-    public final AbstractScreen getSmallestScreenContainingCursor() {
-        if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
+    public final AbstractScreen getSmallestScreenContainingPoint(Vector2f pos) {
+        if (pointInScreen(pos)) {
             for (final AbstractScreen screen : children) {
                 if (screen.isVisible()) {
                     final AbstractScreen b = screen
@@ -154,6 +157,16 @@ public abstract class AbstractScreen {
         }
 
         return null;
+    }
+
+    /**
+     * Finds the smallest screen containing the mouse cursor.
+     * 
+     * @return Returns a Screen on success and null on failure.
+     */
+    public final AbstractScreen getSmallestScreenContainingCursor() {
+        return getSmallestScreenContainingPoint(Input.getInstance()
+                .getMousePos().asVector2f());
     }
 
     /**
@@ -458,6 +471,19 @@ public abstract class AbstractScreen {
     public final void sendMouseDownMessage(final ScreenMouseEvent e) {
         for (final ScreenMouseEventListener listener : mouseListeners) {
             listener.onMouseDown(e);
+        }
+    }
+
+    /**
+     * Send the mouse clicked message when a button is clicked and the mouse
+     * hovers over this screen.
+     * 
+     * @param e
+     *            Event message
+     */
+    public final void sendMouseClickedMessage(final ScreenMouseEvent e) {
+        for (final ScreenMouseEventListener listener : mouseListeners) {
+            listener.onMouseClicked(e);
         }
     }
 

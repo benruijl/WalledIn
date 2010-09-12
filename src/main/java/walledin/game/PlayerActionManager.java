@@ -29,7 +29,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import walledin.engine.Input;
+import walledin.engine.input.Input;
 import walledin.util.SettingsManager;
 
 final public class PlayerActionManager {

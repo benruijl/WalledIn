@@ -76,4 +76,10 @@ public class PopupDialog extends AbstractScreen implements
 
     }
 
+    @Override
+    public void onMouseClicked(ScreenMouseEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

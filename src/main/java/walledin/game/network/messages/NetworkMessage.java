@@ -42,7 +42,7 @@ public interface NetworkMessage {
      * @param buffer
      *            The buffer the message is read from
      * @param address
-     *            The address the message was recieved from.
+     *            The address the message was received from.
      */
     void read(ByteBuffer buffer, SocketAddress address);
 
@@ -51,7 +51,7 @@ public interface NetworkMessage {
      * 
      * @param listener
      * @param address
-     *            The address the message was recieved from
+     *            The address the message was received from
      */
     void fireEvent(NetworkEventListener listener, SocketAddress address);
 

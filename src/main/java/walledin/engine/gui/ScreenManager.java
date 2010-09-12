@@ -31,13 +31,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.input.Input;
+import walledin.engine.input.MouseEvent;
+import walledin.engine.input.MouseEventListener;
+import walledin.engine.math.Vector2i;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class ScreenManager {
+public class ScreenManager implements MouseEventListener {
     /** Logger */
     private static final Logger LOG = Logger.getLogger(ScreenManager.class);
 
@@ -60,6 +63,10 @@ public class ScreenManager {
     private boolean drawCursor;
     /** Focused screen. Only one screen can be focused. */
     private AbstractScreen focusedScreen;
+    /** Is the mouse clicked? */
+    private boolean mouseClicked;
+    /** Click position. */
+    private Vector2i clickedPosition;
 
     /**
      * Creates a screen manager.
@@ -90,6 +97,10 @@ public class ScreenManager {
         fonts = new HashMap<FontType, Font>();
         this.renderer = renderer;
         drawCursor = true;
+
+        /* Set up the mouse listener. */
+        mouseClicked = false;
+        Input.getInstance().addListener(this);
     }
 
     /**
@@ -184,6 +195,13 @@ public class ScreenManager {
         return typedScreens.get(type);
     }
 
+    @Override
+    public void onMouseClicked(MouseEvent event) {
+        /* Sets the flag. */
+        mouseClicked = true;
+        clickedPosition = event.getPosition();
+    }
+
     /**
      * Updates every screen, the cursor position and the entity manager. It also
      * send the correct events to the screens. Rule: update first, then send
@@ -197,7 +215,6 @@ public class ScreenManager {
         if (cursor != null) {
             cursor.setAttribute(Attribute.POSITION, Input.getInstance()
                     .getMousePos().asVector2f());
-            // renderer.screenToWorld(Input.getInstance().getMousePos()));
         }
 
         final Set<Integer> keysDown = Input.getInstance().getKeysDown();
@@ -214,6 +231,24 @@ public class ScreenManager {
             }
         }
 
+        if (getFocusedScreen() == null && mouseClicked) {
+
+            for (final AbstractScreen screen : screenList) {
+                if (screen.isVisible()) {
+                    AbstractScreen targetScreen = screen
+                            .getSmallestScreenContainingPoint(clickedPosition
+                                    .asVector2f());
+                    if (targetScreen != null) {
+                        targetScreen
+                                .sendMouseClickedMessage(new ScreenMouseEvent(
+                                        targetScreen, clickedPosition.asVector2f()));
+                    }
+                }
+            }
+
+            mouseClicked = false;
+        }
+
         if (getFocusedScreen() != null) {
             /* If there is a focused window, send the keys to that window. */
             if (keysDown.size() > 0) {
@@ -226,6 +261,22 @@ public class ScreenManager {
          * Do the check again, because the key event response could change the
          * focused screen.
          */
+        if (getFocusedScreen() != null) {
+            if (mouseClicked) {
+                /* Find click screen. */
+                final AbstractScreen screen = getFocusedScreen()
+                        .getSmallestScreenContainingPoint(
+                                clickedPosition.asVector2f());
+
+                if (screen != null) {
+                    screen.sendMouseClickedMessage(new ScreenMouseEvent(screen,
+                            clickedPosition.asVector2f()));
+                }
+
+                mouseClicked = false;
+            }
+        }
+
         if (getFocusedScreen() != null) {
             final AbstractScreen screen = getFocusedScreen()
                     .getSmallestScreenContainingCursor();

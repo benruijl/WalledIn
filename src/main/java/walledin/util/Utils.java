@@ -138,7 +138,7 @@ public final class Utils {
      * 
      * @param address
      *            The address
-     * @return The string that represends the address
+     * @return The string that represents the address
      */
     public static String getAddressRepresentation(final SocketAddress address) {
         final InetSocketAddress inetAddr = (InetSocketAddress) address;

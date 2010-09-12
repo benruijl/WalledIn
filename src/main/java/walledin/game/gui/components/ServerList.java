@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenManager.ScreenType;
@@ -32,6 +31,7 @@ import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
+import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -102,13 +102,26 @@ public class ServerList extends AbstractScreen implements
 
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseHover(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void initialize() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void onMouseClicked(ScreenMouseEvent e) {
         /* If clicked on refresh button, get server list */
         if (e.getScreen() == refreshButton) {
             getManager().createDialog("Refreshing server list.");
 
             // request a refresh
             clientLogicManager.getClient().refreshServerList();
-            Input.getInstance().setButtonUp(1); // FIXME
         }
 
         /* If clicked on server, load the game */
@@ -134,21 +147,8 @@ public class ServerList extends AbstractScreen implements
 
                     getParent().hide();
                 }
-
-                Input.getInstance().setButtonUp(1); // FIXME
             }
         }
-
-    }
-
-    @Override
-    public void onMouseHover(final ScreenMouseEvent e) {
-    }
-
-    @Override
-    public void initialize() {
-        // TODO Auto-generated method stub
-
     }
 
 }

@@ -40,6 +40,7 @@ import javax.media.opengl.GLEventListener;
 
 import org.apache.log4j.Logger;
 
+import walledin.engine.input.Input;
 import walledin.engine.math.Matrix2f;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;

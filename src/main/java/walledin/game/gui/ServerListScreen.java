@@ -24,13 +24,13 @@ import java.awt.event.KeyEvent;
 
 import org.apache.log4j.Logger;
 
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenKeyEvent;
 import walledin.engine.gui.ScreenKeyEventListener;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -89,7 +89,6 @@ public class ServerListScreen extends AbstractScreen implements
             if (clientLogicManager.getClient().isConnected()) {
                 getManager().getScreen(ScreenType.GAME).show();
                 hide();
-                Input.getInstance().setButtonUp(1); // FIXME
             } else {
                 getManager().getScreen(ScreenType.MAIN_MENU).show();
             }

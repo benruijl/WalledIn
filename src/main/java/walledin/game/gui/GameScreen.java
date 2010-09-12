@@ -25,7 +25,6 @@ import java.awt.event.KeyEvent;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.FontType;
@@ -33,6 +32,7 @@ import walledin.engine.gui.ScreenKeyEvent;
 import walledin.engine.gui.ScreenKeyEventListener;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.input.Input;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.game.EntityManager;

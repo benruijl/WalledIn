@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.gui.AbstractScreen;
@@ -34,6 +33,7 @@ import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
+import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -124,6 +124,22 @@ public class SelectTeamScreen extends AbstractScreen implements
 
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void update(final double delta) {
+        clientLogicManager.getClient().refreshPlayerList();
+        players = clientLogicManager.getClient().getPlayerList();
+
+        super.update(delta);
+    }
+
+    @Override
+    public void onMouseHover(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseClicked(ScreenMouseEvent e) {
         if (e.getScreen() == teamBlue) {
             clientLogicManager.getClient().selectTeam(Team.BLUE);
             getManager().getScreen(ScreenType.GAME).initialize();
@@ -140,20 +156,7 @@ public class SelectTeamScreen extends AbstractScreen implements
         if (e.getScreen() == back) {
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
-            Input.getInstance().setButtonUp(1); // FIXME
         }
-    }
-
-    @Override
-    public void update(final double delta) {
-        clientLogicManager.getClient().refreshPlayerList();
-        players = clientLogicManager.getClient().getPlayerList();
-
-        super.update(delta);
-    }
-
-    @Override
-    public void onMouseHover(final ScreenMouseEvent e) {
     }
 
 }
