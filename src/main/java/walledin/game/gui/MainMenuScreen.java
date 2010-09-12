@@ -65,11 +65,6 @@ public class MainMenuScreen extends AbstractScreen implements
         quitButton.addMouseEventListener(this);
         addChild(startButton);
         addChild(quitButton);
-        
-//        Slider testSlider = new Slider(this, new Rectangle(0, 0, 90, 30), 1, new Vector2f(20, 20));
-//        testSlider.addValue("testcase");
-//        testSlider.addValue("test2");
-//        addChild(testSlider);
     }
 
     @Override

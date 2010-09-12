@@ -3,6 +3,7 @@ package walledin.engine.gui.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.FontType;
@@ -43,10 +44,10 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
         renderer.drawFilledRect(new Rectangle(0, 0, 5, height));
         renderer.drawFilledRect(new Rectangle(width, 0, 5, height));
 
-        if (currentIndex >= 0) {
+        if (sliderValues.size() > 1) {
             renderer.setColorRGB(1, 0, 0);
-            renderer.drawFilledRect(new Rectangle((float)currentIndex / width, 0, 8,
-                    height));
+            renderer.drawFilledRect(new Rectangle(currentIndex
+                    / (float) (sliderValues.size() - 1) * width, 0, 8, height));
             renderer.setColorRGB(1, 1, 1);
 
             getManager().getFont(FontType.BUTTON_CAPTION).renderText(renderer,
@@ -65,16 +66,18 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
 
     @Override
     public void onMouseDown(ScreenMouseEvent e) {
-        if (new Rectangle(0, 0, 5, height).containsPoint(e.getPos())
-                && currentIndex > 0) {
+        if (new Rectangle(0, 0, 5, height).translate(getAbsolutePosition())
+                .containsPoint(e.getPos()) && currentIndex > 0) {
             currentIndex--;
         }
 
-        if (new Rectangle(width, 0, 5, height).containsPoint(e.getPos())
+        if (new Rectangle(width, 0, 5, height).translate(getAbsolutePosition())
+                .containsPoint(e.getPos())
                 && currentIndex < sliderValues.size() - 1) {
             currentIndex++;
         }
-
+        
+        Input.getInstance().setButtonUp(1); // FIXME
     }
 
     @Override
