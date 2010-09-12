@@ -28,8 +28,6 @@ import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
-import walledin.engine.gui.components.Slider;
-import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -85,7 +83,7 @@ public class MainMenuScreen extends AbstractScreen implements
     }
 
     @Override
-    public void onMouseClicked(ScreenMouseEvent e) {
+    public void onMouseClicked(final ScreenMouseEvent e) {
         if (e.getScreen() == startButton) {
             getManager().getScreen(ScreenType.SERVER_LIST).initialize();
             getManager().getScreen(ScreenType.SERVER_LIST).show();

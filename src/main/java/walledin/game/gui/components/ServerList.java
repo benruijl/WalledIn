@@ -26,12 +26,11 @@ import java.util.List;
 import walledin.engine.Font;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
-import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.FontType;
+import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
-import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -115,7 +114,7 @@ public class ServerList extends AbstractScreen implements
     }
 
     @Override
-    public void onMouseClicked(ScreenMouseEvent e) {
+    public void onMouseClicked(final ScreenMouseEvent e) {
         /* If clicked on refresh button, get server list */
         if (e.getScreen() == refreshButton) {
             getManager().createDialog("Refreshing server list.");

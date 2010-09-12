@@ -382,7 +382,7 @@ public class Renderer implements GLEventListener {
             bindTexture(texture);
             gl.glBegin(GL.GL_QUADS);
         }
-        
+
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex2f(destRect.getLeft(), destRect.getTop());
         gl.glTexCoord2f(0.0f, 1.0f);
@@ -464,7 +464,7 @@ public class Renderer implements GLEventListener {
      */
     public final void drawRect(final Texture texture, final Rectangle texRect,
             final Rectangle destRect) {
-        
+
         if (!bulkDraw) {
             bindTexture(texture);
             gl.glBegin(GL.GL_QUADS);
