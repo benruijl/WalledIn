@@ -92,9 +92,9 @@ public class GameScreen extends AbstractScreen implements
 
         /*
          * If no other screen has the focus and this window is visible, take the
-         * focus.
+         * focus. This will enable the server to read the controls.
          */
-        if (getManager().getFocusedScreen() == null) {
+        if (getManager().isRootFocused()) {
             getManager().setFocusedScreen(this);
         }
     }

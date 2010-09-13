@@ -344,11 +344,6 @@ public abstract class AbstractScreen {
      */
     public final void show() {
         state = ScreenState.Visible;
-
-        if (getManager().getFocusedScreen() == null) {
-            getManager().setFocusedScreen(this);
-        }
-
         onVisibilityChanged(true);
     }
 
@@ -549,7 +544,7 @@ public abstract class AbstractScreen {
 
     /**
      * Sends the key down message when a key is pressed and this screen has the
-     * focus.
+     * focus. The message will be sent to the children as well.
      * 
      * @param e
      *            Event message
@@ -558,6 +553,21 @@ public abstract class AbstractScreen {
         for (final ScreenKeyEventListener listener : keyListeners) {
             listener.onKeyDown(e);
         }
+
+        for (AbstractScreen screen : children) {
+            if (screen.isVisible()) {
+                screen.sendKeyDownMessage(e);
+            }
+        }
+    }
+
+    /**
+     * Checks if this screen has the focus.
+     * 
+     * @return True if it has the focus, else false.
+     */
+    private final boolean hasFocus() {
+        return getManager().getFocusedScreen() == this;
     }
 
     /**
