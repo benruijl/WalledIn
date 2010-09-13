@@ -298,15 +298,13 @@ public class EntityManager {
         return currentVersion;
     }
 
-    public void applyChangeSet(final ChangeSet changeSet) {
-        final Set<Entity> removed = new HashSet<Entity>();
-        final Set<Entity> created = new HashSet<Entity>();
-        for (final String name : changeSet.getRemoved()) {
-            removed.add(remove(name));
+    public void applyChangeSet(final ChangeSet changeSet, final int version) {
+        for (final String name : changeSet.getRemovedFromVersion(version)) {
+            remove(name);
         }
-        for (final Entry<String, Family> entry : changeSet.getCreated()
-                .entrySet()) {
-            created.add(create(entry.getValue(), entry.getKey()));
+        for (final Entry<String, Family> entry : changeSet
+                .getCreatedFromVersion(version).entrySet()) {
+            create(entry.getValue(), entry.getKey());
         }
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {

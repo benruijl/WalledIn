@@ -272,17 +272,19 @@ public class Server implements NetworkEventListener {
         final int currentVersion = gameLogicManager.getEntityManager()
                 .getCurrentVersion();
         for (final PlayerConnection connection : players.values()) {
-            int sendVersion = connection.getReceivedVersion();
+            // Get the version that the client has already received
+            int connectionRecievedVersion = connection.getReceivedVersion();
             if (connection.isNew()) {
                 // Set to first version
-                sendVersion = 0;
+                connectionRecievedVersion = 0;
             }
 
-            final ChangeSet changeSet = changeSetLookup.get(sendVersion);
+            final ChangeSet changeSet = changeSetLookup
+                    .get(connectionRecievedVersion);
 
             if (changeSet == null) {
                 LOG.error("Could not find changeset with version "
-                        + sendVersion);
+                        + connectionRecievedVersion);
                 continue;
             }
 
