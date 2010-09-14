@@ -30,7 +30,7 @@ import walledin.util.SettingsManager;
 public final class PlayerInfo extends PlayerClientInfo {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(PlayerInfo.class);
-    private final static float RESPAWN_TIME = SettingsManager.getInstance()
+    private static final float RESPAWN_TIME = SettingsManager.getInstance()
             .getFloat("game.respawnTime");
     private final Entity player;
     private float currentRespawnTime;

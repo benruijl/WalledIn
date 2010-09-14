@@ -33,7 +33,7 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class PlayerWeaponInventoryBehavior extends AbstractBehavior {
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(PlayerWeaponInventoryBehavior.class);
     private final Map<Family, Entity> weapons;
     private final Map<Integer, Family> weaponKeyMap;
