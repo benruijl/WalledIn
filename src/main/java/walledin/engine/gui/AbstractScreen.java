@@ -554,7 +554,7 @@ public abstract class AbstractScreen {
             listener.onKeyDown(e);
         }
 
-        for (AbstractScreen screen : children) {
+        for (final AbstractScreen screen : children) {
             if (screen.isVisible()) {
                 screen.sendKeyDownMessage(e);
             }

@@ -320,9 +320,10 @@ public class ScreenManager implements MouseEventListener {
             focusedScreen = root;
         }
     }
-    
+
     /**
      * Checks if the root is the focused window.
+     * 
      * @return True if root has the focus, else false
      */
     public final boolean isRootFocused() {

@@ -28,6 +28,7 @@ import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
+import walledin.engine.gui.components.ListView;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -63,18 +64,6 @@ public class MainMenuScreen extends AbstractScreen implements
         quitButton.addMouseEventListener(this);
         addChild(startButton);
         addChild(quitButton);
-
-        /* Testing listview. */
-        String columns[] = { "Name", "Players" };
-        float width[] = { 100, 30 };
-        String entry[] = { "TestServer", "3/6" };
-        walledin.engine.gui.components.ListView listView = new walledin.engine.gui.components.ListView(
-                this, new Rectangle(0, 0, 500, 400), 1, columns.length,
-                columns, width);
-
-        listView.addData(entry);
-        addChild(listView);
-        listView.show();
     }
 
     @Override
