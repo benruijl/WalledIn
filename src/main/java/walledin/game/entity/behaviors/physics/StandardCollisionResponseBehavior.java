@@ -32,6 +32,7 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class StandardCollisionResponseBehavior extends AbstractBehavior {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger
             .getLogger(StandardCollisionResponseBehavior.class);
 

@@ -201,6 +201,7 @@ public final class GameLogicManager implements GameStateListener,
      *            Player
      */
     public void spawnPlayer(final Entity player) {
+        @SuppressWarnings("unchecked")
         final List<SpawnPoint> points = (List<SpawnPoint>) map
                 .getAttribute(Attribute.SPAWN_POINTS);
 
@@ -336,6 +337,7 @@ public final class GameLogicManager implements GameStateListener,
 
         staticField = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
                 * tileWidth / playerSize)];
+        @SuppressWarnings("unchecked")
         final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
         /*

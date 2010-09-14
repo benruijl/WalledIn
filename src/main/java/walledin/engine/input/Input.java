@@ -45,6 +45,7 @@ import walledin.engine.math.Vector2i;
  */
 public final class Input implements KeyListener, MouseListener,
         MouseMotionListener {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(Input.class);
     private static Input ref = null;
     private final Set<Integer> keysDown;

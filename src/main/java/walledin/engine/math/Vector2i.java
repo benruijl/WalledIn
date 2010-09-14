@@ -27,7 +27,7 @@ package walledin.engine.math;
 
 /**
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public class Vector2i {
     private final int x;

@@ -37,6 +37,7 @@ import walledin.game.entity.MessageType;
  * 
  */
 public class StickyFoamBulletBehavior extends BulletBehavior {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger
             .getLogger(StickyFoamBulletBehavior.class);
     private boolean blownUp;

@@ -41,6 +41,7 @@ import walledin.game.entity.Entity;
 
 public class GameScreen extends AbstractScreen implements
         ScreenKeyEventListener {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(GameScreen.class);
     private final ClientLogicManager clientLogicManager;
 

@@ -158,6 +158,7 @@ public final class CollisionManager {
         final float tileSize = (Float) map.getAttribute(Attribute.TILE_WIDTH);
         final int width = (Integer) map.getAttribute(Attribute.WIDTH);
         final int height = (Integer) map.getAttribute(Attribute.HEIGHT);
+        @SuppressWarnings("unchecked")
         final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
         final int x = (int) (pos.getX() / tileSize);
         final int y = (int) (pos.getY() / tileSize);

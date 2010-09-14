@@ -29,6 +29,7 @@ import walledin.game.CollisionManager.GeometricalCollisionData;
 
 public class Polygon2f {
     /** Logger. */
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(Polygon2f.class);
 
     private List<Line2f> edges;

@@ -71,7 +71,7 @@ public class XMLReader {
      *            Tag name
      * @return List of sub-elements with name tag or null on failure
      */
-    static public List<Element> getElements(final Element el, final String tag) {
+    public static List<Element> getElements(final Element el, final String tag) {
         final NodeList nl = el.getElementsByTagName(tag);
         if (nl == null) {
             return null;
@@ -96,7 +96,7 @@ public class XMLReader {
      *            Tag name
      * @return Text of the value of tag node, or null on failure
      */
-    static public String getTextValue(final Element el, final String tag) {
+    public static String getTextValue(final Element el, final String tag) {
         String textVal = null;
         final NodeList nl = el.getElementsByTagName(tag);
 
@@ -117,7 +117,7 @@ public class XMLReader {
      *            Tag name
      * @return Integer value in tag, or null on failure
      */
-    static public Integer getIntValue(final Element el, final String tag) {
+    public static Integer getIntValue(final Element el, final String tag) {
         try {
             return Integer.parseInt(getTextValue(el, tag));
         } catch (final NumberFormatException nu) {
@@ -138,7 +138,7 @@ public class XMLReader {
      *            Tag name
      * @return Floating value in tag, or null on failure
      */
-    static public Float getFloatValue(final Element el, final String tag) {
+    public static Float getFloatValue(final Element el, final String tag) {
         try {
             return Float.parseFloat(getTextValue(el, tag));
         } catch (final NumberFormatException nu) {
@@ -150,7 +150,7 @@ public class XMLReader {
         return null;
     }
 
-    static public Element getFirstElement(final Element element,
+    public static Element getFirstElement(final Element element,
             final String tag) {
         final List<Element> elementList = getElements(element, tag);
 
