@@ -318,6 +318,9 @@ public class Server implements NetworkEventListener {
         for (int i = 0; i < storedChangesets; i++) {
             final ChangeSet changeSet = gameLogicManager.getEntityManager()
                     .createChangeSet();
+            for (final ChangeSet oldChangeSet : changeSetLookup.values()) {
+                oldChangeSet.merge(changeSet);
+            }
             changeSets.add(changeSet);
             changeSetLookup.put(changeSet.getVersion(), changeSet);
         }

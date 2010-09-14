@@ -27,8 +27,10 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,21 +114,33 @@ public class NetworkMessageReader {
 
     public static ChangeSet readChangeSet(final ByteBuffer buffer) {
         final int version = buffer.getInt();
-        final int numRemoved = buffer.getInt();
-        final int numCreated = buffer.getInt();
+        final int numRemovedVersions = buffer.getInt();
+        final int numCreatedVersions = buffer.getInt();
         final int numUpdated = buffer.getInt();
-        final Set<String> removed = new HashSet<String>(numRemoved);
-        final Map<String, Family> created = new HashMap<String, Family>(
-                numCreated);
+        final List<Set<String>> removed = new ArrayList<Set<String>>(
+                numRemovedVersions);
+        final List<Map<String, Family>> created = new ArrayList<Map<String, Family>>(
+                numCreatedVersions);
         final Map<String, Map<Attribute, Object>> updated = new HashMap<String, Map<Attribute, Object>>(
                 numUpdated);
-        for (int i = 0; i < numRemoved; i++) {
-            removed.add(readStringData(buffer));
+
+        for (int i = 0; i < numRemovedVersions; i++) {
+            final int numRemoved = buffer.getInt();
+            Set<String> temp = new HashSet<String>();
+            for (int j = 0; j < numRemoved; j++) {
+                temp.add(readStringData(buffer));
+            }
+            removed.add(temp);
         }
-        for (int i = 0; i < numCreated; i++) {
-            final String name = readStringData(buffer);
-            final Family family = readFamilyData(buffer);
-            created.put(name, family);
+        for (int i = 0; i < numCreatedVersions; i++) {
+            final int numCreated = buffer.getInt();
+            Map<String, Family> temp = new HashMap<String, Family>();
+            for (int j = 0; j < numCreated; j++) {
+                final String name = readStringData(buffer);
+                final Family family = readFamilyData(buffer);
+                temp.put(name, family);
+            }
+            created.add(temp);
         }
         for (int i = 0; i < numUpdated; i++) {
             final String name = readStringData(buffer);

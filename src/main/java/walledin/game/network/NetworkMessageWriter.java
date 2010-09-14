@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -95,15 +96,20 @@ public class NetworkMessageWriter {
         buffer.putInt(changeSet.getRemoved().size());
         buffer.putInt(changeSet.getCreated().size());
         buffer.putInt(changeSet.getUpdated().size());
-        for (final String name : changeSet.getRemoved()) {
-            NetworkMessageWriter.writeStringData(name, buffer);
+        for (final Set<String> removed : changeSet.getRemoved()) {
+            buffer.putInt(removed.size());
+            for (final String name : removed) {
+                NetworkMessageWriter.writeStringData(name, buffer);
+            }
         }
-        for (final Entry<String, Family> entry : changeSet.getCreated()
-                .entrySet()) {
-            // write name of entity
-            writeStringData(entry.getKey(), buffer);
-            // write family of entity
-            writeFamilyData(entry.getValue(), buffer);
+        for (final Map<String, Family> created : changeSet.getCreated()) {
+            buffer.putInt(created.size());
+            for (final Entry<String, Family> entry : created.entrySet()) {
+                // write name of entity
+                writeStringData(entry.getKey(), buffer);
+                // write family of entity
+                writeFamilyData(entry.getValue(), buffer);
+            }
         }
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {

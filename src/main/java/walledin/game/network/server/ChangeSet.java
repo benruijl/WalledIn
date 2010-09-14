@@ -117,14 +117,13 @@ public class ChangeSet {
                     "Cannot merge a changeset with multiple versions");
         }
 
-        if (changeSet.version - 1 != changeSet.version) {
+        if (version + removed.size() != changeSet.version) {
             throw new IllegalStateException("Cannot merge a changeset with a"
-                    + " version other then our version + 1");
+                    + " version other than our oldest version + 1");
         }
 
-        Map<String, Family> theirCreated = changeSet.created
-                .get(changeSet.version);
-        Set<String> theirRemoved = changeSet.removed.get(changeSet.version);
+        Map<String, Family> theirCreated = changeSet.created.get(0);
+        Set<String> theirRemoved = changeSet.removed.get(0);
         // Add created to our created
         created.add(theirCreated);
         // Add removed to our removed
@@ -144,39 +143,37 @@ public class ChangeSet {
             updated.put(name, ourChanges);
         }
 
-        // Remove removed entities from our created entities and updated
+        // Remove removed entities from updated
         // entities
         for (final String name : theirRemoved) {
-            final Family removedFamily = created.remove(name);
-            if (removedFamily != null) {
-                // If there was something to be removed from the created set
-                // then also remove it from the removed set because it has been
-                // created and then removed between this version and the current
-                // version, so there is no change.
-                removed.remove(name);
-            }
             updated.remove(name);
         }
+    }
 
-        // Remove created entities from our removed entities
-        for (final String name : changeSet.created.keySet()) {
-            final boolean removedSomething = removed.remove(name);
-            if (removedSomething) {
-                // If there was something to be removed from the removed set
-                // then also remove it from the created set because it has been
-                // removed and then created again between this version and the
-                // current version, so there is no change.
-                removed.remove(name);
+    public Map<String, Family> getCreatedFromVersion(int firstVersion) {
+        Map<String, Family> result = new HashMap<String, Family>();
+        for (int i = version - firstVersion; i < created.size(); i++) {
+            Map<String, Family> currentCreated = created.get(i);
+            Set<String> currentRemoved = removed.get(i);
+            result.putAll(currentCreated);
+            for (String name : currentRemoved) {
+                result.remove(name);
             }
         }
+        return result;
     }
-    
-    public Map<String, Family> getCreatedFromVersion(int version) {
-        
-    }
-    
-    public Set<String> getRemovedFromVersion(int version) {
-        
+
+    public Set<String> getRemovedFromVersion(int firstVersion) {
+        Set<String> result = new HashSet<String>();
+        for (int i = version - firstVersion; i < removed.size(); i++) {
+            Map<String, Family> currentCreated = created.get(i);
+            Set<String> currentRemoved = removed.get(i);
+            result.addAll(currentRemoved);
+            for (String name : currentCreated.keySet()) {
+                result.remove(name);
+            }
+        }
+        return result;
     }
 
     /**
