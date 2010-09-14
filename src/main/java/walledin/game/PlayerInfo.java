@@ -29,6 +29,7 @@ import walledin.util.SettingsManager;
 /** This class contains all information about the player. */
 public final class PlayerInfo extends PlayerClientInfo {
     /** Logger. */
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(PlayerInfo.class);
     private static final float RESPAWN_TIME = SettingsManager.getInstance()
             .getFloat("game.respawnTime");

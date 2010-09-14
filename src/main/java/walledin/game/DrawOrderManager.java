@@ -37,6 +37,7 @@ import walledin.game.entity.MessageType;
 public class DrawOrderManager {
     private static final Logger LOG = Logger.getLogger(DrawOrderManager.class);
 
+    @SuppressWarnings("serial")
     private static class ZOrderComperator implements Comparator<Entity>,
             Serializable {
         @Override

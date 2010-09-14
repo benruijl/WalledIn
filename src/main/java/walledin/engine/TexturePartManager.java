@@ -33,6 +33,7 @@ import com.sun.opengl.util.texture.Texture;
  */
 public final class TexturePartManager extends
         ResourceManager<String, TexturePart> {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger
             .getLogger(TexturePartManager.class);
     private static final TexturePartManager INSTANCE = new TexturePartManager();

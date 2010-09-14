@@ -31,6 +31,7 @@ import walledin.game.PlayerAction;
 import walledin.game.entity.Entity;
 
 public class PlayerConnection {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(PlayerConnection.class);
 
     private final Entity player;

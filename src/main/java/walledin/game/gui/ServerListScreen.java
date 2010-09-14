@@ -38,6 +38,7 @@ import walledin.game.gui.components.ServerList;
 
 public class ServerListScreen extends AbstractScreen implements
         ScreenKeyEventListener {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
     private final AbstractScreen serverListWidget;
     private final ClientLogicManager clientLogicManager;
