@@ -67,7 +67,7 @@ public class ListView<T> extends AbstractScreen implements
     private final int numColumns;
     private final Button[] columns;
     private float[] columnWidth;
-    private float[] accumulatedColumnWidth;
+    private final float[] accumulatedColumnWidth;
     private final List<RowData<T>> data;
     private Comparator<RowData<T>> lastComparator;
     private int selected;
@@ -194,7 +194,7 @@ public class ListView<T> extends AbstractScreen implements
         };
     }
 
-    protected void onListItemClicked(T item) {
+    protected void onListItemClicked(final T item) {
     }
 
     @Override

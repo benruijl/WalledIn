@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui.components;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Font;
@@ -66,8 +65,8 @@ public class ServerList extends ListView<ServerData> implements
         /* Start with an empty list. */
         resetData();
 
-        for (ServerData serverData : serverList) {
-            String[] stringData = { serverData.getName(),
+        for (final ServerData serverData : serverList) {
+            final String[] stringData = { serverData.getName(),
                     serverData.getPlayers() + "/" + serverData.getMaxPlayers(),
                     serverData.getGameMode().toString() };
             addData(new RowData<ServerData>(serverData, stringData));
