@@ -3,16 +3,19 @@
 JOGL = ['jogl:jogl:1.1.1a','jogl:gluegen-rt:1.1.1a']
 LOG4J = 'log4j:log4j:1.2.16'
 JUNIT = 'junit:junit:4.8.1'
-GROOVY = 'groovy-all:groovy-all:1.7.2'
+GROOVY = 'groovy-all:groovy-all:1.7.4'
+JOAL = 'joal:joal:1.1.2'
+JORBIS = 'jorbis:jorbis:0.0.17'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
-version='alpha'
+// find a tag with git
+version="git describe --always --long".execute().text.trim()
 group='walledin'
 
 dependencies {
-  compile JOGL, LOG4J, GROOVY
+  compile JOGL, LOG4J, GROOVY, JOAL, JORBIS
   testCompile JUNIT
 }
 
@@ -29,6 +32,7 @@ task buildDist(type:Zip, dependsOn: jar) {
   from "dist/"
   from "build/libs/"
   from (".") {
-    include "lib/**"
+    include "lib/*.jar"
+    include "lib/native/**"
   }
 }
