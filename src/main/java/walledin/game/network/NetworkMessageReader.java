@@ -126,7 +126,7 @@ public class NetworkMessageReader {
 
         for (int i = 0; i < numRemovedVersions; i++) {
             final int numRemoved = buffer.getInt();
-            Set<String> temp = new HashSet<String>();
+            final Set<String> temp = new HashSet<String>();
             for (int j = 0; j < numRemoved; j++) {
                 temp.add(readStringData(buffer));
             }
@@ -134,7 +134,7 @@ public class NetworkMessageReader {
         }
         for (int i = 0; i < numCreatedVersions; i++) {
             final int numCreated = buffer.getInt();
-            Map<String, Family> temp = new HashMap<String, Family>();
+            final Map<String, Family> temp = new HashMap<String, Family>();
             for (int j = 0; j < numCreated; j++) {
                 final String name = readStringData(buffer);
                 final Family family = readFamilyData(buffer);

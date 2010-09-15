@@ -87,11 +87,11 @@ public class ChangeSet {
      */
     private void initialize(final Set<Entity> created,
             final Set<Entity> removed, final Map<String, Entity> entities) {
-        Map<String, Family> tempCreated = new HashMap<String, Family>();
+        final Map<String, Family> tempCreated = new HashMap<String, Family>();
         for (final Entity entity : created) {
             tempCreated.put(entity.getName(), entity.getFamily());
         }
-        Set<String> tempRemoved = new HashSet<String>();
+        final Set<String> tempRemoved = new HashSet<String>();
         for (final Entity entity : removed) {
             tempRemoved.add(entity.getName());
         }
@@ -122,8 +122,8 @@ public class ChangeSet {
                     + " version other than our oldest version + 1");
         }
 
-        Map<String, Family> theirCreated = changeSet.created.get(0);
-        Set<String> theirRemoved = changeSet.removed.get(0);
+        final Map<String, Family> theirCreated = changeSet.created.get(0);
+        final Set<String> theirRemoved = changeSet.removed.get(0);
         // Add created to our created
         created.add(theirCreated);
         // Add removed to our removed
@@ -150,26 +150,26 @@ public class ChangeSet {
         }
     }
 
-    public Map<String, Family> getCreatedFromVersion(int firstVersion) {
-        Map<String, Family> result = new HashMap<String, Family>();
+    public Map<String, Family> getCreatedFromVersion(final int firstVersion) {
+        final Map<String, Family> result = new HashMap<String, Family>();
         for (int i = version - firstVersion; i < created.size(); i++) {
-            Map<String, Family> currentCreated = created.get(i);
-            Set<String> currentRemoved = removed.get(i);
+            final Map<String, Family> currentCreated = created.get(i);
+            final Set<String> currentRemoved = removed.get(i);
             result.putAll(currentCreated);
-            for (String name : currentRemoved) {
+            for (final String name : currentRemoved) {
                 result.remove(name);
             }
         }
         return result;
     }
 
-    public Set<String> getRemovedFromVersion(int firstVersion) {
-        Set<String> result = new HashSet<String>();
+    public Set<String> getRemovedFromVersion(final int firstVersion) {
+        final Set<String> result = new HashSet<String>();
         for (int i = version - firstVersion; i < removed.size(); i++) {
-            Map<String, Family> currentCreated = created.get(i);
-            Set<String> currentRemoved = removed.get(i);
+            final Map<String, Family> currentCreated = created.get(i);
+            final Set<String> currentRemoved = removed.get(i);
             result.addAll(currentRemoved);
-            for (String name : currentCreated.keySet()) {
+            for (final String name : currentCreated.keySet()) {
                 result.remove(name);
             }
         }

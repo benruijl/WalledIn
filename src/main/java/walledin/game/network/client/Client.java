@@ -384,7 +384,8 @@ public final class Client implements NetworkEventListener {
                     + receivedVersion + " oldversion: " + oldVersion);
         }
         if (receivedVersion >= oldVersion && newVersion > receivedVersion) {
-            clientLogicManager.getEntityManager().applyChangeSet(changeSet, receivedVersion);
+            clientLogicManager.getEntityManager().applyChangeSet(changeSet,
+                    receivedVersion);
             receivedVersion = newVersion;
         }
         try {
