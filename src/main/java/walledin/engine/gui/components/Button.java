@@ -86,8 +86,8 @@ public class Button extends AbstractScreen implements ScreenMouseEventListener {
     }
 
     @Override
-    public void onMouseClicked(ScreenMouseEvent e) {
+    public void onMouseClicked(final ScreenMouseEvent e) {
         // TODO Auto-generated method stub
-        
+
     }
 }

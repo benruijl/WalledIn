@@ -89,7 +89,6 @@ public class ServerListScreen extends AbstractScreen implements
              */
             if (clientLogicManager.getClient().isConnected()) {
                 getManager().getScreen(ScreenType.GAME).show();
-                hide();
             } else {
                 getManager().getScreen(ScreenType.MAIN_MENU).show();
             }

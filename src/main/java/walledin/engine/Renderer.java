@@ -382,7 +382,7 @@ public class Renderer implements GLEventListener {
             bindTexture(texture);
             gl.glBegin(GL.GL_QUADS);
         }
-        
+
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex2f(destRect.getLeft(), destRect.getTop());
         gl.glTexCoord2f(0.0f, 1.0f);
@@ -464,7 +464,7 @@ public class Renderer implements GLEventListener {
      */
     public final void drawRect(final Texture texture, final Rectangle texRect,
             final Rectangle destRect) {
-        
+
         if (!bulkDraw) {
             bindTexture(texture);
             gl.glBegin(GL.GL_QUADS);
@@ -705,6 +705,23 @@ public class Renderer implements GLEventListener {
      */
     public final void setColorRGB(final float r, final float g, final float b) {
         gl.glColor3f(r, g, b);
+    }
+
+    /**
+     * Sets the current color.
+     * 
+     * @param r
+     *            R
+     * @param g
+     *            G
+     * @param b
+     *            B
+     * @param a
+     *            A
+     */
+    public final void setColorRGBA(final float r, final float g, final float b,
+            final float a) {
+        gl.glColor4f(r, g, b, a);
     }
 
     /**

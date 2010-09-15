@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Renderer;
-import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.game.ZValue;

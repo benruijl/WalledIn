@@ -8,7 +8,6 @@ import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
-import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
@@ -16,11 +15,11 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
     private final float width = 80.0f;
     private final float height = 30.0f;
 
-    private List<String> sliderValues;
+    private final List<String> sliderValues;
     private int currentIndex;
 
-    public Slider(AbstractScreen parent, Rectangle boudingRect, int z,
-            final Vector2f pos) {
+    public Slider(final AbstractScreen parent, final Rectangle boudingRect,
+            final int z, final Vector2f pos) {
         super(parent, boudingRect, z);
 
         sliderValues = new ArrayList<String>();
@@ -30,7 +29,7 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
         show();
     }
 
-    public void addValue(String value) {
+    public void addValue(final String value) {
         sliderValues.add(value);
 
         if (currentIndex == -1) {
@@ -39,7 +38,7 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
     }
 
     @Override
-    public void draw(Renderer renderer) {
+    public void draw(final Renderer renderer) {
 
         renderer.drawFilledRect(new Rectangle(0, 0, 5, height));
         renderer.drawFilledRect(new Rectangle(width, 0, 5, height));
@@ -63,15 +62,15 @@ public class Slider extends AbstractScreen implements ScreenMouseEventListener {
     }
 
     @Override
-    public void onMouseDown(ScreenMouseEvent e) {
+    public void onMouseDown(final ScreenMouseEvent e) {
     }
 
     @Override
-    public void onMouseHover(ScreenMouseEvent e) {
+    public void onMouseHover(final ScreenMouseEvent e) {
     }
 
     @Override
-    public void onMouseClicked(ScreenMouseEvent e) {
+    public void onMouseClicked(final ScreenMouseEvent e) {
         if (new Rectangle(0, 0, 5, height).translate(getAbsolutePosition())
                 .containsPoint(e.getPos()) && currentIndex > 0) {
             currentIndex--;
