@@ -708,6 +708,23 @@ public class Renderer implements GLEventListener {
     }
 
     /**
+     * Sets the current color.
+     * 
+     * @param r
+     *            R
+     * @param g
+     *            G
+     * @param b
+     *            B
+     * @param a
+     *            A
+     */
+    public final void setColorRGBA(final float r, final float g, final float b,
+            final float a) {
+        gl.glColor4f(r, g, b, a);
+    }
+
+    /**
      * Centers the camera around a specific point.
      * 
      * @param vec

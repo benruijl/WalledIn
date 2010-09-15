@@ -141,13 +141,13 @@ public class ListView<T> extends AbstractScreen implements
         final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
 
         if (selected >= 0 && selected < data.size()) {
-            renderer.setColorRGB(0.2f, 0.2f, 0.02f);
+            renderer.setColorRGBA(0.2f, 0.2f, 0.02f, 0.5f);
             renderer.drawFilledRect(new Rectangle(START_X_LIST, START_Y_LIST
-                    + (selected - 1) * Y_SPACE,
-                    accumulatedColumnWidth[numColumns - 1], Y_SPACE));
-            renderer.setColorRGB(1, 1, 1);
+                    + (selected - 1) * Y_SPACE + 2,
+                    accumulatedColumnWidth[numColumns - 1], Y_SPACE + 2));
+            renderer.setColorRGBA(1, 1, 1, 1);
         }
-        
+
         float curX = START_X_LIST;
 
         for (int i = 0; i < numColumns; i++) {
