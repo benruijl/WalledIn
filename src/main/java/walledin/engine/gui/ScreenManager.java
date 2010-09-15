@@ -20,12 +20,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.gui;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -41,18 +38,19 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class ScreenManager implements MouseEventListener {
-    /** Logger */
+    /** Logger. */
     private static final Logger LOG = Logger.getLogger(ScreenManager.class);
 
     /** Screen types. */
+    // TODO: move to game section.
     public enum ScreenType {
         MAIN_MENU, GAME, SERVER_LIST, SELECT_TEAM
     }
 
+    /** Root screen. All screens are children of this one. */
+    private final AbstractScreen root;
     /** Map of typed screens. */
     private final Map<ScreenType, AbstractScreen> typedScreens;
-    /** Sorted list of screens. It is sorted on z-order. */
-    private final SortedSet<AbstractScreen> screens;
     /** Map of shared fonts. */
     private final Map<FontType, Font> fonts;
     /** Shared cursor. */
@@ -75,25 +73,14 @@ public class ScreenManager implements MouseEventListener {
      *            Renderer used by screen manager
      */
     public ScreenManager(final Renderer renderer) {
+        root = new AbstractScreen(this, null, -100) {
+        };
+
+        /* Set the focus to root. */
+        focusedScreen = root;
+
         typedScreens = new ConcurrentHashMap<ScreenType, AbstractScreen>();
-        screens = new TreeSet<AbstractScreen>(new Comparator<AbstractScreen>() {
 
-            @Override
-            public int compare(final AbstractScreen o1, final AbstractScreen o2) {
-                final int z1 = o1.getZIndex();
-                final int z2 = o2.getZIndex();
-
-                if (z1 == z2) {
-                    if (o1.hashCode() == o2.hashCode()) {
-                        return 0;
-                    }
-
-                    return o1.hashCode() < o2.hashCode() ? -1 : 1;
-                }
-
-                return z1 - z2;
-            }
-        });
         fonts = new HashMap<FontType, Font>();
         this.renderer = renderer;
         drawCursor = true;
@@ -146,7 +133,7 @@ public class ScreenManager implements MouseEventListener {
     public final void addScreen(final ScreenType type,
             final AbstractScreen screen) {
         typedScreens.put(type, screen);
-        screens.add(screen);
+        root.addChild(screen);
         screen.registerScreenManager(this);
     }
 
@@ -157,7 +144,7 @@ public class ScreenManager implements MouseEventListener {
      *            Screen to add
      */
     public final void addScreen(final AbstractScreen screen) {
-        screens.add(screen);
+        root.addChild(screen);
         screen.registerScreenManager(this);
     }
 
@@ -172,12 +159,12 @@ public class ScreenManager implements MouseEventListener {
      * @see AbstractScreen#dispose()
      */
     public final void removeScreen(final AbstractScreen screen) {
-        if (!screens.remove(screen)) {
+        if (!root.removeChild(screen)) {
             LOG.warn("Tried to remove screen that is not in the list");
         }
 
         if (focusedScreen == screen) {
-            focusedScreen = null;
+            focusedScreen = root;
         }
 
         /* If it is a typed screen, remove the map */
@@ -196,7 +183,7 @@ public class ScreenManager implements MouseEventListener {
     }
 
     @Override
-    public void onMouseClicked(MouseEvent event) {
+    public void onMouseClicked(final MouseEvent event) {
         /* Sets the flag. */
         mouseClicked = true;
         clickedPosition = event.getPosition();
@@ -219,35 +206,7 @@ public class ScreenManager implements MouseEventListener {
 
         final Set<Integer> keysDown = Input.getInstance().getKeysDown();
 
-        final AbstractScreen[] screenList = screens
-                .toArray(new AbstractScreen[0]);
-        for (final AbstractScreen screen : screenList) {
-            if (screen.isVisible()) {
-                screen.update(delta);
-
-                if (getFocusedScreen() == null && keysDown.size() > 0) {
-                    screen.sendKeyDownMessage(new ScreenKeyEvent(keysDown));
-                }
-            }
-        }
-
-        if (getFocusedScreen() == null && mouseClicked) {
-
-            for (final AbstractScreen screen : screenList) {
-                if (screen.isVisible()) {
-                    AbstractScreen targetScreen = screen
-                            .getSmallestScreenContainingPoint(clickedPosition
-                                    .asVector2f());
-                    if (targetScreen != null) {
-                        targetScreen
-                                .sendMouseClickedMessage(new ScreenMouseEvent(
-                                        targetScreen, clickedPosition.asVector2f()));
-                    }
-                }
-            }
-
-            mouseClicked = false;
-        }
+        root.update(delta);
 
         if (getFocusedScreen() != null) {
             /* If there is a focused window, send the keys to that window. */
@@ -302,16 +261,7 @@ public class ScreenManager implements MouseEventListener {
      *            Renderer to draw with
      */
     public final void draw(final Renderer renderer) {
-        final AbstractScreen[] screenList = screens
-                .toArray(new AbstractScreen[0]);
-        for (final AbstractScreen screen : screenList) {
-            if (screen.isVisible()) {
-                renderer.pushMatrix();
-                renderer.translate(screen.getPosition());
-                screen.draw(renderer);
-                renderer.popMatrix();
-            }
-        }
+        root.draw(renderer);
 
         if (cursor != null && drawCursor) {
             getCursor().sendMessage(MessageType.RENDER, renderer);
@@ -361,10 +311,23 @@ public class ScreenManager implements MouseEventListener {
      * screen receiving input.
      * 
      * @param screen
-     *            Screen. Can be null.
+     *            Screen. If null, the root screen will receive the focus
      */
     public final void setFocusedScreen(final AbstractScreen screen) {
-        focusedScreen = screen;
+        if (screen != null) {
+            focusedScreen = screen;
+        } else {
+            focusedScreen = root;
+        }
+    }
+
+    /**
+     * Checks if the root is the focused window.
+     * 
+     * @return True if root has the focus, else false
+     */
+    public final boolean isRootFocused() {
+        return focusedScreen == root;
     }
 
     /**

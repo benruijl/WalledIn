@@ -33,7 +33,6 @@ import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
-import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
@@ -139,7 +138,7 @@ public class SelectTeamScreen extends AbstractScreen implements
     }
 
     @Override
-    public void onMouseClicked(ScreenMouseEvent e) {
+    public void onMouseClicked(final ScreenMouseEvent e) {
         if (e.getScreen() == teamBlue) {
             clientLogicManager.getClient().selectTeam(Team.BLUE);
             getManager().getScreen(ScreenType.GAME).initialize();
