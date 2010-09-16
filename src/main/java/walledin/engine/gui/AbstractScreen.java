@@ -566,7 +566,7 @@ public abstract class AbstractScreen {
      * 
      * @return True if it has the focus, else false.
      */
-    private final boolean hasFocus() {
+    private boolean hasFocus() {
         return getManager().getFocusedScreen() == this;
     }
 
