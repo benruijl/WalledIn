@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui.components;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Font;
@@ -42,6 +41,7 @@ public class ServerList extends ListView<ServerData> implements
         ScreenMouseEventListener {
     private static final String[] columnNames = { "Name", "Players", "Type" };
     private static final float[] columnWidth = { 150f, 70f, 150f };
+    private static final int MAX_VISIBLE = 13;
 
     private final AbstractScreen refreshButton;
     private List<ServerData> serverList; // list of servers
@@ -50,7 +50,7 @@ public class ServerList extends ListView<ServerData> implements
     public ServerList(final AbstractScreen parent, final Rectangle boudingRect,
             final ClientLogicManager clientLogicManager) {
         super(parent, boudingRect, 1, columnNames.length, columnNames,
-                columnWidth);
+                columnWidth, MAX_VISIBLE);
         this.clientLogicManager = clientLogicManager;
 
         refreshButton = new Button(this, "Refresh", new Vector2f(400, 40));

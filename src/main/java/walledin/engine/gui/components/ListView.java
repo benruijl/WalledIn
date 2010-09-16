@@ -64,6 +64,7 @@ public class ListView<T> extends AbstractScreen implements
     private static final float START_Y_LIST = 60f;
     private static final float Y_SPACE = 20f;
 
+    private final int maxVisible;
     private final int numColumns;
     private final Button[] columns;
     private float[] columnWidth;
@@ -72,14 +73,17 @@ public class ListView<T> extends AbstractScreen implements
     private Comparator<RowData<T>> lastComparator;
     private int selected;
 
+    private final ScrollBar scrollBar;
+
     public ListView(final AbstractScreen parent, final Rectangle boudingRect,
             final int z, final int numColumns, final String names[],
-            final float[] columnWidth) {
+            final float[] columnWidth, int maxVisible) {
         super(parent, boudingRect, z);
 
         data = new ArrayList<RowData<T>>();
 
         this.numColumns = numColumns;
+        this.maxVisible = maxVisible;
 
         accumulatedColumnWidth = new float[numColumns];
         setColumnWidth(columnWidth);
@@ -95,6 +99,10 @@ public class ListView<T> extends AbstractScreen implements
             columns[i].addMouseEventListener(this);
             addChild(columns[i]);
         }
+
+        scrollBar = new ScrollBar(this, 2, maxVisible);
+        addChild(scrollBar);
+        scrollBar.show();
 
         lastComparator = getComparator(0);
         addMouseEventListener(this);
@@ -119,6 +127,7 @@ public class ListView<T> extends AbstractScreen implements
         }
 
         data.add(entry);
+        scrollBar.setNumEntries(data.size());
     }
 
     /**
@@ -130,10 +139,11 @@ public class ListView<T> extends AbstractScreen implements
 
     public void resetData() {
         data.clear();
+        scrollBar.setNumEntries(0);
     }
 
     protected List<RowData<T>> getData() {
-        return data;
+        return Collections.unmodifiableList(data);
     }
 
     @Override
