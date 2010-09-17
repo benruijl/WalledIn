@@ -127,7 +127,6 @@ public class ListView<T> extends AbstractScreen implements
         }
 
         data.add(entry);
-        scrollBar.setNumEntries(data.size());
     }
 
     /**
@@ -137,9 +136,12 @@ public class ListView<T> extends AbstractScreen implements
         Collections.sort(data, lastComparator);
     }
 
+    public void updateScrollBar() {
+        scrollBar.setNumEntries(data.size());
+    }
+
     public void resetData() {
         data.clear();
-        scrollBar.setNumEntries(0);
     }
 
     protected List<RowData<T>> getData() {
@@ -163,7 +165,8 @@ public class ListView<T> extends AbstractScreen implements
         for (int i = 0; i < numColumns; i++) {
             float curY = START_Y_LIST;
 
-            for (int j = 0; j < data.size(); j++) {
+            for (int j = Math.max(0, scrollBar.getCurrentIndex()); j < Math
+                    .min(scrollBar.getCurrentIndex() + maxVisible, data.size()); j++) {
                 font.renderText(renderer, data.get(j).getData()[i],
                         new Vector2f(curX, curY));
                 curY += Y_SPACE;
@@ -182,7 +185,7 @@ public class ListView<T> extends AbstractScreen implements
 
     @Override
     public void onMouseHover(final ScreenMouseEvent e) {
-        for (int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < Math.min(maxVisible, data.size()); i++) {
             /* The i -1 is because the text is rendered above the line. */
             if (new Rectangle(START_X_LIST, START_Y_LIST + (i - 1) * Y_SPACE,
                     accumulatedColumnWidth[numColumns - 1], Y_SPACE).translate(
@@ -218,13 +221,17 @@ public class ListView<T> extends AbstractScreen implements
             }
         }
 
-        for (int i = 0; i < data.size(); i++) {
-            /* The i -1 is because the text is rendered above the line. */
-            if (new Rectangle(START_X_LIST, START_Y_LIST + (i - 1) * Y_SPACE,
-                    accumulatedColumnWidth[numColumns - 1], Y_SPACE).translate(
-                    getAbsolutePosition()).containsPoint(e.getPos())) {
-                onListItemClicked(data.get(i).getObject());
-                return;
+        if (scrollBar.getCurrentIndex() >= 0) {
+            for (int i = 0; i < Math.min(maxVisible, data.size()); i++) {
+                /* The - 1 is because the text is rendered above the line. */
+                if (new Rectangle(START_X_LIST, START_Y_LIST + (i - 1)
+                        * Y_SPACE, accumulatedColumnWidth[numColumns - 1],
+                        Y_SPACE).translate(getAbsolutePosition())
+                        .containsPoint(e.getPos())) {
+                    onListItemClicked(data.get(i + scrollBar.getCurrentIndex())
+                            .getObject());
+                    return;
+                }
             }
         }
 

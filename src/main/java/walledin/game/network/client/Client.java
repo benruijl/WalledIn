@@ -38,6 +38,7 @@ import walledin.game.ClientLogicManager;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerClientInfo;
 import walledin.game.Team;
+import walledin.game.gamemode.GameMode;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
@@ -138,7 +139,7 @@ public final class Client implements NetworkEventListener {
     public List<ServerData> getServerList() {
         final List<ServerData> servers = new ArrayList<ServerData>(
                 lanServerList);
-        servers.addAll(internetServerList);
+        servers.addAll(internetServerList);        
         return servers;
     }
 

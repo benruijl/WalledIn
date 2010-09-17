@@ -40,8 +40,8 @@ import walledin.game.network.ServerData;
 public class ServerList extends ListView<ServerData> implements
         ScreenMouseEventListener {
     private static final String[] columnNames = { "Name", "Players", "Type" };
-    private static final float[] columnWidth = { 150f, 70f, 150f };
-    private static final int MAX_VISIBLE = 13;
+    private static final float[] columnWidth = { 150f, 70f, 170f };
+    private static final int MAX_VISIBLE = 17;
 
     private final AbstractScreen refreshButton;
     private List<ServerData> serverList; // list of servers
@@ -74,6 +74,7 @@ public class ServerList extends ListView<ServerData> implements
         }
 
         sortData();
+        updateScrollBar();
 
         super.update(delta);
     }

@@ -64,22 +64,17 @@ public class PopupDialog extends AbstractScreen implements
 
     @Override
     public final void onMouseDown(final ScreenMouseEvent e) {
-        if (e.getScreen() == okButton) {
-            dispose();
-        }
-
     }
 
     @Override
     public void onMouseHover(final ScreenMouseEvent e) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onMouseClicked(final ScreenMouseEvent e) {
-        // TODO Auto-generated method stub
-
+        if (e.getScreen() == okButton) {
+            dispose();
+        }
     }
 
 }

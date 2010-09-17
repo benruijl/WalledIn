@@ -13,12 +13,14 @@ public class ScrollBar extends AbstractScreen implements
         ScreenMouseEventListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(ScrollBar.class);
+    private static final float WIDTH = 20f;
+    private static final float BUTTON_HEIGHT = 20f;
+    private static final float SCROLL_DELAY = 0.1f;
 
     private int currentIndex;
     private int numEntries;
+    private float currentWaitTime;
 
-    private static final float WIDTH = 20f;
-    private static final float BUTTON_HEIGHT = 20f;
     private final Rectangle buttonUpRect;
     private final Rectangle buttonDownRect;
     private final int maxVisibleEntries;
@@ -35,6 +37,8 @@ public class ScrollBar extends AbstractScreen implements
                 - BUTTON_HEIGHT, WIDTH, BUTTON_HEIGHT);
 
         this.maxVisibleEntries = maxVisibleEntries;
+        currentWaitTime = 0f;
+        addMouseEventListener(this);
     }
 
     public void setNumEntries(int numEntries) {
@@ -54,6 +58,15 @@ public class ScrollBar extends AbstractScreen implements
     }
 
     @Override
+    public void update(double delta) {
+        if (currentWaitTime < SCROLL_DELAY) {
+            currentWaitTime += delta;
+        }
+
+        super.update(delta);
+    }
+
+    @Override
     public void draw(Renderer renderer) {
         renderer.drawFilledRect(buttonUpRect);
         renderer.drawFilledRect(buttonDownRect);
@@ -62,9 +75,15 @@ public class ScrollBar extends AbstractScreen implements
 
         if (currentIndex >= 0 && numEntries - maxVisibleEntries > 0) {
             renderer.setColorRGB(1, 0, 0);
-            renderer.drawFilledRect(new Rectangle(0, buttonUpRect.getBottom()
-                    + currentIndex / (float) (numEntries - maxVisibleEntries)
-                    * (buttonDownRect.getTop() - buttonUpRect.getBottom()),
+            renderer.drawFilledRect(new Rectangle(
+                    0,
+                    buttonUpRect.getBottom()
+                            + currentIndex
+                            / (float) (numEntries - maxVisibleEntries)
+                            * (buttonDownRect.getTop()
+                                    - buttonUpRect.getBottom() - (buttonDownRect
+                                    .getTop() - buttonUpRect.getBottom())
+                                    / (float) (numEntries - maxVisibleEntries)),
                     WIDTH, (buttonDownRect.getTop() - buttonUpRect.getBottom())
                             / (float) (numEntries - maxVisibleEntries)));
             renderer.setColorRGB(1, 1, 1);
@@ -78,14 +97,21 @@ public class ScrollBar extends AbstractScreen implements
         if (buttonUpRect.translate(getAbsolutePosition()).containsPoint(
                 e.getPos())) {
             if (currentIndex > 0) {
-                currentIndex--;
+                if (currentWaitTime > SCROLL_DELAY) {
+                    currentIndex--;
+                    currentWaitTime = 0;
+                }
             }
         }
 
         if (buttonDownRect.translate(getAbsolutePosition()).containsPoint(
                 e.getPos())) {
-            if (currentIndex < numEntries - 1) {
-                currentIndex++;
+            if (currentIndex >= 0
+                    && currentIndex < numEntries - maxVisibleEntries) {
+                if (currentWaitTime > SCROLL_DELAY) {
+                    currentIndex++;
+                    currentWaitTime = 0;
+                }
             }
         }
     }
