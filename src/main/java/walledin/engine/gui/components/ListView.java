@@ -76,8 +76,8 @@ public class ListView<T> extends AbstractScreen implements
     private final ScrollBar scrollBar;
 
     public ListView(final AbstractScreen parent, final Rectangle boudingRect,
-            final int z, final int numColumns, final String names[],
-            final float[] columnWidth, int maxVisible) {
+            final int z, final int numColumns, final String[] names,
+            final float[] columnWidth, final int maxVisible) {
         super(parent, boudingRect, z);
 
         data = new ArrayList<RowData<T>>();

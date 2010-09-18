@@ -186,6 +186,7 @@ public class OggDecoder {
                             }
                             if (result == -1) {
                                 // FIXME what should happen here?
+                                LOG.warn("Bitstream error.");
                             } else {
 
                                 int samples;

@@ -39,9 +39,9 @@ import walledin.game.network.ServerData;
 
 public class ServerList extends ListView<ServerData> implements
         ScreenMouseEventListener {
-    private static final String[] columnNames = { "Name", "Players", "Type" };
-    private static final float[] columnWidth = { 150f, 70f, 170f };
     private static final int MAX_VISIBLE = 17;
+    private static final String[] COLUMN_NAMES = { "Name", "Players", "Type" };
+    private static final float[] COLUMN_WIDTH = { 150f, 70f, 170f };
 
     private final AbstractScreen refreshButton;
     private List<ServerData> serverList; // list of servers
@@ -49,8 +49,8 @@ public class ServerList extends ListView<ServerData> implements
 
     public ServerList(final AbstractScreen parent, final Rectangle boudingRect,
             final ClientLogicManager clientLogicManager) {
-        super(parent, boudingRect, 1, columnNames.length, columnNames,
-                columnWidth, MAX_VISIBLE);
+        super(parent, boudingRect, 1, COLUMN_NAMES.length, COLUMN_NAMES,
+                COLUMN_WIDTH, MAX_VISIBLE);
         this.clientLogicManager = clientLogicManager;
 
         refreshButton = new Button(this, "Refresh", new Vector2f(400, 40));

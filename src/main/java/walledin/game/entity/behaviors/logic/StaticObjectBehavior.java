@@ -39,7 +39,7 @@ import walledin.game.entity.MessageType;
 public class StaticObjectBehavior extends AbstractBehavior implements
         StaticObject {
 
-    public StaticObjectBehavior(Entity owner) {
+    public StaticObjectBehavior(final Entity owner) {
         super(owner);
     }
 
@@ -51,11 +51,11 @@ public class StaticObjectBehavior extends AbstractBehavior implements
     }
 
     @Override
-    public void onMessage(MessageType messageType, Object data) {
+    public void onMessage(final MessageType messageType, final Object data) {
     }
 
     @Override
-    public void onUpdate(double delta) {
+    public void onUpdate(final double delta) {
     }
 
 }

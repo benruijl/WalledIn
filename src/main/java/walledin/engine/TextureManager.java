@@ -35,8 +35,9 @@ import com.sun.opengl.util.texture.TextureData;
 import com.sun.opengl.util.texture.TextureIO;
 
 /**
+ * Texture manager. Can be used to load textures.
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public final class TextureManager extends ResourceManager<String, Texture> {
     private static final Logger LOG = Logger.getLogger(TextureManager.class);

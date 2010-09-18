@@ -95,9 +95,6 @@ public final class Entity {
      * 
      * @param behavior
      *            The behavior instance to be added
-     * @throws IllegalArgumentException
-     *             Thrown when the entity already contains an behavior of this
-     *             type
      */
     public void addBehavior(final AbstractBehavior behavior) {
         final Class<? extends AbstractBehavior> clazz = behavior.getClass();
@@ -183,9 +180,6 @@ public final class Entity {
      * @param <T>
      *            The class of the attribute
      * @return Returns the object bound to the attribute before
-     * @throws IllegalArgumentException
-     *             if the newObect is not of the class specified in the
-     *             attribute
      */
     @SuppressWarnings("unchecked")
     public <T> T setAttribute(final Attribute attribute, final T newObject) {

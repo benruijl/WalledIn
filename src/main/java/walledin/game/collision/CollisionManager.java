@@ -92,6 +92,8 @@ public final class CollisionManager {
         private final Entity collisionEntity;
 
         /**
+         * Creates a new collision data package.
+         * 
          * @param newPos
          *            The position after the collision detection
          * @param oldPos

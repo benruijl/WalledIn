@@ -301,14 +301,12 @@ public class EntityManager {
     }
 
     public void applyChangeSet(final ChangeSet changeSet) {
-        final Set<Entity> removed = new HashSet<Entity>();
-        final Set<Entity> created = new HashSet<Entity>();
         for (final String name : changeSet.getRemoved()) {
-            removed.add(remove(name));
+            remove(name);
         }
         for (final Entry<String, Family> entry : changeSet.getCreated()
                 .entrySet()) {
-            created.add(create(entry.getValue(), entry.getKey()));
+            create(entry.getValue(), entry.getKey());
         }
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {

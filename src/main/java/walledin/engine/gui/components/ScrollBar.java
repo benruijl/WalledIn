@@ -1,3 +1,23 @@
+/*  Copyright 2010 Ben Ruijl, Wouter Smeenk
+
+This file is part of Walled In.
+
+Walled In is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 3, or (at your option)
+any later version.
+
+Walled In is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Walled In; see the file LICENSE.  If not, write to the
+Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307 USA.
+
+ */
 package walledin.engine.gui.components;
 
 import org.apache.log4j.Logger;
@@ -25,7 +45,8 @@ public class ScrollBar extends AbstractScreen implements
     private final Rectangle buttonDownRect;
     private final int maxVisibleEntries;
 
-    public ScrollBar(AbstractScreen parent, int z, int maxVisibleEntries) {
+    public ScrollBar(final AbstractScreen parent, final int z,
+            final int maxVisibleEntries) {
         super(parent, new Rectangle(0, 0, WIDTH, parent.getRectangle()
                 .getBottom()), z);
 
@@ -41,7 +62,7 @@ public class ScrollBar extends AbstractScreen implements
         addMouseEventListener(this);
     }
 
-    public void setNumEntries(int numEntries) {
+    public void setNumEntries(final int numEntries) {
         this.numEntries = numEntries;
 
         if (currentIndex >= numEntries) {
@@ -58,7 +79,7 @@ public class ScrollBar extends AbstractScreen implements
     }
 
     @Override
-    public void update(double delta) {
+    public void update(final double delta) {
         if (currentWaitTime < SCROLL_DELAY) {
             currentWaitTime += delta;
         }
@@ -67,7 +88,7 @@ public class ScrollBar extends AbstractScreen implements
     }
 
     @Override
-    public void draw(Renderer renderer) {
+    public void draw(final Renderer renderer) {
         renderer.drawFilledRect(buttonUpRect);
         renderer.drawFilledRect(buttonDownRect);
 
@@ -83,9 +104,9 @@ public class ScrollBar extends AbstractScreen implements
                             * (buttonDownRect.getTop()
                                     - buttonUpRect.getBottom() - (buttonDownRect
                                     .getTop() - buttonUpRect.getBottom())
-                                    / (float) (numEntries - maxVisibleEntries)),
-                    WIDTH, (buttonDownRect.getTop() - buttonUpRect.getBottom())
-                            / (float) (numEntries - maxVisibleEntries)));
+                                    / (numEntries - maxVisibleEntries)), WIDTH,
+                    (buttonDownRect.getTop() - buttonUpRect.getBottom())
+                            / (numEntries - maxVisibleEntries)));
             renderer.setColorRGB(1, 1, 1);
         }
 
@@ -93,7 +114,7 @@ public class ScrollBar extends AbstractScreen implements
     }
 
     @Override
-    public void onMouseDown(ScreenMouseEvent e) {
+    public void onMouseDown(final ScreenMouseEvent e) {
         if (buttonUpRect.translate(getAbsolutePosition()).containsPoint(
                 e.getPos())) {
             if (currentIndex > 0) {
@@ -117,11 +138,11 @@ public class ScrollBar extends AbstractScreen implements
     }
 
     @Override
-    public void onMouseHover(ScreenMouseEvent e) {
+    public void onMouseHover(final ScreenMouseEvent e) {
     }
 
     @Override
-    public void onMouseClicked(ScreenMouseEvent e) {
+    public void onMouseClicked(final ScreenMouseEvent e) {
     }
 
 }

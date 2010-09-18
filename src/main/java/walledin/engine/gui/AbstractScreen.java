@@ -387,6 +387,7 @@ public abstract class AbstractScreen {
      * 
      * @param childScreen
      *            Child screen
+     * @return True if the addition was successful, else false
      */
     public final boolean addChild(final AbstractScreen childScreen) {
         return children.add(childScreen);
@@ -397,6 +398,7 @@ public abstract class AbstractScreen {
      * 
      * @param childScreen
      *            Child screen
+     * @return True if the removal was successful, else false
      */
     public final boolean removeChild(final AbstractScreen childScreen) {
         return children.remove(childScreen);

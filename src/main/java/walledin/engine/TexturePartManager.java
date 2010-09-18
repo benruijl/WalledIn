@@ -28,8 +28,7 @@ import walledin.engine.math.Vector2f;
 import com.sun.opengl.util.texture.Texture;
 
 /**
- * 
- * @author ben
+ * Texture part manager.
  */
 public final class TexturePartManager extends
         ResourceManager<String, TexturePart> {

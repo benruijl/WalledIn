@@ -23,7 +23,9 @@ package walledin.game.collision;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.log4j.Logger;
+
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
@@ -34,15 +36,15 @@ import walledin.engine.math.Vector2f;
  * 
  */
 public class QuadTree {
-    /** Logger. */
-    private static final Logger LOG = Logger.getLogger(QuadTree.class);
-
     /** Maximum depth of the tree. */
     public static final int MAX_DEPTH = 5;
     /**
      * Maximum objects per leaf if the depth is less than the maximum depth.
      */
     public static final int MAX_OBJECTS = 6;
+
+    /** Logger. */
+    private static final Logger LOG = Logger.getLogger(QuadTree.class);
 
     /**
      * Children quadtrees. There are either none or four, depending on whether

@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Rectangle class.
  * 
  * @author Ben Ruijl
  */

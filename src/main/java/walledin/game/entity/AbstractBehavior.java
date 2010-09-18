@@ -65,9 +65,6 @@ public abstract class AbstractBehavior {
      * @param newObject
      *            Object to bind
      * @return Returns the object bound to the attribute before
-     * @throws IllegalArgumentException
-     *             if the newObect is not of the class specified in the
-     *             attribute
      */
     protected <T> T setAttribute(final Attribute attribute, final T newObject) {
         return getOwner().setAttribute(attribute, newObject);
