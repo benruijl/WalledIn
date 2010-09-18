@@ -33,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Renderer;
+import walledin.game.collision.CollisionManager;
+import walledin.game.collision.QuadTree;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;

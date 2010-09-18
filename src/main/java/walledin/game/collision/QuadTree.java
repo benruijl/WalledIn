@@ -18,19 +18,14 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game;
+package walledin.game.collision;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.log4j.Logger;
-
-import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.game.entity.Attribute;
-import walledin.game.entity.Entity;
 
 /**
  * A quadtree for spatial partitioning.
@@ -56,7 +51,7 @@ public class QuadTree {
     private final QuadTree[] children;
 
     /** Objects in this node or leaf. */
-    private final List<Entity> objects;
+    private final List<StaticObject> objects;
 
     /** Bounding rectangle. */
     private final Rectangle rectangle;
@@ -89,7 +84,7 @@ public class QuadTree {
      */
     private QuadTree(final Rectangle rect, final int depth) {
         children = new QuadTree[4];
-        objects = new ArrayList<Entity>();
+        objects = new ArrayList<StaticObject>();
         rectangle = rect;
         leaf = true;
         this.depth = depth;
@@ -101,7 +96,7 @@ public class QuadTree {
      * @param object
      *            Object to add
      */
-    private void addObject(final Entity object) {
+    private void addObject(final StaticObject object) {
         objects.add(object);
 
         if (objects.size() > MAX_OBJECTS) {
@@ -115,7 +110,7 @@ public class QuadTree {
      * @param object
      *            Object to remove
      */
-    private void removeObject(final Entity object) {
+    private void removeObject(final StaticObject object) {
         objects.remove(object);
     }
 
@@ -127,11 +122,8 @@ public class QuadTree {
      *            Object
      * @return True if fully contained, else false
      */
-    private boolean containsFully(final Entity object) {
-        final Rectangle rect = ((AbstractGeometry) object
-                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
-                .translate((Vector2f) object.getAttribute(Attribute.POSITION));
-
+    private boolean containsFully(final StaticObject object) {
+        final Rectangle rect = object.getBoudingRectangle();
         return rectangle.containsFully(rect);
     }
 
@@ -165,11 +157,8 @@ public class QuadTree {
      * @param object
      *            Object to add
      */
-    public void add(final Entity object) {
-        final Rectangle rect = ((AbstractGeometry) object
-                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
-                .translate((Vector2f) object.getAttribute(Attribute.POSITION));
-
+    public void add(final StaticObject object) {
+        final Rectangle rect = object.getBoudingRectangle();
         final QuadTree tree = getSmallestQuadTreeContainingRectangle(rect);
 
         if (tree == null) {
@@ -217,10 +206,8 @@ public class QuadTree {
      *            Object
      * @return Quadtree or null on failure
      */
-    public QuadTree getQuadTreeContainingObject(final Entity object) {
-        final Rectangle rect = ((AbstractGeometry) object
-                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
-                .translate((Vector2f) object.getAttribute(Attribute.POSITION));
+    public QuadTree getQuadTreeContainingObject(final StaticObject object) {
+        final Rectangle rect = object.getBoudingRectangle();
 
         if (objects.contains(object)) {
             return this;
@@ -252,8 +239,8 @@ public class QuadTree {
      *            Rectangle
      * @return List of entities
      */
-    public List<Entity> getObjectsFromRectangle(final Rectangle rect) {
-        final List<Entity> objectList = new ArrayList<Entity>();
+    public List<StaticObject> getObjectsFromRectangle(final Rectangle rect) {
+        final List<StaticObject> objectList = new ArrayList<StaticObject>();
 
         if (contains(rect)) {
             objectList.addAll(getObjects());
@@ -263,7 +250,7 @@ public class QuadTree {
 
         if (!leaf) {
             for (int i = 0; i < 4; i++) {
-                final List<Entity> tree = children[i]
+                final List<StaticObject> tree = children[i]
                         .getObjectsFromRectangle(rect);
 
                 if (tree != null) {
@@ -280,7 +267,7 @@ public class QuadTree {
      * 
      * @return List of objects
      */
-    public List<Entity> getObjects() {
+    public List<StaticObject> getObjects() {
         return objects;
     }
 
@@ -290,7 +277,7 @@ public class QuadTree {
      * @param object
      *            Object to remove
      */
-    public void remove(final Entity object) {
+    public void remove(final StaticObject object) {
         final QuadTree tree = getQuadTreeContainingObject(object);
 
         if (tree != null) {
@@ -321,9 +308,9 @@ public class QuadTree {
         children[3] = new QuadTree(new Rectangle(middle.getX(),
                 rectangle.getTop(), size.getX(), size.getY()), depth + 1);
 
-        final Iterator<Entity> it = objects.iterator();
+        final Iterator<StaticObject> it = objects.iterator();
         while (it.hasNext()) {
-            final Entity object = it.next();
+            final StaticObject object = it.next();
             for (int i = 0; i < 4; i++) {
                 if (children[i].containsFully(object)) {
                     children[i].addObject(object);

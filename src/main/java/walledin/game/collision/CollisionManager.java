@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game;
+package walledin.game.collision;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +34,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.game.entity.behaviors.logic.StaticObjectBehavior;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
 import walledin.util.SettingsManager;
@@ -363,22 +364,28 @@ public final class CollisionManager {
                 final float bottom = Math.max(oldRect.getBottom(),
                         theorRect.getBottom());
 
-                final List<Entity> targetList = staticMap
+                final List<StaticObject> targetList = staticMap
                         .getObjectsFromRectangle(new Rectangle(left, top, right
                                 - left, bottom - top));
 
                 if (targetList != null) {
-                    for (final Entity target : targetList) {
-                        if (resolvePolygonCircleCollision(element, target,
-                                delta)) {
-                            element.sendMessage(
-                                    MessageType.COLLIDED,
-                                    new CollisionData((Vector2f) element
-                                            .getAttribute(Attribute.POSITION),
-                                            oldPos, theorPos, delta, target));
-                            target.sendMessage(MessageType.COLLIDED,
-                                    new CollisionData(null, null, null, delta,
-                                            element));
+                    for (final StaticObject object : targetList) {
+                        /* Is the object an entity? */
+                        if (object instanceof StaticObjectBehavior) {
+                            final Entity target = ((StaticObjectBehavior) object)
+                                    .getOwner();
+                            if (resolvePolygonCircleCollision(element, target,
+                                    delta)) {
+                                element.sendMessage(
+                                        MessageType.COLLIDED,
+                                        new CollisionData(
+                                                (Vector2f) element
+                                                        .getAttribute(Attribute.POSITION),
+                                                oldPos, theorPos, delta, target));
+                                target.sendMessage(MessageType.COLLIDED,
+                                        new CollisionData(null, null, null,
+                                                delta, element));
+                            }
                         }
                     }
                 }
