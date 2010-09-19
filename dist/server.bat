@@ -1,1 +1,1 @@
-java -classpath *;lib/*  walledin.game.GameLogicManager 
+java -classpath .;*;lib/*  walledin.game.GameLogicManager 
