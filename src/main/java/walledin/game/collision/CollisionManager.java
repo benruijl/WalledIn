@@ -338,10 +338,12 @@ public final class CollisionManager {
             }
         }
 
-        /* Check some entities against static ones. */
+        /* Check non-static collidable entities against static ones. */
         for (final Entity element : entArray) {
-            if (element.getFamily() == Family.PLAYER
-                    || element.getFamily() == Family.HANDGUN_BULLET) {
+            if (element.hasAttribute(Attribute.BOUNDING_GEOMETRY)
+                    && !new Vector2f(0, 0).equals(element
+                            .getAttribute(Attribute.VELOCITY))
+                    && !element.hasAttribute(Attribute.NO_COLLIDE)) {
 
                 /* Create a rectangle from the old and new position. */
                 final Vector2f theorPos = (Vector2f) element

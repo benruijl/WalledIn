@@ -52,6 +52,7 @@ public class GrenadeBehavior extends AbstractBehavior {
     public void onUpdate(final double delta) {
         time += delta;
 
+        /* TODO: use shoot message? */
         if (time > EXPLODE_TIME) {
             /* Explode! */
 
@@ -71,6 +72,9 @@ public class GrenadeBehavior extends AbstractBehavior {
                                 .add(new Matrix2f(-i * Math.PI
                                         / (NUMBER_OFPARTICALS - 1))
                                         .apply(particleTarget)));
+
+                foamBullet.setAttribute(Attribute.OWNED_BY,
+                        getAttribute(Attribute.OWNED_BY));
             }
 
             getOwner().remove();
