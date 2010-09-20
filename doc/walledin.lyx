@@ -1,0 +1,235 @@
+#LyX 1.6.5 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\language english
+\inputencoding auto
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Design document WalledIn
+\end_layout
+
+\begin_layout Author
+Ben Ruijl and Wouter Smeenk
+\end_layout
+
+\begin_layout Standard
+Task List (In order of importance:
+\end_layout
+
+\begin_layout Itemize
+Stable master server:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Protect against corrupt messages:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Messages from older versions.
+\end_layout
+
+\begin_layout Itemize
+Forged messages designed to crash the master server.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Better Logging:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Think about where to log (Important in master server as it will have to
+ run for a long time).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+With every protocol change also change the datagram identification so that
+ the master server will ignore older versions.
+\end_layout
+
+\begin_layout Itemize
+Share network code between the client/server and master server to prevent
+ unintended differences.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Improve network performance.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Currently lags over internet.
+\end_layout
+
+\begin_layout Itemize
+Make new changeset format work.
+\end_layout
+
+\begin_layout Itemize
+More client side interpolation
+\end_layout
+
+\begin_layout Itemize
+Test if the performance is good enough.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Well working foam.
+ It should be easy to create walls and bridges and feel natural.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Instead of using many circular foam particle entities add a point to a foam
+ cluster when the particle hits the cluster.
+\end_layout
+
+\begin_layout Itemize
+Or tweak current solution?
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Smaller particles
+\end_layout
+
+\begin_layout Itemize
+Faster flying foam
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Dont create particals where the user clicks or give a clear indication to
+ the user how this works.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Focus on one game mode: Bridge building.
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Two or more teams start at two points in the level.
+\end_layout
+
+\begin_layout Itemize
+The players create foam to make a path to the end point of the level.
+\end_layout
+
+\begin_layout Itemize
+The team (with all it's players, or maybe a %tage) who reaches the end point
+ first wins.
+\end_layout
+
+\begin_layout Itemize
+Players can sabotage each others foam (and their own) and killed them with
+ guns or enclose them in foam (And they will die).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Finish framework for game states:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Test and process (show user) victory condition.
+\end_layout
+
+\begin_layout Itemize
+Show score lists to user (kill/death statistics).
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Custom graphics: Create our own graphics.
+ (Fleur)
+\end_layout
+
+\begin_layout Itemize
+Good level design (Fleur?).
+\end_layout
+
+\begin_layout Itemize
+Controls that feel natural.
+\end_layout
+
+\begin_layout Itemize
+More types of guns:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Shotgun
+\end_layout
+
+\begin_layout Itemize
+Laser
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Release 0.1
+\end_layout
+
+\begin_layout Itemize
+Network performance (Wouter)
+\end_layout
+
+\begin_layout Itemize
+Foam (Ben)
+\end_layout
+
+\begin_layout Itemize
+Working game mode (Wouter)
+\end_layout
+
+\begin_layout Itemize
+Stable Master
+\end_layout
+
+\end_body
+\end_document
