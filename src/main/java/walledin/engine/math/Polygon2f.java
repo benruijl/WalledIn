@@ -25,10 +25,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import walledin.game.CollisionManager.GeometricalCollisionData;
+import walledin.game.collision.CollisionManager.GeometricalCollisionData;
 
 public class Polygon2f {
     /** Logger. */
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(Polygon2f.class);
 
     private List<Line2f> edges;

@@ -40,6 +40,7 @@ import javax.media.opengl.GLEventListener;
 
 import org.apache.log4j.Logger;
 
+import walledin.engine.input.Input;
 import walledin.engine.math.Matrix2f;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -73,6 +74,8 @@ public class Renderer implements GLEventListener {
     private long lastUpdate;
     private Texture lastTexture;
 
+    private boolean bulkDraw = false;
+
     /* HUD settings */
     private final int hudWidth = 800; // FIXME: adjust to aspect ratio
     private final int hudHeight = 600;
@@ -94,7 +97,7 @@ public class Renderer implements GLEventListener {
      * @author Ben Ruijl
      * 
      */
-    public class ColorRGB {
+    private static final class ColorRGB {
         private final float r, g, b;
 
         public ColorRGB(final float r, final float g, final float b) {
@@ -123,7 +126,7 @@ public class Renderer implements GLEventListener {
      * @author Ben Ruijl
      * 
      */
-    public class ColorRGBA {
+    private static final class ColorRGBA {
         private final ColorRGB rgb;
         private final float a;
 
@@ -336,6 +339,23 @@ public class Renderer implements GLEventListener {
     }
 
     /**
+     * Starts a bulk draw mode in which only texture coordinates, color changes
+     * and vertices can be sent to the graphics card.
+     */
+    public void startBulkDraw() {
+        gl.glBegin(GL.GL_QUADS);
+        bulkDraw = true;
+    }
+
+    /**
+     * Stops the bulk draw mode.
+     */
+    public void stopBulkDraw() {
+        gl.glEnd();
+        bulkDraw = false;
+    }
+
+    /**
      * Draws a textured rectangle to the screen. The full texture is used, and
      * the dimensions are kept.
      * 
@@ -357,10 +377,12 @@ public class Renderer implements GLEventListener {
      *            Destination rectangle
      */
     public final void drawRect(final String strTex, final Rectangle destRect) {
-        final Texture texture = TextureManager.getInstance().get(strTex);
-        bindTexture(texture);
+        if (!bulkDraw) {
+            final Texture texture = TextureManager.getInstance().get(strTex);
+            bindTexture(texture);
+            gl.glBegin(GL.GL_QUADS);
+        }
 
-        gl.glBegin(GL.GL_QUADS);
         gl.glTexCoord2f(0.0f, 0.0f);
         gl.glVertex2f(destRect.getLeft(), destRect.getTop());
         gl.glTexCoord2f(0.0f, 1.0f);
@@ -369,7 +391,10 @@ public class Renderer implements GLEventListener {
         gl.glVertex2f(destRect.getRight(), destRect.getBottom());
         gl.glTexCoord2f(1.0f, 0.0f);
         gl.glVertex2f(destRect.getRight(), destRect.getTop());
-        gl.glEnd();
+
+        if (!bulkDraw) {
+            gl.glEnd();
+        }
     }
 
     /**
@@ -378,7 +403,7 @@ public class Renderer implements GLEventListener {
      * @param texture
      *            Texture to bind
      */
-    private void bindTexture(final Texture texture) {
+    public void bindTexture(final Texture texture) {
         if (texture != lastTexture) {
             texture.bind();
             lastTexture = texture;
@@ -439,9 +464,12 @@ public class Renderer implements GLEventListener {
      */
     public final void drawRect(final Texture texture, final Rectangle texRect,
             final Rectangle destRect) {
-        bindTexture(texture);
 
-        gl.glBegin(GL.GL_QUADS);
+        if (!bulkDraw) {
+            bindTexture(texture);
+            gl.glBegin(GL.GL_QUADS);
+        }
+
         gl.glTexCoord2f(texRect.getLeft(), texRect.getTop());
         gl.glVertex2f(destRect.getLeft(), destRect.getTop());
         gl.glTexCoord2f(texRect.getLeft(), texRect.getBottom());
@@ -450,7 +478,10 @@ public class Renderer implements GLEventListener {
         gl.glVertex2f(destRect.getRight(), destRect.getBottom());
         gl.glTexCoord2f(texRect.getRight(), texRect.getTop());
         gl.glVertex2f(destRect.getRight(), destRect.getTop());
-        gl.glEnd();
+
+        if (!bulkDraw) {
+            gl.glEnd();
+        }
     }
 
     /**
@@ -602,7 +633,7 @@ public class Renderer implements GLEventListener {
     /**
      * This function restores the projection and modelview matrices to the point
      * just before the call to <code>startHUDRendering</code>. It is
-     * <u>mandatory</u> to call this function after a call to startHudRendering.
+     * <b>mandatory</b> to call this function after a call to startHudRendering.
      * 
      * @see Renderer#startHUDRendering()
      */
@@ -674,6 +705,23 @@ public class Renderer implements GLEventListener {
      */
     public final void setColorRGB(final float r, final float g, final float b) {
         gl.glColor3f(r, g, b);
+    }
+
+    /**
+     * Sets the current color.
+     * 
+     * @param r
+     *            R
+     * @param g
+     *            G
+     * @param b
+     *            B
+     * @param a
+     *            A
+     */
+    public final void setColorRGBA(final float r, final float g, final float b,
+            final float a) {
+        gl.glColor4f(r, g, b, a);
     }
 
     /**

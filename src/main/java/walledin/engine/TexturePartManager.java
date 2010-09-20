@@ -28,11 +28,11 @@ import walledin.engine.math.Vector2f;
 import com.sun.opengl.util.texture.Texture;
 
 /**
- * 
- * @author ben
+ * Texture part manager.
  */
 public final class TexturePartManager extends
         ResourceManager<String, TexturePart> {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger
             .getLogger(TexturePartManager.class);
     private static final TexturePartManager INSTANCE = new TexturePartManager();

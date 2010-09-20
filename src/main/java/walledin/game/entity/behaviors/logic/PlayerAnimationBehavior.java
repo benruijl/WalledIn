@@ -28,6 +28,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerAnimationBehavior extends AnimationBehavior {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger
             .getLogger(PlayerAnimationBehavior.class);
 

@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
  */
 public final class SettingsManager {
     /** Logger. */
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(SettingsManager.class);
     /** Reference object. */
     private static SettingsManager ref = null;

@@ -26,8 +26,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.CollisionManager.CollisionData;
 import walledin.game.PlayerAction;
+import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;

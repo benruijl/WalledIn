@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Renderer;
+import walledin.engine.TexturePartManager;
 import walledin.engine.math.Rectangle;
 import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
@@ -39,7 +40,7 @@ import walledin.game.map.Tile;
  */
 public class MapRenderBehavior extends RenderBehavior {
     /** The width in tiles of the block that should be rendered. */
-    private final int stepSize = 10;
+    private static final int STEP_SIZE = 10;
     /** The width of a tile. */
     private float tileWidth;
     /** Map height in tiles. */
@@ -67,9 +68,12 @@ public class MapRenderBehavior extends RenderBehavior {
      *            Renderer
      */
     private void render(final Renderer renderer) {
+        renderer.bindTexture(TexturePartManager.getInstance()
+                .get(tiles.get(0).getType().getTexturePartID()).getTexture());
+
         /* Partition the map */
-        for (int sw = 0; sw < width; sw += stepSize) {
-            for (int sh = 0; sh < height; sh += stepSize) {
+        for (int sw = 0; sw < width; sw += STEP_SIZE) {
+            for (int sh = 0; sh < height; sh += STEP_SIZE) {
                 renderPart(renderer, sw, sh);
 
             }
@@ -88,10 +92,15 @@ public class MapRenderBehavior extends RenderBehavior {
      */
     private void renderPart(final Renderer renderer, final int sw, final int sh) {
         final Rectangle part = new Rectangle(sw * tileWidth, sh * tileWidth,
-                tileWidth * stepSize, tileWidth * stepSize);
+                tileWidth * STEP_SIZE, tileWidth * STEP_SIZE);
+
         if (renderer.inFrustum(part)) {
-            for (int i = 0; i < Math.min(stepSize, height - sh); i++) {
-                for (int j = 0; j < Math.min(stepSize, width - sw); j++) {
+
+            /* A lot of quads will be drawn, so start the bulk mode. */
+            renderer.startBulkDraw();
+
+            for (int i = 0; i < Math.min(STEP_SIZE, height - sh); i++) {
+                for (int j = 0; j < Math.min(STEP_SIZE, width - sw); j++) {
                     final int index = (sh + i) * width + sw + j;
                     if (index >= 0 && index < tiles.size()) {
                         final Tile tile = tiles.get(index);
@@ -102,6 +111,8 @@ public class MapRenderBehavior extends RenderBehavior {
                     }
                 }
             }
+
+            renderer.stopBulkDraw();
         }
     }
 

@@ -35,6 +35,7 @@ import walledin.engine.TextureManager;
 import walledin.engine.TexturePartManager;
 import walledin.engine.audio.Audio;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
@@ -103,7 +104,7 @@ public final class ClientLogicManager implements RenderListener,
         renderer = new Renderer();
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
-        entityManager.setListener(this);
+        entityManager.addListener(this);
         screenManager = new ScreenManager(renderer);
         gameAssets = new ArrayList<Entity>();
 
@@ -159,7 +160,7 @@ public final class ClientLogicManager implements RenderListener,
 
         /* Show FPS for debugging */
         renderer.startHUDRendering();
-        final Font font = screenManager.getFont("arial20");
+        final Font font = screenManager.getFont(FontType.BUTTON_CAPTION);
         font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
                 630, 20));
         renderer.stopHUDRendering();
@@ -213,15 +214,8 @@ public final class ClientLogicManager implements RenderListener,
         return gameAssets;
     }
 
-    /**
-     * Called when a new game entity is created. These entities are stored in a
-     * separate list.
-     * 
-     * @param entity
-     *            Game entity
-     */
     @Override
-    public void entityCreated(final Entity entity) {
+    public void onEntityCreated(final Entity entity) {
         gameAssets.add(entity);
 
         /* Play a sound when a bullet is created */
@@ -239,7 +233,10 @@ public final class ClientLogicManager implements RenderListener,
                         false);
             }
         }
+    }
 
+    @Override
+    public void onEntityUpdated(final Entity entity) {
         if (entity.getFamily() == Family.MAP) {
             final GameMapIO mapIO = new GameMapIOXML();
             final String mapName = (String) entity
@@ -254,14 +251,8 @@ public final class ClientLogicManager implements RenderListener,
         }
     }
 
-    /**
-     * Called when an entity gets removed from the game.
-     * 
-     * @param entity
-     *            Game entity
-     */
     @Override
-    public void entityRemoved(final Entity entity) {
+    public void onEntityRemoved(final Entity entity) {
         gameAssets.remove(entity);
     }
 
@@ -274,7 +265,7 @@ public final class ClientLogicManager implements RenderListener,
         /* Remove the game assets. */
         client.resetReceivedVersion();
 
-        for (final Entity asset : gameAssets) {
+        for (final Entity asset : new ArrayList<Entity>(gameAssets)) {
             entityManager.remove(asset.getName());
         }
     }
@@ -341,7 +332,8 @@ public final class ClientLogicManager implements RenderListener,
         final String fontName = SettingsManager.getInstance().getString(
                 "game.font");
         font.readFromStream(Utils.getClasspathURL(fontName + ".font"));
-        screenManager.addFont(fontName, font);
+        screenManager.addFont(FontType.BUTTON_CAPTION, font);
+        screenManager.addFont(FontType.MENU_MAIN, font);
 
         final AbstractScreen serverListScreen = new ServerListScreen(
                 screenManager, this);
@@ -401,6 +393,8 @@ public final class ClientLogicManager implements RenderListener,
         screenManager.addScreen(ScreenType.MAIN_MENU, menuScreen);
         menuScreen.initialize();
         menuScreen.show();
+
+        client.initialize();
     }
 
     @Override

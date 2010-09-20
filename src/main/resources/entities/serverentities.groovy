@@ -14,6 +14,7 @@ import walledin.game.entity.behaviors.physics.*
     // create grenade launcher
     def grenLauncher = entity.getEntityManager().create(Family.GRENADE_LAUNCHER);
     entity.setAttribute(Attribute.GRENADE_LAUNCHER, grenLauncher);
+    grenLauncher.sendMessage(MessageType.PICK_UP, entity);
 
     // FIXME correct the drawing instead of the hacking the bounding box
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY,
@@ -42,7 +43,7 @@ import walledin.game.entity.behaviors.physics.*
    entity.addBehavior(new HealthBehavior(entity, 100, 80));    
     
     entity.addBehavior(new PhysicsBehavior(entity, 2e4, false, false));
-    //entity.addBehavior(new StaticObjectCollisionBehavior(entity));
+    entity.addBehavior(new StaticObjectBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
 } as EntityFunction,

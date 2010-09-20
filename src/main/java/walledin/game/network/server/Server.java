@@ -124,7 +124,7 @@ public class Server implements NetworkEventListener {
 
         // Store the first version so we can give it new players
         final ChangeSet firstChangeSet = gameLogicManager.getEntityManager()
-                .getChangeSet();
+                .createChangeSet();
         changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
     }
 
@@ -250,7 +250,7 @@ public class Server implements NetworkEventListener {
         // Get current change set from entity manager and merge it with all the
         // save versions
         final ChangeSet currentChangeSet = gameLogicManager.getEntityManager()
-                .getChangeSet();
+                .createChangeSet();
         for (final ChangeSet changeSet : changeSetLookup.values()) {
             changeSet.merge(currentChangeSet);
         }
@@ -315,7 +315,7 @@ public class Server implements NetworkEventListener {
         // Fill the change set queue
         for (int i = 0; i < storedChangesets; i++) {
             final ChangeSet changeSet = gameLogicManager.getEntityManager()
-                    .getChangeSet();
+                    .createChangeSet();
             changeSets.add(changeSet);
             changeSetLookup.put(changeSet.getVersion(), changeSet);
         }

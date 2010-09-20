@@ -36,4 +36,12 @@ public interface ScreenMouseEventListener {
      *            Mouse event information
      */
     void onMouseHover(ScreenMouseEvent e);
+
+    /**
+     * Called when mouse is clicked above the screen.
+     * 
+     * @param e
+     *            Mouse event information
+     */
+    void onMouseClicked(ScreenMouseEvent e);
 }

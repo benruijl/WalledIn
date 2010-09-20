@@ -20,35 +20,38 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui.components;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
+import walledin.engine.gui.components.ListView;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.game.gamemode.GameMode;
 import walledin.game.network.ServerData;
 
-public class ServerList extends AbstractScreen implements
+public class ServerList extends ListView<ServerData> implements
         ScreenMouseEventListener {
+    private static final int MAX_VISIBLE = 17;
+    private static final String[] COLUMN_NAMES = { "Name", "Players", "Type" };
+    private static final float[] COLUMN_WIDTH = { 150f, 70f, 170f };
+
     private final AbstractScreen refreshButton;
     private List<ServerData> serverList; // list of servers
-    private final List<AbstractScreen> serverButtons; // list of buttons
     private final ClientLogicManager clientLogicManager;
 
     public ServerList(final AbstractScreen parent, final Rectangle boudingRect,
             final ClientLogicManager clientLogicManager) {
-        super(parent, boudingRect, 1);
+        super(parent, boudingRect, 1, COLUMN_NAMES.length, COLUMN_NAMES,
+                COLUMN_WIDTH, MAX_VISIBLE);
         this.clientLogicManager = clientLogicManager;
-        serverButtons = new ArrayList<AbstractScreen>();
 
         refreshButton = new Button(this, "Refresh", new Vector2f(400, 40));
         refreshButton.addMouseEventListener(this);
@@ -60,40 +63,25 @@ public class ServerList extends AbstractScreen implements
     public void update(final double delta) {
         serverList = clientLogicManager.getClient().getServerList();
 
-        for (int i = 0; i < serverButtons.size(); i++) {
-            removeChild(serverButtons.get(i));
+        /* Start with an empty list. */
+        resetData();
+
+        for (final ServerData serverData : serverList) {
+            final String[] stringData = { serverData.getName(),
+                    serverData.getPlayers() + "/" + serverData.getMaxPlayers(),
+                    serverData.getGameMode().toString() };
+            addData(new RowData<ServerData>(serverData, stringData));
         }
 
-        serverButtons.clear();
-
-        for (int i = 0; i < serverList.size(); i++) {
-            final AbstractScreen server = new Button(this, serverList.get(i)
-                    .getName()
-                    + " ("
-                    + serverList.get(i).getAddress().getAddress()
-                    + ")"
-                    + " "
-                    + serverList.get(i).getPlayers()
-                    + "/"
-                    + serverList.get(i).getMaxPlayers() + " players",
-                    new Vector2f(10, 65 + i * 20));
-            server.registerScreenManager(getManager());
-            server.addMouseEventListener(this);
-            serverButtons.add(server);
-            addChild(server);
-        }
-
-        for (int i = 0; i < serverButtons.size(); i++) {
-            serverButtons.get(i).update(delta);
-        }
+        sortData();
+        updateScrollBar();
 
         super.update(delta);
     }
 
     @Override
     public void draw(final Renderer renderer) {
-        final Font font = getManager().getFont("arial20");
-        font.renderText(renderer, "Server Name", new Vector2f(10, 40));
+        final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
 
         renderer.drawRectOutline(getRectangle());
         super.draw(renderer);
@@ -101,53 +89,49 @@ public class ServerList extends AbstractScreen implements
 
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
+        super.onMouseDown(e);
+    }
+
+    @Override
+    public void onMouseHover(final ScreenMouseEvent e) {
+        super.onMouseHover(e);
+    }
+
+    @Override
+    protected void onListItemClicked(final ServerData item) {
+        /* If clicked on server, load the game */
+        clientLogicManager.getClient().connectToServer(item);
+
+        if (clientLogicManager.getClient().isConnected()) {
+
+            /* If it is a team game, load the team selection screen */
+            final GameMode gameMode = item.getGameMode();
+            if (gameMode == GameMode.BRIDGE_BUILDER
+                    || gameMode == GameMode.TEAM_DEATHMATCH) {
+                getManager().getScreen(ScreenType.SELECT_TEAM).initialize();
+                getManager().getScreen(ScreenType.SELECT_TEAM).show();
+            } else {
+                getManager().getScreen(ScreenType.GAME).initialize();
+                getManager().getScreen(ScreenType.GAME).show();
+            }
+
+            getParent().hide();
+        }
+
+        super.onListItemClicked(item);
+    }
+
+    @Override
+    public void onMouseClicked(final ScreenMouseEvent e) {
         /* If clicked on refresh button, get server list */
         if (e.getScreen() == refreshButton) {
             getManager().createDialog("Refreshing server list.");
 
             // request a refresh
             clientLogicManager.getClient().refreshServerList();
-            Input.getInstance().setButtonUp(1); // FIXME
         }
 
-        /* If clicked on server, load the game */
-        for (int i = 0; i < serverButtons.size(); i++) {
-            if (e.getScreen() == serverButtons.get(i)) {
-                // connect to server
-                clientLogicManager.getClient().connectToServer(
-                        serverList.get(i));
-
-                if (clientLogicManager.getClient().isConnected()) {
-
-                    /* If it is a team game, load the team selection screen */
-                    final GameMode gameMode = serverList.get(i).getGameMode();
-                    if (gameMode == GameMode.BRIDGE_BUILDER
-                            || gameMode == GameMode.TEAM_DEATHMATCH) {
-                        getManager().getScreen(ScreenType.SELECT_TEAM)
-                                .initialize();
-                        getManager().getScreen(ScreenType.SELECT_TEAM).show();
-                    } else {
-                        getManager().getScreen(ScreenType.GAME).initialize();
-                        getManager().getScreen(ScreenType.GAME).show();
-                    }
-
-                    getParent().hide();
-                }
-
-                Input.getInstance().setButtonUp(1); // FIXME
-            }
-        }
-
-    }
-
-    @Override
-    public void onMouseHover(final ScreenMouseEvent e) {
-    }
-
-    @Override
-    public void initialize() {
-        // TODO Auto-generated method stub
-
+        super.onMouseClicked(e);
     }
 
 }

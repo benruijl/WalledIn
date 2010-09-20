@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.gui;
 
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.gui.AbstractScreen;
@@ -77,21 +76,23 @@ public class MainMenuScreen extends AbstractScreen implements
 
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseHover(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseClicked(final ScreenMouseEvent e) {
         if (e.getScreen() == startButton) {
             getManager().getScreen(ScreenType.SERVER_LIST).initialize();
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
-            Input.getInstance().setButtonUp(1); // FIXME
         }
 
         if (e.getScreen() == quitButton) {
             clientLogicManager.dispose(); // quit application
         }
-
-    }
-
-    @Override
-    public void onMouseHover(final ScreenMouseEvent e) {
     }
 
 }

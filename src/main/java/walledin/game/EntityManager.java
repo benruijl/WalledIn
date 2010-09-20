@@ -22,6 +22,7 @@ package walledin.game;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Renderer;
+import walledin.game.collision.CollisionManager;
+import walledin.game.collision.QuadTree;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
@@ -47,7 +50,7 @@ public class EntityManager {
     private final Set<Entity> removed;
     private final Set<Entity> created;
     private int currentVersion;
-    private EntityUpdateListener listener;
+    private final List<EntityUpdateListener> listeners;
 
     public EntityManager(final EntityFactory factory) {
         entities = new ConcurrentHashMap<String, Entity>();
@@ -56,10 +59,29 @@ public class EntityManager {
         this.factory = factory;
         drawOrderManager = new DrawOrderManager();
         currentVersion = 0;
+        listeners = new ArrayList<EntityUpdateListener>();
     }
 
-    public void setListener(final EntityUpdateListener listener) {
-        this.listener = listener;
+    public void addListener(final EntityUpdateListener listener) {
+        listeners.add(listener);
+    }
+
+    private void fireOnEntityRemoved(final Entity entity) {
+        for (final EntityUpdateListener listener : listeners) {
+            listener.onEntityRemoved(entity);
+        }
+    }
+
+    private void fireOnEntityCreated(final Entity entity) {
+        for (final EntityUpdateListener listener : listeners) {
+            listener.onEntityCreated(entity);
+        }
+    }
+
+    private void fireOnEntityUpdated(final Entity entity) {
+        for (final EntityUpdateListener listener : listeners) {
+            listener.onEntityUpdated(entity);
+        }
     }
 
     /**
@@ -74,6 +96,7 @@ public class EntityManager {
     public Entity create(final Family family, final String entityName) {
         final Entity entity = factory.create(this, family, entityName);
         add(entity);
+        fireOnEntityCreated(entity);
         return entity;
     }
 
@@ -189,6 +212,7 @@ public class EntityManager {
 
         entity.resetMarkedRemoved();
         entity.resetAttributes();
+        fireOnEntityRemoved(entity);
         return entity;
     }
 
@@ -207,7 +231,7 @@ public class EntityManager {
      * @return Entity list
      */
     public Map<String, Entity> getEntities() {
-        return entities;
+        return Collections.unmodifiableMap(entities);
     }
 
     /**
@@ -238,16 +262,23 @@ public class EntityManager {
         }
     }
 
-    public void doCollisionDetection(final Entity curMap, final double delta) {
+    public void doCollisionDetection(final Entity curMap,
+            final QuadTree staticMap, final double delta) {
         CollisionManager.calculateMapCollisions(curMap, entities.values(),
                 delta);
-        CollisionManager.calculateEntityCollisions(entities.values(), delta);
+        CollisionManager.calculateEntityCollisions(entities.values(),
+                staticMap, delta);
     }
 
     public void init() {
     }
 
-    public ChangeSet getChangeSet() {
+    /**
+     * Creates a new change set and resets the current internal values.
+     * 
+     * @return New changeset
+     */
+    public ChangeSet createChangeSet() {
         final ChangeSet result = new ChangeSet(currentVersion, created,
                 removed, entities);
         created.clear();
@@ -256,19 +287,26 @@ public class EntityManager {
         return result;
     }
 
+    /**
+     * Returns the current changeset.
+     * 
+     * @return Current changeset
+     */
+    public ChangeSet getCurrentChangeSet() {
+        return new ChangeSet(currentVersion, created, removed, entities);
+    }
+
     public int getCurrentVersion() {
         return currentVersion;
     }
 
     public void applyChangeSet(final ChangeSet changeSet) {
-        final Set<Entity> removed = new HashSet<Entity>();
-        final Set<Entity> created = new HashSet<Entity>();
         for (final String name : changeSet.getRemoved()) {
-            removed.add(remove(name));
+            remove(name);
         }
         for (final Entry<String, Family> entry : changeSet.getCreated()
                 .entrySet()) {
-            created.add(create(entry.getValue(), entry.getKey()));
+            create(entry.getValue(), entry.getKey());
         }
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {
@@ -277,14 +315,15 @@ public class EntityManager {
                     .entrySet()) {
                 entity.setAttribute(attribute.getKey(), attribute.getValue());
             }
+            fireOnEntityUpdated(entity);
         }
-        if (listener != null) {
-            for (final Entity entity : created) {
-                listener.entityCreated(entity);
-            }
-            for (final Entity entity : removed) {
-                listener.entityRemoved(entity);
-            }
-        }
+    }
+
+    public Set<Entity> getCreated() {
+        return Collections.unmodifiableSet(created);
+    }
+
+    public Set<Entity> getRemoved() {
+        return Collections.unmodifiableSet(removed);
     }
 }

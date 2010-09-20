@@ -249,6 +249,10 @@ public final class Audio {
             final OggDecoder decoder = new OggDecoder();
             final OggData ogg = decoder.getData(url.openStream());
 
+            if (ogg == null) {
+                return;
+            }
+
             final IntBuffer buffer = IntBuffer.allocate(1);
             al.alGenBuffers(1, buffer);
             al.alBufferData(buffer.get(0),
@@ -288,6 +292,7 @@ public final class Audio {
 
             al.alSourcei(source, ALConstants.AL_BUFFER, samples.get(name));
             al.alSourcef(source, ALConstants.AL_PITCH, 1.0f);
+
             /* Full volume. */
             al.alSourcef(source, ALConstants.AL_GAIN, 1.0f);
             al.alSource3f(source, ALConstants.AL_POSITION,

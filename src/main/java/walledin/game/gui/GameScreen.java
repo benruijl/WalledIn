@@ -25,13 +25,14 @@ import java.awt.event.KeyEvent;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenKeyEvent;
 import walledin.engine.gui.ScreenKeyEventListener;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.input.Input;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
 import walledin.game.EntityManager;
@@ -40,6 +41,7 @@ import walledin.game.entity.Entity;
 
 public class GameScreen extends AbstractScreen implements
         ScreenKeyEventListener {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(GameScreen.class);
     private final ClientLogicManager clientLogicManager;
 
@@ -60,7 +62,7 @@ public class GameScreen extends AbstractScreen implements
         entityManager.draw(renderer); // draw all entities in correct order
 
         renderer.startHUDRendering();
-        final Font font = getManager().getFont("arial20");
+        final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
         final Entity player = entityManager.get(clientLogicManager
                 .getPlayerName());
 
@@ -91,9 +93,9 @@ public class GameScreen extends AbstractScreen implements
 
         /*
          * If no other screen has the focus and this window is visible, take the
-         * focus.
+         * focus. This will enable the server to read the controls.
          */
-        if (getManager().getFocusedScreen() == null) {
+        if (getManager().isRootFocused()) {
             getManager().setFocusedScreen(this);
         }
     }

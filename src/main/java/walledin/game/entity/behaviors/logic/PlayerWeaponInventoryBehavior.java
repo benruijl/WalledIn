@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import walledin.game.CollisionManager.CollisionData;
+import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -33,7 +33,7 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class PlayerWeaponInventoryBehavior extends AbstractBehavior {
-    private final static Logger LOG = Logger
+    private static final Logger LOG = Logger
             .getLogger(PlayerWeaponInventoryBehavior.class);
     private final Map<Family, Entity> weapons;
     private final Map<Integer, Family> weaponKeyMap;

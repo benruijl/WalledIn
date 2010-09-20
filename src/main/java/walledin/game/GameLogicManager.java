@@ -35,13 +35,16 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
+import walledin.game.collision.QuadTree;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.game.entity.behaviors.logic.StaticObjectBehavior;
 import walledin.game.gamemode.GameMode;
 import walledin.game.gamemode.GameModeHandler;
 import walledin.game.gamemode.GameModeHandlerFactory;
@@ -60,7 +63,8 @@ import walledin.util.Utils;
  * @author Ben Ruijl
  * 
  */
-public final class GameLogicManager implements GameStateListener {
+public final class GameLogicManager implements GameStateListener,
+        EntityUpdateListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(GameLogicManager.class);
 
@@ -72,6 +76,8 @@ public final class GameLogicManager implements GameStateListener {
     private final EntityManager entityManager;
     /** Entity factory. */
     private final EntityFactory entityFactory;
+    /** Quadtree of static objects for collision detection. */
+    private QuadTree staticObjectsTree;
 
     /** Active map. */
     private Entity map;
@@ -100,6 +106,7 @@ public final class GameLogicManager implements GameStateListener {
     public GameLogicManager() {
         entityFactory = new EntityFactory();
         entityManager = new EntityManager(entityFactory);
+        entityManager.addListener(this);
         players = new HashMap<String, PlayerInfo>();
         teams = new HashMap<Team, Set<PlayerInfo>>();
         clusters = new ArrayList<List<Entity>>();
@@ -205,6 +212,7 @@ public final class GameLogicManager implements GameStateListener {
      *            Player
      */
     public void spawnPlayer(final Entity player) {
+        @SuppressWarnings("unchecked")
         final List<SpawnPoint> points = (List<SpawnPoint>) map
                 .getAttribute(Attribute.SPAWN_POINTS);
 
@@ -398,6 +406,7 @@ public final class GameLogicManager implements GameStateListener {
 
         staticField = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
                 * tileWidth / playerSize)];
+        @SuppressWarnings("unchecked")
         final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
         /*
@@ -551,8 +560,25 @@ public final class GameLogicManager implements GameStateListener {
         /* Update the game mode specific routines */
         gameModeHandler.update(delta);
 
+        /* Get the created entities. By this point their attributes are set. */
+        for (final Entity entity : entityManager.getCreated()) {
+            /* For now, add just foam particles. */
+            if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
+                staticObjectsTree.add(entity
+                        .getBehavior(StaticObjectBehavior.class));
+            }
+        }
+
+        for (final Entity entity : entityManager.getRemoved()) {
+            /* For now, add just foam particles. */
+            if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
+                staticObjectsTree.remove(entity
+                        .getBehavior(StaticObjectBehavior.class));
+            }
+        }
+
         /* Do collision detection */
-        entityManager.doCollisionDetection(map, delta);
+        entityManager.doCollisionDetection(map, staticObjectsTree, delta);
     }
 
     /**
@@ -580,6 +606,12 @@ public final class GameLogicManager implements GameStateListener {
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, mapName);
 
+        staticObjectsTree = new QuadTree(new Rectangle(0, 0,
+                (Integer) map.getAttribute(Attribute.WIDTH)
+                        * (Float) map.getAttribute(Attribute.TILE_WIDTH),
+                (Integer) map.getAttribute(Attribute.HEIGHT)
+                        * (Float) map.getAttribute(Attribute.TILE_WIDTH)));
+
         /* Build the static movability field. */
         buildStaticField();
     }
@@ -593,4 +625,16 @@ public final class GameLogicManager implements GameStateListener {
         LOG.info("The match has ended.");
     }
 
+    @Override
+    public void onEntityCreated(final Entity entity) {
+    }
+
+    @Override
+    public void onEntityRemoved(final Entity entity) {
+    }
+
+    @Override
+    public void onEntityUpdated(final Entity entity) {
+        // do nothing
+    }
 }

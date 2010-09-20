@@ -21,11 +21,14 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.engine.gui;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 
@@ -47,8 +50,8 @@ public abstract class AbstractScreen {
     /** Parent of this screen. */
     private final AbstractScreen parent;
 
-    /** Child screens of this screen. */
-    private final List<AbstractScreen> children;
+    /** Child screens of this screen sorted by z-index. */
+    private final SortedSet<AbstractScreen> children;
 
     /** Manager of this screen. */
     private ScreenManager manager;
@@ -91,7 +94,27 @@ public abstract class AbstractScreen {
      */
     public AbstractScreen(final AbstractScreen parent,
             final Rectangle boudingRect, final int z) {
-        children = new ArrayList<AbstractScreen>();
+
+        children = new TreeSet<AbstractScreen>(
+                new Comparator<AbstractScreen>() {
+
+                    @Override
+                    public int compare(final AbstractScreen o1,
+                            final AbstractScreen o2) {
+                        final int z1 = o1.getZIndex();
+                        final int z2 = o2.getZIndex();
+
+                        if (z1 == z2) {
+                            if (o1.hashCode() == o2.hashCode()) {
+                                return 0;
+                            }
+
+                            return o1.hashCode() < o2.hashCode() ? -1 : 1;
+                        }
+
+                        return z1 - z2;
+                    }
+                });
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
         keyListeners = new ArrayList<ScreenKeyEventListener>();
@@ -115,7 +138,27 @@ public abstract class AbstractScreen {
      */
     public AbstractScreen(final ScreenManager manager,
             final Rectangle boudingRect, final int z) {
-        children = new ArrayList<AbstractScreen>();
+
+        children = new TreeSet<AbstractScreen>(
+                new Comparator<AbstractScreen>() {
+
+                    @Override
+                    public int compare(final AbstractScreen o1,
+                            final AbstractScreen o2) {
+                        final int z1 = o1.getZIndex();
+                        final int z2 = o2.getZIndex();
+
+                        if (z1 == z2) {
+                            if (o1.hashCode() == o2.hashCode()) {
+                                return 0;
+                            }
+
+                            return o1.hashCode() < o2.hashCode() ? -1 : 1;
+                        }
+
+                        return z1 - z2;
+                    }
+                });
         position = new Vector2f();
         mouseListeners = new ArrayList<ScreenMouseEventListener>();
         keyListeners = new ArrayList<ScreenKeyEventListener>();
@@ -130,19 +173,24 @@ public abstract class AbstractScreen {
      * To be called after screen is added to the list. Do not call on
      * beforehand, because some functions may require a parent screen manager.
      */
-    public abstract void initialize();
+    public void initialize() {
+    }
 
     /**
-     * Finds the smallest screen containing the mouse cursor.
+     * Finds the smallest screen containing a certain position.
+     * 
+     * @param pos
+     *            Position to check
      * 
      * @return Returns a Screen on success and null on failure.
      */
-    public final AbstractScreen getSmallestScreenContainingCursor() {
-        if (pointInScreen(Input.getInstance().getMousePos().asVector2f())) {
+    public final AbstractScreen getSmallestScreenContainingPoint(
+            final Vector2f pos) {
+        if (pointInScreen(pos)) {
             for (final AbstractScreen screen : children) {
                 if (screen.isVisible()) {
                     final AbstractScreen b = screen
-                            .getSmallestScreenContainingCursor();
+                            .getSmallestScreenContainingPoint(pos);
 
                     if (b != null) {
                         return b;
@@ -154,6 +202,16 @@ public abstract class AbstractScreen {
         }
 
         return null;
+    }
+
+    /**
+     * Finds the smallest screen containing the mouse cursor.
+     * 
+     * @return Returns a Screen on success and null on failure.
+     */
+    public final AbstractScreen getSmallestScreenContainingCursor() {
+        return getSmallestScreenContainingPoint(Input.getInstance()
+                .getMousePos().asVector2f());
     }
 
     /**
@@ -329,9 +387,10 @@ public abstract class AbstractScreen {
      * 
      * @param childScreen
      *            Child screen
+     * @return True if the addition was successful, else false
      */
-    public final void addChild(final AbstractScreen childScreen) {
-        children.add(childScreen);
+    public final boolean addChild(final AbstractScreen childScreen) {
+        return children.add(childScreen);
     }
 
     /**
@@ -339,9 +398,10 @@ public abstract class AbstractScreen {
      * 
      * @param childScreen
      *            Child screen
+     * @return True if the removal was successful, else false
      */
-    public final void removeChild(final AbstractScreen childScreen) {
-        children.remove(childScreen);
+    public final boolean removeChild(final AbstractScreen childScreen) {
+        return children.remove(childScreen);
     }
 
     /**
@@ -462,6 +522,19 @@ public abstract class AbstractScreen {
     }
 
     /**
+     * Send the mouse clicked message when a button is clicked and the mouse
+     * hovers over this screen.
+     * 
+     * @param e
+     *            Event message
+     */
+    public final void sendMouseClickedMessage(final ScreenMouseEvent e) {
+        for (final ScreenMouseEventListener listener : mouseListeners) {
+            listener.onMouseClicked(e);
+        }
+    }
+
+    /**
      * Adds a key event listener to this screen.
      * 
      * @param listener
@@ -473,7 +546,7 @@ public abstract class AbstractScreen {
 
     /**
      * Sends the key down message when a key is pressed and this screen has the
-     * focus.
+     * focus. The message will be sent to the children as well.
      * 
      * @param e
      *            Event message
@@ -482,6 +555,21 @@ public abstract class AbstractScreen {
         for (final ScreenKeyEventListener listener : keyListeners) {
             listener.onKeyDown(e);
         }
+
+        for (final AbstractScreen screen : children) {
+            if (screen.isVisible()) {
+                screen.sendKeyDownMessage(e);
+            }
+        }
+    }
+
+    /**
+     * Checks if this screen has the focus.
+     * 
+     * @return True if it has the focus, else false.
+     */
+    private boolean hasFocus() {
+        return getManager().getFocusedScreen() == this;
     }
 
     /**

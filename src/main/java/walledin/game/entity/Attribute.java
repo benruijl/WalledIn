@@ -49,7 +49,7 @@ public enum Attribute {
     TILES(List.class, false),
     /** Width of a tile. This is also the height. */
     TILE_WIDTH(Float.class, true),
-    /** Map name will be sent separately at entity creation. */
+    /** Name of a map. */
     MAP_NAME(String.class, true),
     /** Spawn points of a map. */
     SPAWN_POINTS(List.class, false),

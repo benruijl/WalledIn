@@ -29,13 +29,13 @@ import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class GrenadeBehavior extends AbstractBehavior {
-    /** Explode time in seconds. */
-    private final double explodeTime = 2.0;
     /**
      * The number of particles created from the explosion. They will fly in
      * different directions.
      */
-    private final int numberOfParticles = 5;
+    private static final int NUMBER_OFPARTICALS = 5;
+    /** Explode time in seconds. */
+    private static final double EXPLODE_TIME = 2.0;
     private double time = 0;
     private final Vector2f particleTarget = new Vector2f(100.0f, 0);
     private final Vector2f particleAcc = new Vector2f(30000.0f, 0);
@@ -52,26 +52,29 @@ public class GrenadeBehavior extends AbstractBehavior {
     public void onUpdate(final double delta) {
         time += delta;
 
-        if (time > explodeTime) {
+        /* TODO: use shoot message? */
+        if (time > EXPLODE_TIME) {
             /* Explode! */
 
-            for (int i = 0; i < numberOfParticles; i++) {
+            for (int i = 0; i < NUMBER_OFPARTICALS; i++) {
                 final Entity foamBullet = getOwner().getEntityManager().create(
                         Family.FOAMGUN_BULLET);
                 foamBullet.setAttribute(Attribute.POSITION,
                         getAttribute(Attribute.POSITION));
 
-                foamBullet
-                        .sendMessage(MessageType.APPLY_FORCE, new Matrix2f(-i
-                                * Math.PI / (numberOfParticles - 1))
-                                .apply(particleAcc));
+                foamBullet.sendMessage(MessageType.APPLY_FORCE, new Matrix2f(-i
+                        * Math.PI / (NUMBER_OFPARTICALS - 1))
+                        .apply(particleAcc));
 
                 foamBullet
                         .setAttribute(Attribute.TARGET, ((Vector2f) foamBullet
                                 .getAttribute(Attribute.POSITION))
                                 .add(new Matrix2f(-i * Math.PI
-                                        / (numberOfParticles - 1))
+                                        / (NUMBER_OFPARTICALS - 1))
                                         .apply(particleTarget)));
+
+                foamBullet.setAttribute(Attribute.OWNED_BY,
+                        getAttribute(Attribute.OWNED_BY));
             }
 
             getOwner().remove();

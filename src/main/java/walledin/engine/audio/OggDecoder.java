@@ -49,8 +49,10 @@ public class OggDecoder {
 
     public OggData getData(final InputStream input) throws IOException {
         if (input == null) {
-            throw new IOException("Failed to read OGG, source does not exist?");
+            LOG.error("Failed to read OGG file. Does the file exist?");
+            return null;
         }
+
         final ByteArrayOutputStream dataout = new ByteArrayOutputStream();
 
         final SyncState oy = new SyncState();
@@ -80,9 +82,8 @@ public class OggDecoder {
             try {
                 bytes = input.read(buffer, index, 4096);
             } catch (final Exception e) {
-                LOG.error("Failure reading in vorbis");
-                LOG.error(e);
-                System.exit(0);
+                LOG.error("Failure reading in vorbis: ", e);
+                return null;
             }
             oy.wrote(bytes);
             if (oy.pageout(og) != 1) {
@@ -91,7 +92,7 @@ public class OggDecoder {
                 }
 
                 LOG.error("Input does not appear to be an Ogg bitstream.");
-                System.exit(0);
+                return null;
             }
 
             os.init(og.serialno());
@@ -99,19 +100,18 @@ public class OggDecoder {
             vi.init();
             vc.init();
             if (os.pagein(og) < 0) {
-
                 LOG.error("Error reading first page of Ogg bitstream data.");
-                System.exit(0);
+                return null;
             }
 
             if (os.packetout(op) != 1) {
                 LOG.error("Error reading initial header packet.");
-                System.exit(0);
+                return null;
             }
 
             if (vi.synthesis_headerin(vc, op) < 0) {
                 LOG.error("This Ogg bitstream does not contain Vorbis audio data.");
-                System.exit(0);
+                return null;
             }
 
             int i = 0;
@@ -147,13 +147,12 @@ public class OggDecoder {
                 try {
                     bytes = input.read(buffer, index, 4096);
                 } catch (final Exception e) {
-                    LOG.error("Failed to read Vorbis: ");
-                    LOG.error(e);
-                    System.exit(0);
+                    LOG.error("Failed to read Vorbis: ", e);
+                    return null;
                 }
                 if (bytes == 0 && i < 2) {
                     LOG.error("End of file before finding all Vorbis headers!");
-                    System.exit(0);
+                    return null;
                 }
                 oy.wrote(bytes);
             }
@@ -186,7 +185,8 @@ public class OggDecoder {
                                 break;
                             }
                             if (result == -1) {
-                                // FIXME wtf!
+                                // FIXME what should happen here?
+                                LOG.warn("Bitstream error.");
                             } else {
 
                                 int samples;
@@ -251,9 +251,8 @@ public class OggDecoder {
                         try {
                             bytes = input.read(buffer, index, 4096);
                         } catch (final Exception e) {
-                            LOG.error("Failure during vorbis decoding");
-                            LOG.error(e);
-                            System.exit(0);
+                            LOG.error("Failure during vorbis decoding: ", e);
+                            return null;
                         }
                     } else {
                         bytes = 0;

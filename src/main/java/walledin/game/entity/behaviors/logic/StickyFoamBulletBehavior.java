@@ -23,8 +23,8 @@ package walledin.game.entity.behaviors.logic;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
-import walledin.game.CollisionManager.CollisionData;
 import walledin.game.EntityManager;
+import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -37,6 +37,7 @@ import walledin.game.entity.MessageType;
  * 
  */
 public class StickyFoamBulletBehavior extends BulletBehavior {
+    @SuppressWarnings("unused")
     private static final Logger LOG = Logger
             .getLogger(StickyFoamBulletBehavior.class);
     private boolean blownUp;

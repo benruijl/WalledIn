@@ -23,6 +23,7 @@ package walledin.engine.gui.components;
 import walledin.engine.Font;
 import walledin.engine.Renderer;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.math.Vector2f;
@@ -35,7 +36,7 @@ public class Button extends AbstractScreen implements ScreenMouseEventListener {
 
     public Button(final AbstractScreen parent, final String text,
             final Vector2f pos) {
-        super(parent, parent.getManager().getFont("arial20")
+        super(parent, parent.getManager().getFont(FontType.BUTTON_CAPTION)
                 .getBoundingRect(text), 2);
         this.text = text;
         setPosition(pos);
@@ -58,7 +59,7 @@ public class Button extends AbstractScreen implements ScreenMouseEventListener {
     @Override
     public void draw(final Renderer renderer) {
 
-        final Font font = getManager().getFont("arial20");
+        final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
 
         if (selected) {
             renderer.setColorRGB(1, 0, 0);
@@ -82,5 +83,11 @@ public class Button extends AbstractScreen implements ScreenMouseEventListener {
     @Override
     public void onMouseHover(final ScreenMouseEvent e) {
         selected = true;
+    }
+
+    @Override
+    public void onMouseClicked(final ScreenMouseEvent e) {
+        // TODO Auto-generated method stub
+
     }
 }

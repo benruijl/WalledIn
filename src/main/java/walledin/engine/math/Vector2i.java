@@ -26,8 +26,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.engine.math;
 
 /**
+ * 2D integer vector class.
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public class Vector2i {
     private final int x;

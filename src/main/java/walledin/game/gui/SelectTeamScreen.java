@@ -24,10 +24,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import walledin.engine.Font;
-import walledin.engine.Input;
 import walledin.engine.Renderer;
 import walledin.engine.TextureManager;
 import walledin.engine.gui.AbstractScreen;
+import walledin.engine.gui.FontType;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
@@ -78,7 +78,7 @@ public class SelectTeamScreen extends AbstractScreen implements
         super.draw(renderer);
 
         renderer.drawRect("logo", new Rectangle(250, 50, 256, 128));
-        final Font font = getManager().getFont("arial20");
+        final Font font = getManager().getFont(FontType.BUTTON_CAPTION);
 
         /* Output the player names under the correct team */
         int redCount = 0;
@@ -123,6 +123,22 @@ public class SelectTeamScreen extends AbstractScreen implements
 
     @Override
     public void onMouseDown(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void update(final double delta) {
+        clientLogicManager.getClient().refreshPlayerList();
+        players = clientLogicManager.getClient().getPlayerList();
+
+        super.update(delta);
+    }
+
+    @Override
+    public void onMouseHover(final ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseClicked(final ScreenMouseEvent e) {
         if (e.getScreen() == teamBlue) {
             clientLogicManager.getClient().selectTeam(Team.BLUE);
             getManager().getScreen(ScreenType.GAME).initialize();
@@ -139,20 +155,7 @@ public class SelectTeamScreen extends AbstractScreen implements
         if (e.getScreen() == back) {
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
-            Input.getInstance().setButtonUp(1); // FIXME
         }
-    }
-
-    @Override
-    public void update(final double delta) {
-        clientLogicManager.getClient().refreshPlayerList();
-        players = clientLogicManager.getClient().getPlayerList();
-
-        super.update(delta);
-    }
-
-    @Override
-    public void onMouseHover(final ScreenMouseEvent e) {
     }
 
 }

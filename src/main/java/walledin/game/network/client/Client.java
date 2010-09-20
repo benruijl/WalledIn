@@ -32,8 +32,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import walledin.engine.Input;
 import walledin.engine.Renderer;
+import walledin.engine.input.Input;
 import walledin.game.ClientLogicManager;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerClientInfo;
@@ -224,15 +224,17 @@ public final class Client implements NetworkEventListener {
      * Bind the server notify channel so we can receive lan broadcasts.
      */
     public void bindServerNotifyChannel() {
-        try {
-            serverNotifyChannel = DatagramChannel.open();
-            serverNotifyChannel.socket()
-                    .bind(new InetSocketAddress(
-                            NetworkConstants.MASTER_PROTOCOL_PORT));
-            serverNotifyChannel.configureBlocking(false);
-            boundServerNotifyChannel = true;
-        } catch (final IOException e) {
-            LOG.warn("IOException", e);
+        if (!boundServerNotifyChannel) {
+            try {
+                serverNotifyChannel = DatagramChannel.open();
+                serverNotifyChannel.socket().bind(
+                        new InetSocketAddress(
+                                NetworkConstants.MASTER_PROTOCOL_PORT));
+                serverNotifyChannel.configureBlocking(false);
+                boundServerNotifyChannel = true;
+            } catch (final IOException e) {
+                LOG.warn("IOException", e);
+            }
         }
     }
 
