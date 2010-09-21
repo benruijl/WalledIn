@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Circle;
+import walledin.engine.math.OrientedRectangle;
 import walledin.engine.math.Polygon2f;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -207,9 +208,20 @@ public final class CollisionManager {
                 .sub(polygonVelocity);
 
         /* Polygon and circle at old position. */
-        final Polygon2f polygon = ((AbstractGeometry) polygonEntity
-                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
-                .translate(polygonOldPos).asPolygon();
+        Polygon2f polygon;
+
+        if (polygonEntity.hasAttribute(Attribute.ORIENTATION_ANGLE)) {
+            polygon = new OrientedRectangle(
+                    ((AbstractGeometry) polygonEntity.getAttribute(Attribute.BOUNDING_GEOMETRY))
+                            .asRectangle(), (Float) polygonEntity
+                            .getAttribute(Attribute.ORIENTATION_ANGLE))
+                    .translate(polygonOldPos).asPolygon();
+        } else {
+            polygon = ((AbstractGeometry) polygonEntity
+                    .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
+                    .translate(polygonOldPos).asPolygon();
+        }
+
         final Circle circle = ((AbstractGeometry) circleEntity
                 .getAttribute(Attribute.BOUNDING_GEOMETRY))
                 .asCircumscribedCircle().translate(circlePosition);

@@ -93,6 +93,10 @@ public class Rectangle extends AbstractGeometry {
         return new Vector2f(x, getBottom());
     }
 
+    public Vector2f getCenter() {
+        return new Vector2f(x + getWidth() / 2.0f, y + getHeight() / 2.0f);
+    }
+
     public Rectangle setPos(final Vector2f vPos) {
         return new Rectangle(vPos.getX(), vPos.getY(), width, height);
     }
@@ -138,7 +142,7 @@ public class Rectangle extends AbstractGeometry {
 
     @Override
     public Circle asInscribedCircle() {
-        throw new IllegalStateException("Not yet implemented");
+        throw new IllegalStateException("Not implemented yet");
     }
 
     @Override
