@@ -49,6 +49,8 @@ import walledin.util.SettingsManager;
  */
 public final class CollisionManager {
     private static final Logger LOG = Logger.getLogger(CollisionManager.class);
+    private static final float MAXIMUM_DELTA = SettingsManager.getInstance()
+            .getFloat("game.maximumDelta");
     private static final float FLOOR_DAMPING = SettingsManager.getInstance()
             .getFloat("game.floorDamping");
 
@@ -172,6 +174,7 @@ public final class CollisionManager {
                     + "Tried to access tile at coordinates (" + x + "," + y
                     + "), but the boundaries are (0,0) - (" + width + ","
                     + height + ").");
+            LOG.debug("Stacktrace: ", new Throwable());
 
             return new Tile(TileType.TILE_FILLED, x, y);
         }
@@ -358,11 +361,11 @@ public final class CollisionManager {
                     && !element.hasAttribute(Attribute.NO_COLLIDE)) {
 
                 /* Create a rectangle from the old and new position. */
-                final Vector2f theorPos = (Vector2f) element
+                final Vector2f oldPos = (Vector2f) element
                         .getAttribute(Attribute.POSITION);
-                final Vector2f oldPos = theorPos.sub(((Vector2f) element
-                        .getAttribute(Attribute.VELOCITY))
-                        .scale(1 / (float) delta));
+                final Vector2f frameVelocity = ((Vector2f) element
+                        .getAttribute(Attribute.VELOCITY)).scale((float) delta);
+                final Vector2f theorPos = oldPos.add(frameVelocity);
 
                 final Rectangle theorRect = ((AbstractGeometry) element
                         .getAttribute(Attribute.BOUNDING_GEOMETRY))
@@ -431,29 +434,30 @@ public final class CollisionManager {
                     continue;
                 }
 
-                Vector2f vel = (Vector2f) ent.getAttribute(Attribute.VELOCITY);
+                final Vector2f oldPos = (Vector2f) ent
+                        .getAttribute(Attribute.POSITION);
+                final Vector2f frameVelocity = ((Vector2f) ent
+                        .getAttribute(Attribute.VELOCITY)).scale((float) delta);
+                final Vector2f theorPos = oldPos.add(frameVelocity);
 
                 // skip static entities
-                if (vel.equals(new Vector2f(0, 0))) {
+                if (frameVelocity.equals(new Vector2f(0, 0))) {
                     continue;
                 }
 
-                vel = vel.scale((float) delta); // velocity per frame
                 final AbstractGeometry bounds = (AbstractGeometry) ent
                         .getAttribute(Attribute.BOUNDING_GEOMETRY);
                 Rectangle rect = bounds.asRectangle();
-                final Vector2f curPos = (Vector2f) ent
-                        .getAttribute(Attribute.POSITION);
-                final Vector2f oldPos = curPos.sub(vel);
 
-                float x = curPos.getX(); // new x position after collision
-                float y = curPos.getY(); // new y position after collision
+                float x = theorPos.getX(); // new x position after collision
+                float y = theorPos.getY(); // new y position after collision
 
                 // small value to prevent floating errors
                 final float eps = 0.001f;
 
                 // VERTICAL CHECK - move vertically only
-                rect = rect.setPos(new Vector2f(oldPos.getX(), curPos.getY()));
+                rect = rect
+                        .setPos(new Vector2f(oldPos.getX(), theorPos.getY()));
 
                 // check the four edges
                 Tile lt = tileFromPixel(map, rect.getLeftTop());
@@ -468,7 +472,7 @@ public final class CollisionManager {
                 float damping = 1.0f;
 
                 // bottom check
-                if (vel.getY() > 0
+                if (frameVelocity.getY() > 0
                         && (lb.getType().isSolid() || rb.getType().isSolid())) {
                     final int rest = (int) (rect.getBottom() / tileSize);
                     y = rest * tileSize - rect.getHeight() - eps;
@@ -476,14 +480,14 @@ public final class CollisionManager {
                     damping = FLOOR_DAMPING;
                 } else
                 // top check
-                if (vel.getY() < 0
+                if (frameVelocity.getY() < 0
                         && (lt.getType().isSolid() || rt.getType().isSolid())) {
                     final int rest = (int) (rect.getTop() / tileSize);
                     y = (rest + 1) * tileSize + eps;
                 }
 
                 // HORIZONTAL CHECK - move horizontally only
-                rect = rect.setPos(new Vector2f(curPos.getX(), y));
+                rect = rect.setPos(new Vector2f(theorPos.getX(), y));
 
                 lt = tileFromPixel(map, rect.getLeftTop());
                 lb = tileFromPixel(map, rect.getLeftBottom());
@@ -491,13 +495,13 @@ public final class CollisionManager {
                 rb = tileFromPixel(map, rect.getRightBottom());
 
                 // right check
-                if (vel.getX() > 0
+                if (frameVelocity.getX() > 0
                         && (rt.getType().isSolid() || rb.getType().isSolid())) {
                     final int rest = (int) (rect.getRight() / tileSize);
                     x = rest * tileSize - rect.getWidth() - eps;
                 } else
                 // left check
-                if (vel.getX() < 0
+                if (frameVelocity.getX() < 0
                         && (lt.getType().isSolid() || lb.getType().isSolid())) {
                     final int rest = (int) (rect.getLeft() / tileSize);
                     x = (rest + 1) * tileSize + eps;
@@ -510,13 +514,40 @@ public final class CollisionManager {
                                 - oldPos.getY()).scale((float) (1 / delta)));
 
                 // if there is no difference, there has been no collision
-                if (Math.abs(x - curPos.getX()) > eps
-                        || Math.abs(y - curPos.getY()) > eps) {
+                if (Math.abs(x - theorPos.getX()) > eps
+                        || Math.abs(y - theorPos.getY()) > eps) {
                     ent.sendMessage(MessageType.COLLIDED, new CollisionData(
-                            new Vector2f(x, y), oldPos, curPos, delta, map));
+                            new Vector2f(x, y), oldPos, theorPos, delta, map));
                 }
             }
         }
 
+    }
+
+    /**
+     * Does collision detection and moves the entities.
+     * 
+     * @param curMap
+     *            Current map
+     * @param entities
+     *            Collection of entities
+     * @param staticMap
+     *            Static collision quadtree
+     * @param delta
+     *            Delta time
+     */
+    public static void doCollisionDetection(final Entity curMap,
+            final Collection<Entity> entities, final QuadTree staticMap,
+            final double delta) {
+        double currentDelta = delta;
+
+        while (currentDelta > 0) {
+            CollisionManager.calculateMapCollisions(curMap, entities,
+                    Math.min(MAXIMUM_DELTA, currentDelta));
+            CollisionManager.calculateEntityCollisions(entities, staticMap,
+                    Math.min(MAXIMUM_DELTA, currentDelta));
+
+            currentDelta -= MAXIMUM_DELTA;
+        }
     }
 }

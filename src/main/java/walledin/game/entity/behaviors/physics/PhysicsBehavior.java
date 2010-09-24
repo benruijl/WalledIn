@@ -146,10 +146,7 @@ public class PhysicsBehavior extends AbstractBehavior {
                 * velocity.getY() * velocity.getY() * frictionCoefficient));
 
         final Vector2f velNew = velocity.add(acceleration.scale((float) delta));
-        final Vector2f posNew = position.add(velNew.scale((float) delta));
-
         setAttribute(Attribute.VELOCITY, velNew);
-        setAttribute(Attribute.POSITION, posNew);
 
         acceleration = new Vector2f(0, 0);
     }

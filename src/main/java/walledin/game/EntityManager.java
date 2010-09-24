@@ -264,9 +264,7 @@ public class EntityManager {
 
     public void doCollisionDetection(final Entity curMap,
             final QuadTree staticMap, final double delta) {
-        CollisionManager.calculateMapCollisions(curMap, entities.values(),
-                delta);
-        CollisionManager.calculateEntityCollisions(entities.values(),
+        CollisionManager.doCollisionDetection(curMap, entities.values(),
                 staticMap, delta);
     }
 

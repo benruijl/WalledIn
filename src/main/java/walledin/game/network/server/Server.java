@@ -216,6 +216,10 @@ public class Server implements NetworkEventListener {
         // convert to sec
         delta /= 1000000000.0;
 
+        if (delta > 0.030) {
+            LOG.warn("Server lag detected: " + delta);
+        }
+
         // Update game state
         gameLogicManager.update(delta);
         // Process the changes
