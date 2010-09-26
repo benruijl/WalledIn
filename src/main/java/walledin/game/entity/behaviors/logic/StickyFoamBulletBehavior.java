@@ -54,6 +54,11 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
 
         particle.setAttribute(Attribute.POSITION,
                 getAttribute(Attribute.POSITION));
+        particle.setAttribute(Attribute.ORIENTATION_ANGLE,
+                getAttribute(Attribute.ORIENTATION_ANGLE));
+        particle.setAttribute(Attribute.OWNED_BY,
+                getAttribute(Attribute.OWNED_BY));
+
         blownUp = true;
         getOwner().remove();
     }

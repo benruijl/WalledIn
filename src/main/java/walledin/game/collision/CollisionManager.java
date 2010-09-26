@@ -198,7 +198,7 @@ public final class CollisionManager {
             final Entity polygonEntity, final Entity circleEntity,
             final double delta) {
 
-        final Vector2f theoreticalPolygonPosition = (Vector2f) polygonEntity
+        final Vector2f polygonOldPos = (Vector2f) polygonEntity
                 .getAttribute(Attribute.POSITION);
 
         final Vector2f circlePosition = (Vector2f) circleEntity
@@ -206,9 +206,6 @@ public final class CollisionManager {
 
         final Vector2f polygonVelocity = ((Vector2f) polygonEntity
                 .getAttribute(Attribute.VELOCITY)).scale((float) delta);
-
-        final Vector2f polygonOldPos = theoreticalPolygonPosition
-                .sub(polygonVelocity);
 
         /* Polygon and circle at old position. */
         Polygon2f polygon;
@@ -258,7 +255,7 @@ public final class CollisionManager {
 
         polygonEntity.setAttribute(Attribute.VELOCITY,
                 newPolygonPos.sub(polygonOldPos).scale(1.0f / (float) delta));
-        polygonEntity.setAttribute(Attribute.POSITION, newPolygonPos);
+        // polygonEntity.setAttribute(Attribute.POSITION, newPolygonPos);
 
         return true;
     }
@@ -279,22 +276,17 @@ public final class CollisionManager {
     public static void sendCollisionMessage(final Entity objectA,
             final Entity objectB, final double delta, final boolean check) {
         /* Gather some information for the collision event. */
-        final Vector2f theorPosA = (Vector2f) objectA
+        final Vector2f oldPosA = (Vector2f) objectA
                 .getAttribute(Attribute.POSITION);
-        final Vector2f theorPosB = (Vector2f) objectB
+        final Vector2f oldPosB = (Vector2f) objectB
                 .getAttribute(Attribute.POSITION);
 
-        final Vector2f oldPosA = theorPosA.sub(((Vector2f) objectA
+        final Vector2f theorPosA = oldPosA.add(((Vector2f) objectA
                 .getAttribute(Attribute.VELOCITY)).scale((float) delta));
-        final Vector2f oldPosB = theorPosA.sub(((Vector2f) objectB
+        final Vector2f theorPosB = oldPosB.add(((Vector2f) objectB
                 .getAttribute(Attribute.VELOCITY)).scale((float) delta));
 
         /* Kind of a hack. */
-        final Vector2f posA = (Vector2f) objectA
-                .getAttribute(Attribute.POSITION);
-        final Vector2f posB = (Vector2f) objectB
-                .getAttribute(Attribute.POSITION);
-
         final AbstractGeometry boundsA = ((AbstractGeometry) objectA
                 .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
                 .translate(theorPosA);
@@ -303,10 +295,10 @@ public final class CollisionManager {
                 .translate(theorPosB);
 
         if (!check || boundsA.intersects(boundsB)) {
-            objectA.sendMessage(MessageType.COLLIDED, new CollisionData(posA,
-                    oldPosA, theorPosA, delta, objectB));
-            objectB.sendMessage(MessageType.COLLIDED, new CollisionData(posB,
-                    oldPosB, theorPosB, delta, objectA));
+            objectA.sendMessage(MessageType.COLLIDED, new CollisionData(
+                    oldPosA, oldPosA, theorPosA, delta, objectB));
+            objectB.sendMessage(MessageType.COLLIDED, new CollisionData(
+                    oldPosB, oldPosB, theorPosB, delta, objectA));
         }
     }
 
@@ -393,6 +385,7 @@ public final class CollisionManager {
                         if (object instanceof StaticObjectBehavior) {
                             final Entity target = ((StaticObjectBehavior) object)
                                     .getOwner();
+
                             if (resolvePolygonCircleCollision(element, target,
                                     delta)) {
                                 element.sendMessage(
@@ -507,7 +500,7 @@ public final class CollisionManager {
                     x = (rest + 1) * tileSize + eps;
                 }
 
-                ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
+                // ent.setAttribute(Attribute.POSITION, new Vector2f(x, y));
                 ent.setAttribute(
                         Attribute.VELOCITY,
                         new Vector2f((x - oldPos.getX()) * damping, y
@@ -546,6 +539,19 @@ public final class CollisionManager {
                     Math.min(MAXIMUM_DELTA, currentDelta));
             CollisionManager.calculateEntityCollisions(entities, staticMap,
                     Math.min(MAXIMUM_DELTA, currentDelta));
+
+            /* Update all the entity positions. */
+            for (Entity entity : entities) {
+                if (entity.hasAttribute(Attribute.POSITION)
+                        && entity.hasAttribute(Attribute.VELOCITY)) {
+                    entity.setAttribute(Attribute.POSITION, ((Vector2f) entity
+                            .getAttribute(Attribute.POSITION))
+                            .add(((Vector2f) entity
+                                    .getAttribute(Attribute.VELOCITY))
+                                    .scale((float) Math.min(MAXIMUM_DELTA,
+                                            currentDelta))));
+                }
+            }
 
             currentDelta -= MAXIMUM_DELTA;
         }

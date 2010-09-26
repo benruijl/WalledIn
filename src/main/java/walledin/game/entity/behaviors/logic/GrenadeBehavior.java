@@ -33,7 +33,7 @@ public class GrenadeBehavior extends AbstractBehavior {
      * The number of particles created from the explosion. They will fly in
      * different directions.
      */
-    private static final int NUMBER_OFPARTICALS = 5;
+    private static final int NUMBER_OF_PARTICLES = 5;
     /** Explode time in seconds. */
     private static final double EXPLODE_TIME = 2.0;
     private double time = 0;
@@ -56,21 +56,21 @@ public class GrenadeBehavior extends AbstractBehavior {
         if (time > EXPLODE_TIME) {
             /* Explode! */
 
-            for (int i = 0; i < NUMBER_OFPARTICALS; i++) {
+            for (int i = 0; i < NUMBER_OF_PARTICLES; i++) {
                 final Entity foamBullet = getOwner().getEntityManager().create(
                         Family.FOAMGUN_BULLET);
                 foamBullet.setAttribute(Attribute.POSITION,
                         getAttribute(Attribute.POSITION));
 
                 foamBullet.sendMessage(MessageType.APPLY_FORCE, new Matrix2f(-i
-                        * Math.PI / (NUMBER_OFPARTICALS - 1))
+                        * Math.PI / (NUMBER_OF_PARTICLES - 1))
                         .apply(particleAcc));
 
                 foamBullet
                         .setAttribute(Attribute.TARGET, ((Vector2f) foamBullet
                                 .getAttribute(Attribute.POSITION))
                                 .add(new Matrix2f(-i * Math.PI
-                                        / (NUMBER_OFPARTICALS - 1))
+                                        / (NUMBER_OF_PARTICLES - 1))
                                         .apply(particleTarget)));
 
                 foamBullet.setAttribute(Attribute.OWNED_BY,
