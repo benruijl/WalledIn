@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.EntityManager;
-import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -63,17 +62,18 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
         super.onMessage(messageType, data);
 
         if (messageType == MessageType.COLLIDED) {
-            final CollisionData colData = (CollisionData) data;
-            if (!blownUp) {
+            // final CollisionData colData = (CollisionData) data;
+            // if (!blownUp) {
+            //
+            // if (colData.getCollisionEntity().getFamily() == Family.MAP
+            // || colData.getCollisionEntity().getFamily()
+            // .equals(Family.FOAM_PARTICLE)
+            // ) {
+            // spawnBullet();
+            // }
+            // }
 
-                if (colData.getCollisionEntity().getFamily() == Family.MAP
-                /*
-                 * || colData.getCollisionEntity().getFamily()
-                 * .equals(Family.FOAM_PARTICLE)
-                 */) {
-                    spawnBullet();
-                }
-            }
+            LOG.warn("Unimplemented collision event.");
         }
 
     }

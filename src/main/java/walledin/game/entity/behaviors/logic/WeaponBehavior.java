@@ -29,7 +29,6 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
-import walledin.game.entity.behaviors.physics.PhysicsBehavior;
 import walledin.util.Utils;
 
 public class WeaponBehavior extends AbstractBehavior {
@@ -80,13 +79,11 @@ public class WeaponBehavior extends AbstractBehavior {
                  * The weapon cannot collide anymore when it is attached to the
                  * player. The physics are also removed.
                  */
-                getOwner().setAttribute(Attribute.NO_COLLIDE, true);
-                getOwner().removeBehavior(PhysicsBehavior.class);
+                LOG.warn("TODO: disable collisions");
 
             } else {
                 getOwner().setAttribute(Attribute.NO_COLLIDE, null);
-                getOwner().addBehavior(
-                        new PhysicsBehavior(getOwner(), WEAPON_MASS));
+                LOG.warn("TODO: enable collision");
             }
         }
 

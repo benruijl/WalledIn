@@ -27,6 +27,8 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.jbox2d.collision.AABB;
+import org.jbox2d.common.Vec2;
 
 import walledin.engine.Font;
 import walledin.engine.RenderListener;
@@ -40,6 +42,7 @@ import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.engine.physics.PhysicsManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
@@ -118,10 +121,10 @@ public final class ClientLogicManager implements RenderListener,
 
         final SettingsManager settings = SettingsManager.getInstance();
 
-        renderer.initialize("WalledIn",
-                settings.getInteger("engine.window.width"),
-                settings.getInteger("engine.window.height"),
-                settings.getBoolean("engine.window.fullScreen"));
+        renderer.initialize("WalledIn", settings
+                .getInteger("engine.window.width"), settings
+                .getInteger("engine.window.height"), settings
+                .getBoolean("engine.window.fullScreen"));
         renderer.addListener(this);
     }
 
@@ -438,69 +441,43 @@ public final class ClientLogicManager implements RenderListener,
         manager.createTexturePart("player_foot", "player", new Rectangle(192,
                 32, 96, 32));
         manager.createTexturePart("sun", "sun", new Rectangle(0, 0, 128, 128));
-        manager.createTexturePart(
-                "tile_empty",
-                "tiles",
+        manager.createTexturePart("tile_empty", "tiles",
                 createMapTextureRectangle(6, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_filled",
-                "tiles",
+        manager.createTexturePart("tile_filled", "tiles",
                 createMapTextureRectangle(1, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_left",
-                "tiles",
+        manager.createTexturePart("tile_top_grass_end_left", "tiles",
                 createMapTextureRectangle(4, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass_end_right",
-                "tiles",
+        manager.createTexturePart("tile_top_grass_end_right", "tiles",
                 createMapTextureRectangle(5, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_grass",
-                "tiles",
+        manager.createTexturePart("tile_top_grass", "tiles",
                 createMapTextureRectangle(16, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_grass",
-                "tiles",
+        manager.createTexturePart("tile_left_grass", "tiles",
                 createMapTextureRectangle(19, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_left_mud",
-                "tiles",
+        manager.createTexturePart("tile_left_mud", "tiles",
                 createMapTextureRectangle(20, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_right_mud",
-                "tiles",
+        manager.createTexturePart("tile_right_mud", "tiles",
                 createMapTextureRectangle(21, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass",
-                "tiles",
+        manager.createTexturePart("tile_top_left_grass", "tiles",
                 createMapTextureRectangle(32, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_left_mud",
-                "tiles",
+        manager.createTexturePart("tile_bottom_left_mud", "tiles",
                 createMapTextureRectangle(36, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_right_mud",
-                "tiles",
+        manager.createTexturePart("tile_bottom_right_mud", "tiles",
                 createMapTextureRectangle(37, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_top_left_grass_end",
-                "tiles",
+        manager.createTexturePart("tile_top_left_grass_end", "tiles",
                 createMapTextureRectangle(48, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
-        manager.createTexturePart(
-                "tile_bottom_mud",
-                "tiles",
+        manager.createTexturePart("tile_bottom_mud", "tiles",
                 createMapTextureRectangle(52, TILES_PER_LINE, TILE_SIZE,
                         TILE_SIZE));
     }

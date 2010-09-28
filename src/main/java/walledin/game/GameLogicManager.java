@@ -33,17 +33,17 @@ import java.util.Set;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.jbox2d.collision.AABB;
+import org.jbox2d.common.Vec2;
 
-import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
-import walledin.game.collision.QuadTree;
+import walledin.engine.physics.PhysicsManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
-import walledin.game.entity.behaviors.logic.StaticObjectBehavior;
 import walledin.game.gamemode.GameMode;
 import walledin.game.gamemode.GameModeHandler;
 import walledin.game.gamemode.GameModeHandlerFactory;
@@ -75,8 +75,6 @@ public final class GameLogicManager implements GameStateListener,
     private final EntityManager entityManager;
     /** Entity factory. */
     private final EntityFactory entityFactory;
-    /** Quadtree of static objects for collision detection. */
-    private QuadTree staticObjectsTree;
 
     /** Active map. */
     private Entity map;
@@ -484,25 +482,8 @@ public final class GameLogicManager implements GameStateListener,
         /* Update the game mode specific routines */
         gameModeHandler.update(delta);
 
-        /* Get the created entities. By this point their attributes are set. */
-        for (final Entity entity : entityManager.getCreated()) {
-            /* For now, add just foam particles. */
-            if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
-                staticObjectsTree.add(entity
-                        .getBehavior(StaticObjectBehavior.class));
-            }
-        }
-
-        for (final Entity entity : entityManager.getRemoved()) {
-            /* For now, add just foam particles. */
-            if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
-                staticObjectsTree.remove(entity
-                        .getBehavior(StaticObjectBehavior.class));
-            }
-        }
-
-        /* Do collision detection */
-        entityManager.doCollisionDetection(map, staticObjectsTree, delta);
+        /* Update physics and do collision detection */
+        PhysicsManager.getInstance().update();
     }
 
     /**
@@ -529,15 +510,11 @@ public final class GameLogicManager implements GameStateListener,
 
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, mapName);
+        
+        /* Initialize physics and create physical world. */
+        PhysicsManager.getInstance().initialize(
+                new AABB(new Vec2(0, 0), new Vec2(900, 900)));
 
-        staticObjectsTree = new QuadTree(new Rectangle(0, 0,
-                (Integer) map.getAttribute(Attribute.WIDTH)
-                        * (Float) map.getAttribute(Attribute.TILE_WIDTH),
-                (Integer) map.getAttribute(Attribute.HEIGHT)
-                        * (Float) map.getAttribute(Attribute.TILE_WIDTH)));
-
-        /* Build the static movability field. */
-        buildStaticField();
     }
 
     @Override

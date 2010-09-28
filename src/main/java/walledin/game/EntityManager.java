@@ -26,15 +26,13 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
 import walledin.engine.Renderer;
-import walledin.game.collision.CollisionManager;
-import walledin.game.collision.QuadTree;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
@@ -260,14 +258,6 @@ public class EntityManager {
         for (final Entity entity : entities.values()) {
             entity.sendUpdate(delta);
         }
-    }
-
-    public void doCollisionDetection(final Entity curMap,
-            final QuadTree staticMap, final double delta) {
-        CollisionManager.calculateMapCollisions(curMap, entities.values(),
-                delta);
-        CollisionManager.calculateEntityCollisions(entities.values(),
-                staticMap, delta);
     }
 
     public void init() {

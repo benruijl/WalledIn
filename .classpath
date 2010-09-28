@@ -11,5 +11,10 @@
 	<classpathentry kind="lib" path="lib/jorbis-0.0.17.jar"/>
 	<classpathentry kind="lib" path="lib/joal-1.1.2.jar" sourcepath="lib/joal-1.1.2-src.zip"/>
 	<classpathentry kind="lib" path="lib/groovy-all-1.7.4.jar"/>
+	<classpathentry kind="lib" path="lib/jbox2d-2.0.1.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/WalledIn/lib/jbox2d-doc.zip!/doc"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="build/classes/main"/>
 </classpath>

@@ -20,15 +20,18 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Vector2f;
-import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class BulletBehavior extends AbstractBehavior {
+    private static final Logger LOG = Logger
+    .getLogger(BulletBehavior.class);
+    
     /** The damage the player takes from this bullet. */
     private final int damage;
 
@@ -40,25 +43,27 @@ public class BulletBehavior extends AbstractBehavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
-            final CollisionData colData = (CollisionData) data;
-
-            // if collided with map, destroy
-            if (colData.getCollisionEntity().getFamily().equals(Family.MAP)) {
-                getOwner().remove();
-            }
-
-            // if collided with entity that has a health component, remove and
-            // do damage
-            if (colData.getCollisionEntity().hasAttribute(Attribute.HEALTH)) {
-                colData.getCollisionEntity().sendMessage(
-                        MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
-
-                colData.getCollisionEntity()
-                        .setAttribute(Attribute.LAST_DAMAGE,
-                                getAttribute(Attribute.OWNED_BY));
-
-                getOwner().remove();
-            }
+//            final CollisionData colData = (CollisionData) data;
+//
+//            // if collided with map, destroy
+//            if (colData.getCollisionEntity().getFamily().equals(Family.MAP)) {
+//                getOwner().remove();
+//            }
+//
+//            // if collided with entity that has a health component, remove and
+//            // do damage
+//            if (colData.getCollisionEntity().hasAttribute(Attribute.HEALTH)) {
+//                colData.getCollisionEntity().sendMessage(
+//                        MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
+//
+//                colData.getCollisionEntity()
+//                        .setAttribute(Attribute.LAST_DAMAGE,
+//                                getAttribute(Attribute.OWNED_BY));
+//
+//                getOwner().remove();
+//            }
+            
+            LOG.warn("Unimplemented collision event.");
         }
 
         if (messageType == MessageType.ATTRIBUTE_SET) {

@@ -20,14 +20,15 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
-import walledin.game.EntityManager;
-import walledin.game.collision.CollisionManager.CollisionData;
-import walledin.game.entity.Attribute;
+import org.apache.log4j.Logger;
+
 import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class FoamBulletBehavior extends BulletBehavior {
+    private static final Logger LOG = Logger
+            .getLogger(FoamBulletBehavior.class);
+
     private boolean blownUp;
 
     public FoamBulletBehavior(final Entity owner) {
@@ -40,29 +41,30 @@ public class FoamBulletBehavior extends BulletBehavior {
         super.onMessage(messageType, data);
 
         if (messageType == MessageType.COLLIDED) {
-            final CollisionData colData = (CollisionData) data;
-            if (!blownUp) {
-
-                // if collided with map or other foam particle create a
-                // foam particle
-                if (colData.getCollisionEntity().getFamily() == Family.MAP
-                        || colData.getCollisionEntity().getFamily()
-                                .equals(Family.FOAM_PARTICLE)) {
-                    final EntityManager manager = getEntityManager();
-                    final Entity particle = manager
-                            .create(Family.FOAM_PARTICLE);
-
-                    particle.setAttribute(Attribute.POSITION,
-                            getAttribute(Attribute.POSITION));
-                    particle.setAttribute(Attribute.ORIENTATION_ANGLE,
-                            getAttribute(Attribute.ORIENTATION_ANGLE));
-                    particle.setAttribute(Attribute.OWNED_BY,
-                            getAttribute(Attribute.OWNED_BY));
-                    blownUp = true;
-
-                    getOwner().remove(); // remove the foam bullet
-                }
-            }
+            // final CollisionData colData = (CollisionData) data;
+            // if (!blownUp) {
+            //
+            // // if collided with map or other foam particle create a
+            // // foam particle
+            // if (colData.getCollisionEntity().getFamily() == Family.MAP
+            // || colData.getCollisionEntity().getFamily()
+            // .equals(Family.FOAM_PARTICLE)) {
+            // final EntityManager manager = getEntityManager();
+            // final Entity particle = manager
+            // .create(Family.FOAM_PARTICLE);
+            //
+            // particle.setAttribute(Attribute.POSITION,
+            // getAttribute(Attribute.POSITION));
+            // particle.setAttribute(Attribute.ORIENTATION_ANGLE,
+            // getAttribute(Attribute.ORIENTATION_ANGLE));
+            // particle.setAttribute(Attribute.OWNED_BY,
+            // getAttribute(Attribute.OWNED_BY));
+            // blownUp = true;
+            //
+            // getOwner().remove(); // remove the foam bullet
+            // }
+            // }
+            LOG.warn("Unimplemented collision event.");
         }
     }
 }

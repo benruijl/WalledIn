@@ -1,7 +1,6 @@
 import walledin.engine.math.*
 import walledin.game.entity.*
 import walledin.game.entity.behaviors.logic.*
-import walledin.game.entity.behaviors.physics.*
 
 [
 (Family.PLAYER): { entity ->
@@ -42,8 +41,8 @@ import walledin.game.entity.behaviors.physics.*
     entity.addBehavior(new FoamParticleBehavior(entity));
    entity.addBehavior(new HealthBehavior(entity, 100, 80));    
     
-    entity.addBehavior(new PhysicsBehavior(entity, 2e4, false, false));
-    entity.addBehavior(new StaticObjectBehavior(entity));
+    //entity.addBehavior(new PhysicsBehavior(entity, 2e4, false, false));
+    //entity.addBehavior(new StaticObjectBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
 } as EntityFunction,
@@ -83,7 +82,7 @@ import walledin.game.entity.behaviors.physics.*
 
 (Family.FOAMNADE): { entity ->
     def destRect = new Rectangle(0, 0, 32, 32)
-    entity.addBehavior(new PhysicsBehavior(entity, 10, true, false));
+    //entity.addBehavior(new PhysicsBehavior(entity, 10, true, false));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
     entity.addBehavior(new GrenadeBehavior(entity));

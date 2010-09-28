@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import walledin.game.collision.CollisionManager.GeometricalCollisionData;
-
 public class Polygon2f {
     /** Logger. */
     @SuppressWarnings("unused")
@@ -129,33 +127,33 @@ public class Polygon2f {
         return closest;
     }
 
-    public GeometricalCollisionData circleCollisionData(final Circle circle,
-            final Vector2f velocity) {
-        final float time = circleCollision(circle, velocity);
-
-        if (time < 0) {
-            return new GeometricalCollisionData(false, 0, null, null);
-        }
-
-        final Vector2f circlePos = circle.getPos().add(velocity.scale(time));
-        final Vector2f polygonPoint = closestPointOnPolygon(circlePos);
-        Vector2f circlePoint = new Circle(circlePos, circle.getRadius())
-                .closestPointOnCircle(polygonPoint);
-
-        Vector2f normal = circlePos.sub(polygonPoint).normalize();
-        Vector2f penetration = polygonPoint.sub(circlePoint);
-
-        if (pointInsidePolygon(circlePos)) {
-            /* We are deep in the polygon! */
-            if (!new Circle(circlePos, circle.getRadius())
-                    .isPointInCircle(polygonPoint)) {
-                normal = normal.scale(-1.0f);
-            }
-
-            circlePoint = circlePos.add(normal.scale(circle.getRadius()));
-            penetration = polygonPoint.sub(circlePoint);
-        }
-
-        return new GeometricalCollisionData(true, time, normal, penetration);
-    }
+    // public GeometricalCollisionData circleCollisionData(final Circle circle,
+    // final Vector2f velocity) {
+    // final float time = circleCollision(circle, velocity);
+    //
+    // if (time < 0) {
+    // return new GeometricalCollisionData(false, 0, null, null);
+    // }
+    //
+    // final Vector2f circlePos = circle.getPos().add(velocity.scale(time));
+    // final Vector2f polygonPoint = closestPointOnPolygon(circlePos);
+    // Vector2f circlePoint = new Circle(circlePos, circle.getRadius())
+    // .closestPointOnCircle(polygonPoint);
+    //
+    // Vector2f normal = circlePos.sub(polygonPoint).normalize();
+    // Vector2f penetration = polygonPoint.sub(circlePoint);
+    //
+    // if (pointInsidePolygon(circlePos)) {
+    // /* We are deep in the polygon! */
+    // if (!new Circle(circlePos, circle.getRadius())
+    // .isPointInCircle(polygonPoint)) {
+    // normal = normal.scale(-1.0f);
+    // }
+    //
+    // circlePoint = circlePos.add(normal.scale(circle.getRadius()));
+    // penetration = polygonPoint.sub(circlePoint);
+    // }
+    //
+    // return new GeometricalCollisionData(true, time, normal, penetration);
+    // }
 }

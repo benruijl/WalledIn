@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game.entity.behaviors.physics;
+package walledin.game.entity.behaviors.logic;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.Vector2f;
 import walledin.game.PlayerAction;
-import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -50,11 +49,13 @@ public class PlayerControlBehaviour extends AbstractBehavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
-            final CollisionData colData = (CollisionData) data;
+            // final CollisionData colData = (CollisionData) data;
+            //
+            // if (colData.getNewPos().getY() < colData.getTheorPos().getY()) {
+            // canJump = true;
+            // }
 
-            if (colData.getNewPos().getY() < colData.getTheorPos().getY()) {
-                canJump = true;
-            }
+            LOG.warn("Unimplemented collision event.");
 
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attribute = (Attribute) data;
