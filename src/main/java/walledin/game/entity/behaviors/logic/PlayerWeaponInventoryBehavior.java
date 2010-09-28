@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import walledin.game.CollisionManager.CollisionData;
+import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;

@@ -633,7 +633,7 @@ public class Renderer implements GLEventListener {
     /**
      * This function restores the projection and modelview matrices to the point
      * just before the call to <code>startHUDRendering</code>. It is
-     * <u>mandatory</u> to call this function after a call to startHudRendering.
+     * <b>mandatory</b> to call this function after a call to startHudRendering.
      * 
      * @see Renderer#startHUDRendering()
      */

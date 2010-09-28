@@ -18,7 +18,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.game;
+package walledin.game.collision;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Circle;
+import walledin.engine.math.OrientedRectangle;
 import walledin.engine.math.Polygon2f;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -34,6 +35,7 @@ import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.game.entity.behaviors.logic.StaticObjectBehavior;
 import walledin.game.map.Tile;
 import walledin.game.map.TileType;
 import walledin.util.SettingsManager;
@@ -91,6 +93,8 @@ public final class CollisionManager {
         private final Entity collisionEntity;
 
         /**
+         * Creates a new collision data package.
+         * 
          * @param newPos
          *            The position after the collision detection
          * @param oldPos
@@ -204,9 +208,20 @@ public final class CollisionManager {
                 .sub(polygonVelocity);
 
         /* Polygon and circle at old position. */
-        final Polygon2f polygon = ((AbstractGeometry) polygonEntity
-                .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
-                .translate(polygonOldPos).asPolygon();
+        Polygon2f polygon;
+
+        if (polygonEntity.hasAttribute(Attribute.ORIENTATION_ANGLE)) {
+            polygon = new OrientedRectangle(
+                    ((AbstractGeometry) polygonEntity.getAttribute(Attribute.BOUNDING_GEOMETRY))
+                            .asRectangle(), (Float) polygonEntity
+                            .getAttribute(Attribute.ORIENTATION_ANGLE))
+                    .translate(polygonOldPos).asPolygon();
+        } else {
+            polygon = ((AbstractGeometry) polygonEntity
+                    .getAttribute(Attribute.BOUNDING_GEOMETRY)).asRectangle()
+                    .translate(polygonOldPos).asPolygon();
+        }
+
         final Circle circle = ((AbstractGeometry) circleEntity
                 .getAttribute(Attribute.BOUNDING_GEOMETRY))
                 .asCircumscribedCircle().translate(circlePosition);
@@ -335,10 +350,12 @@ public final class CollisionManager {
             }
         }
 
-        /* Check some entities against static ones. */
+        /* Check non-static collidable entities against static ones. */
         for (final Entity element : entArray) {
-            if (element.getFamily() == Family.PLAYER
-                    || element.getFamily() == Family.HANDGUN_BULLET) {
+            if (element.hasAttribute(Attribute.BOUNDING_GEOMETRY)
+                    && !new Vector2f(0, 0).equals(element
+                            .getAttribute(Attribute.VELOCITY))
+                    && !element.hasAttribute(Attribute.NO_COLLIDE)) {
 
                 /* Create a rectangle from the old and new position. */
                 final Vector2f theorPos = (Vector2f) element
@@ -363,22 +380,28 @@ public final class CollisionManager {
                 final float bottom = Math.max(oldRect.getBottom(),
                         theorRect.getBottom());
 
-                final List<Entity> targetList = staticMap
+                final List<StaticObject> targetList = staticMap
                         .getObjectsFromRectangle(new Rectangle(left, top, right
                                 - left, bottom - top));
 
                 if (targetList != null) {
-                    for (final Entity target : targetList) {
-                        if (resolvePolygonCircleCollision(element, target,
-                                delta)) {
-                            element.sendMessage(
-                                    MessageType.COLLIDED,
-                                    new CollisionData((Vector2f) element
-                                            .getAttribute(Attribute.POSITION),
-                                            oldPos, theorPos, delta, target));
-                            target.sendMessage(MessageType.COLLIDED,
-                                    new CollisionData(null, null, null, delta,
-                                            element));
+                    for (final StaticObject object : targetList) {
+                        /* Is the object an entity? */
+                        if (object instanceof StaticObjectBehavior) {
+                            final Entity target = ((StaticObjectBehavior) object)
+                                    .getOwner();
+                            if (resolvePolygonCircleCollision(element, target,
+                                    delta)) {
+                                element.sendMessage(
+                                        MessageType.COLLIDED,
+                                        new CollisionData(
+                                                (Vector2f) element
+                                                        .getAttribute(Attribute.POSITION),
+                                                oldPos, theorPos, delta, target));
+                                target.sendMessage(MessageType.COLLIDED,
+                                        new CollisionData(null, null, null,
+                                                delta, element));
+                            }
                         }
                     }
                 }

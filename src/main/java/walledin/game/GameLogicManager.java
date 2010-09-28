@@ -37,11 +37,13 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
+import walledin.game.collision.QuadTree;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
+import walledin.game.entity.behaviors.logic.StaticObjectBehavior;
 import walledin.game.gamemode.GameMode;
 import walledin.game.gamemode.GameModeHandler;
 import walledin.game.gamemode.GameModeHandlerFactory;
@@ -486,14 +488,16 @@ public final class GameLogicManager implements GameStateListener,
         for (final Entity entity : entityManager.getCreated()) {
             /* For now, add just foam particles. */
             if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
-                staticObjectsTree.add(entity);
+                staticObjectsTree.add(entity
+                        .getBehavior(StaticObjectBehavior.class));
             }
         }
 
         for (final Entity entity : entityManager.getRemoved()) {
             /* For now, add just foam particles. */
             if (entity != null && entity.getFamily() == Family.FOAM_PARTICLE) {
-                staticObjectsTree.remove(entity);
+                staticObjectsTree.remove(entity
+                        .getBehavior(StaticObjectBehavior.class));
             }
         }
 

@@ -23,8 +23,9 @@ package walledin.engine;
 import walledin.engine.math.Vector2f;
 
 /**
+ * Camera class. Can rotate, scale and translate.
  * 
- * @author ben
+ * @author Ben Ruijl
  */
 public class Camera {
     private Vector2f pos;

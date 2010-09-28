@@ -87,8 +87,8 @@ public class XMLReader {
     }
 
     /**
-     * Returns the text value of a tag in the given element. Example:</br> XML
-     * file:<book><name>ABC</name></book> This function will return ABC.
+     * Returns the text value of a tag in the given element. Example:<br />
+     * XML file:&lt;book><name>ABC&lt;/name>&lt;/book> This function will return ABC.
      * 
      * @param el
      *            Current element

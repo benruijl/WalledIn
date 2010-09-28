@@ -18,8 +18,10 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA.
 
  */
-package walledin.engine.input;
+package walledin.game.collision;
 
-public interface MouseEventListener {
-    void onMouseClicked(MouseEvent event);
+import walledin.engine.math.Rectangle;
+
+public interface StaticObject {
+    Rectangle getBoudingRectangle();
 }

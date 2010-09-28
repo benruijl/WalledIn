@@ -64,22 +64,26 @@ public class ListView<T> extends AbstractScreen implements
     private static final float START_Y_LIST = 60f;
     private static final float Y_SPACE = 20f;
 
+    private final int maxVisible;
     private final int numColumns;
     private final Button[] columns;
     private float[] columnWidth;
-    private float[] accumulatedColumnWidth;
+    private final float[] accumulatedColumnWidth;
     private final List<RowData<T>> data;
     private Comparator<RowData<T>> lastComparator;
     private int selected;
 
+    private final ScrollBar scrollBar;
+
     public ListView(final AbstractScreen parent, final Rectangle boudingRect,
-            final int z, final int numColumns, final String names[],
-            final float[] columnWidth) {
+            final int z, final int numColumns, final String[] names,
+            final float[] columnWidth, final int maxVisible) {
         super(parent, boudingRect, z);
 
         data = new ArrayList<RowData<T>>();
 
         this.numColumns = numColumns;
+        this.maxVisible = maxVisible;
 
         accumulatedColumnWidth = new float[numColumns];
         setColumnWidth(columnWidth);
@@ -95,6 +99,10 @@ public class ListView<T> extends AbstractScreen implements
             columns[i].addMouseEventListener(this);
             addChild(columns[i]);
         }
+
+        scrollBar = new ScrollBar(this, 2, maxVisible);
+        addChild(scrollBar);
+        scrollBar.show();
 
         lastComparator = getComparator(0);
         addMouseEventListener(this);
@@ -128,12 +136,16 @@ public class ListView<T> extends AbstractScreen implements
         Collections.sort(data, lastComparator);
     }
 
+    public void updateScrollBar() {
+        scrollBar.setNumEntries(data.size());
+    }
+
     public void resetData() {
         data.clear();
     }
 
     protected List<RowData<T>> getData() {
-        return data;
+        return Collections.unmodifiableList(data);
     }
 
     @Override
@@ -153,7 +165,8 @@ public class ListView<T> extends AbstractScreen implements
         for (int i = 0; i < numColumns; i++) {
             float curY = START_Y_LIST;
 
-            for (int j = 0; j < data.size(); j++) {
+            for (int j = Math.max(0, scrollBar.getCurrentIndex()); j < Math
+                    .min(scrollBar.getCurrentIndex() + maxVisible, data.size()); j++) {
                 font.renderText(renderer, data.get(j).getData()[i],
                         new Vector2f(curX, curY));
                 curY += Y_SPACE;
@@ -172,7 +185,7 @@ public class ListView<T> extends AbstractScreen implements
 
     @Override
     public void onMouseHover(final ScreenMouseEvent e) {
-        for (int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < Math.min(maxVisible, data.size()); i++) {
             /* The i -1 is because the text is rendered above the line. */
             if (new Rectangle(START_X_LIST, START_Y_LIST + (i - 1) * Y_SPACE,
                     accumulatedColumnWidth[numColumns - 1], Y_SPACE).translate(
@@ -194,7 +207,7 @@ public class ListView<T> extends AbstractScreen implements
         };
     }
 
-    protected void onListItemClicked(T item) {
+    protected void onListItemClicked(final T item) {
     }
 
     @Override
@@ -208,13 +221,17 @@ public class ListView<T> extends AbstractScreen implements
             }
         }
 
-        for (int i = 0; i < data.size(); i++) {
-            /* The i -1 is because the text is rendered above the line. */
-            if (new Rectangle(START_X_LIST, START_Y_LIST + (i - 1) * Y_SPACE,
-                    accumulatedColumnWidth[numColumns - 1], Y_SPACE).translate(
-                    getAbsolutePosition()).containsPoint(e.getPos())) {
-                onListItemClicked(data.get(i).getObject());
-                return;
+        if (scrollBar.getCurrentIndex() >= 0) {
+            for (int i = 0; i < Math.min(maxVisible, data.size()); i++) {
+                /* The - 1 is because the text is rendered above the line. */
+                if (new Rectangle(START_X_LIST, START_Y_LIST + (i - 1)
+                        * Y_SPACE, accumulatedColumnWidth[numColumns - 1],
+                        Y_SPACE).translate(getAbsolutePosition())
+                        .containsPoint(e.getPos())) {
+                    onListItemClicked(data.get(i + scrollBar.getCurrentIndex())
+                            .getObject());
+                    return;
+                }
             }
         }
 

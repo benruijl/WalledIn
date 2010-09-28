@@ -43,7 +43,7 @@ import walledin.game.entity.behaviors.physics.*
    entity.addBehavior(new HealthBehavior(entity, 100, 80));    
     
     entity.addBehavior(new PhysicsBehavior(entity, 2e4, false, false));
-    //entity.addBehavior(new StaticObjectCollisionBehavior(entity));
+    entity.addBehavior(new StaticObjectBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
 } as EntityFunction,

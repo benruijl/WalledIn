@@ -20,8 +20,8 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
-import walledin.game.CollisionManager.CollisionData;
 import walledin.game.EntityManager;
+import walledin.game.collision.CollisionManager.CollisionData;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
@@ -56,6 +56,8 @@ public class FoamBulletBehavior extends BulletBehavior {
                             getAttribute(Attribute.POSITION));
                     particle.setAttribute(Attribute.ORIENTATION_ANGLE,
                             getAttribute(Attribute.ORIENTATION_ANGLE));
+                    particle.setAttribute(Attribute.OWNED_BY,
+                            getAttribute(Attribute.OWNED_BY));
                     blownUp = true;
 
                     getOwner().remove(); // remove the foam bullet

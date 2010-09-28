@@ -28,7 +28,6 @@ import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.gui.ScreenMouseEvent;
 import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.components.Button;
-import walledin.engine.gui.components.ListView;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
