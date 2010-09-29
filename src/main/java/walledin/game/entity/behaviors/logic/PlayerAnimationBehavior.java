@@ -39,6 +39,7 @@ public class PlayerAnimationBehavior extends AnimationBehavior {
     public PlayerAnimationBehavior(final Entity owner) {
         super(owner);
         setAttribute(Attribute.WALK_ANIM_FRAME, new Float(0));
+        velocity = new Vector2f();
     }
 
     @Override

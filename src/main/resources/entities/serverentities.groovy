@@ -18,6 +18,8 @@ import walledin.game.entity.behaviors.logic.*
     // FIXME correct the drawing instead of the hacking the bounding box
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY,
     new Rectangle(0, 0, 44, 43));
+    
+    entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.MAP): { entity ->

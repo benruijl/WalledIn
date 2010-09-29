@@ -33,9 +33,8 @@ import java.util.Set;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
-import org.jbox2d.collision.AABB;
-import org.jbox2d.common.Vec2;
 
+import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
 import walledin.engine.physics.PhysicsManager;
@@ -510,10 +509,14 @@ public final class GameLogicManager implements GameStateListener,
 
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, mapName);
-        
+
         /* Initialize physics and create physical world. */
+        // TODO: calculate from map
         PhysicsManager.getInstance().initialize(
-                new AABB(new Vec2(0, 0), new Vec2(900, 900)));
+                new Rectangle(0, 0, 64 * 32, 48 * 32));
+
+        /* Build the static movability field. */
+        buildStaticField();
 
     }
 

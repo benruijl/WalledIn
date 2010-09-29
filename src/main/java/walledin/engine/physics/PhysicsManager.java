@@ -28,21 +28,17 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.World;
 
-import walledin.engine.input.Input;
+import walledin.engine.math.Rectangle;
 
 public class PhysicsManager {
-    private static final Logger LOG = Logger.getLogger(Input.class);
-    private static final Vec2 GRAVITY = new Vec2(0, 10.0f);
+    private static final Logger LOG = Logger.getLogger(PhysicsManager.class);
+    private static final Vec2 GRAVITY = new Vec2(0, 20.0f);
     private static final float TIME_STEP = 1.0f / 60.0f;
     private static final int ITERATION = 5;
     private static PhysicsManager ref = null;
-    
+
     private World world;
     private AABB worldRect;
-
-    /* Ground shape, useful for testing. */
-    private BodyDef groundBodyDef;
-    private PolygonDef groundShapeDef;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -61,18 +57,53 @@ public class PhysicsManager {
 
     }
 
-    public boolean initialize(AABB worldRect) {
-        this.worldRect = worldRect;
-        world = new World(worldRect, GRAVITY, true);
+    public boolean initialize(Rectangle worldRect) {
+        this.worldRect = new AABB(new Vec2(worldRect.getLeft(),
+                worldRect.getTop()), new Vec2(worldRect.getRight(),
+                worldRect.getBottom()));
+        world = new World(this.worldRect, GRAVITY, true);
+        world.setContactListener(new GeneralContactListener());
 
-        groundBodyDef = new BodyDef();
-        groundBodyDef.position.set(new Vec2((float) 0.0, (float) -10.0));
-        final Body groundBody = world.createBody(groundBodyDef);
-        groundShapeDef = new PolygonDef();
-        groundShapeDef.setAsBox((float) 50.0, (float) 10.0);
-        groundBody.createShape(groundShapeDef);
+        createStaticBody(new Rectangle(0, worldRect.getBottom(),
+                worldRect.getWidth(), 10));
+
+        // createStaticBody(new Rectangle(0, 40, 300, 70));
 
         return true;
+    }
+
+    /**
+     * Creates a static box from a bounding rectangle.
+     * 
+     * @param rect
+     *            Rectangle
+     */
+    public void createStaticBody(Rectangle rect) {
+        BodyDef box = new BodyDef();
+        box.position.set(rect.getLeft() + rect.getWidth() / 2.0f, rect.getTop()
+                + rect.getHeight() / 2.0f);
+        PolygonDef polygon = new PolygonDef();
+        polygon.setAsBox(rect.getWidth() / 2.0f, rect.getHeight() / 2.0f);
+        final Body testBox = world.createBody(box);
+        testBox.createShape(polygon);
+    }
+
+    public PhysicsBody addBody(Rectangle rect, Object userData) {
+        /* Add dummy object */
+        BodyDef box = new BodyDef();
+        box.position.set(rect.getLeft() + rect.getWidth() / 2.0f, rect.getTop()
+                + rect.getHeight() / 2.0f);
+        PolygonDef polygon = new PolygonDef();
+        polygon.setAsBox(rect.getWidth() / 2.0f, rect.getHeight() / 2.0f);
+        polygon.density = 1.0f;
+        polygon.friction = 0.3f;
+        polygon.restitution = 0.2f;
+        Body testBox = world.createBody(box);
+        testBox.createShape(polygon);
+        testBox.setMassFromShapes();
+        testBox.m_userData = userData;
+
+        return new PhysicsBody(testBox);
     }
 
     public void update() {

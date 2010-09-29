@@ -2,7 +2,7 @@ import walledin.game.entity.*
 
 [
 (Family.PLAYER): { entity ->
-    //entity.addBehavior(new PhysicsBehavior(entity, 1));
+    //entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.FOAMGUN_BULLET): { entity ->

@@ -132,7 +132,8 @@ public class PlayerControlBehaviour extends AbstractBehavior {
             weapon.sendMessage(MessageType.SHOOT, getOwner());
         }
 
-        getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
+        getOwner().sendMessage(MessageType.APPLY_FORCE,
+                new Vector2f(x / (float) delta, y / (float) delta));
         canJump = false;
     }
 }
