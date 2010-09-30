@@ -14,16 +14,11 @@ import walledin.game.entity.MessageType;
 
 public class PhysicsBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-    PhysicsBody body;
+    private PhysicsBody body;
 
     public PhysicsBehavior(Entity owner) {
         super(owner);
-
-        body = PhysicsManager
-                .getInstance()
-                .addBody(
-                        ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
-                                .asRectangle(), owner);
+        body = null;
     }
 
     @Override
@@ -32,20 +27,34 @@ public class PhysicsBehavior extends AbstractBehavior {
             body.applyForce((Vector2f) data);
         }
 
+        /* When the position is set, create a body. */
         if (messageType == MessageType.ATTRIBUTE_SET) {
+            if (data == Attribute.POSITION) {
+                if (body == null) {
+                    body = PhysicsManager
+                            .getInstance()
+                            .addBody(
+                                    ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                                            .asRectangle()
+                                            .translate(
+                                                    (Vector2f) getAttribute(Attribute.POSITION)),
+                                    getOwner());
+                }
+            }
         }
     }
 
     @Override
     public void onUpdate(double delta) {
-        /* Correct the position. */
-        Rectangle rect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
-                .asRectangle();
-        Vector2f pos = new Vector2f(body.getPosition().getX() - rect.getWidth()
-                / 2.0f, body.getPosition().getY() - rect.getHeight() / 2.0f);
-        setAttribute(Attribute.POSITION, pos);
-        setAttribute(Attribute.VELOCITY, body.getVelocity());
-        LOG.info(pos);
-
+        if (body != null) {
+            /* Correct the position. */
+            Rectangle rect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                    .asRectangle();
+            Vector2f pos = new Vector2f(body.getPosition().getX()
+                    - rect.getWidth() / 2.0f, body.getPosition().getY()
+                    - rect.getHeight() / 2.0f);
+            setAttribute(Attribute.POSITION, pos);
+            setAttribute(Attribute.VELOCITY, body.getVelocity());
+        }
     }
 }

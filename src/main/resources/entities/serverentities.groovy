@@ -56,12 +56,14 @@ import walledin.game.entity.behaviors.logic.*
 (Family.ARMOURKIT): { entity ->
     def destRect = new Rectangle(0, 0, 32, 32)
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
+    entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.HEALTHKIT): { entity ->
     def destRect = new Rectangle(0, 0, 32, 32)
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.addBehavior(new HealthKitBehavior(entity, 10));
+    entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.HANDGUN): { entity ->

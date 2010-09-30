@@ -31,7 +31,6 @@ public class GeneralContactListener implements ContactListener {
 
     @Override
     public void add(ContactPoint point) {
-        LOG.info("Collision detected.");
     }
 
     @Override

@@ -347,6 +347,10 @@ public final class GameLogicManager implements GameStateListener,
             if (tile.getType().isSolid()) {
                 staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
                         .getY() * tileWidth / playerSize)] = true;
+
+                PhysicsManager.getInstance().createStaticBody(
+                        new Rectangle(tile.getX() * tileWidth, tile.getY()
+                                * tileWidth, tileWidth, tileWidth));
             }
         }
 
@@ -515,7 +519,10 @@ public final class GameLogicManager implements GameStateListener,
         PhysicsManager.getInstance().initialize(
                 new Rectangle(0, 0, 64 * 32, 48 * 32));
 
-        /* Build the static movability field. */
+        /*
+         * Build the static movability field and add static bodies to the
+         * physics manager.
+         */
         buildStaticField();
 
     }
