@@ -26,19 +26,21 @@ import org.jbox2d.collision.PolygonDef;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.ContactListener;
 import org.jbox2d.dynamics.World;
 
 import walledin.engine.math.Rectangle;
 
 public class PhysicsManager {
     private static final Logger LOG = Logger.getLogger(PhysicsManager.class);
-    private static final Vec2 GRAVITY = new Vec2(0, 20.0f);
+    private static final Vec2 GRAVITY = new Vec2(0, 40.0f);
     private static final float TIME_STEP = 1.0f / 60.0f;
     private static final int ITERATION = 5;
     private static PhysicsManager ref = null;
 
     private World world;
     private AABB worldRect;
+    private GeneralContactListener contactListener;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -54,7 +56,16 @@ public class PhysicsManager {
     }
 
     private PhysicsManager() {
+        contactListener = new GeneralContactListener();
 
+    }
+
+    public void addContactListener(Object id, ContactListener listener) {
+        contactListener.addListener(id, listener);
+    }
+
+    public void removeContactListener(ContactListener listener) {
+        contactListener.removeListener(listener);
     }
 
     public boolean initialize(Rectangle worldRect) {
@@ -62,7 +73,7 @@ public class PhysicsManager {
                 worldRect.getTop()), new Vec2(worldRect.getRight(),
                 worldRect.getBottom()));
         world = new World(this.worldRect, GRAVITY, true);
-        world.setContactListener(new GeneralContactListener());
+        world.setContactListener(contactListener);
 
         createStaticBody(new Rectangle(0, worldRect.getBottom(),
                 worldRect.getWidth(), 10));

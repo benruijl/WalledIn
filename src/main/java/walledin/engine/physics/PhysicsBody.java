@@ -27,7 +27,7 @@ import walledin.engine.math.Vector2f;
 
 public class PhysicsBody {
     Body body;
-    
+
     public PhysicsBody(Body body) {
         this.body = body;
     }
@@ -40,12 +40,20 @@ public class PhysicsBody {
         return new Vector2f(body.getLinearVelocity().x,
                 body.getLinearVelocity().y);
     }
-    
+
     /**
      * Applies a force to the center of mass.
-     * @param force Force
+     * 
+     * @param force
+     *            Force
      */
     public void applyForce(final Vector2f force) {
-        body.applyForce(new Vec2(force.getX(), force.getY()), body.getPosition());
+        body.applyForce(new Vec2(force.getX(), force.getY()),
+                body.getPosition());
+    }
+
+    public void applyImpulse(final Vector2f impulse) {
+        body.applyImpulse(new Vec2(impulse.getX(), impulse.getY()),
+                body.getPosition());
     }
 }

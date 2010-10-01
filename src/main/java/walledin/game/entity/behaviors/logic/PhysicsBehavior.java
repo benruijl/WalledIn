@@ -23,8 +23,9 @@ public class PhysicsBehavior extends AbstractBehavior {
 
     @Override
     public void onMessage(MessageType messageType, Object data) {
+        /* FIXME: wrong message name! */
         if (messageType == MessageType.APPLY_FORCE) {
-            body.applyForce((Vector2f) data);
+            body.applyImpulse((Vector2f) data);
         }
 
         /* When the position is set, create a body. */
@@ -38,7 +39,7 @@ public class PhysicsBehavior extends AbstractBehavior {
                                             .asRectangle()
                                             .translate(
                                                     (Vector2f) getAttribute(Attribute.POSITION)),
-                                    getOwner());
+                                    getOwner().getName());
                 }
             }
         }

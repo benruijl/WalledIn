@@ -24,19 +24,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jbox2d.dynamics.ContactListener;
+import org.jbox2d.dynamics.contacts.ContactPoint;
+import org.jbox2d.dynamics.contacts.ContactResult;
 
 import walledin.engine.math.Vector2f;
+import walledin.engine.physics.PhysicsManager;
 import walledin.game.PlayerAction;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class PlayerControlBehaviour extends AbstractBehavior {
+public class PlayerControlBehaviour extends AbstractBehavior implements
+        ContactListener {
     private static final Logger LOG = Logger
             .getLogger(PlayerControlBehaviour.class);
     private static final float MOVE_SPEED = 500.0f;
-    private static final float JUMP_SPEED = 8000.0f;
+    private static final float JUMP_SPEED = 9000.0f;
     private boolean canJump;
     private Set<PlayerAction> playerActions;
 
@@ -44,17 +49,15 @@ public class PlayerControlBehaviour extends AbstractBehavior {
         super(owner);
         playerActions = new HashSet<PlayerAction>();
         setAttribute(Attribute.PLAYER_ACTIONS, playerActions);
+
+        /* Register the contact listener. */
+        PhysicsManager.getInstance().addContactListener(getOwner().getName(),
+                this);
     }
 
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
-            // final CollisionData colData = (CollisionData) data;
-            //
-            // if (colData.getNewPos().getY() < colData.getTheorPos().getY()) {
-            // canJump = true;
-            // }
-
             LOG.warn("Unimplemented collision event.");
 
         } else if (messageType == MessageType.ATTRIBUTE_SET) {
@@ -133,7 +136,30 @@ public class PlayerControlBehaviour extends AbstractBehavior {
         }
 
         getOwner().sendMessage(MessageType.APPLY_FORCE,
-                new Vector2f(x / (float) delta, y / (float) delta));
+                new Vector2f(x * 10.0f, y * 10.0f));
         canJump = false;
+    }
+
+    @Override
+    public void add(ContactPoint point) {
+        if (point.normal.y >= -1 && point.normal.y < 0) {
+            canJump = true;
+        }
+    }
+
+    @Override
+    public void persist(ContactPoint point) {
+        if (point.normal.y >= -1 && point.normal.y < 0) {
+            canJump = true;
+        }
+    }
+
+    @Override
+    public void remove(ContactPoint point) {
+        canJump = false;
+    }
+
+    @Override
+    public void result(ContactResult point) {
     }
 }
