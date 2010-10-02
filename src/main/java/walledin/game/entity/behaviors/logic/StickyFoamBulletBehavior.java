@@ -50,6 +50,8 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
     public final void spawnBullet() {
         final EntityManager manager = getEntityManager();
         final Entity particle = manager.create(Family.FOAM_PARTICLE);
+        particle.setAttribute(Attribute.ORIENTATION_ANGLE,
+                getAttribute(Attribute.ORIENTATION_ANGLE));
 
         particle.setAttribute(Attribute.POSITION,
                 getAttribute(Attribute.POSITION));
@@ -62,18 +64,15 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
         super.onMessage(messageType, data);
 
         if (messageType == MessageType.COLLIDED) {
-            // final CollisionData colData = (CollisionData) data;
-            // if (!blownUp) {
-            //
-            // if (colData.getCollisionEntity().getFamily() == Family.MAP
-            // || colData.getCollisionEntity().getFamily()
-            // .equals(Family.FOAM_PARTICLE)
-            // ) {
-            // spawnBullet();
-            // }
-            // }
+            Entity colEntity = (Entity) data;
 
-            LOG.warn("Unimplemented collision event.");
+            if (!blownUp) {
+                LOG.info("YO: " + colEntity.getName());
+                if (colEntity.getFamily() == Family.MAP
+                        || colEntity.getFamily().equals(Family.FOAM_PARTICLE)) {
+                    spawnBullet();
+                }
+            }
         }
 
     }

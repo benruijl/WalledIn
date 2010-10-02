@@ -23,7 +23,9 @@ package walledin.game.entity.behaviors.logic;
 import org.apache.log4j.Logger;
 
 import walledin.game.entity.AbstractBehavior;
+import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class HealthKitBehavior extends AbstractBehavior {
@@ -38,22 +40,19 @@ public class HealthKitBehavior extends AbstractBehavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
-//
-//            final CollisionData colData = (CollisionData) data;
-//
-//            if (!colData.getCollisionEntity().getFamily().equals(Family.PLAYER)) {
-//                return;
-//            }
-//
-//            LOG.info(getOwner().getName() + " collided with "
-//                    + colData.getCollisionEntity().getName());
-//            colData.getCollisionEntity().sendMessage(
-//                    MessageType.RESTORE_HEALTH, Integer.valueOf(strength));
-//
-//            setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
-//            getOwner().remove(); // remove after usage
-            
-            LOG.warn("Unimplemented collision event.");
+            final Entity colEntity = (Entity) data;
+
+            if (!colEntity.getFamily().equals(Family.PLAYER)) {
+                return;
+            }
+
+            LOG.info(getOwner().getName() + " collided with "
+                    + colEntity.getName());
+            colEntity.sendMessage(MessageType.RESTORE_HEALTH,
+                    Integer.valueOf(strength));
+
+            setAttribute(Attribute.PICKED_UP, Boolean.TRUE);
+            getOwner().remove(); // remove after usage
         }
     }
 

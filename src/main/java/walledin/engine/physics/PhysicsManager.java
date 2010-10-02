@@ -20,6 +20,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.physics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.PolygonDef;
@@ -41,6 +44,7 @@ public class PhysicsManager {
     private World world;
     private AABB worldRect;
     private GeneralContactListener contactListener;
+    private List<Body> remove;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -57,6 +61,7 @@ public class PhysicsManager {
 
     private PhysicsManager() {
         contactListener = new GeneralContactListener();
+        remove = new ArrayList<Body>();
 
     }
 
@@ -75,8 +80,9 @@ public class PhysicsManager {
         world = new World(this.worldRect, GRAVITY, true);
         world.setContactListener(contactListener);
 
-        createStaticBody(new Rectangle(0, worldRect.getBottom(),
-                worldRect.getWidth(), 10));
+        addStaticBody(
+                new Rectangle(0, worldRect.getBottom(), worldRect.getWidth(),
+                        10), null);
 
         // createStaticBody(new Rectangle(0, 40, 300, 70));
 
@@ -89,7 +95,7 @@ public class PhysicsManager {
      * @param rect
      *            Rectangle
      */
-    public void createStaticBody(Rectangle rect) {
+    public PhysicsBody addStaticBody(Rectangle rect, Object userData) {
         BodyDef box = new BodyDef();
         box.position.set(rect.getLeft() + rect.getWidth() / 2.0f, rect.getTop()
                 + rect.getHeight() / 2.0f);
@@ -97,6 +103,9 @@ public class PhysicsManager {
         polygon.setAsBox(rect.getWidth() / 2.0f, rect.getHeight() / 2.0f);
         final Body testBox = world.createBody(box);
         testBox.createShape(polygon);
+        testBox.setUserData(userData);
+
+        return new PhysicsBody(testBox);
     }
 
     public PhysicsBody addBody(Rectangle rect, Object userData) {
@@ -117,8 +126,40 @@ public class PhysicsManager {
         return new PhysicsBody(testBox);
     }
 
+    /**
+     * Adds a body to the remove queue.
+     * 
+     * @param id
+     *            ID of the body
+     * @return True if body exists, else false
+     */
+    public boolean addToRemoveQueue(Object id) {
+        if (world == null) {
+            return false;
+        }
+
+        Body currentBody = world.getBodyList();
+        while (currentBody != null) {
+            if (id == currentBody.getUserData()) {
+                remove.add(currentBody);
+                return true;
+            }
+
+            currentBody = currentBody.getNext();
+        }
+
+        return false;
+    }
+
     public void update() {
         world.step(TIME_STEP, ITERATION);
+
+        /* Remove every body in the removed queue. */
+        for (Body body : remove) {
+            world.destroyBody(body);
+        }
+
+        remove.clear();
     }
 
 }

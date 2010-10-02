@@ -15,10 +15,17 @@ import walledin.game.entity.MessageType;
 public class PhysicsBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
     private PhysicsBody body;
+    private boolean isStatic = false;
 
     public PhysicsBehavior(Entity owner) {
         super(owner);
         body = null;
+    }
+
+    public PhysicsBehavior(Entity owner, boolean isStatic) {
+        super(owner);
+        body = null;
+        this.isStatic = isStatic;
     }
 
     @Override
@@ -32,14 +39,25 @@ public class PhysicsBehavior extends AbstractBehavior {
         if (messageType == MessageType.ATTRIBUTE_SET) {
             if (data == Attribute.POSITION) {
                 if (body == null) {
+                    if (isStatic) {
                     body = PhysicsManager
                             .getInstance()
-                            .addBody(
+                            .addStaticBody(
                                     ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
                                             .asRectangle()
                                             .translate(
                                                     (Vector2f) getAttribute(Attribute.POSITION)),
                                     getOwner().getName());
+                    } else {
+                        body = PhysicsManager
+                        .getInstance()
+                        .addBody(
+                                ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                                        .asRectangle()
+                                        .translate(
+                                                (Vector2f) getAttribute(Attribute.POSITION)),
+                                getOwner().getName());
+                    }
                 }
             }
         }

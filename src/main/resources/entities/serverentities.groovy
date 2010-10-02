@@ -29,12 +29,14 @@ import walledin.game.entity.behaviors.logic.*
     def destRect = new Circle(new Vector2f(8, 8), 8)
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.addBehavior(new StickyFoamBulletBehavior(entity));
+    entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.HANDGUN_BULLET): { entity ->
     def destRect = new Rectangle(0, 0, 22, 11)
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.addBehavior(new BulletBehavior(entity,10));
+    entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.FOAM_PARTICLE): { entity ->
@@ -71,6 +73,7 @@ import walledin.game.entity.behaviors.logic.*
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
     entity.addBehavior(new WeaponBehavior(entity, 10, Family.HANDGUN_BULLET));
+   // entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.GRENADE_LAUNCHER): { entity ->
@@ -82,6 +85,9 @@ import walledin.game.entity.behaviors.logic.*
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
     entity.addBehavior(new WeaponBehavior(entity, 4, Family.FOAMGUN_BULLET));
+    
+    // DO NOT add physics behavior for guns. A body is created in the WeaponBehavior.
+    //entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 
 (Family.FOAMNADE): { entity ->
@@ -90,5 +96,6 @@ import walledin.game.entity.behaviors.logic.*
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
     entity.addBehavior(new GrenadeBehavior(entity));
+    entity.addBehavior(new PhysicsBehavior(entity));
 } as EntityFunction,
 ]

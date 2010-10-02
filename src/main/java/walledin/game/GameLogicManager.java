@@ -348,9 +348,10 @@ public final class GameLogicManager implements GameStateListener,
                 staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
                         .getY() * tileWidth / playerSize)] = true;
 
-                PhysicsManager.getInstance().createStaticBody(
+                PhysicsManager.getInstance().addStaticBody(
                         new Rectangle(tile.getX() * tileWidth, tile.getY()
-                                * tileWidth, tileWidth, tileWidth));
+                                * tileWidth, tileWidth, tileWidth),
+                        map.getName());
             }
         }
 

@@ -59,45 +59,43 @@ public class PlayerWeaponInventoryBehavior extends AbstractBehavior {
         }
 
         if (messageType == MessageType.COLLIDED) {
-            // final CollisionData colData = (CollisionData) data;
-            // final Entity weapon = colData.getCollisionEntity();
-            //
-            // if (weapon.getFamily().getParent() == Family.WEAPON) {
-            // if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)
-            // || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
-            //
-            // // is weapon already owned?
-            // final Boolean hasWeapon = (Boolean) weapon
-            // .getAttribute(Attribute.PICKED_UP);
-            // if (hasWeapon != null && hasWeapon) {
-            // return;
-            // }
-            //
-            // if (weapons.containsKey(weapon.getFamily())) {
-            // return;
-            // }
-            //
-            // /* Tell the item that it will be picked up. */
-            // weapon.sendMessage(MessageType.PICK_UP, getOwner());
-            //
-            // weapons.put(weapon.getFamily(), weapon);
-            // LOG.info("Adding weapon of family "
-            // + weapon.getFamily().toString());
-            //
-            // if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
-            // setAttribute(Attribute.ACTIVE_WEAPON, weapon);
-            //
-            // // set some attributes for the weapon
-            // weapon.setAttribute(Attribute.ORIENTATION_ANGLE,
-            // getAttribute(Attribute.ORIENTATION_ANGLE));
-            // } else {
-            // // remove weapon if picked up
-            // weapon.remove();
-            // }
-            //
-            // }
-            // }
-            LOG.warn("Unimplemented collision event.");
+            final Entity weapon = (Entity) data;
+
+            if (weapon.getFamily().getParent() == Family.WEAPON) {
+                if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)
+                        || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
+
+                    // is weapon already owned?
+                    final Boolean hasWeapon = (Boolean) weapon
+                            .getAttribute(Attribute.PICKED_UP);
+                    if (hasWeapon != null && hasWeapon) {
+                        return;
+                    }
+
+                    if (weapons.containsKey(weapon.getFamily())) {
+                        return;
+                    }
+
+                    /* Tell the item that it will be picked up. */
+                    weapon.sendMessage(MessageType.PICK_UP, getOwner());
+
+                    weapons.put(weapon.getFamily(), weapon);
+                    LOG.info("Adding weapon of family "
+                            + weapon.getFamily().toString());
+
+                    if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)) {
+                        setAttribute(Attribute.ACTIVE_WEAPON, weapon);
+
+                        // set some attributes for the weapon
+                        weapon.setAttribute(Attribute.ORIENTATION_ANGLE,
+                                getAttribute(Attribute.ORIENTATION_ANGLE));
+                    } else {
+                        // remove weapon if picked up
+                        weapon.remove();
+                    }
+
+                }
+            }
         }
 
         if (messageType == MessageType.SELECT_WEAPON) {

@@ -30,10 +30,12 @@ import org.jbox2d.dynamics.contacts.ContactResult;
 
 import walledin.engine.math.Vector2f;
 import walledin.engine.physics.PhysicsManager;
+import walledin.game.EntityManager;
 import walledin.game.PlayerAction;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends AbstractBehavior implements
@@ -57,10 +59,7 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
 
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
-        if (messageType == MessageType.COLLIDED) {
-            LOG.warn("Unimplemented collision event.");
-
-        } else if (messageType == MessageType.ATTRIBUTE_SET) {
+        if (messageType == MessageType.ATTRIBUTE_SET) {
             final Attribute attribute = (Attribute) data;
             switch (attribute) {
             case PLAYER_ACTIONS:
@@ -144,6 +143,18 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
     public void add(ContactPoint point) {
         if (point.normal.y >= -1 && point.normal.y < 0) {
             canJump = true;
+        }
+
+        /* Handle all collisions for now. */
+        Entity ent1 = getEntityManager().get(
+                (String) point.shape1.getBody().getUserData());
+
+        Entity ent2 = getEntityManager().get(
+                (String) point.shape2.getBody().getUserData());
+
+        if (ent1 != null && ent2 != null) {
+            ent1.sendMessage(MessageType.COLLIDED, ent2);
+            ent2.sendMessage(MessageType.COLLIDED, ent1);
         }
     }
 

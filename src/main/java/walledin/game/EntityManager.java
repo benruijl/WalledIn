@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import walledin.engine.Renderer;
+import walledin.engine.physics.PhysicsManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;
@@ -204,9 +205,13 @@ public class EntityManager {
         } else {
             removed.add(entity);
         }
+        
+        /* Delete it from the physics manager if it had a body. */
+        PhysicsManager.getInstance().addToRemoveQueue(name);
 
         drawOrderManager.removeEntity(entity);
         entities.remove(name);
+        
 
         entity.resetMarkedRemoved();
         entity.resetAttributes();

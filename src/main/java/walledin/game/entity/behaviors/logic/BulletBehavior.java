@@ -26,12 +26,12 @@ import walledin.engine.math.Vector2f;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
+import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class BulletBehavior extends AbstractBehavior {
-    private static final Logger LOG = Logger
-    .getLogger(BulletBehavior.class);
-    
+    private static final Logger LOG = Logger.getLogger(BulletBehavior.class);
+
     /** The damage the player takes from this bullet. */
     private final int damage;
 
@@ -43,27 +43,24 @@ public class BulletBehavior extends AbstractBehavior {
     @Override
     public void onMessage(final MessageType messageType, final Object data) {
         if (messageType == MessageType.COLLIDED) {
-//            final CollisionData colData = (CollisionData) data;
-//
-//            // if collided with map, destroy
-//            if (colData.getCollisionEntity().getFamily().equals(Family.MAP)) {
-//                getOwner().remove();
-//            }
-//
-//            // if collided with entity that has a health component, remove and
-//            // do damage
-//            if (colData.getCollisionEntity().hasAttribute(Attribute.HEALTH)) {
-//                colData.getCollisionEntity().sendMessage(
-//                        MessageType.TAKE_DAMAGE, Integer.valueOf(damage));
-//
-//                colData.getCollisionEntity()
-//                        .setAttribute(Attribute.LAST_DAMAGE,
-//                                getAttribute(Attribute.OWNED_BY));
-//
-//                getOwner().remove();
-//            }
-            
-            LOG.warn("Unimplemented collision event.");
+            final Entity colEntity = (Entity) data;
+
+            // if collided with map, destroy
+            if (colEntity.getFamily().equals(Family.MAP)) {
+                getOwner().remove();
+            }
+
+            // if collided with entity that has a health component, remove and
+            // do damage
+            if (colEntity.hasAttribute(Attribute.HEALTH)) {
+                colEntity.sendMessage(MessageType.TAKE_DAMAGE,
+                        Integer.valueOf(damage));
+
+                colEntity.setAttribute(Attribute.LAST_DAMAGE,
+                        getAttribute(Attribute.OWNED_BY));
+
+                getOwner().remove();
+            }
         }
 
         if (messageType == MessageType.ATTRIBUTE_SET) {

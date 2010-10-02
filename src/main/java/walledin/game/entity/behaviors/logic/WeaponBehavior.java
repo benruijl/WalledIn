@@ -22,7 +22,9 @@ package walledin.game.entity.behaviors.logic;
 
 import org.apache.log4j.Logger;
 
+import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Vector2f;
+import walledin.engine.physics.PhysicsManager;
 import walledin.game.EntityManager;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
@@ -79,11 +81,20 @@ public class WeaponBehavior extends AbstractBehavior {
                  * The weapon cannot collide anymore when it is attached to the
                  * player. The physics are also removed.
                  */
-                LOG.warn("TODO: disable collisions");
-
+                PhysicsManager.getInstance().addToRemoveQueue(
+                        getOwner().getName());
             } else {
+                /* FIXME: do this differently. */
+                PhysicsManager
+                        .getInstance()
+                        .addBody(
+                                ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                                        .asRectangle()
+                                        .translate(
+                                                (Vector2f) getAttribute(Attribute.POSITION)),
+                                getOwner().getName());
+
                 getOwner().setAttribute(Attribute.NO_COLLIDE, null);
-                LOG.warn("TODO: enable collision");
             }
         }
 
