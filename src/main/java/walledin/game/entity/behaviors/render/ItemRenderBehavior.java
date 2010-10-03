@@ -62,7 +62,14 @@ public class ItemRenderBehavior extends RenderBehavior {
         renderer.translate((Vector2f) getAttribute(Attribute.POSITION));
 
         if (getOwner().hasAttribute(Attribute.ORIENTATION_ANGLE)) {
+            Rectangle rect = itemRect;
+
+            renderer.translate(rect.getCenter());
+
             renderer.rotate((Float) getAttribute(Attribute.ORIENTATION_ANGLE));
+
+            renderer.translate(new Vector2f(-rect.getCenter().getX(), -rect
+                    .getCenter().getY()));
         }
 
         renderer.drawTexturePart(texPart, itemRect);

@@ -40,7 +40,7 @@ import walledin.game.entity.behaviors.logic.*
 } as EntityFunction,
 
 (Family.FOAM_PARTICLE): { entity ->
-    def destRect = new Circle(new Vector2f(16, 16), 16)
+    def destRect = new Circle(new Vector2f(16, 16), 16);
     
     entity.addBehavior(new FoamParticleBehavior(entity));
    entity.addBehavior(new HealthBehavior(entity, 100, 80));    
@@ -49,6 +49,7 @@ import walledin.game.entity.behaviors.logic.*
     //entity.addBehavior(new StaticObjectBehavior(entity));
     entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
     entity.setAttribute(Attribute.VELOCITY, new Vector2f());
+    entity.addBehavior(new PhysicsBehavior(entity, true));
 } as EntityFunction,
 
 (Family.ITEM): { entity ->

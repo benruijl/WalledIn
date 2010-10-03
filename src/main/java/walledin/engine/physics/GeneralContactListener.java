@@ -20,7 +20,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.physics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -33,25 +35,53 @@ public class GeneralContactListener implements
     private static final Logger LOG = Logger
             .getLogger(GeneralContactListener.class);
 
+    List<ContactPoint> contacts;
     Map<Object, ContactListener> listeners;
+    List<ContactListener> genericListeners;
 
     public GeneralContactListener() {
+        contacts = new ArrayList<ContactPoint>();
         listeners = new HashMap<Object, ContactListener>();
+        genericListeners = new ArrayList<ContactListener>();
+    }
+    
+    public List<ContactPoint> getContacts() {
+        return contacts;
+    }
+    
+    public Map<Object, ContactListener> getListeners() {
+        return listeners;
+    }
+    
+    public List<ContactListener> getGenericListeners() {
+        return genericListeners;
+    }
+
+    public void addListener(ContactListener listener) {
+        genericListeners.add(listener);
     }
 
     public void addListener(Object object, ContactListener listener) {
         listeners.put(object, listener);
     }
 
-    public void removeListener(ContactListener listener) {
+    public void removeListener(Object object, ContactListener listener) {
         listeners.values().remove(listener);
+    }
+
+    public void removeListener(ContactListener listener) {
+        genericListeners.remove(listener);
     }
 
     @Override
     public void add(ContactPoint point) {
-        ContactListener listenerA = listeners.get(point.shape1.m_body.getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body.getUserData());
-        
+        contacts.add(point);
+
+        ContactListener listenerA = listeners.get(point.shape1.m_body
+                .getUserData());
+        ContactListener listenerB = listeners.get(point.shape2.m_body
+                .getUserData());
+
         if (listenerA != null) {
             listenerA.add(point);
         }
@@ -63,8 +93,14 @@ public class GeneralContactListener implements
 
     @Override
     public void persist(ContactPoint point) {
-        ContactListener listenerA = listeners.get(point.shape1.m_body.getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body.getUserData());
+        for (ContactListener listener : genericListeners) {
+            listener.persist(point);
+        }
+
+        ContactListener listenerA = listeners.get(point.shape1.m_body
+                .getUserData());
+        ContactListener listenerB = listeners.get(point.shape2.m_body
+                .getUserData());
         if (listenerA != null) {
             listenerA.persist(point);
         }
@@ -76,8 +112,14 @@ public class GeneralContactListener implements
 
     @Override
     public void remove(ContactPoint point) {
-        ContactListener listenerA = listeners.get(point.shape1.m_body.getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body.getUserData());
+        for (ContactListener listener : genericListeners) {
+            listener.remove(point);
+        }
+
+        ContactListener listenerA = listeners.get(point.shape1.m_body
+                .getUserData());
+        ContactListener listenerB = listeners.get(point.shape2.m_body
+                .getUserData());
         if (listenerA != null) {
             listenerA.remove(point);
         }
@@ -90,8 +132,14 @@ public class GeneralContactListener implements
 
     @Override
     public void result(ContactResult point) {
-        ContactListener listenerA = listeners.get(point.shape1.m_body.getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body.getUserData());
+        for (ContactListener listener : genericListeners) {
+            listener.result(point);
+        }
+
+        ContactListener listenerA = listeners.get(point.shape1.m_body
+                .getUserData());
+        ContactListener listenerB = listeners.get(point.shape2.m_body
+                .getUserData());
         if (listenerA != null) {
             listenerA.result(point);
         }

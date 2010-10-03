@@ -25,13 +25,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jbox2d.collision.AABB;
+import org.jbox2d.collision.CircleDef;
 import org.jbox2d.collision.PolygonDef;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.ContactListener;
 import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.contacts.ContactPoint;
 
+import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 
 public class PhysicsManager {
@@ -65,12 +68,8 @@ public class PhysicsManager {
 
     }
 
-    public void addContactListener(Object id, ContactListener listener) {
-        contactListener.addListener(id, listener);
-    }
-
-    public void removeContactListener(ContactListener listener) {
-        contactListener.removeListener(listener);
+    public GeneralContactListener getContactListener() {
+        return contactListener;
     }
 
     public boolean initialize(Rectangle worldRect) {
@@ -83,10 +82,60 @@ public class PhysicsManager {
         addStaticBody(
                 new Rectangle(0, worldRect.getBottom(), worldRect.getWidth(),
                         10), null);
-
-        // createStaticBody(new Rectangle(0, 40, 300, 70));
-
         return true;
+    }
+
+    /**
+     * Creates a static circle.
+     * 
+     * @param circ
+     *            Circle
+     * @param userData
+     *            User data
+     * @return Created body
+     */
+    public PhysicsBody addStaticCircleBody(Circle circ, Object userData) {
+        CircleDef circle = new CircleDef();
+        circle.radius = circ.getRadius();
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position = new Vec2(circ.getPos().getX(), circ.getPos().getY());
+        final Body body = world.createBody(bodyDef);
+
+        if (body == null) {
+            LOG.info("Cannot create body in loop.");
+            return null;
+        }
+
+        body.createShape(circle);
+        body.setUserData(userData);
+
+        return new PhysicsBody(body);
+    }
+
+    /**
+     * Creates a dynamic circle.
+     * 
+     * @param circ
+     *            Circle
+     * @param userData
+     *            User data
+     * @return Created body
+     */
+    public PhysicsBody addCircleBody(Circle circ, Object userData) {
+        CircleDef circle = new CircleDef();
+        circle.radius = circ.getRadius();
+        circle.density = 1.0f;
+        circle.friction = 0.3f;
+        circle.restitution = 0.2f;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position = new Vec2(circ.getPos().getX(), circ.getPos().getY());
+        final Body body = world.createBody(bodyDef);
+        body.createShape(circle);
+        body.setUserData(userData);
+        body.setMassFromShapes();
+
+        return new PhysicsBody(body);
     }
 
     /**
@@ -94,6 +143,9 @@ public class PhysicsManager {
      * 
      * @param rect
      *            Rectangle
+     * @param userData
+     *            User data
+     * @return Created body
      */
     public PhysicsBody addStaticBody(Rectangle rect, Object userData) {
         BodyDef box = new BodyDef();
@@ -153,6 +205,19 @@ public class PhysicsManager {
 
     public void update() {
         world.step(TIME_STEP, ITERATION);
+
+        /*
+         * Bodies cannot be created in callback events. Therefore, a part of the
+         * contact processing is done now.
+         */
+        for (ContactPoint point : contactListener.getContacts()) {
+            for (ContactListener listener : contactListener
+                    .getGenericListeners()) {
+                listener.add(point);
+            }
+        }
+
+        contactListener.getContacts().clear();
 
         /* Remove every body in the removed queue. */
         for (Body body : remove) {

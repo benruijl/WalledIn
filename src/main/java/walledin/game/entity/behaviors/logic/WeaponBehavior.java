@@ -137,6 +137,8 @@ public class WeaponBehavior extends AbstractBehavior {
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.setAttribute(Attribute.TARGET, target);
+                bullet.setAttribute(Attribute.ORIENTATION_ANGLE,
+                        getAttribute(Attribute.ORIENTATION_ANGLE));
                 bullet.setAttribute(Attribute.OWNED_BY,
                         getAttribute(Attribute.OWNED_BY));
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);

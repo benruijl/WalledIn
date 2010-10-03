@@ -52,6 +52,8 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
         final Entity particle = manager.create(Family.FOAM_PARTICLE);
         particle.setAttribute(Attribute.ORIENTATION_ANGLE,
                 getAttribute(Attribute.ORIENTATION_ANGLE));
+        particle.setAttribute(Attribute.OWNED_BY,
+                getAttribute(Attribute.OWNED_BY));
 
         particle.setAttribute(Attribute.POSITION,
                 getAttribute(Attribute.POSITION));
@@ -67,7 +69,6 @@ public class StickyFoamBulletBehavior extends BulletBehavior {
             Entity colEntity = (Entity) data;
 
             if (!blownUp) {
-                LOG.info("YO: " + colEntity.getName());
                 if (colEntity.getFamily() == Family.MAP
                         || colEntity.getFamily().equals(Family.FOAM_PARTICLE)) {
                     spawnBullet();

@@ -3,6 +3,7 @@ package walledin.game.entity.behaviors.logic;
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.AbstractGeometry;
+import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.physics.PhysicsBody;
@@ -16,6 +17,7 @@ public class PhysicsBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
     private PhysicsBody body;
     private boolean isStatic = false;
+    private boolean isCircle = false;
 
     public PhysicsBehavior(Entity owner) {
         super(owner);
@@ -28,6 +30,12 @@ public class PhysicsBehavior extends AbstractBehavior {
         this.isStatic = isStatic;
     }
 
+    /*
+     * public PhysicsBehavior(Entity owner, boolean isStatic, boolean isCircle)
+     * { super(owner); body = null; this.isStatic = isStatic; this.isCircle =
+     * isCircle; }
+     */
+
     @Override
     public void onMessage(MessageType messageType, Object data) {
         /* FIXME: wrong message name! */
@@ -39,24 +47,30 @@ public class PhysicsBehavior extends AbstractBehavior {
         if (messageType == MessageType.ATTRIBUTE_SET) {
             if (data == Attribute.POSITION) {
                 if (body == null) {
-                    if (isStatic) {
-                    body = PhysicsManager
-                            .getInstance()
-                            .addStaticBody(
-                                    ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
-                                            .asRectangle()
-                                            .translate(
-                                                    (Vector2f) getAttribute(Attribute.POSITION)),
-                                    getOwner().getName());
-                    } else {
-                        body = PhysicsManager
-                        .getInstance()
-                        .addBody(
-                                ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
-                                        .asRectangle()
-                                        .translate(
-                                                (Vector2f) getAttribute(Attribute.POSITION)),
-                                getOwner().getName());
+                    String name = getOwner().getName();
+                    Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+                    AbstractGeometry geom = (AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY);
+
+                    if (geom instanceof Rectangle) {
+                        if (isStatic) {
+                            body = PhysicsManager.getInstance().addStaticBody(
+                                    geom.asRectangle().translate(pos), name);
+                        } else {
+                            body = PhysicsManager.getInstance().addBody(
+                                    geom.asRectangle().translate(pos), name);
+                        }
+                    } else if (geom instanceof Circle) {
+                        if (isStatic) {
+                            body = PhysicsManager.getInstance()
+                                    .addStaticCircleBody(
+                                            geom.asCircumscribedCircle()
+                                                    .translate(pos), name);
+                        } else {
+                            body = PhysicsManager.getInstance()
+                                    .addCircleBody(
+                                            geom.asCircumscribedCircle()
+                                                    .translate(pos), name);
+                        }
                     }
                 }
             }

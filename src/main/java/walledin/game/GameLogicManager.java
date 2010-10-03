@@ -520,6 +520,10 @@ public final class GameLogicManager implements GameStateListener,
         PhysicsManager.getInstance().initialize(
                 new Rectangle(0, 0, 64 * 32, 48 * 32));
 
+        /* Add a generic contact resolver. */
+        PhysicsManager.getInstance().getContactListener()
+                .addListener(new ContactHandler(entityManager));
+
         /*
          * Build the static movability field and add static bodies to the
          * physics manager.

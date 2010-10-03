@@ -53,8 +53,8 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
         setAttribute(Attribute.PLAYER_ACTIONS, playerActions);
 
         /* Register the contact listener. */
-        PhysicsManager.getInstance().addContactListener(getOwner().getName(),
-                this);
+        PhysicsManager.getInstance().getContactListener()
+                .addListener(getOwner().getName(), this);
     }
 
     @Override
@@ -143,18 +143,6 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
     public void add(ContactPoint point) {
         if (point.normal.y >= -1 && point.normal.y < 0) {
             canJump = true;
-        }
-
-        /* Handle all collisions for now. */
-        Entity ent1 = getEntityManager().get(
-                (String) point.shape1.getBody().getUserData());
-
-        Entity ent2 = getEntityManager().get(
-                (String) point.shape2.getBody().getUserData());
-
-        if (ent1 != null && ent2 != null) {
-            ent1.sendMessage(MessageType.COLLIDED, ent2);
-            ent2.sendMessage(MessageType.COLLIDED, ent1);
         }
     }
 
