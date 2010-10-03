@@ -22,65 +22,65 @@ texturePartManager.createTexturePart("foamgun", itemsTexture, new Rectangle(64, 
 texturePartManager.createTexturePart("foamnade", itemsTexture, new Rectangle(320, 256, 64, 64))
 
 [
-(Family.PLAYER): { entity ->
-    entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f); // start looking to
-    // the right
-    entity.addBehavior(new PlayerAnimationBehavior(entity));
-    // TODO: we should be able to define player texture here
-    entity.addBehavior(new PlayerRenderBehavior(entity));
-    entity.addBehavior(new PlayerParentBehavior(entity));
-} as EntityFunction,
-
-(Family.BACKGROUND): { entity ->
-    entity.addBehavior(new BackgroundRenderBehavior(entity));
-} as EntityFunction,
-
-(Family.MAP): { entity ->
-    entity.addBehavior(new MapRenderBehavior(entity));
-} as EntityFunction,
-
-(Family.FOAMGUN_BULLET): { entity ->
-    def destRect = new Circle(new Vector2f(8, 8), 8)
-    entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
-} as EntityFunction,
-
-(Family.FOAMNADE): { entity ->
-    def destRect = new Rectangle(0, 0, 32, 32)
-    entity.addBehavior(new ItemRenderBehavior(entity, "foamnade", destRect));
-} as EntityFunction,
-
-(Family.HANDGUN_BULLET): { entity ->
-    def destRect = new Rectangle(0, 0, 22, 11)
-    entity.addBehavior(new ItemRenderBehavior(entity, "handgunbullet", destRect));
-} as EntityFunction,
-
-(Family.FOAM_PARTICLE): { entity ->
-    def destRect = new Circle(new Vector2f(16, 16), 16)
-    entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
-} as EntityFunction,
-
-(Family.ARMOURKIT): { entity ->
-    def destRect = new Rectangle(0, 0, 32, 32)
-    entity.addBehavior(new ItemRenderBehavior(entity, "armorkit", destRect));
-} as EntityFunction,
-
-(Family.HEALTHKIT): { entity ->
-    def destRect = new Rectangle(0, 0, 32, 32)
-    entity.addBehavior(new ItemRenderBehavior(entity, "healthkit", destRect));
-} as EntityFunction,
-
-(Family.HANDGUN): { entity ->
-    def destRect = new Rectangle(0, 0, 40, 21)
-    entity.addBehavior(new WeaponRenderBehavior(entity, "handgun", destRect));
-} as EntityFunction,
-
-(Family.FOAMGUN): { entity ->
-    def destRect = new Rectangle(0, 0, 80, 21)
-    entity.addBehavior(new WeaponRenderBehavior(entity, "foamgun", destRect));
-} as EntityFunction,
-
-(Family.CURSOR): { entity ->
-    entity.addBehavior(new CursorRenderBehavior(entity, ZValue.CURSOR));
-} as EntityFunction,
-
-]
+            (Family.PLAYER): { entity ->
+                entity.setAttribute(Attribute.ORIENTATION_ANGLE, 0.0f); // start looking to
+                // the right
+                entity.addBehavior(new PlayerAnimationBehavior(entity));
+                // TODO: we should be able to define player texture here
+                entity.addBehavior(new PlayerRenderBehavior(entity));
+                entity.addBehavior(new PlayerParentBehavior(entity));
+            } as EntityFunction,
+            
+            (Family.BACKGROUND): { entity ->
+                entity.addBehavior(new BackgroundRenderBehavior(entity));
+            } as EntityFunction,
+            
+            (Family.MAP): { entity ->
+                entity.addBehavior(new MapRenderBehavior(entity));
+            } as EntityFunction,
+            
+            (Family.FOAMGUN_BULLET): { entity ->
+                def destRect = new Circle(new Vector2f(8, 8), 8)
+                entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
+            } as EntityFunction,
+            
+            (Family.FOAMNADE): { entity ->
+                def destRect = new Rectangle(0, 0, 32, 32)
+                entity.addBehavior(new ItemRenderBehavior(entity, "foamnade", destRect));
+            } as EntityFunction,
+            
+            (Family.HANDGUN_BULLET): { entity ->
+                def destRect = new Rectangle(0, 0, 22, 11)
+                entity.addBehavior(new ItemRenderBehavior(entity, "handgunbullet", destRect));
+            } as EntityFunction,
+            
+            (Family.FOAM_PARTICLE): { entity ->
+                def destRect = new Circle(new Vector2f(16, 16), 16)
+                entity.addBehavior(new ItemRenderBehavior(entity, "foambullet", destRect));
+            } as EntityFunction,
+            
+            (Family.ARMOURKIT): { entity ->
+                def destRect = new Rectangle(0, 0, 32, 32)
+                entity.addBehavior(new ItemRenderBehavior(entity, "armorkit", destRect));
+            } as EntityFunction,
+            
+            (Family.HEALTHKIT): { entity ->
+                def destRect = new Rectangle(0, 0, 32, 32)
+                entity.addBehavior(new ItemRenderBehavior(entity, "healthkit", destRect));
+            } as EntityFunction,
+            
+            (Family.HANDGUN): { entity ->
+                def destRect = new Rectangle(0, 0, 40, 21)
+                entity.addBehavior(new WeaponRenderBehavior(entity, "handgun", destRect));
+            } as EntityFunction,
+            
+            (Family.FOAMGUN): { entity ->
+                def destRect = new Rectangle(0, 0, 80, 21)
+                entity.addBehavior(new WeaponRenderBehavior(entity, "foamgun", destRect));
+            } as EntityFunction,
+            
+            (Family.CURSOR): { entity ->
+                entity.addBehavior(new CursorRenderBehavior(entity, ZValue.CURSOR));
+            } as EntityFunction,
+            
+        ]

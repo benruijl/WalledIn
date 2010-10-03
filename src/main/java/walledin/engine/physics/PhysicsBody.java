@@ -31,6 +31,10 @@ public class PhysicsBody {
     public PhysicsBody(Body body) {
         this.body = body;
     }
+    
+    public Body getBody() {
+        return body;
+    }
 
     public Vector2f getPosition() {
         return new Vector2f(body.getPosition().x, body.getPosition().y);

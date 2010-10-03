@@ -1,13 +1,13 @@
 package walledin.game.entity.behaviors.logic;
 
 import org.apache.log4j.Logger;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body;
 
 import walledin.engine.math.AbstractGeometry;
-import walledin.engine.math.Circle;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.physics.PhysicsBody;
-import walledin.engine.physics.PhysicsManager;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -15,26 +15,20 @@ import walledin.game.entity.MessageType;
 
 public class PhysicsBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
+    private static final Vector2f GRAVITY = new Vector2f(0, 4000.0f);
     private PhysicsBody body;
-    private boolean isStatic = false;
-    private boolean isCircle = false;
+    private boolean doGravity = true;
 
-    public PhysicsBehavior(Entity owner) {
+    public PhysicsBehavior(Entity owner, Body body) {
         super(owner);
-        body = null;
+        this.body = new PhysicsBody(body);
     }
 
-    public PhysicsBehavior(Entity owner, boolean isStatic) {
+    public PhysicsBehavior(Entity owner, Body body, boolean doGravity) {
         super(owner);
-        body = null;
-        this.isStatic = isStatic;
+        this.body = new PhysicsBody(body);
+        this.doGravity = doGravity;
     }
-
-    /*
-     * public PhysicsBehavior(Entity owner, boolean isStatic, boolean isCircle)
-     * { super(owner); body = null; this.isStatic = isStatic; this.isCircle =
-     * isCircle; }
-     */
 
     @Override
     public void onMessage(MessageType messageType, Object data) {
@@ -43,36 +37,17 @@ public class PhysicsBehavior extends AbstractBehavior {
             body.applyImpulse((Vector2f) data);
         }
 
-        /* When the position is set, create a body. */
         if (messageType == MessageType.ATTRIBUTE_SET) {
             if (data == Attribute.POSITION) {
-                if (body == null) {
-                    String name = getOwner().getName();
-                    Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
-                    AbstractGeometry geom = (AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY);
+                Rectangle rect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                        .asRectangle();
+                Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+                pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
+                        .getHeight() / 2.0f));
 
-                    if (geom instanceof Rectangle) {
-                        if (isStatic) {
-                            body = PhysicsManager.getInstance().addStaticBody(
-                                    geom.asRectangle().translate(pos), name);
-                        } else {
-                            body = PhysicsManager.getInstance().addBody(
-                                    geom.asRectangle().translate(pos), name);
-                        }
-                    } else if (geom instanceof Circle) {
-                        if (isStatic) {
-                            body = PhysicsManager.getInstance()
-                                    .addStaticCircleBody(
-                                            geom.asCircumscribedCircle()
-                                                    .translate(pos), name);
-                        } else {
-                            body = PhysicsManager.getInstance()
-                                    .addCircleBody(
-                                            geom.asCircumscribedCircle()
-                                                    .translate(pos), name);
-                        }
-                    }
-                }
+                /* Be careful calling this function! */
+                body.getBody().setXForm(new Vec2(pos.getX(), pos.getY()),
+                        body.getBody().getAngle());
             }
         }
     }
@@ -80,6 +55,11 @@ public class PhysicsBehavior extends AbstractBehavior {
     @Override
     public void onUpdate(double delta) {
         if (body != null) {
+
+            if (doGravity) {
+                body.applyImpulse(GRAVITY);
+            }
+
             /* Correct the position. */
             Rectangle rect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
                     .asRectangle();

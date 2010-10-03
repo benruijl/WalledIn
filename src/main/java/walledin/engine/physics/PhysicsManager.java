@@ -39,7 +39,6 @@ import walledin.engine.math.Rectangle;
 
 public class PhysicsManager {
     private static final Logger LOG = Logger.getLogger(PhysicsManager.class);
-    private static final Vec2 GRAVITY = new Vec2(0, 40.0f);
     private static final float TIME_STEP = 1.0f / 60.0f;
     private static final int ITERATION = 5;
     private static PhysicsManager ref = null;
@@ -76,7 +75,7 @@ public class PhysicsManager {
         this.worldRect = new AABB(new Vec2(worldRect.getLeft(),
                 worldRect.getTop()), new Vec2(worldRect.getRight(),
                 worldRect.getBottom()));
-        world = new World(this.worldRect, GRAVITY, true);
+        world = new World(this.worldRect, new Vec2(), true);
         world.setContactListener(contactListener);
 
         addStaticBody(
@@ -161,7 +160,6 @@ public class PhysicsManager {
     }
 
     public PhysicsBody addBody(Rectangle rect, Object userData) {
-        /* Add dummy object */
         BodyDef box = new BodyDef();
         box.position.set(rect.getLeft() + rect.getWidth() / 2.0f, rect.getTop()
                 + rect.getHeight() / 2.0f);
@@ -176,6 +174,10 @@ public class PhysicsManager {
         testBox.m_userData = userData;
 
         return new PhysicsBody(testBox);
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     /**
