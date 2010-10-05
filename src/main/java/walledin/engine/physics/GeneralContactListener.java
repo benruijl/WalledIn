@@ -44,15 +44,15 @@ public class GeneralContactListener implements
         listeners = new HashMap<Object, ContactListener>();
         genericListeners = new ArrayList<ContactListener>();
     }
-    
+
     public List<ContactPoint> getContacts() {
         return contacts;
     }
-    
+
     public Map<Object, ContactListener> getListeners() {
         return listeners;
     }
-    
+
     public List<ContactListener> getGenericListeners() {
         return genericListeners;
     }
@@ -75,7 +75,19 @@ public class GeneralContactListener implements
 
     @Override
     public void add(ContactPoint point) {
-        contacts.add(point);
+        /* Copy entire structure. The point variable is changed by box2d. */
+        ContactPoint newPoint = new ContactPoint();
+        newPoint.friction = point.friction;
+        newPoint.id = point.id;
+        newPoint.normal = point.normal;
+        newPoint.position = point.position;
+        newPoint.restitution = point.restitution;
+        newPoint.separation = point.separation;
+        newPoint.shape1 = point.shape1;
+        newPoint.shape2 = point.shape2;
+        newPoint.velocity = point.velocity;
+
+        contacts.add(newPoint);
 
         ContactListener listenerA = listeners.get(point.shape1.m_body
                 .getUserData());

@@ -58,10 +58,14 @@ import org.jbox2d.dynamics.World;
                 circle.friction = 0.0f;
                 circle.restitution = 0.2f;
                 
+                // don't collide with other bullets
+                circle.filter.groupIndex = -1;
+                
                 BodyDef bodyDef = new BodyDef();
                 World world = PhysicsManager.getInstance().getWorld();
                 bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
                 final Body body = world.createBody(bodyDef);
+                body.setBullet(true);
                 body.createShape(circle);
                 body.setUserData(entity.getName());
                 body.setMassFromShapes();
@@ -80,8 +84,13 @@ import org.jbox2d.dynamics.World;
                 polygon.density = 1.0f;
                 polygon.friction = 0.0f;
                 polygon.restitution = 0.2f;
+                
+                // don't collide with other bullets
+                polygon.filter.groupIndex = -1;
+                
                 World world = PhysicsManager.getInstance().getWorld();
                 Body testBox = world.createBody(box);
+                testBox.setBullet(true);
                 testBox.createShape(polygon);
                 testBox.setMassFromShapes();
                 testBox.m_userData = entity.getName();

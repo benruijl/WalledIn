@@ -45,6 +45,7 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
     private static final float MOVE_SPEED = 500.0f;
     private static final float JUMP_SPEED = 9000.0f;
     private boolean canJump;
+    private int colCount;
     private Set<PlayerAction> playerActions;
 
     public PlayerControlBehaviour(final Entity owner) {
@@ -143,6 +144,7 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
     public void add(ContactPoint point) {
         if (point.normal.y >= -1 && point.normal.y < 0) {
             canJump = true;
+            colCount++;
         }
     }
 
@@ -155,7 +157,11 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
 
     @Override
     public void remove(ContactPoint point) {
-        canJump = false;
+        colCount--;
+
+        if (colCount <= 0) {
+            canJump = false;
+        }
     }
 
     @Override
