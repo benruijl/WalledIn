@@ -50,11 +50,11 @@ import org.jbox2d.dynamics.World;
             (Family.FOAMGUN_BULLET): { entity ->
                 def destRect = new Circle(new Vector2f(8.0f, 8.0f), 8.0f)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
-                entity.addBehavior(new StickyFoamBulletBehavior(entity));
+                entity.addBehavior(new FoamBulletBehavior(entity));
                 
                 CircleDef circle = new CircleDef();
                 circle.radius = destRect.getRadius();
-                circle.density = 1.0f;
+                circle.density = 0.01f;
                 circle.friction = 0.0f;
                 circle.restitution = 0.2f;
                 
@@ -65,6 +65,7 @@ import org.jbox2d.dynamics.World;
                 World world = PhysicsManager.getInstance().getWorld();
                 bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
                 final Body body = world.createBody(bodyDef);
+                body.m_linearDamping = 0.0f;
                 body.setBullet(true);
                 body.createShape(circle);
                 body.setUserData(entity.getName());
@@ -81,15 +82,16 @@ import org.jbox2d.dynamics.World;
                 BodyDef box = new BodyDef();
                 PolygonDef polygon = new PolygonDef();
                 polygon.setAsBox((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f));
-                polygon.density = 1.0f;
+                polygon.density = 0.01f;
                 polygon.friction = 0.0f;
-                polygon.restitution = 0.2f;
+                polygon.restitution = 0.01f;
                 
                 // don't collide with other bullets
                 polygon.filter.groupIndex = -1;
                 
                 World world = PhysicsManager.getInstance().getWorld();
                 Body testBox = world.createBody(box);
+                testBox.m_linearDamping = 0.0f;
                 testBox.setBullet(true);
                 testBox.createShape(polygon);
                 testBox.setMassFromShapes();

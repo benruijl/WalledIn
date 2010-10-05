@@ -38,6 +38,7 @@ import walledin.game.ClientLogicManager;
 import walledin.game.PlayerActionManager;
 import walledin.game.PlayerClientInfo;
 import walledin.game.Team;
+import walledin.game.gamemode.GameMode;
 import walledin.game.network.NetworkConstants;
 import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
@@ -139,6 +140,10 @@ public final class Client implements NetworkEventListener {
         final List<ServerData> servers = new ArrayList<ServerData>(
                 lanServerList);
         servers.addAll(internetServerList);
+
+        /* TODO: remove */
+        servers.add(new ServerData(new InetSocketAddress("localhost", 1234),
+                "localhost_hack", 0, 3, GameMode.DEATHMATCH));
         return servers;
     }
 
@@ -386,11 +391,10 @@ public final class Client implements NetworkEventListener {
             clientLogicManager.getEntityManager().applyChangeSet(changeSet);
         }
         try {
-            networkWriter.sendMessage(
-                    channel,
-                    new InputMessage(receivedVersion, PlayerActionManager
-                            .getInstance().getPlayerActions(), renderer
-                            .screenToWorld(Input.getInstance().getMousePos())));
+            networkWriter.sendMessage(channel, new InputMessage(
+                    receivedVersion, PlayerActionManager.getInstance()
+                            .getPlayerActions(), renderer.screenToWorld(Input
+                            .getInstance().getMousePos())));
         } catch (final IOException e) {
             LOG.error("IO exception during network event", e);
             dispose();
