@@ -152,7 +152,7 @@ public class ChangeSet {
 
     public Map<String, Family> getCreatedFromVersion(final int firstVersion) {
         final Map<String, Family> result = new HashMap<String, Family>();
-        for (int i = version - firstVersion; i < created.size(); i++) {
+        for (int i = firstVersion - version; i < created.size(); i++) {
             final Map<String, Family> currentCreated = created.get(i);
             final Set<String> currentRemoved = removed.get(i);
             result.putAll(currentCreated);
@@ -165,7 +165,7 @@ public class ChangeSet {
 
     public Set<String> getRemovedFromVersion(final int firstVersion) {
         final Set<String> result = new HashSet<String>();
-        for (int i = version - firstVersion; i < removed.size(); i++) {
+        for (int i = firstVersion - version; i < removed.size(); i++) {
             final Map<String, Family> currentCreated = created.get(i);
             final Set<String> currentRemoved = removed.get(i);
             result.addAll(currentRemoved);
