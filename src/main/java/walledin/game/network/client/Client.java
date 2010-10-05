@@ -210,7 +210,6 @@ public final class Client implements NetworkEventListener {
             clientLogicManager
                     .displayErrorAndDisconnect("Connection to server lost.");
         }
-
     }
 
     /**
@@ -363,6 +362,27 @@ public final class Client implements NetworkEventListener {
         } catch (final IOException e) {
             LOG.error("IOException", e);
         }
+    }
+    
+    public long getBytesRead() {
+        return networkReader.getBytesRead();
+    }
+
+    public int getMessagesRead() {
+        return networkReader.getMessagesRead();
+    }
+    
+    public long getBytesWritten() {
+        return networkWriter.getBytesWritten();
+    }
+
+    public int getMessagesWritten() {
+        return networkWriter.getMessagesWritten();
+    }
+    
+    public void resetStatistics() {
+        networkReader.resetStatistics();
+        networkWriter.resetStatistics();
     }
 
     /**

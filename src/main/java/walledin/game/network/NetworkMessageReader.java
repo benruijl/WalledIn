@@ -59,10 +59,28 @@ public class NetworkMessageReader {
             .getLogger(NetworkMessageReader.class);
     private final ByteBuffer buffer;
     private final NetworkEventListener listener;
+    /** Amount of bytes read so far */
+    private long bytesRead;
+    /** Amount of messages read so far */
+    private int messagesRead;
 
     public NetworkMessageReader(final NetworkEventListener listener) {
         this.listener = listener;
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
+        resetStatistics();
+    }
+
+    public long getBytesRead() {
+        return bytesRead;
+    }
+
+    public int getMessagesRead() {
+        return messagesRead;
+    }
+
+    public void resetStatistics() {
+        bytesRead = 0;
+        messagesRead = 0;
     }
 
     public static ServerData readServerData(final ByteBuffer buffer)
@@ -182,6 +200,10 @@ public class NetworkMessageReader {
         buffer.clear();
         final SocketAddress address = channel.receive(buffer);
         buffer.flip();
+        if (address != null) {
+            messagesRead++;
+            bytesRead += buffer.limit();
+        }
         return address;
     }
 

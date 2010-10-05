@@ -46,9 +46,27 @@ public class NetworkMessageWriter {
     private static final Logger LOG = Logger
             .getLogger(NetworkMessageWriter.class);
     private final ByteBuffer buffer;
+    /** Amount of bytes written so far */
+    private long bytesWritten;
+    /** Amount of messages written so far */
+    private int messagesWritten;
 
     public NetworkMessageWriter() {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
+        resetStatistics();
+    }
+
+    public long getBytesWritten() {
+        return bytesWritten;
+    }
+
+    public int getMessagesWritten() {
+        return messagesWritten;
+    }
+
+    public void resetStatistics() {
+        bytesWritten = 0;
+        messagesWritten = 0;
     }
 
     private void writeMessage(final NetworkMessage message) {
@@ -56,6 +74,8 @@ public class NetworkMessageWriter {
         message.writeHeader(buffer);
         message.write(buffer);
         buffer.flip();
+        messagesWritten++;
+        bytesWritten += buffer.limit();
     }
 
     public void sendMessage(final DatagramChannel channel,
