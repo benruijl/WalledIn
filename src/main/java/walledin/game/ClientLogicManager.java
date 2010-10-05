@@ -93,6 +93,12 @@ public final class ClientLogicManager implements RenderListener,
     private boolean quitting = false;
     /** The name of the player of this client. */
     private String playerName;
+    /** Seconds since statistics */
+    private double secsSinceStatistics;
+    private double bytesWrittenPerSec;
+    private double bytesReadPerSec;
+    private double messagesWrittenPerSec;
+    private double messagesReadPerSec;
 
     /**
      * Creates a new logic manager.
@@ -107,6 +113,7 @@ public final class ClientLogicManager implements RenderListener,
         entityManager.addListener(this);
         screenManager = new ScreenManager(renderer);
         gameAssets = new ArrayList<Entity>();
+        secsSinceStatistics = 0;
 
         try {
             client = new Client(renderer, this);
@@ -163,6 +170,14 @@ public final class ClientLogicManager implements RenderListener,
         final Font font = screenManager.getFont(FontType.BUTTON_CAPTION);
         font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
                 630, 20));
+        font.renderText(renderer, "bin: " + bytesReadPerSec, new Vector2f(
+                630, 80));
+        font.renderText(renderer, "bout: " + bytesWrittenPerSec, new Vector2f(
+                630, 100));
+        font.renderText(renderer, "min: " + messagesReadPerSec, new Vector2f(
+                630, 120));
+        font.renderText(renderer, "mout: " + messagesWrittenPerSec, new Vector2f(
+                630, 140));
         renderer.stopHUDRendering();
     }
 
@@ -315,6 +330,16 @@ public final class ClientLogicManager implements RenderListener,
         }
 
         screenManager.update(delta);
+        
+        secsSinceStatistics += delta;
+        if (secsSinceStatistics > 1) {
+            bytesWrittenPerSec = client.getBytesWritten() / secsSinceStatistics;
+            bytesReadPerSec = client.getBytesRead() / secsSinceStatistics;
+            messagesWrittenPerSec = client.getMessagesWritten() / secsSinceStatistics;
+            messagesReadPerSec = client.getMessagesRead() / secsSinceStatistics;
+            client.resetStatistics();
+            secsSinceStatistics = 0;
+        }
     }
 
     /**
