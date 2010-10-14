@@ -31,7 +31,7 @@ import walledin.game.network.messages.NetworkMessage;
 import walledin.util.Utils;
 
 public abstract class AbstractMasterServerMessage implements NetworkMessage {
-    public static final int DATAGRAM_IDENTIFICATION = 0x174BC126;
+    public static final int DATAGRAM_IDENTIFICATION = 0x2C6853CA;
     private static final Logger LOG = Logger
             .getLogger(NetworkMessageReader.class);
     private static final Map<Byte, Class<? extends AbstractMasterServerMessage>> MESSAGE_CLASSES = initializeMessageClasses();
