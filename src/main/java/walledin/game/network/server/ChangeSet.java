@@ -20,7 +20,6 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.network.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,36 +42,44 @@ import walledin.game.entity.Family;
  */
 public class ChangeSet {
     /** The first version this change set records changes from. */
-    private final int version;
+    private final int firstVersion;
+
+    /** The first version this change set records changes from. */
+    private int lastVersion;
+
     /**
      * For each version this change set can update from the name and family of
      * the entities that have been created
      */
-    private final List<Map<String, Family>> created;
+    private final Map<Integer, Map<String, Family>> created;
+
     /**
      * For each version this change set can update from the name of the entities
      * that have been removed
      */
-    private final List<Set<String>> removed;
+    private final Map<Integer, Set<String>> removed;
+
     /**
      * For each entity the values of the attributes that have changed
      */
     private final Map<String, Map<Attribute, Object>> updated;
 
-    public ChangeSet(final int version, final Set<Entity> created,
+    public ChangeSet(final int firstVersion, final Set<Entity> created,
             final Set<Entity> removed, final Map<String, Entity> entities) {
-        this.version = version;
-        this.created = new ArrayList<Map<String, Family>>();
-        this.removed = new ArrayList<Set<String>>();
+        this.firstVersion = firstVersion;
+        lastVersion = firstVersion;
+        this.created = new HashMap<Integer, Map<String, Family>>();
+        this.removed = new HashMap<Integer, Set<String>>();
         updated = new HashMap<String, Map<Attribute, Object>>();
         initialize(created, removed, entities);
     }
 
-    public ChangeSet(final int version,
-            final List<Map<String, Family>> created,
-            final List<Set<String>> removed,
+    public ChangeSet(final int firstVersion, final int lastVersion,
+            final Map<Integer, Map<String, Family>> created,
+            final Map<Integer, Set<String>> removed,
             final Map<String, Map<Attribute, Object>> updated) {
-        this.version = version;
+        this.firstVersion = firstVersion;
+        this.lastVersion = lastVersion;
         this.created = created;
         this.removed = removed;
         this.updated = updated;
@@ -95,8 +102,12 @@ public class ChangeSet {
         for (final Entity entity : removed) {
             tempRemoved.add(entity.getName());
         }
-        this.created.add(tempCreated);
-        this.removed.add(tempRemoved);
+        if (tempCreated != null && !tempCreated.isEmpty()) {
+            this.created.put(firstVersion, tempCreated);
+        }
+        if (tempRemoved != null && !tempRemoved.isEmpty()) {
+            this.removed.put(firstVersion, tempRemoved);
+        }
         for (final Entity entity : entities.values()) {
             final Set<Attribute> changes = entity.getChangedAttributes();
             if (!changes.isEmpty()) {
@@ -112,22 +123,28 @@ public class ChangeSet {
      * @param changeSet
      */
     public void merge(final ChangeSet changeSet) {
-        if (changeSet.created.size() > 1 || changeSet.removed.size() > 1) {
+        if (changeSet.firstVersion != changeSet.lastVersion) {
             throw new IllegalStateException(
                     "Cannot merge a changeset with multiple versions");
         }
 
-        if (version + removed.size() != changeSet.version) {
+        if (lastVersion + 1 != changeSet.firstVersion) {
             throw new IllegalStateException("Cannot merge a changeset with a"
                     + " version other than our oldest version + 1");
         }
 
-        final Map<String, Family> theirCreated = changeSet.created.get(0);
-        final Set<String> theirRemoved = changeSet.removed.get(0);
+        final Map<String, Family> theirCreated = changeSet.created
+                .get(changeSet.firstVersion);
+        final Set<String> theirRemoved = changeSet.removed
+                .get(changeSet.firstVersion);
         // Add created to our created
-        created.add(theirCreated);
+        if (theirCreated != null && !theirCreated.isEmpty()) {
+            created.put(changeSet.firstVersion, theirCreated);
+        }
         // Add removed to our removed
-        removed.add(theirRemoved);
+        if (theirRemoved != null && !theirRemoved.isEmpty()) {
+            removed.put(changeSet.firstVersion, theirRemoved);
+        }
 
         // Add updates to our updates
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet.updated
@@ -143,21 +160,27 @@ public class ChangeSet {
             updated.put(name, ourChanges);
         }
 
-        // Remove removed entities from updated
-        // entities
-        for (final String name : theirRemoved) {
-            updated.remove(name);
+        if (theirRemoved != null) {
+            // Remove removed entities from updated entities
+            for (final String name : theirRemoved) {
+                updated.remove(name);
+            }
         }
+        lastVersion++;
     }
 
     public Map<String, Family> getCreatedFromVersion(final int firstVersion) {
         final Map<String, Family> result = new HashMap<String, Family>();
-        for (int i = firstVersion - version; i < created.size(); i++) {
+        for (int i = firstVersion; i <= lastVersion; i++) {
             final Map<String, Family> currentCreated = created.get(i);
             final Set<String> currentRemoved = removed.get(i);
-            result.putAll(currentCreated);
-            for (final String name : currentRemoved) {
-                result.remove(name);
+            if (currentCreated != null) {
+                result.putAll(currentCreated);
+            }
+            if (currentRemoved != null) {
+                for (final String name : currentRemoved) {
+                    result.remove(name);
+                }
             }
         }
         return result;
@@ -165,12 +188,16 @@ public class ChangeSet {
 
     public Set<String> getRemovedFromVersion(final int firstVersion) {
         final Set<String> result = new HashSet<String>();
-        for (int i = firstVersion - version; i < removed.size(); i++) {
+        for (int i = firstVersion; i <= lastVersion; i++) {
             final Map<String, Family> currentCreated = created.get(i);
             final Set<String> currentRemoved = removed.get(i);
-            result.addAll(currentRemoved);
-            for (final String name : currentCreated.keySet()) {
-                result.remove(name);
+            if (currentRemoved != null) {
+                result.addAll(currentRemoved);
+            }
+            if (currentCreated != null) {
+                for (final String name : currentCreated.keySet()) {
+                    result.remove(name);
+                }
             }
         }
         return result;
@@ -181,15 +208,24 @@ public class ChangeSet {
      * 
      * @return the version this change set records changes from.
      */
-    public int getVersion() {
-        return version;
+    public int getFirstVersion() {
+        return firstVersion;
     }
 
-    public List<Map<String, Family>> getCreated() {
+    /**
+     * Returns the last version this change set records changes to.
+     * 
+     * @return the last version this change set records changes to.
+     */
+    public int getLastVersion() {
+        return lastVersion;
+    }
+
+    public Map<Integer, Map<String, Family>> getCreated() {
         return created;
     }
 
-    public List<Set<String>> getRemoved() {
+    public Map<Integer, Set<String>> getRemoved() {
         return removed;
     }
 

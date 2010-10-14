@@ -131,26 +131,29 @@ public class NetworkMessageReader {
     }
 
     public static ChangeSet readChangeSet(final ByteBuffer buffer) {
-        final int version = buffer.getInt();
+        final int firstVersion = buffer.getInt();
+        final int lastVersion = buffer.getInt();
         final int numRemovedVersions = buffer.getInt();
         final int numCreatedVersions = buffer.getInt();
         final int numUpdated = buffer.getInt();
-        final List<Set<String>> removed = new ArrayList<Set<String>>(
+        final Map<Integer, Set<String>> removed = new HashMap<Integer, Set<String>>(
                 numRemovedVersions);
-        final List<Map<String, Family>> created = new ArrayList<Map<String, Family>>(
+        final Map<Integer, Map<String, Family>> created = new HashMap<Integer, Map<String, Family>>(
                 numCreatedVersions);
         final Map<String, Map<Attribute, Object>> updated = new HashMap<String, Map<Attribute, Object>>(
                 numUpdated);
 
         for (int i = 0; i < numRemovedVersions; i++) {
+            final int version = buffer.getInt();
             final int numRemoved = buffer.getInt();
             final Set<String> temp = new HashSet<String>();
             for (int j = 0; j < numRemoved; j++) {
                 temp.add(readStringData(buffer));
             }
-            removed.add(temp);
+            removed.put(version, temp);
         }
         for (int i = 0; i < numCreatedVersions; i++) {
+            final int version = buffer.getInt();
             final int numCreated = buffer.getInt();
             final Map<String, Family> temp = new HashMap<String, Family>();
             for (int j = 0; j < numCreated; j++) {
@@ -158,14 +161,15 @@ public class NetworkMessageReader {
                 final Family family = readFamilyData(buffer);
                 temp.put(name, family);
             }
-            created.add(temp);
+            created.put(version, temp);
         }
         for (int i = 0; i < numUpdated; i++) {
             final String name = readStringData(buffer);
             final Map<Attribute, Object> attributes = readAttributesData(buffer);
             updated.put(name, attributes);
         }
-        return new ChangeSet(version, created, removed, updated);
+        return new ChangeSet(firstVersion, lastVersion, created, removed,
+                updated);
     }
 
     public static Family readFamilyData(final ByteBuffer buffer) {
