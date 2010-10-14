@@ -441,7 +441,7 @@ public final class Client implements NetworkEventListener {
             break;
         default:
             clientLogicManager.displayErrorAndDisconnect("Could not login to"
-                    + " the server.");
+                    + " the server: " + message.getErrorCode());
             break;
         }
     }
