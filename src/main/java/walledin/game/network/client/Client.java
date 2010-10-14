@@ -395,15 +395,18 @@ public final class Client implements NetworkEventListener {
         lastLoginTry = -1;
         // FIXME check if this is correct .. version could be swaped
         final ChangeSet changeSet = message.getChangeSet();
-        final int oldVersion = changeSet.getVersion();
-        final int newVersion = message.getKnownClientVersion();
+        // The old version from where this change set updates
+        final int oldVersion = changeSet.getFirstVersion();
+        // The new version to which this change set updates
+        final int newVersion = message.getNewVersion();
         if (LOG.isTraceEnabled()) {
             LOG.trace("version:" + newVersion + " receivedVersion:"
                     + receivedVersion + " oldversion: " + oldVersion);
         }
-        if (receivedVersion == oldVersion && newVersion > receivedVersion) {
+        if (receivedVersion >= oldVersion && newVersion > receivedVersion) {
+            clientLogicManager.getEntityManager().applyChangeSet(changeSet,
+                    receivedVersion);
             receivedVersion = newVersion;
-            clientLogicManager.getEntityManager().applyChangeSet(changeSet);
         }
         try {
             networkWriter.sendMessage(

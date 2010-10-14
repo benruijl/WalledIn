@@ -125,7 +125,7 @@ public class Server implements NetworkEventListener {
         // Store the first version so we can give it new players
         final ChangeSet firstChangeSet = gameLogicManager.getEntityManager()
                 .createChangeSet();
-        changeSetLookup.put(firstChangeSet.getVersion(), firstChangeSet);
+        changeSetLookup.put(firstChangeSet.getFirstVersion(), firstChangeSet);
     }
 
     /**
@@ -235,11 +235,11 @@ public class Server implements NetworkEventListener {
         // Get the oldest changeset (we dont support this version anymore from
         // now)
         final ChangeSet oldChangeSet = changeSets.remove();
-        changeSetLookup.remove(oldChangeSet.getVersion());
+        changeSetLookup.remove(oldChangeSet.getFirstVersion());
         // Remove the player that are still on this version or older
         final Set<SocketAddress> removedPlayers = new HashSet<SocketAddress>();
         for (final PlayerConnection connection : players.values()) {
-            if (connection.getReceivedVersion() <= oldChangeSet.getVersion()) {
+            if (connection.getReceivedVersion() <= oldChangeSet.getFirstVersion()) {
                 removedPlayers.add(connection.getAddress());
                 LOG.info("Connection lost to client " + connection.getAddress());
             }
@@ -256,7 +256,7 @@ public class Server implements NetworkEventListener {
         }
         // Add the current change set
         changeSets.add(currentChangeSet);
-        changeSetLookup.put(currentChangeSet.getVersion(), currentChangeSet);
+        changeSetLookup.put(currentChangeSet.getFirstVersion(), currentChangeSet);
     }
 
     /**
@@ -272,23 +272,25 @@ public class Server implements NetworkEventListener {
         final int currentVersion = gameLogicManager.getEntityManager()
                 .getCurrentVersion();
         for (final PlayerConnection connection : players.values()) {
-            int sendVersion = connection.getReceivedVersion();
+            // Get the version that the client has already received
+            int connectionRecievedVersion = connection.getReceivedVersion();
             if (connection.isNew()) {
                 // Set to first version
-                sendVersion = 0;
+                connectionRecievedVersion = 0;
             }
 
-            final ChangeSet changeSet = changeSetLookup.get(sendVersion);
+            final ChangeSet changeSet = changeSetLookup
+                    .get(connectionRecievedVersion);
 
             if (changeSet == null) {
                 LOG.error("Could not find changeset with version "
-                        + sendVersion);
+                        + connectionRecievedVersion);
                 continue;
             }
 
             if (LOG.isTraceEnabled()) {
                 LOG.trace("currentVersion: " + currentVersion + " changeset: "
-                        + changeSet.getVersion() + " " + changeSet.getCreated()
+                        + changeSet.getFirstVersion() + " " + changeSet.getCreated()
                         + " " + changeSet.getRemoved() + " "
                         + changeSet.getUpdated());
             }
@@ -316,8 +318,11 @@ public class Server implements NetworkEventListener {
         for (int i = 0; i < storedChangesets; i++) {
             final ChangeSet changeSet = gameLogicManager.getEntityManager()
                     .createChangeSet();
+            for (final ChangeSet oldChangeSet : changeSetLookup.values()) {
+                oldChangeSet.merge(changeSet);
+            }
             changeSets.add(changeSet);
-            changeSetLookup.put(changeSet.getVersion(), changeSet);
+            changeSetLookup.put(changeSet.getFirstVersion(), changeSet);
         }
 
         gameLogicManager.initialize();

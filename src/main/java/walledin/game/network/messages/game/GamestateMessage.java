@@ -30,34 +30,42 @@ import walledin.game.network.server.ChangeSet;
 
 public class GamestateMessage extends AbstractGameMessage {
     private ChangeSet changeSet;
-    private int knownClientVersion;
+    private int newVersion;
 
     public GamestateMessage() {
 
     }
 
-    public GamestateMessage(final ChangeSet changeSet, final int currentVersion) {
+    /**
+     * Creates a gamestate message.
+     * 
+     * @param changeSet
+     *            This changeset to send
+     * @param newVersion
+     *            The version it is updating to
+     */
+    public GamestateMessage(final ChangeSet changeSet, final int newVersion) {
         this.changeSet = changeSet;
-        knownClientVersion = currentVersion;
+        this.newVersion = newVersion;
     }
 
     public ChangeSet getChangeSet() {
         return changeSet;
     }
 
-    public int getKnownClientVersion() {
-        return knownClientVersion;
+    public int getNewVersion() {
+        return newVersion;
     }
 
     @Override
     public void read(final ByteBuffer buffer, final SocketAddress address) {
-        knownClientVersion = buffer.getInt();
+        newVersion = buffer.getInt();
         changeSet = NetworkMessageReader.readChangeSet(buffer);
     }
 
     @Override
     public void write(final ByteBuffer buffer) {
-        buffer.putInt(knownClientVersion);
+        buffer.putInt(newVersion);
         NetworkMessageWriter.writeChangeSet(changeSet, buffer);
     }
 
