@@ -23,6 +23,7 @@ package walledin.masterserver;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
@@ -47,25 +48,29 @@ public class NetworkReader {
             return false;
         }
         buffer.flip();
-        ident = buffer.getInt();
-        if (ident != NetworkConstants.DATAGRAM_IDENTIFICATION) {
-            // ignore the datagram, incorrect format
-            return true;
-        }
-        final byte type = buffer.get();
-        switch (type) {
-        case NetworkConstants.GET_SERVERS_MESSAGE:
-            processGetServersMessage(address);
-            break;
-        case NetworkConstants.SERVER_NOTIFICATION_MESSAGE:
-            processServerNotificationMessage(address);
-            break;
-        case NetworkConstants.CHALLENGE_MESSAGE:
-            processChallengeMessage(address);
-            break;
-        default:
-            LOG.warn("Received unhandled message");
-            break;
+        try {
+            ident = buffer.getInt();
+            if (ident != NetworkConstants.DATAGRAM_IDENTIFICATION) {
+                // ignore the datagram, incorrect format
+                return true;
+            }
+            final byte type = buffer.get();
+            switch (type) {
+            case NetworkConstants.GET_SERVERS_MESSAGE:
+                processGetServersMessage(address);
+                break;
+            case NetworkConstants.SERVER_NOTIFICATION_MESSAGE:
+                processServerNotificationMessage(address);
+                break;
+            case NetworkConstants.CHALLENGE_MESSAGE:
+                processChallengeMessage(address);
+                break;
+            default:
+                LOG.warn("Received unhandled message");
+                break;
+            }
+        } catch (final BufferUnderflowException e) {
+            LOG.warn("Corrupt message!", e);
         }
         return true;
     }

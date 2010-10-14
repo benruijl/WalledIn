@@ -22,7 +22,7 @@ package walledin.masterserver;
 
 public class NetworkConstants {
     public static final int BUFFER_SIZE = 1024 * 1024;
-    public static final int DATAGRAM_IDENTIFICATION = 0x174BC126;
+    public static final int DATAGRAM_IDENTIFICATION = 0x2C6853CA;
     public static final byte GET_SERVERS_MESSAGE = 0;
     public static final byte SERVER_NOTIFICATION_MESSAGE = 1;
     public static final byte SERVERS_MESSAGE = 2;
