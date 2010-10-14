@@ -215,7 +215,6 @@ public final class Client implements NetworkEventListener {
             clientLogicManager
                     .displayErrorAndDisconnect("Connection to server lost.");
         }
-
     }
 
     /**
@@ -369,6 +368,27 @@ public final class Client implements NetworkEventListener {
             LOG.error("IOException", e);
         }
     }
+    
+    public long getBytesRead() {
+        return networkReader.getBytesRead();
+    }
+
+    public int getMessagesRead() {
+        return networkReader.getMessagesRead();
+    }
+    
+    public long getBytesWritten() {
+        return networkWriter.getBytesWritten();
+    }
+
+    public int getMessagesWritten() {
+        return networkWriter.getMessagesWritten();
+    }
+    
+    public void resetStatistics() {
+        networkReader.resetStatistics();
+        networkWriter.resetStatistics();
+    }
 
     /**
      * Called when the gamestate has been updated. We only send a new input when
@@ -380,15 +400,18 @@ public final class Client implements NetworkEventListener {
         lastLoginTry = -1;
         // FIXME check if this is correct .. version could be swaped
         final ChangeSet changeSet = message.getChangeSet();
-        final int oldVersion = changeSet.getVersion();
-        final int newVersion = message.getKnownClientVersion();
+        // The old version from where this change set updates
+        final int oldVersion = changeSet.getFirstVersion();
+        // The new version to which this change set updates
+        final int newVersion = message.getNewVersion();
         if (LOG.isTraceEnabled()) {
             LOG.trace("version:" + newVersion + " receivedVersion:"
                     + receivedVersion + " oldversion: " + oldVersion);
         }
-        if (receivedVersion == oldVersion && newVersion > receivedVersion) {
+        if (receivedVersion >= oldVersion && newVersion > receivedVersion) {
+            clientLogicManager.getEntityManager().applyChangeSet(changeSet,
+                    receivedVersion);
             receivedVersion = newVersion;
-            clientLogicManager.getEntityManager().applyChangeSet(changeSet);
         }
         try {
             networkWriter.sendMessage(channel, new InputMessage(
@@ -425,7 +448,7 @@ public final class Client implements NetworkEventListener {
             break;
         default:
             clientLogicManager.displayErrorAndDisconnect("Could not login to"
-                    + " the server.");
+                    + " the server: " + message.getErrorCode());
             break;
         }
     }

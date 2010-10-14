@@ -27,8 +27,10 @@ import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,10 +59,28 @@ public class NetworkMessageReader {
             .getLogger(NetworkMessageReader.class);
     private final ByteBuffer buffer;
     private final NetworkEventListener listener;
+    /** Amount of bytes read so far */
+    private long bytesRead;
+    /** Amount of messages read so far */
+    private int messagesRead;
 
     public NetworkMessageReader(final NetworkEventListener listener) {
         this.listener = listener;
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
+        resetStatistics();
+    }
+
+    public long getBytesRead() {
+        return bytesRead;
+    }
+
+    public int getMessagesRead() {
+        return messagesRead;
+    }
+
+    public void resetStatistics() {
+        bytesRead = 0;
+        messagesRead = 0;
     }
 
     public static ServerData readServerData(final ByteBuffer buffer)
@@ -111,29 +131,45 @@ public class NetworkMessageReader {
     }
 
     public static ChangeSet readChangeSet(final ByteBuffer buffer) {
-        final int version = buffer.getInt();
-        final int numRemoved = buffer.getInt();
-        final int numCreated = buffer.getInt();
+        final int firstVersion = buffer.getInt();
+        final int lastVersion = buffer.getInt();
+        final int numRemovedVersions = buffer.getInt();
+        final int numCreatedVersions = buffer.getInt();
         final int numUpdated = buffer.getInt();
-        final Set<String> removed = new HashSet<String>(numRemoved);
-        final Map<String, Family> created = new HashMap<String, Family>(
-                numCreated);
+        final Map<Integer, Set<String>> removed = new HashMap<Integer, Set<String>>(
+                numRemovedVersions);
+        final Map<Integer, Map<String, Family>> created = new HashMap<Integer, Map<String, Family>>(
+                numCreatedVersions);
         final Map<String, Map<Attribute, Object>> updated = new HashMap<String, Map<Attribute, Object>>(
                 numUpdated);
-        for (int i = 0; i < numRemoved; i++) {
-            removed.add(readStringData(buffer));
+
+        for (int i = 0; i < numRemovedVersions; i++) {
+            final int version = buffer.getInt();
+            final int numRemoved = buffer.getInt();
+            final Set<String> temp = new HashSet<String>();
+            for (int j = 0; j < numRemoved; j++) {
+                temp.add(readStringData(buffer));
+            }
+            removed.put(version, temp);
         }
-        for (int i = 0; i < numCreated; i++) {
-            final String name = readStringData(buffer);
-            final Family family = readFamilyData(buffer);
-            created.put(name, family);
+        for (int i = 0; i < numCreatedVersions; i++) {
+            final int version = buffer.getInt();
+            final int numCreated = buffer.getInt();
+            final Map<String, Family> temp = new HashMap<String, Family>();
+            for (int j = 0; j < numCreated; j++) {
+                final String name = readStringData(buffer);
+                final Family family = readFamilyData(buffer);
+                temp.put(name, family);
+            }
+            created.put(version, temp);
         }
         for (int i = 0; i < numUpdated; i++) {
             final String name = readStringData(buffer);
             final Map<Attribute, Object> attributes = readAttributesData(buffer);
             updated.put(name, attributes);
         }
-        return new ChangeSet(version, created, removed, updated);
+        return new ChangeSet(firstVersion, lastVersion, created, removed,
+                updated);
     }
 
     public static Family readFamilyData(final ByteBuffer buffer) {
@@ -168,6 +204,10 @@ public class NetworkMessageReader {
         buffer.clear();
         final SocketAddress address = channel.receive(buffer);
         buffer.flip();
+        if (address != null) {
+            messagesRead++;
+            bytesRead += buffer.limit();
+        }
         return address;
     }
 

@@ -295,12 +295,12 @@ public class EntityManager {
         return currentVersion;
     }
 
-    public void applyChangeSet(final ChangeSet changeSet) {
-        for (final String name : changeSet.getRemoved()) {
+    public void applyChangeSet(final ChangeSet changeSet, final int version) {
+        for (final String name : changeSet.getRemovedFromVersion(version)) {
             remove(name);
         }
-        for (final Entry<String, Family> entry : changeSet.getCreated()
-                .entrySet()) {
+        for (final Entry<String, Family> entry : changeSet
+                .getCreatedFromVersion(version).entrySet()) {
             create(entry.getValue(), entry.getKey());
         }
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet

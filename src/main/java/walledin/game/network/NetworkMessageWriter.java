@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -45,9 +46,27 @@ public class NetworkMessageWriter {
     private static final Logger LOG = Logger
             .getLogger(NetworkMessageWriter.class);
     private final ByteBuffer buffer;
+    /** Amount of bytes written so far */
+    private long bytesWritten;
+    /** Amount of messages written so far */
+    private int messagesWritten;
 
     public NetworkMessageWriter() {
         buffer = ByteBuffer.allocate(NetworkConstants.BUFFER_SIZE);
+        resetStatistics();
+    }
+
+    public long getBytesWritten() {
+        return bytesWritten;
+    }
+
+    public int getMessagesWritten() {
+        return messagesWritten;
+    }
+
+    public void resetStatistics() {
+        bytesWritten = 0;
+        messagesWritten = 0;
     }
 
     private void writeMessage(final NetworkMessage message) {
@@ -55,6 +74,8 @@ public class NetworkMessageWriter {
         message.writeHeader(buffer);
         message.write(buffer);
         buffer.flip();
+        messagesWritten++;
+        bytesWritten += buffer.limit();
     }
 
     public void sendMessage(final DatagramChannel channel,
@@ -90,20 +111,30 @@ public class NetworkMessageWriter {
 
     public static void writeChangeSet(final ChangeSet changeSet,
             final ByteBuffer buffer) {
-        buffer.putInt(changeSet.getVersion());
+        buffer.putInt(changeSet.getFirstVersion());
+        buffer.putInt(changeSet.getLastVersion());
         // Write the size of the changeset
         buffer.putInt(changeSet.getRemoved().size());
         buffer.putInt(changeSet.getCreated().size());
         buffer.putInt(changeSet.getUpdated().size());
-        for (final String name : changeSet.getRemoved()) {
-            NetworkMessageWriter.writeStringData(name, buffer);
+        for (final Entry<Integer, Set<String>> entry : changeSet.getRemoved().entrySet()) {
+            buffer.putInt(entry.getKey());
+            final Set<String> removed = entry.getValue();
+            buffer.putInt(removed.size());
+            for (final String name : removed) {
+                NetworkMessageWriter.writeStringData(name, buffer);
+            }
         }
-        for (final Entry<String, Family> entry : changeSet.getCreated()
-                .entrySet()) {
-            // write name of entity
-            writeStringData(entry.getKey(), buffer);
-            // write family of entity
-            writeFamilyData(entry.getValue(), buffer);
+        for (final Entry<Integer, Map<String, Family>> entry : changeSet.getCreated().entrySet()) {
+            buffer.putInt(entry.getKey());
+            Map<String, Family> created = entry.getValue();
+            buffer.putInt(created.size());
+            for (final Entry<String, Family> subEntry : created.entrySet()) {
+                // write name of entity
+                writeStringData(subEntry.getKey(), buffer);
+                // write family of entity
+                writeFamilyData(subEntry.getValue(), buffer);
+            }
         }
         for (final Entry<String, Map<Attribute, Object>> entry : changeSet
                 .getUpdated().entrySet()) {
