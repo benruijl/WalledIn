@@ -1,8 +1,6 @@
 package walledin.game.entity.behaviors.logic;
 
 import org.apache.log4j.Logger;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
 
 import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Rectangle;

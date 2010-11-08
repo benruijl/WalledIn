@@ -84,14 +84,14 @@ public class WeaponBehavior extends AbstractBehavior {
                         getOwner().getName());
             } else {
                 /* FIXME: do this differently. */
-                PhysicsManager
+              /*  PhysicsManager
                         .getInstance()
                         .addBody(
                                 ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
                                         .asRectangle()
                                         .translate(
                                                 (Vector2f) getAttribute(Attribute.POSITION)),
-                                getOwner().getName());
+                                getOwner().getName());*/
             }
         }
 

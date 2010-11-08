@@ -20,22 +20,31 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.physics;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-import org.jbox2d.collision.AABB;
-import org.jbox2d.collision.CircleDef;
-import org.jbox2d.collision.PolygonDef;
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.ContactListener;
-import org.jbox2d.dynamics.World;
-import org.jbox2d.dynamics.contacts.ContactPoint;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
 
-import walledin.engine.math.Circle;
+import org.apache.log4j.Logger;
+
 import walledin.engine.math.Rectangle;
+
+import com.bulletphysics.collision.broadphase.BroadphaseInterface;
+import com.bulletphysics.collision.broadphase.DbvtBroadphase;
+import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
+import com.bulletphysics.collision.narrowphase.ManifoldPoint;
+import com.bulletphysics.collision.narrowphase.PersistentManifold;
+import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.collision.shapes.StaticPlaneShape;
+import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
+import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.linearmath.Transform;
 
 public class PhysicsManager {
     private static final Logger LOG = Logger.getLogger(PhysicsManager.class);
@@ -43,10 +52,11 @@ public class PhysicsManager {
     private static final int ITERATION = 10;
     private static PhysicsManager ref = null;
 
-    private World world;
-    private AABB worldRect;
+    private DiscreteDynamicsWorld world;
+    private Rectangle worldRect;
     private GeneralContactListener contactListener;
-    private List<Body> remove;
+
+    private List<RigidBody> remove;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -63,7 +73,7 @@ public class PhysicsManager {
 
     private PhysicsManager() {
         contactListener = new GeneralContactListener();
-        remove = new ArrayList<Body>();
+        // remove = new ArrayList<Body>();
 
     }
 
@@ -72,57 +82,43 @@ public class PhysicsManager {
     }
 
     public boolean initialize(Rectangle worldRect) {
-        this.worldRect = new AABB(new Vec2(worldRect.getLeft(), worldRect
-                .getTop()), new Vec2(worldRect.getRight(), worldRect
-                .getBottom()));
-        world = new World(this.worldRect, new Vec2(), true);
-        world.setContactListener(contactListener);
+        this.worldRect = worldRect;
 
-        addStaticBody(new Rectangle(0, worldRect.getBottom(), worldRect
-                .getWidth(), 10), null);
+        // Build the broadphase
+        BroadphaseInterface broadphase = new DbvtBroadphase();
+
+        // Set up the collision configuration and dispatcher
+        DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
+        CollisionDispatcher dispatcher = new CollisionDispatcher(
+                collisionConfiguration);
+
+        // The actual physics solver
+        SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
+
+        // The world.
+        DiscreteDynamicsWorld dynamicsWorld = new DiscreteDynamicsWorld(
+                dispatcher, broadphase, solver, collisionConfiguration);
+        dynamicsWorld.setGravity(new Vector3f(0, -10, 0));
+
+        /* Create a shape */
+
+        final CollisionShape groundShape = new StaticPlaneShape(new Vector3f(0,
+                1, 0), 1);
+
+        final DefaultMotionState groundMotionState = new DefaultMotionState(
+                new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, -1, 0), 0)));
+
+        RigidBodyConstructionInfo groundRigidBodyCI = new RigidBodyConstructionInfo(
+                0, groundMotionState, groundShape, new Vector3f(0, 0, 0));
+        RigidBody groundRigidBody = new RigidBody(groundRigidBodyCI);
+
+        dynamicsWorld.addRigidBody(groundRigidBody);
+
         return true;
     }
 
-    /**
-     * Creates a static box from a bounding rectangle.
-     * 
-     * @param rect
-     *            Rectangle
-     * @param userData
-     *            User data
-     * @return Created body
-     */
-    public PhysicsBody addStaticBody(Rectangle rect, Object userData) {
-        BodyDef box = new BodyDef();
-        box.position.set(rect.getLeft() + rect.getWidth() / 2.0f, rect.getTop()
-                + rect.getHeight() / 2.0f);
-        PolygonDef polygon = new PolygonDef();
-        polygon.setAsBox(rect.getWidth() / 2.0f, rect.getHeight() / 2.0f);
-        final Body testBox = world.createBody(box);
-        testBox.createShape(polygon);
-        testBox.setUserData(userData);
-
-        return new PhysicsBody(testBox);
-    }
-
-    public PhysicsBody addBody(Rectangle rect, Object userData) {
-        BodyDef box = new BodyDef();
-        box.position.set(rect.getLeft() + rect.getWidth() / 2.0f, rect.getTop()
-                + rect.getHeight() / 2.0f);
-        PolygonDef polygon = new PolygonDef();
-        polygon.setAsBox(rect.getWidth() / 2.0f, rect.getHeight() / 2.0f);
-        polygon.density = 1.0f;
-        polygon.friction = 0.3f;
-        polygon.restitution = 0.2f;
-        Body testBox = world.createBody(box);
-        testBox.createShape(polygon);
-        testBox.setMassFromShapes();
-        testBox.m_userData = userData;
-
-        return new PhysicsBody(testBox);
-    }
-
-    public World getWorld() {
+    public DiscreteDynamicsWorld getWorld() {
         return world;
     }
 
@@ -138,15 +134,13 @@ public class PhysicsManager {
             return false;
         }
 
-        Body currentBody = world.getBodyList();
-        while (currentBody != null) {
-            if (id == currentBody.getUserData()) {
-                remove.add(currentBody);
-                return true;
-            }
-
-            currentBody = currentBody.getNext();
-        }
+        /*
+         * RigidBody currentBody = world.getBodyList(); while (currentBody !=
+         * null) { if (id == currentBody.getUserData()) {
+         * remove.add(currentBody); return true; }
+         * 
+         * currentBody = currentBody.getNext(); }
+         */
 
         return false;
     }
@@ -155,16 +149,35 @@ public class PhysicsManager {
      * Updates the physics simulation.
      */
     public void update() {
-        world.step(TIME_STEP, ITERATION);
+        world.stepSimulation(TIME_STEP, ITERATION);
 
         contactListener.update();
 
+        int numManifolds = world.getDispatcher().getNumManifolds();
+
+        for (int i = 0; i < numManifolds; i++) {
+            PersistentManifold contactManifold = world.getDispatcher()
+                    .getManifoldByIndexInternal(i);
+            CollisionObject obA = (CollisionObject) contactManifold.getBody0();
+            CollisionObject obB = (CollisionObject) contactManifold.getBody1();
+
+            int numContacts = contactManifold.getNumContacts();
+            for (int j = 0; j < numContacts; j++) {
+                ManifoldPoint pt = contactManifold.getContactPoint(j);
+                if (pt.getDistance() < 0.f) {
+                    final Vector3f ptA = pt.getPositionWorldOnA(new Vector3f());
+                    final Vector3f ptB = pt.getPositionWorldOnB(new Vector3f());
+                    final Vector3f normalOnB = pt.normalWorldOnB;
+                }
+            }
+        }
+
         /* Remove every body in the removed queue. */
-        for (Body body : remove) {
-            world.destroyBody(body);
+        for (RigidBody body : remove) {
+            world.removeRigidBody(body);
         }
 
         remove.clear();
-    }
 
+    }
 }
