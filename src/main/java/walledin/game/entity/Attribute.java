@@ -81,8 +81,6 @@ public enum Attribute {
     Z_INDEX(Integer.class),
     /** Mass of the particle. */
     MASS(Float.class),
-    /** Keeps track if the entity must not collide with other entities. */
-    NO_COLLIDE(Boolean.class),
     /** Target position of a bullet particle or something else. */
     TARGET(Vector2f.class),
     /** Counter between zero and one that takes track of how blocked you are. */

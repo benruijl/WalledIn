@@ -30,12 +30,10 @@ import org.jbox2d.dynamics.contacts.ContactResult;
 
 import walledin.engine.math.Vector2f;
 import walledin.engine.physics.PhysicsManager;
-import walledin.game.EntityManager;
 import walledin.game.PlayerAction;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
-import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 
 public class PlayerControlBehaviour extends AbstractBehavior implements
@@ -54,8 +52,7 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
         setAttribute(Attribute.PLAYER_ACTIONS, playerActions);
 
         /* Register the contact listener. */
-        PhysicsManager.getInstance().getContactListener()
-                .addListener(getOwner().getName(), this);
+        PhysicsManager.getInstance().getContactListener().addListener(this);
     }
 
     @Override
@@ -142,6 +139,11 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
 
     @Override
     public void add(ContactPoint point) {
+        if (point.shape1.m_body.m_userData != getOwner().getName()
+                && point.shape2.m_body.m_userData != getOwner().getName()) {
+            return;
+        }
+
         if (point.normal.y >= -1 && point.normal.y < 0) {
             canJump = true;
             colCount++;
@@ -150,6 +152,11 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
 
     @Override
     public void persist(ContactPoint point) {
+        if (point.shape1.m_body.m_userData != getOwner().getName()
+                && point.shape2.m_body.m_userData != getOwner().getName()) {
+            return;
+        }
+
         if (point.normal.y >= -1 && point.normal.y < 0) {
             canJump = true;
         }
@@ -157,6 +164,11 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
 
     @Override
     public void remove(ContactPoint point) {
+        if (point.shape1.m_body.m_userData != getOwner().getName()
+                && point.shape2.m_body.m_userData != getOwner().getName()) {
+            return;
+        }
+
         colCount--;
 
         if (colCount <= 0) {

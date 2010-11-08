@@ -72,69 +72,15 @@ public class PhysicsManager {
     }
 
     public boolean initialize(Rectangle worldRect) {
-        this.worldRect = new AABB(new Vec2(worldRect.getLeft(),
-                worldRect.getTop()), new Vec2(worldRect.getRight(),
-                worldRect.getBottom()));
+        this.worldRect = new AABB(new Vec2(worldRect.getLeft(), worldRect
+                .getTop()), new Vec2(worldRect.getRight(), worldRect
+                .getBottom()));
         world = new World(this.worldRect, new Vec2(), true);
         world.setContactListener(contactListener);
 
-        addStaticBody(
-                new Rectangle(0, worldRect.getBottom(), worldRect.getWidth(),
-                        10), null);
+        addStaticBody(new Rectangle(0, worldRect.getBottom(), worldRect
+                .getWidth(), 10), null);
         return true;
-    }
-
-    /**
-     * Creates a static circle.
-     * 
-     * @param circ
-     *            Circle
-     * @param userData
-     *            User data
-     * @return Created body
-     */
-    public PhysicsBody addStaticCircleBody(Circle circ, Object userData) {
-        CircleDef circle = new CircleDef();
-        circle.radius = circ.getRadius();
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position = new Vec2(circ.getPos().getX(), circ.getPos().getY());
-        final Body body = world.createBody(bodyDef);
-
-        if (body == null) {
-            LOG.info("Cannot create body in loop.");
-            return null;
-        }
-
-        body.createShape(circle);
-        body.setUserData(userData);
-
-        return new PhysicsBody(body);
-    }
-
-    /**
-     * Creates a dynamic circle.
-     * 
-     * @param circ
-     *            Circle
-     * @param userData
-     *            User data
-     * @return Created body
-     */
-    public PhysicsBody addCircleBody(Circle circ, Object userData) {
-        CircleDef circle = new CircleDef();
-        circle.radius = circ.getRadius();
-        circle.density = 1.0f;
-        circle.friction = 0.3f;
-        circle.restitution = 0.2f;
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.position = new Vec2(circ.getPos().getX(), circ.getPos().getY());
-        final Body body = world.createBody(bodyDef);
-        body.createShape(circle);
-        body.setUserData(userData);
-        body.setMassFromShapes();
-
-        return new PhysicsBody(body);
     }
 
     /**
@@ -205,21 +151,13 @@ public class PhysicsManager {
         return false;
     }
 
+    /**
+     * Updates the physics simulation.
+     */
     public void update() {
         world.step(TIME_STEP, ITERATION);
 
-        /*
-         * Bodies cannot be created in callback events. Therefore, a part of the
-         * contact processing is done now.
-         */
-        for (ContactPoint point : contactListener.getContacts()) {
-            for (ContactListener listener : contactListener
-                    .getGenericListeners()) {
-                listener.add(point);
-            }
-        }
-
-        contactListener.getContacts().clear();
+        contactListener.update();
 
         /* Remove every body in the removed queue. */
         for (Body body : remove) {

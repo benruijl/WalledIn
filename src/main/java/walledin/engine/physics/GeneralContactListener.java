@@ -21,61 +21,53 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 package walledin.engine.physics;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jbox2d.dynamics.ContactListener;
+import org.jbox2d.dynamics.contacts.Contact;
 import org.jbox2d.dynamics.contacts.ContactPoint;
 import org.jbox2d.dynamics.contacts.ContactResult;
 
-public class GeneralContactListener implements
-        org.jbox2d.dynamics.ContactListener {
+public class GeneralContactListener implements ContactListener {
     private static final Logger LOG = Logger
             .getLogger(GeneralContactListener.class);
 
-    List<ContactPoint> contacts;
-    Map<Object, ContactListener> listeners;
-    List<ContactListener> genericListeners;
+    private List<ContactPoint> contactsAdded;
+    private List<ContactPoint> contactsRemoved;
+    private List<ContactPoint> contactsPersist;
+    private List<ContactResult> contactsResult;
+    private List<ContactListener> listeners;
 
     public GeneralContactListener() {
-        contacts = new ArrayList<ContactPoint>();
-        listeners = new HashMap<Object, ContactListener>();
-        genericListeners = new ArrayList<ContactListener>();
+        contactsAdded = new ArrayList<ContactPoint>();
+        contactsRemoved = new ArrayList<ContactPoint>();
+        contactsPersist = new ArrayList<ContactPoint>();
+        contactsResult = new ArrayList<ContactResult>();
+
+        listeners = new ArrayList<ContactListener>();
     }
 
-    public List<ContactPoint> getContacts() {
-        return contacts;
-    }
-
-    public Map<Object, ContactListener> getListeners() {
+    public List<ContactListener> getListeners() {
         return listeners;
     }
 
-    public List<ContactListener> getGenericListeners() {
-        return genericListeners;
-    }
-
     public void addListener(ContactListener listener) {
-        genericListeners.add(listener);
-    }
-
-    public void addListener(Object object, ContactListener listener) {
-        listeners.put(object, listener);
-    }
-
-    public void removeListener(Object object, ContactListener listener) {
-        listeners.values().remove(listener);
+        listeners.add(listener);
     }
 
     public void removeListener(ContactListener listener) {
-        genericListeners.remove(listener);
+        listeners.remove(listener);
     }
 
-    @Override
-    public void add(ContactPoint point) {
-        /* Copy entire structure. The point variable is changed by box2d. */
+    /**
+     * Copies a contact point. The point variable is changed by box2d.
+     * 
+     * @param point
+     *            Point
+     * @return Copy of point
+     */
+    private ContactPoint copyContactPoint(ContactPoint point) {
         ContactPoint newPoint = new ContactPoint();
         newPoint.friction = point.friction;
         newPoint.id = point.id;
@@ -87,79 +79,83 @@ public class GeneralContactListener implements
         newPoint.shape2 = point.shape2;
         newPoint.velocity = point.velocity;
 
-        contacts.add(newPoint);
+        return newPoint;
+    }
 
-        ContactListener listenerA = listeners.get(point.shape1.m_body
-                .getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body
-                .getUserData());
+    /**
+     * Copies a contact result point. The point variable is changed by box2d.
+     * 
+     * @param point
+     *            Point
+     * @return Copy of point
+     */
+    private ContactResult copyContactResultPoint(ContactResult point) {
+        ContactResult newPoint = new ContactResult();
+        newPoint.id = point.id;
+        newPoint.normal = point.normal;
+        newPoint.normalImpulse = point.normalImpulse;
+        newPoint.tangentImpulse = point.tangentImpulse;
+        newPoint.position = point.position;
+        newPoint.shape1 = point.shape1;
+        newPoint.shape2 = point.shape2;
 
-        if (listenerA != null) {
-            listenerA.add(point);
+        return newPoint;
+    }
+
+    @Override
+    public void add(ContactPoint point) {
+        contactsAdded.add(copyContactPoint(point));
+    }
+
+    /**
+     * Sends contact events to the listeners. Bodies cannot be created in
+     * callback events. Therefore, a part of the contact processing is done
+     * here.
+     */
+    public void update() {
+        for (ContactPoint point : contactsAdded) {
+            for (ContactListener listener : listeners) {
+                listener.add(point);
+            }
         }
 
-        if (listenerB != null) {
-            listenerB.add(point);
+        for (ContactPoint point : contactsPersist) {
+            for (ContactListener listener : listeners) {
+                listener.persist(point);
+            }
         }
+
+        for (ContactPoint point : contactsRemoved) {
+            for (ContactListener listener : listeners) {
+                listener.remove(point);
+            }
+        }
+
+        for (ContactResult point : contactsResult) {
+            for (ContactListener listener : listeners) {
+                listener.result(point);
+            }
+        }
+
+        contactsAdded.clear();
+        contactsPersist.clear();
+        contactsRemoved.clear();
+        contactsResult.clear();
     }
 
     @Override
     public void persist(ContactPoint point) {
-        for (ContactListener listener : genericListeners) {
-            listener.persist(point);
-        }
-
-        ContactListener listenerA = listeners.get(point.shape1.m_body
-                .getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body
-                .getUserData());
-        if (listenerA != null) {
-            listenerA.persist(point);
-        }
-
-        if (listenerB != null) {
-            listenerB.persist(point);
-        }
+        contactsPersist.add(copyContactPoint(point));
     }
 
     @Override
     public void remove(ContactPoint point) {
-        for (ContactListener listener : genericListeners) {
-            listener.remove(point);
-        }
-
-        ContactListener listenerA = listeners.get(point.shape1.m_body
-                .getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body
-                .getUserData());
-        if (listenerA != null) {
-            listenerA.remove(point);
-        }
-
-        if (listenerB != null) {
-            listenerB.remove(point);
-        }
-
+        contactsRemoved.add(copyContactPoint(point));
     }
 
     @Override
     public void result(ContactResult point) {
-        for (ContactListener listener : genericListeners) {
-            listener.result(point);
-        }
-
-        ContactListener listenerA = listeners.get(point.shape1.m_body
-                .getUserData());
-        ContactListener listenerB = listeners.get(point.shape2.m_body
-                .getUserData());
-        if (listenerA != null) {
-            listenerA.result(point);
-        }
-
-        if (listenerB != null) {
-            listenerB.result(point);
-        }
-
+        contactsResult.add(copyContactResultPoint(point));
     }
 
 }

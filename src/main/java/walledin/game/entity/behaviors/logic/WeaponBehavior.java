@@ -92,8 +92,6 @@ public class WeaponBehavior extends AbstractBehavior {
                                         .translate(
                                                 (Vector2f) getAttribute(Attribute.POSITION)),
                                 getOwner().getName());
-
-                getOwner().setAttribute(Attribute.NO_COLLIDE, null);
             }
         }
 
