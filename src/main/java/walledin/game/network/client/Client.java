@@ -156,7 +156,52 @@ public final class Client implements NetworkEventListener {
      *            time since last update in seconds
      */
     public void update(final double delta) {
-        // network stuff
+        processServerMessages();
+        processMasterServerMessages();
+        processBroadcastMessages();
+    }
+
+    private void processBroadcastMessages() {
+        try {
+            if (boundServerNotifyChannel) {
+                SocketAddress address = networkReader
+                        .readMessage(serverNotifyChannel);
+                while (address != null) {
+                    networkReader.processMessage(address);
+                    address = networkReader.readMessage(serverNotifyChannel);
+                }
+            }
+        } catch (final IOException e) {
+            LOG.error("Generic IO exception.", e);
+        }
+    }
+
+    private void processMasterServerMessages() {
+        try {
+            if (connectedMasterServer) {
+                // Read messages.
+                SocketAddress address = networkReader
+                        .readMessage(masterServerChannel);
+                while (address != null) {
+                    networkReader.processMessage(address);
+                    address = networkReader.readMessage(masterServerChannel);
+                }
+            }
+
+        } catch (final PortUnreachableException e) {
+            clientLogicManager
+                    .displayError("Could not connect to master server.");
+            connectedMasterServer = false;
+            LOG.fatal("The port is unreachable.");
+        } catch (final IOException e) {
+            clientLogicManager
+                    .displayError("Could not connect to master server.");
+            connectedMasterServer = false;
+            LOG.error("Generic IO exception.", e);
+        }
+    }
+
+    private void processServerMessages() {
         try {
             if (connected) {
 
@@ -185,23 +230,6 @@ public final class Client implements NetworkEventListener {
                     address = networkReader.readMessage(channel);
                 }
             }
-            if (connectedMasterServer) {
-                // Read messages.
-                SocketAddress address = networkReader
-                        .readMessage(masterServerChannel);
-                while (address != null) {
-                    networkReader.processMessage(address);
-                    address = networkReader.readMessage(masterServerChannel);
-                }
-            }
-            if (boundServerNotifyChannel) {
-                SocketAddress address = networkReader
-                        .readMessage(serverNotifyChannel);
-                while (address != null) {
-                    networkReader.processMessage(address);
-                    address = networkReader.readMessage(serverNotifyChannel);
-                }
-            }
         } catch (final PortUnreachableException e) {
             clientLogicManager
                     .displayErrorAndDisconnect("Connection to server lost.");
@@ -209,6 +237,7 @@ public final class Client implements NetworkEventListener {
         } catch (final IOException e) {
             clientLogicManager
                     .displayErrorAndDisconnect("Connection to server lost.");
+            LOG.error("Generic IO exception.", e);
         }
     }
 
@@ -363,7 +392,7 @@ public final class Client implements NetworkEventListener {
             LOG.error("IOException", e);
         }
     }
-    
+
     public long getBytesRead() {
         return networkReader.getBytesRead();
     }
@@ -371,7 +400,7 @@ public final class Client implements NetworkEventListener {
     public int getMessagesRead() {
         return networkReader.getMessagesRead();
     }
-    
+
     public long getBytesWritten() {
         return networkWriter.getBytesWritten();
     }
@@ -379,7 +408,7 @@ public final class Client implements NetworkEventListener {
     public int getMessagesWritten() {
         return networkWriter.getMessagesWritten();
     }
-    
+
     public void resetStatistics() {
         networkReader.resetStatistics();
         networkWriter.resetStatistics();

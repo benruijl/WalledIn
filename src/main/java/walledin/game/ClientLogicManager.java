@@ -170,14 +170,14 @@ public final class ClientLogicManager implements RenderListener,
         final Font font = screenManager.getFont(FontType.BUTTON_CAPTION);
         font.renderText(renderer, "FPS: " + renderer.getFPS(), new Vector2f(
                 630, 20));
-        font.renderText(renderer, "bin: " + bytesReadPerSec, new Vector2f(
-                630, 80));
+        font.renderText(renderer, "bin: " + bytesReadPerSec, new Vector2f(630,
+                80));
         font.renderText(renderer, "bout: " + bytesWrittenPerSec, new Vector2f(
                 630, 100));
         font.renderText(renderer, "min: " + messagesReadPerSec, new Vector2f(
                 630, 120));
-        font.renderText(renderer, "mout: " + messagesWrittenPerSec, new Vector2f(
-                630, 140));
+        font.renderText(renderer, "mout: " + messagesWrittenPerSec,
+                new Vector2f(630, 140));
         renderer.stopHUDRendering();
     }
 
@@ -286,6 +286,17 @@ public final class ClientLogicManager implements RenderListener,
     }
 
     /**
+     * Displays an error.
+     * 
+     * @param message
+     *            Error message
+     */
+    public void displayError(final String message) {
+        screenManager.createDialog(message);
+        LOG.error(message);
+    }
+
+    /**
      * Displays an error message, disconnects from the server and returns to the
      * server list.
      * 
@@ -330,12 +341,13 @@ public final class ClientLogicManager implements RenderListener,
         }
 
         screenManager.update(delta);
-        
+
         secsSinceStatistics += delta;
         if (secsSinceStatistics > 1) {
             bytesWrittenPerSec = client.getBytesWritten() / secsSinceStatistics;
             bytesReadPerSec = client.getBytesRead() / secsSinceStatistics;
-            messagesWrittenPerSec = client.getMessagesWritten() / secsSinceStatistics;
+            messagesWrittenPerSec = client.getMessagesWritten()
+                    / secsSinceStatistics;
             messagesReadPerSec = client.getMessagesRead() / secsSinceStatistics;
             client.resetStatistics();
             secsSinceStatistics = 0;
