@@ -43,6 +43,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.ServerData;
+import walledin.game.network.messages.game.ConsoleUpdateMessage;
 import walledin.game.network.messages.game.GamestateMessage;
 import walledin.game.network.messages.game.GetPlayerInfoMessage;
 import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
@@ -476,6 +477,12 @@ public final class Client implements NetworkEventListener {
                     + " the server: " + message.getErrorCode());
             break;
         }
+    }
+
+    @Override
+    public void receivedMessage(SocketAddress address,
+            ConsoleUpdateMessage message) {
+        LOG.info("Server: " + message.getMessage());
     }
 
     @Override
