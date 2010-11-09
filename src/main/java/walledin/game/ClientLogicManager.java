@@ -27,8 +27,6 @@ import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
-import org.jbox2d.collision.AABB;
-import org.jbox2d.common.Vec2;
 
 import walledin.engine.Font;
 import walledin.engine.RenderListener;
@@ -42,7 +40,6 @@ import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.engine.physics.PhysicsManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.EntityFactory;

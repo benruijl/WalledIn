@@ -20,6 +20,7 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.physics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.vecmath.Matrix4f;
@@ -54,7 +55,7 @@ public class PhysicsManager {
 
     private DiscreteDynamicsWorld world;
     private Rectangle worldRect;
-    private GeneralContactListener contactListener;
+    private List<ContactListener> contactListeners;
 
     private List<RigidBody> remove;
 
@@ -72,13 +73,8 @@ public class PhysicsManager {
     }
 
     private PhysicsManager() {
-        contactListener = new GeneralContactListener();
-        // remove = new ArrayList<Body>();
-
-    }
-
-    public GeneralContactListener getContactListener() {
-        return contactListener;
+        contactListeners = new ArrayList<ContactListener>();
+        remove = new ArrayList<RigidBody>();
     }
 
     public boolean initialize(Rectangle worldRect) {
@@ -96,7 +92,7 @@ public class PhysicsManager {
         SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
 
         // The world.
-        DiscreteDynamicsWorld dynamicsWorld = new DiscreteDynamicsWorld(
+        final DiscreteDynamicsWorld dynamicsWorld = new DiscreteDynamicsWorld(
                 dispatcher, broadphase, solver, collisionConfiguration);
         dynamicsWorld.setGravity(new Vector3f(0, -10, 0));
 
@@ -114,6 +110,7 @@ public class PhysicsManager {
         RigidBody groundRigidBody = new RigidBody(groundRigidBodyCI);
 
         dynamicsWorld.addRigidBody(groundRigidBody);
+        world = dynamicsWorld;
 
         return true;
     }
@@ -134,6 +131,8 @@ public class PhysicsManager {
             return false;
         }
 
+        // world.
+
         /*
          * RigidBody currentBody = world.getBodyList(); while (currentBody !=
          * null) { if (id == currentBody.getUserData()) {
@@ -145,29 +144,29 @@ public class PhysicsManager {
         return false;
     }
 
+    public void addListener(ContactListener listener) {
+        contactListeners.add(listener);
+    }
+
     /**
      * Updates the physics simulation.
      */
     public void update() {
         world.stepSimulation(TIME_STEP, ITERATION);
 
-        contactListener.update();
-
-        int numManifolds = world.getDispatcher().getNumManifolds();
+        final int numManifolds = world.getDispatcher().getNumManifolds();
 
         for (int i = 0; i < numManifolds; i++) {
             PersistentManifold contactManifold = world.getDispatcher()
                     .getManifoldByIndexInternal(i);
-            CollisionObject obA = (CollisionObject) contactManifold.getBody0();
-            CollisionObject obB = (CollisionObject) contactManifold.getBody1();
-
             int numContacts = contactManifold.getNumContacts();
             for (int j = 0; j < numContacts; j++) {
                 ManifoldPoint pt = contactManifold.getContactPoint(j);
                 if (pt.getDistance() < 0.f) {
-                    final Vector3f ptA = pt.getPositionWorldOnA(new Vector3f());
-                    final Vector3f ptB = pt.getPositionWorldOnB(new Vector3f());
-                    final Vector3f normalOnB = pt.normalWorldOnB;
+                    /* Send to all listeners. */
+                    for (ContactListener listener : contactListeners) {
+                        listener.processContact(pt, contactManifold);
+                    }
                 }
             }
         }

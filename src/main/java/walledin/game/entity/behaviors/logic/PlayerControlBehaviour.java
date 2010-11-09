@@ -24,17 +24,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.jbox2d.dynamics.ContactListener;
-import org.jbox2d.dynamics.contacts.ContactPoint;
-import org.jbox2d.dynamics.contacts.ContactResult;
 
 import walledin.engine.math.Vector2f;
+import walledin.engine.physics.ContactListener;
 import walledin.engine.physics.PhysicsManager;
 import walledin.game.PlayerAction;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
+
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.narrowphase.ManifoldPoint;
+import com.bulletphysics.collision.narrowphase.PersistentManifold;
 
 public class PlayerControlBehaviour extends AbstractBehavior implements
         ContactListener {
@@ -52,7 +54,7 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
         setAttribute(Attribute.PLAYER_ACTIONS, playerActions);
 
         /* Register the contact listener. */
-        PhysicsManager.getInstance().getContactListener().addListener(this);
+        PhysicsManager.getInstance().addListener(this);
     }
 
     @Override
@@ -138,45 +140,31 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
     }
 
     @Override
-    public void add(ContactPoint point) {
-        if (point.shape1.m_body.m_userData != getOwner().getName()
-                && point.shape2.m_body.m_userData != getOwner().getName()) {
+    public void processContact(ManifoldPoint point,
+            PersistentManifold contactManifold) {
+        CollisionObject a = (CollisionObject) contactManifold.getBody0();
+        CollisionObject b = (CollisionObject) contactManifold.getBody1();
+
+        if (a.getUserPointer() != getOwner().getName()
+                && b.getUserPointer() != getOwner().getName()) {
             return;
         }
 
-        if (point.normal.y >= -1 && point.normal.y < 0) {
+        if (point.normalWorldOnB.y >= -1 && point.normalWorldOnB.y < 0) {
             canJump = true;
             colCount++;
         }
+
     }
 
-    @Override
-    public void persist(ContactPoint point) {
-        if (point.shape1.m_body.m_userData != getOwner().getName()
-                && point.shape2.m_body.m_userData != getOwner().getName()) {
-            return;
-        }
+    /*
+     * @Override public void remove(ContactPoint point) { if
+     * (point.shape1.m_body.m_userData != getOwner().getName() &&
+     * point.shape2.m_body.m_userData != getOwner().getName()) { return; }
+     * 
+     * colCount--;
+     * 
+     * if (colCount <= 0) { canJump = false; } }
+     */
 
-        if (point.normal.y >= -1 && point.normal.y < 0) {
-            canJump = true;
-        }
-    }
-
-    @Override
-    public void remove(ContactPoint point) {
-        if (point.shape1.m_body.m_userData != getOwner().getName()
-                && point.shape2.m_body.m_userData != getOwner().getName()) {
-            return;
-        }
-
-        colCount--;
-
-        if (colCount <= 0) {
-            canJump = false;
-        }
-    }
-
-    @Override
-    public void result(ContactResult point) {
-    }
 }

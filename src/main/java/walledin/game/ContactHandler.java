@@ -1,9 +1,10 @@
 package walledin.game;
 
-import org.jbox2d.dynamics.ContactListener;
-import org.jbox2d.dynamics.contacts.ContactPoint;
-import org.jbox2d.dynamics.contacts.ContactResult;
+import com.bulletphysics.collision.dispatch.CollisionObject;
+import com.bulletphysics.collision.narrowphase.ManifoldPoint;
+import com.bulletphysics.collision.narrowphase.PersistentManifold;
 
+import walledin.engine.physics.ContactListener;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
@@ -16,28 +17,19 @@ public class ContactHandler implements ContactListener {
     }
 
     @Override
-    public void add(ContactPoint point) {
-        Entity ent1 = entityManager.get((String) point.shape1.getBody()
-                .getUserData());
+    public void processContact(ManifoldPoint point,
+            PersistentManifold contactManifold) {
+        CollisionObject a = (CollisionObject) contactManifold.getBody0();
+        CollisionObject b = (CollisionObject) contactManifold.getBody1();
 
-        Entity ent2 = entityManager.get((String) point.shape2.getBody()
-                .getUserData());
+        Entity ent1 = entityManager.get((String) a.getUserPointer());
+
+        Entity ent2 = entityManager.get((String) b.getUserPointer());
 
         if (ent1 != null && ent2 != null) {
             ent1.sendMessage(MessageType.COLLIDED, ent2);
             ent2.sendMessage(MessageType.COLLIDED, ent1);
         }
-    }
 
-    @Override
-    public void persist(ContactPoint point) {
-    }
-
-    @Override
-    public void remove(ContactPoint point) {
-    }
-
-    @Override
-    public void result(ContactResult point) {
     }
 }

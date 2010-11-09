@@ -1,30 +1,35 @@
 package walledin.game.entity.behaviors.logic;
 
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
+
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
-import walledin.engine.physics.PhysicsBody;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.linearmath.Transform;
+
 public class PhysicsBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-    private static final Vector2f GRAVITY = new Vector2f(0, 4000.0f);
-    private PhysicsBody body;
+    private static final Vector3f GRAVITY = new Vector3f(0, 4000.0f, 0);
+    private RigidBody body;
     private boolean doGravity = true;
 
-    public PhysicsBehavior(Entity owner, Body body) {
+    public PhysicsBehavior(Entity owner, RigidBody body) {
         super(owner);
-        this.body = new PhysicsBody(body);
+        this.body = body;
     }
 
-    public PhysicsBehavior(Entity owner, Body body, boolean doGravity) {
+    public PhysicsBehavior(Entity owner, RigidBody body, boolean doGravity) {
         super(owner);
-        this.body = new PhysicsBody(body);
+        this.body = body;
         this.doGravity = doGravity;
     }
 
@@ -32,7 +37,8 @@ public class PhysicsBehavior extends AbstractBehavior {
     public void onMessage(MessageType messageType, Object data) {
         /* FIXME: wrong message name! */
         if (messageType == MessageType.APPLY_FORCE) {
-            body.applyImpulse((Vector2f) data);
+            Vector2f imp = (Vector2f) data;
+            body.applyImpulse(new Vector3f(imp.getX(), imp.getY(), 0), new Vector3f());
         }
 
         if (messageType == MessageType.ATTRIBUTE_SET) {
@@ -43,9 +49,9 @@ public class PhysicsBehavior extends AbstractBehavior {
                 pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
                         .getHeight() / 2.0f));
 
-                /* Be careful calling this function! */
-                body.getBody().setXForm(new Vec2(pos.getX(), pos.getY()),
-                        body.getBody().getAngle());
+                body.setWorldTransform(new Transform(new Matrix4f(body
+                        .getOrientation(null), new Vector3f(pos.getX(), pos
+                        .getY(), 0), 1)));
             }
         }
     }
@@ -55,17 +61,21 @@ public class PhysicsBehavior extends AbstractBehavior {
         if (body != null) {
 
             if (doGravity) {
-                body.applyImpulse(GRAVITY);
+                body.applyImpulse(GRAVITY, new Vector3f()); // apply at center
+                                                            // of mass
             }
 
             /* Correct the position. */
             Rectangle rect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
                     .asRectangle();
-            Vector2f pos = new Vector2f(body.getPosition().getX()
-                    - rect.getWidth() / 2.0f, body.getPosition().getY()
-                    - rect.getHeight() / 2.0f);
+
+            Vector3f pos3D = body.getCenterOfMassPosition(new Vector3f());
+            Vector3f vel3D = body.getLinearVelocity(new Vector3f());
+
+            Vector2f pos = new Vector2f(pos3D.x - rect.getWidth() / 2.0f,
+                    pos3D.y - rect.getHeight() / 2.0f);
             setAttribute(Attribute.POSITION, pos);
-            setAttribute(Attribute.VELOCITY, body.getVelocity());
+            setAttribute(Attribute.VELOCITY, new Vector2f(vel3D.x, vel3D.y));
         }
     }
 }
