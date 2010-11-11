@@ -30,6 +30,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
@@ -54,6 +58,13 @@ import walledin.game.map.Tile;
 import walledin.game.network.server.Server;
 import walledin.util.SettingsManager;
 import walledin.util.Utils;
+
+import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.linearmath.Transform;
 
 /**
  * This class takes care of the game logic.
@@ -348,10 +359,19 @@ public final class GameLogicManager implements GameStateListener,
                 staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
                         .getY() * tileWidth / playerSize)] = true;
 
-                PhysicsManager.getInstance().addStaticBody(
-                        new Rectangle(tile.getX() * tileWidth, tile.getY()
-                                * tileWidth, tileWidth, tileWidth),
-                        map.getName());
+                CollisionShape tileShape = new BoxShape(new Vector3f(tileWidth / 2.0f,
+                        tileWidth / 2.0f, 0));
+                DefaultMotionState tileMotionState = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                                new Vector3f(tile.getX() * tileWidth, tile
+                                        .getY() * tileWidth, 0), 1)));
+                RigidBodyConstructionInfo tileRigidBodyCI = new RigidBodyConstructionInfo(
+                        0, tileMotionState, tileShape, new Vector3f(0, 0, 0));
+                RigidBody tileRigidBody = new RigidBody(tileRigidBodyCI);
+                tileRigidBody.setUserPointer(map.getName());
+
+                PhysicsManager.getInstance().getWorld()
+                        .addRigidBody(tileRigidBody);
             }
         }
 
@@ -521,7 +541,8 @@ public final class GameLogicManager implements GameStateListener,
                 new Rectangle(0, 0, 64 * 32, 48 * 32));
 
         /* Add a generic contact resolver. */
-        PhysicsManager.getInstance().addListener(new ContactHandler(entityManager));
+        PhysicsManager.getInstance().addListener(
+                new ContactHandler(entityManager));
 
         /*
          * Build the static movability field and add static bodies to the

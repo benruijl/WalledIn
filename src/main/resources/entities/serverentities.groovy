@@ -3,12 +3,16 @@ import walledin.engine.physics.*
 import walledin.game.entity.*
 import walledin.game.entity.behaviors.logic.*
 
-import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
-import org.jbox2d.collision.CircleDef;
-import org.jbox2d.collision.PolygonDef;
-import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.World;
+import com.bulletphysics.collision.shapes.CylinderShape;
+import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.linearmath.Transform;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
 
 /* TODO: change variable names! */
 
@@ -29,19 +33,20 @@ import org.jbox2d.dynamics.World;
                 def destRect = new Rectangle(0, 0, 44.0f, 43.0f);
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
-                BodyDef box = new BodyDef();
-                PolygonDef polygon = new PolygonDef();
-                polygon.setAsBox((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f));
-                polygon.density = 1.0f;
-                polygon.friction = 0.0f;
-                polygon.restitution = 0.2f;
-                World world = PhysicsManager.getInstance().getWorld();
-                Body testBox = world.createBody(box);
-                testBox.createShape(polygon);
-                testBox.setMassFromShapes();
-                testBox.m_userData = entity.getName();
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, 50, 0), 1)));
+                float mass = 1.0f;
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(entity.getName());
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
-                entity.addBehavior(new PhysicsBehavior(entity, testBox));
+                entity.addBehavior(new PhysicsBehavior(entity, rb));
             } as EntityFunction,
             
             (Family.MAP): { entity ->
@@ -52,26 +57,37 @@ import org.jbox2d.dynamics.World;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.addBehavior(new FoamBulletBehavior(entity));
                 
-                CircleDef circle = new CircleDef();
-                circle.radius = destRect.getRadius();
-                circle.density = 0.01f;
-                circle.friction = 0.0f;
-                circle.restitution = 0.2f;
+                /*  CircleDef circle = new CircleDef();
+         circle.radius = destRect.getRadius();
+         circle.density = 0.01f;
+         circle.friction = 0.0f;
+         circle.restitution = 0.2f;
+         // don't collide with other bullets
+         circle.filter.groupIndex = -1;
+         BodyDef bodyDef = new BodyDef();
+         World world = PhysicsManager.getInstance().getWorld();
+         bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
+         final Body body = world.createBody(bodyDef);
+         body.m_linearDamping = 0.0f;
+         body.setBullet(true);
+         body.createShape(circle);
+         body.setUserData(entity.getName());
+         body.setMassFromShapes();*/
                 
-                // don't collide with other bullets
-                circle.filter.groupIndex = -1;
+                CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f), (float)(destRadius.getRadius() / 2.0f), 0));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, 50, 0), 1)));
+                float mass = 1.0f;
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(entity.getName());
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
-                BodyDef bodyDef = new BodyDef();
-                World world = PhysicsManager.getInstance().getWorld();
-                bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
-                final Body body = world.createBody(bodyDef);
-                body.m_linearDamping = 0.0f;
-                body.setBullet(true);
-                body.createShape(circle);
-                body.setUserData(entity.getName());
-                body.setMassFromShapes();
-                
-                entity.addBehavior(new PhysicsBehavior(entity, body, false));
+                entity.addBehavior(new PhysicsBehavior(entity, rb, false));
             } as EntityFunction,
             
             (Family.HANDGUN_BULLET): { entity ->
@@ -79,25 +95,20 @@ import org.jbox2d.dynamics.World;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.addBehavior(new BulletBehavior(entity,10));
                 
-                BodyDef box = new BodyDef();
-                PolygonDef polygon = new PolygonDef();
-                polygon.setAsBox((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f));
-                polygon.density = 0.01f;
-                polygon.friction = 0.0f;
-                polygon.restitution = 0.01f;
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, 50, 0), 1)));
+                float mass = 1.0f;
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(entity.getName());
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
-                // don't collide with other bullets
-                polygon.filter.groupIndex = -1;
-                
-                World world = PhysicsManager.getInstance().getWorld();
-                Body testBox = world.createBody(box);
-                testBox.m_linearDamping = 0.0f;
-                testBox.setBullet(true);
-                testBox.createShape(polygon);
-                testBox.setMassFromShapes();
-                testBox.m_userData = entity.getName();
-                
-                entity.addBehavior(new PhysicsBehavior(entity, testBox, false));
+                entity.addBehavior(new PhysicsBehavior(entity, rb, false));
             } as EntityFunction,
             
             (Family.FOAM_PARTICLE): { entity ->
@@ -108,16 +119,15 @@ import org.jbox2d.dynamics.World;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());
                 
-                CircleDef circle = new CircleDef();
-                circle.radius = destRect.getRadius();
-                BodyDef bodyDef = new BodyDef();
-                bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
-                World world = PhysicsManager.getInstance().getWorld();
-                final Body body = world.createBody(bodyDef);
-                body.createShape(circle);
-                body.setUserData(entity.getName());
-                
-                entity.addBehavior(new PhysicsBehavior(entity, body));
+                /*   CircleDef circle = new CircleDef();
+         circle.radius = destRect.getRadius();
+         BodyDef bodyDef = new BodyDef();
+         bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
+         World world = PhysicsManager.getInstance().getWorld();
+         final Body body = world.createBody(bodyDef);
+         body.createShape(circle);
+         body.setUserData(entity.getName());
+         entity.addBehavior(new PhysicsBehavior(entity, body));*/
             } as EntityFunction,
             
             (Family.ITEM): { entity ->
@@ -128,19 +138,20 @@ import org.jbox2d.dynamics.World;
                 def destRect = new Rectangle(0, 0, 32.0f, 32.0f)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
-                BodyDef box = new BodyDef();
-                PolygonDef polygon = new PolygonDef();
-                polygon.setAsBox((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f));
-                polygon.density = 1.0f;
-                polygon.friction = 0.0f;
-                polygon.restitution = 0.2f;
-                World world = PhysicsManager.getInstance().getWorld();
-                Body testBox = world.createBody(box);
-                testBox.createShape(polygon);
-                testBox.setMassFromShapes();
-                testBox.m_userData = entity.getName();
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, 50, 0), 1)));
+                float mass = 1.0f;
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(entity.getName());
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
-                entity.addBehavior(new PhysicsBehavior(entity, testBox));
+                entity.addBehavior(new PhysicsBehavior(entity, rb));
             } as EntityFunction,
             
             (Family.HEALTHKIT): { entity ->
@@ -149,19 +160,20 @@ import org.jbox2d.dynamics.World;
                 entity.addBehavior(new HealthKitBehavior(entity, 10));
                 
                 
-                BodyDef box = new BodyDef();
-                PolygonDef polygon = new PolygonDef();
-                polygon.setAsBox((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f));
-                polygon.density = 1.0f;
-                polygon.friction = 0.0f;
-                polygon.restitution = 0.2f;
-                World world = PhysicsManager.getInstance().getWorld();
-                Body testBox = world.createBody(box);
-                testBox.createShape(polygon);
-                testBox.setMassFromShapes();
-                testBox.m_userData = entity.getName();
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, 50, 0), 1)));
+                float mass = 1.0f;
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(entity.getName());
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
-                entity.addBehavior(new PhysicsBehavior(entity, testBox));
+                entity.addBehavior(new PhysicsBehavior(entity, rb));
             } as EntityFunction,
             
             (Family.HANDGUN): { entity ->
@@ -192,20 +204,19 @@ import org.jbox2d.dynamics.World;
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());
                 entity.addBehavior(new GrenadeBehavior(entity));
                 
-                BodyDef box = new BodyDef();
-                PolygonDef polygon = new PolygonDef();
-                polygon.setAsBox((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f));
-                polygon.density = 1.0f;
-                polygon.friction = 0.3f;
-                polygon.restitution = 0.2f;
-                World world = PhysicsManager.getInstance().getWorld();
-                Body testBox = world.createBody(box);
-                testBox.createShape(polygon);
-                testBox.setMassFromShapes();
-                testBox.m_userData = entity.getName();
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, 50, 0), 1)));
+                float mass = 1.0f;
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(entity.getName());
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
-                entity.addBehavior(new PhysicsBehavior(entity, testBox));
-                
-                entity.addBehavior(new PhysicsBehavior(entity, testBox));
+                entity.addBehavior(new PhysicsBehavior(entity, rb));
             } as EntityFunction,
         ]

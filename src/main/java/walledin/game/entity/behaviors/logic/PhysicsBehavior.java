@@ -1,6 +1,7 @@
 package walledin.game.entity.behaviors.logic;
 
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
@@ -18,7 +19,7 @@ import com.bulletphysics.linearmath.Transform;
 
 public class PhysicsBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-    private static final Vector3f GRAVITY = new Vector3f(0, 4000.0f, 0);
+    private static final Vector3f GRAVITY = new Vector3f(0, 40.0f, 0);
     private RigidBody body;
     private boolean doGravity = true;
 
@@ -38,7 +39,8 @@ public class PhysicsBehavior extends AbstractBehavior {
         /* FIXME: wrong message name! */
         if (messageType == MessageType.APPLY_FORCE) {
             Vector2f imp = (Vector2f) data;
-            body.applyImpulse(new Vector3f(imp.getX(), imp.getY(), 0), new Vector3f());
+            body.applyImpulse(new Vector3f(imp.getX(), imp.getY(), 0),
+                    new Vector3f());
         }
 
         if (messageType == MessageType.ATTRIBUTE_SET) {
@@ -49,9 +51,11 @@ public class PhysicsBehavior extends AbstractBehavior {
                 pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
                         .getHeight() / 2.0f));
 
-                body.setWorldTransform(new Transform(new Matrix4f(body
-                        .getOrientation(null), new Vector3f(pos.getX(), pos
-                        .getY(), 0), 1)));
+                body.setWorldTransform(
+                        new Transform(new Matrix4f(body
+                                .getOrientation(new Quat4f()), new Vector3f(pos
+                                .getX(), pos.getY(), 0), 1)));
+                // body.setWorldTransform ?
             }
         }
     }

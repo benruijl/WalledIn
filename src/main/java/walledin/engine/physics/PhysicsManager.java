@@ -23,8 +23,6 @@ package walledin.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import org.apache.log4j.Logger;
@@ -34,18 +32,12 @@ import walledin.engine.math.Rectangle;
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
-import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.narrowphase.ManifoldPoint;
 import com.bulletphysics.collision.narrowphase.PersistentManifold;
-import com.bulletphysics.collision.shapes.CollisionShape;
-import com.bulletphysics.collision.shapes.StaticPlaneShape;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
-import com.bulletphysics.linearmath.DefaultMotionState;
-import com.bulletphysics.linearmath.Transform;
 
 public class PhysicsManager {
     private static final Logger LOG = Logger.getLogger(PhysicsManager.class);
@@ -98,18 +90,23 @@ public class PhysicsManager {
 
         /* Create a shape */
 
-        final CollisionShape groundShape = new StaticPlaneShape(new Vector3f(0,
-                1, 0), 1);
-
-        final DefaultMotionState groundMotionState = new DefaultMotionState(
-                new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                        new Vector3f(0, -1, 0), 0)));
-
-        RigidBodyConstructionInfo groundRigidBodyCI = new RigidBodyConstructionInfo(
-                0, groundMotionState, groundShape, new Vector3f(0, 0, 0));
-        RigidBody groundRigidBody = new RigidBody(groundRigidBodyCI);
-
-        dynamicsWorld.addRigidBody(groundRigidBody);
+        /*
+         * final CollisionShape groundShape = new StaticPlaneShape(new
+         * Vector3f(0, 1, 0), 1);
+         * 
+         * final DefaultMotionState groundMotionState = new DefaultMotionState(
+         * new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), new Vector3f(0,
+         * -1, 0), 0)));
+         * 
+         * final RigidBodyConstructionInfo groundRigidBodyCI = new
+         * RigidBodyConstructionInfo( 0, groundMotionState, groundShape, new
+         * Vector3f(0, 0, 0)); RigidBody groundRigidBody = new
+         * RigidBody(groundRigidBodyCI);
+         * 
+         * 
+         * dynamicsWorld.addRigidBody(groundRigidBody);
+         */
+        
         world = dynamicsWorld;
 
         return true;
