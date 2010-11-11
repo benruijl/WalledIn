@@ -33,10 +33,10 @@ import javax.vecmath.Vector3f;
                 def destRect = new Rectangle(0, 0, 44.0f, 43.0f);
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
-                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                        new Vector3f(0, 50, 0), 1)));
+                        new Vector3f(0, 0, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);
@@ -77,7 +77,7 @@ import javax.vecmath.Vector3f;
                 CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f), (float)(destRadius.getRadius() / 2.0f), 0));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                        new Vector3f(0, 50, 0), 1)));
+                        new Vector3f(0, 0, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);
@@ -98,7 +98,7 @@ import javax.vecmath.Vector3f;
                 CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                        new Vector3f(0, 50, 0), 1)));
+                        new Vector3f(0, 0, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);
@@ -141,7 +141,7 @@ import javax.vecmath.Vector3f;
                 CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                        new Vector3f(0, 50, 0), 1)));
+                        new Vector3f(0, 0, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);
@@ -163,7 +163,7 @@ import javax.vecmath.Vector3f;
                 CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                        new Vector3f(0, 50, 0), 1)));
+                        new Vector3f(0, 0, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);
@@ -194,7 +194,6 @@ import javax.vecmath.Vector3f;
                 entity.addBehavior(new WeaponBehavior(entity, 4, Family.FOAMGUN_BULLET));
                 
                 // DO NOT add physics behavior for guns. A body is created in the WeaponBehavior.
-                //entity.addBehavior(new PhysicsBehavior(entity));
             } as EntityFunction,
             
             (Family.FOAMNADE): { entity ->
@@ -207,7 +206,7 @@ import javax.vecmath.Vector3f;
                 CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                        new Vector3f(0, 50, 0), 1)));
+                        new Vector3f(0, 0, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);

@@ -360,7 +360,7 @@ public final class GameLogicManager implements GameStateListener,
                         .getY() * tileWidth / playerSize)] = true;
 
                 CollisionShape tileShape = new BoxShape(new Vector3f(tileWidth / 2.0f,
-                        tileWidth / 2.0f, 0));
+                        tileWidth / 2.0f, 2));
                 DefaultMotionState tileMotionState = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                                 new Vector3f(tile.getX() * tileWidth, tile

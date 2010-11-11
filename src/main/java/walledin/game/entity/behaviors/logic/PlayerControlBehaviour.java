@@ -42,8 +42,8 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
         ContactListener {
     private static final Logger LOG = Logger
             .getLogger(PlayerControlBehaviour.class);
-    private static final float MOVE_SPEED = 500.0f;
-    private static final float JUMP_SPEED = 9000.0f;
+    private static final float MOVE_SPEED = 10.0f;
+    private static final float JUMP_SPEED = 20.0f;
     private boolean canJump;
     private int colCount;
     private Set<PlayerAction> playerActions;

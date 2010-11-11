@@ -20,9 +20,14 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.game.entity.behaviors.logic;
 
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
+import javax.vecmath.Vector3f;
+
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.AbstractGeometry;
+import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.physics.PhysicsManager;
 import walledin.game.EntityManager;
@@ -32,6 +37,13 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.Family;
 import walledin.game.entity.MessageType;
 import walledin.util.Utils;
+
+import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
+import com.bulletphysics.linearmath.DefaultMotionState;
+import com.bulletphysics.linearmath.Transform;
 
 public class WeaponBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(WeaponBehavior.class);
@@ -84,14 +96,30 @@ public class WeaponBehavior extends AbstractBehavior {
                         getOwner().getName());
             } else {
                 /* FIXME: do this differently. */
-              /*  PhysicsManager
-                        .getInstance()
-                        .addBody(
-                                ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
-                                        .asRectangle()
-                                        .translate(
-                                                (Vector2f) getAttribute(Attribute.POSITION)),
-                                getOwner().getName());*/
+
+                Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION); // WRONG
+                                                                            // position:
+                                                                            // should
+                                                                            // be
+                                                                            // the
+                                                                            // center
+                Rectangle destRect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                        .asRectangle();
+
+                CollisionShape shape = new BoxShape(new Vector3f(
+                        (float) (destRect.getWidth() / 2.0f),
+                        (float) (destRect.getHeight() / 2.0f), 2));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                                new Vector3f(pos.getX(), pos.getY(), 0), 1)));
+                float mass = 1.0f;
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(getOwner().getName());
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
             }
         }
 

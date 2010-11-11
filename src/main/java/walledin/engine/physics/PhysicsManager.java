@@ -32,6 +32,7 @@ import walledin.engine.math.Rectangle;
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.CollisionObject;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.narrowphase.ManifoldPoint;
 import com.bulletphysics.collision.narrowphase.PersistentManifold;
@@ -49,7 +50,7 @@ public class PhysicsManager {
     private Rectangle worldRect;
     private List<ContactListener> contactListeners;
 
-    private List<RigidBody> remove;
+    private List<CollisionObject> remove;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -66,7 +67,7 @@ public class PhysicsManager {
 
     private PhysicsManager() {
         contactListeners = new ArrayList<ContactListener>();
-        remove = new ArrayList<RigidBody>();
+        remove = new ArrayList<CollisionObject>();
     }
 
     public boolean initialize(Rectangle worldRect) {
@@ -106,7 +107,7 @@ public class PhysicsManager {
          * 
          * dynamicsWorld.addRigidBody(groundRigidBody);
          */
-        
+
         world = dynamicsWorld;
 
         return true;
@@ -127,16 +128,12 @@ public class PhysicsManager {
         if (world == null) {
             return false;
         }
-
-        // world.
-
-        /*
-         * RigidBody currentBody = world.getBodyList(); while (currentBody !=
-         * null) { if (id == currentBody.getUserData()) {
-         * remove.add(currentBody); return true; }
-         * 
-         * currentBody = currentBody.getNext(); }
-         */
+               
+        for (CollisionObject obj : world.getCollisionObjectArray()) {
+            if (id == obj.getUserPointer()) {
+                remove.add(obj);
+            }
+        }
 
         return false;
     }
@@ -169,8 +166,8 @@ public class PhysicsManager {
         }
 
         /* Remove every body in the removed queue. */
-        for (RigidBody body : remove) {
-            world.removeRigidBody(body);
+        for (CollisionObject body : remove) {
+            world.removeCollisionObject(body);
         }
 
         remove.clear();

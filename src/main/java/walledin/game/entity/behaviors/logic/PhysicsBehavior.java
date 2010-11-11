@@ -36,6 +36,10 @@ public class PhysicsBehavior extends AbstractBehavior {
 
     @Override
     public void onMessage(MessageType messageType, Object data) {
+        if (body == null) {
+            return;
+        }
+
         /* FIXME: wrong message name! */
         if (messageType == MessageType.APPLY_FORCE) {
             Vector2f imp = (Vector2f) data;
@@ -51,11 +55,9 @@ public class PhysicsBehavior extends AbstractBehavior {
                 pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
                         .getHeight() / 2.0f));
 
-                body.setWorldTransform(
-                        new Transform(new Matrix4f(body
-                                .getOrientation(new Quat4f()), new Vector3f(pos
-                                .getX(), pos.getY(), 0), 1)));
-                // body.setWorldTransform ?
+                body.setWorldTransform(new Transform(new Matrix4f(body
+                        .getOrientation(new Quat4f(0, 0, 0, 1)), new Vector3f(
+                        pos.getX(), pos.getY(), 0), 1)));
             }
         }
     }
@@ -75,6 +77,9 @@ public class PhysicsBehavior extends AbstractBehavior {
 
             Vector3f pos3D = body.getCenterOfMassPosition(new Vector3f());
             Vector3f vel3D = body.getLinearVelocity(new Vector3f());
+
+            // reset velocity
+            body.setLinearVelocity(new Vector3f(vel3D.x, vel3D.y, 0));
 
             Vector2f pos = new Vector2f(pos3D.x - rect.getWidth() / 2.0f,
                     pos3D.y - rect.getHeight() / 2.0f);
