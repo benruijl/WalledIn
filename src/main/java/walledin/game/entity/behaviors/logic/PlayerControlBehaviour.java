@@ -150,7 +150,7 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
             return;
         }
 
-        if (point.normalWorldOnB.y >= -1 && point.normalWorldOnB.y < 0) {
+        if (point.normalWorldOnB.y >= -1) {
             canJump = true;
             colCount++;
         }

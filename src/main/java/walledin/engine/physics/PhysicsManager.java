@@ -49,7 +49,6 @@ public class PhysicsManager {
     private DiscreteDynamicsWorld world;
     private Rectangle worldRect;
     private List<ContactListener> contactListeners;
-
     private List<CollisionObject> remove;
 
     @Override
@@ -109,7 +108,7 @@ public class PhysicsManager {
          */
 
         world = dynamicsWorld;
-
+        
         return true;
     }
 
@@ -132,6 +131,7 @@ public class PhysicsManager {
         for (CollisionObject obj : world.getCollisionObjectArray()) {
             if (id == obj.getUserPointer()) {
                 remove.add(obj);
+                return true;
             }
         }
 

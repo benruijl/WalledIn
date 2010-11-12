@@ -33,7 +33,8 @@ import javax.vecmath.Vector3f;
                 def destRect = new Rectangle(0, 0, 44.0f, 43.0f);
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
-                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 2));
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), 
+                (float)(destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -44,6 +45,8 @@ import javax.vecmath.Vector3f;
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
@@ -74,7 +77,8 @@ import javax.vecmath.Vector3f;
          body.setUserData(entity.getName());
          body.setMassFromShapes();*/
                 
-                CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f), (float)(destRadius.getRadius() / 2.0f), 0));
+                CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f), 
+                (float)(destRect.getRadius() / 2.0f), 0));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -85,6 +89,8 @@ import javax.vecmath.Vector3f;
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
@@ -106,6 +112,8 @@ import javax.vecmath.Vector3f;
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
@@ -149,6 +157,8 @@ import javax.vecmath.Vector3f;
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
@@ -171,6 +181,8 @@ import javax.vecmath.Vector3f;
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
@@ -214,6 +226,8 @@ import javax.vecmath.Vector3f;
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));

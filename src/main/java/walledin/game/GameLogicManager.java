@@ -360,15 +360,17 @@ public final class GameLogicManager implements GameStateListener,
                         .getY() * tileWidth / playerSize)] = true;
 
                 CollisionShape tileShape = new BoxShape(new Vector3f(tileWidth / 2.0f,
-                        tileWidth / 2.0f, 2));
+                        tileWidth / 2.0f, 21));
                 DefaultMotionState tileMotionState = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                                new Vector3f(tile.getX() * tileWidth, tile
-                                        .getY() * tileWidth, 0), 1)));
+                                new Vector3f(tile.getX() * tileWidth + tileWidth / 2.0f, tile
+                                        .getY() * tileWidth + tileWidth / 2.0f, 0), 1)));
                 RigidBodyConstructionInfo tileRigidBodyCI = new RigidBodyConstructionInfo(
                         0, tileMotionState, tileShape, new Vector3f(0, 0, 0));
                 RigidBody tileRigidBody = new RigidBody(tileRigidBodyCI);
                 tileRigidBody.setUserPointer(map.getName());
+                tileRigidBody.setLinearFactor(new Vector3f(1, 1, 0));
+                tileRigidBody.setAngularFactor(new Vector3f(0, 0, 1));
 
                 PhysicsManager.getInstance().getWorld()
                         .addRigidBody(tileRigidBody);

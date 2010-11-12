@@ -119,7 +119,10 @@ public class WeaponBehavior extends AbstractBehavior {
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(getOwner().getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                LOG.info(getOwner().getName() + ": Added weapon physics.");
             }
         }
 

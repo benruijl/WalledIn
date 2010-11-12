@@ -22,6 +22,7 @@ public class PhysicsBehavior extends AbstractBehavior {
     private static final Vector3f GRAVITY = new Vector3f(0, 40.0f, 0);
     private RigidBody body;
     private boolean doGravity = true;
+    private boolean internalUpdate = false;
 
     public PhysicsBehavior(Entity owner, RigidBody body) {
         super(owner);
@@ -49,15 +50,18 @@ public class PhysicsBehavior extends AbstractBehavior {
 
         if (messageType == MessageType.ATTRIBUTE_SET) {
             if (data == Attribute.POSITION) {
-                Rectangle rect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
-                        .asRectangle();
-                Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
-                pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
-                        .getHeight() / 2.0f));
+                if (!internalUpdate) {
+                    Rectangle rect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                            .asRectangle();
 
-                body.setWorldTransform(new Transform(new Matrix4f(body
-                        .getOrientation(new Quat4f(0, 0, 0, 1)), new Vector3f(
-                        pos.getX(), pos.getY(), 0), 1)));
+                    Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+                    pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
+                            .getHeight() / 2.0f));
+
+                    body.setWorldTransform(new Transform(new Matrix4f(body
+                            .getOrientation(new Quat4f(0, 0, 0, 1)),
+                            new Vector3f(pos.getX(), pos.getY(), 0), 1)));
+                }
             }
         }
     }
@@ -78,13 +82,13 @@ public class PhysicsBehavior extends AbstractBehavior {
             Vector3f pos3D = body.getCenterOfMassPosition(new Vector3f());
             Vector3f vel3D = body.getLinearVelocity(new Vector3f());
 
-            // reset velocity
-            body.setLinearVelocity(new Vector3f(vel3D.x, vel3D.y, 0));
-
             Vector2f pos = new Vector2f(pos3D.x - rect.getWidth() / 2.0f,
                     pos3D.y - rect.getHeight() / 2.0f);
+
+            internalUpdate = true;
             setAttribute(Attribute.POSITION, pos);
             setAttribute(Attribute.VELOCITY, new Vector2f(vel3D.x, vel3D.y));
+            internalUpdate = false;
         }
     }
 }
