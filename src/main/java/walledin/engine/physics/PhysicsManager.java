@@ -40,7 +40,7 @@ import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 
-public class PhysicsManager {
+public final class PhysicsManager {
     private static final Logger LOG = Logger.getLogger(PhysicsManager.class);
     private static final float TIME_STEP = 1.0f / 40.0f;
     private static final int ITERATION = 10;
@@ -69,46 +69,26 @@ public class PhysicsManager {
         remove = new ArrayList<CollisionObject>();
     }
 
-    public boolean initialize(Rectangle worldRect) {
+    public boolean initialize(final Rectangle worldRect) {
         this.worldRect = worldRect;
 
         // Build the broadphase
-        BroadphaseInterface broadphase = new DbvtBroadphase();
+        final BroadphaseInterface broadphase = new DbvtBroadphase();
 
         // Set up the collision configuration and dispatcher
-        DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
-        CollisionDispatcher dispatcher = new CollisionDispatcher(
+        final DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
+        final CollisionDispatcher dispatcher = new CollisionDispatcher(
                 collisionConfiguration);
 
         // The actual physics solver
-        SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
+        final SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
 
         // The world.
         final DiscreteDynamicsWorld dynamicsWorld = new DiscreteDynamicsWorld(
                 dispatcher, broadphase, solver, collisionConfiguration);
-        dynamicsWorld.setGravity(new Vector3f(0, -10, 0));
-
-        /* Create a shape */
-
-        /*
-         * final CollisionShape groundShape = new StaticPlaneShape(new
-         * Vector3f(0, 1, 0), 1);
-         * 
-         * final DefaultMotionState groundMotionState = new DefaultMotionState(
-         * new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1), new Vector3f(0,
-         * -1, 0), 0)));
-         * 
-         * final RigidBodyConstructionInfo groundRigidBodyCI = new
-         * RigidBodyConstructionInfo( 0, groundMotionState, groundShape, new
-         * Vector3f(0, 0, 0)); RigidBody groundRigidBody = new
-         * RigidBody(groundRigidBodyCI);
-         * 
-         * 
-         * dynamicsWorld.addRigidBody(groundRigidBody);
-         */
 
         world = dynamicsWorld;
-        
+
         return true;
     }
 
@@ -123,11 +103,11 @@ public class PhysicsManager {
      *            ID of the body
      * @return True if body exists, else false
      */
-    public boolean addToRemoveQueue(Object id) {
+    public boolean addToRemoveQueue(final Object id) {
         if (world == null) {
             return false;
         }
-               
+
         for (CollisionObject obj : world.getCollisionObjectArray()) {
             if (id == obj.getUserPointer()) {
                 remove.add(obj);
@@ -138,7 +118,7 @@ public class PhysicsManager {
         return false;
     }
 
-    public void addListener(ContactListener listener) {
+    public void addListener(final ContactListener listener) {
         contactListeners.add(listener);
     }
 
@@ -151,11 +131,11 @@ public class PhysicsManager {
         final int numManifolds = world.getDispatcher().getNumManifolds();
 
         for (int i = 0; i < numManifolds; i++) {
-            PersistentManifold contactManifold = world.getDispatcher()
+            final PersistentManifold contactManifold = world.getDispatcher()
                     .getManifoldByIndexInternal(i);
-            int numContacts = contactManifold.getNumContacts();
+            final int numContacts = contactManifold.getNumContacts();
             for (int j = 0; j < numContacts; j++) {
-                ManifoldPoint pt = contactManifold.getContactPoint(j);
+                final ManifoldPoint pt = contactManifold.getContactPoint(j);
                 if (pt.getDistance() < 0.f) {
                     /* Send to all listeners. */
                     for (ContactListener listener : contactListeners) {

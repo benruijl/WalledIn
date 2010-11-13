@@ -34,7 +34,7 @@ import javax.vecmath.Vector3f;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
                 CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), 
-                (float)(destRect.getHeight() / 2.0f), 2));
+                        (float)(destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -60,25 +60,8 @@ import javax.vecmath.Vector3f;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.addBehavior(new FoamBulletBehavior(entity));
                 
-                /*  CircleDef circle = new CircleDef();
-         circle.radius = destRect.getRadius();
-         circle.density = 0.01f;
-         circle.friction = 0.0f;
-         circle.restitution = 0.2f;
-         // don't collide with other bullets
-         circle.filter.groupIndex = -1;
-         BodyDef bodyDef = new BodyDef();
-         World world = PhysicsManager.getInstance().getWorld();
-         bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
-         final Body body = world.createBody(bodyDef);
-         body.m_linearDamping = 0.0f;
-         body.setBullet(true);
-         body.createShape(circle);
-         body.setUserData(entity.getName());
-         body.setMassFromShapes();*/
-                
                 CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f), 
-                (float)(destRect.getRadius() / 2.0f), 2));
+                        (float)(destRect.getRadius() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -125,19 +108,26 @@ import javax.vecmath.Vector3f;
                 def destRect = new Circle(new Vector2f(16.0f, 16.0f), 16.0f);
                 
                 entity.addBehavior(new FoamParticleBehavior(entity));
-                entity.addBehavior(new HealthBehavior(entity, 100, 80));
+                entity.addBehavior(new HealthBehavior(entity, 100, 40));
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());
                 
-                /*   CircleDef circle = new CircleDef();
-         circle.radius = destRect.getRadius();
-         BodyDef bodyDef = new BodyDef();
-         bodyDef.position = new Vec2(destRect.getPos().getX(), destRect.getPos().getY());
-         World world = PhysicsManager.getInstance().getWorld();
-         final Body body = world.createBody(bodyDef);
-         body.createShape(circle);
-         body.setUserData(entity.getName());
-         entity.addBehavior(new PhysicsBehavior(entity, body));*/
+                CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f),
+                        (float)(destRect.getRadius() / 2.0f), 2));
+                DefaultMotionState state = new DefaultMotionState(
+                        new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
+                        new Vector3f(0, 0, 0), 1)));
+                float mass = 0.0f; // standing still
+                Vector3f inertia = new Vector3f();
+                shape.calculateLocalInertia(mass, inertia);
+                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                        mass, state, shape, inertia);
+                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rb.setUserPointer(entity.getName());
+                rb.setLinearFactor(new Vector3f(1, 1, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                entity.addBehavior(new PhysicsBehavior(entity, rb, false));
             } as EntityFunction,
             
             (Family.ITEM): { entity ->

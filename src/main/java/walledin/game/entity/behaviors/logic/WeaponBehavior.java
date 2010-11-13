@@ -64,7 +64,7 @@ public class WeaponBehavior extends AbstractBehavior {
         lastShot = fireLag;
         canShoot = true;
         this.bulletFamily = bulletFamily;
-        bulletAccelerationConstant = 3000000.0f;
+        bulletAccelerationConstant = 600.0f;
 
         setAttribute(Attribute.PICKED_UP, Boolean.FALSE);
         setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
