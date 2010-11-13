@@ -60,8 +60,10 @@ public class PlayerWeaponInventoryBehavior extends AbstractBehavior {
 
         if (messageType == MessageType.COLLIDED) {
             final Entity weapon = (Entity) data;
-            LOG.info("Weapon collided");
+           
             if (weapon.getFamily().getParent() == Family.WEAPON) {
+                LOG.info("Weapon collided: " + weapon.getName());
+                
                 if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)
                         || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
 
@@ -100,7 +102,7 @@ public class PlayerWeaponInventoryBehavior extends AbstractBehavior {
 
         if (messageType == MessageType.SELECT_WEAPON) {
             final Entity weapon = weapons.get(weaponKeyMap.get(data));
-
+            
             if (weapon != null
                     && !getAttribute(Attribute.ACTIVE_WEAPON).equals(weapon)) {
                 getEntityManager().add(weapon);

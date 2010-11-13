@@ -81,6 +81,7 @@ public class PhysicsBehavior extends AbstractBehavior {
 
             Vector3f pos3D = body.getCenterOfMassPosition(new Vector3f());
             Vector3f vel3D = body.getLinearVelocity(new Vector3f());
+            Vector3f ang3D = body.getAngularVelocity(new Vector3f());
 
             Vector2f pos = new Vector2f(pos3D.x - rect.getWidth() / 2.0f,
                     pos3D.y - rect.getHeight() / 2.0f);
@@ -88,6 +89,7 @@ public class PhysicsBehavior extends AbstractBehavior {
             internalUpdate = true;
             setAttribute(Attribute.POSITION, pos);
             setAttribute(Attribute.VELOCITY, new Vector2f(vel3D.x, vel3D.y));
+            //setAttribute(Attribute.ORIENTATION_ANGLE, ang3D.z);
             internalUpdate = false;
         }
     }

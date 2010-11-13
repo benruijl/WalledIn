@@ -94,16 +94,12 @@ public class WeaponBehavior extends AbstractBehavior {
                  */
                 PhysicsManager.getInstance().addToRemoveQueue(
                         getOwner().getName());
+                getOwner().removeBehavior(PhysicsBehavior.class);
             } else {
                 /* FIXME: do this differently. */
 
-                Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION); // WRONG
-                                                                            // position:
-                                                                            // should
-                                                                            // be
-                                                                            // the
-                                                                            // center
-                Rectangle destRect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
+                final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+                final Rectangle destRect = ((AbstractGeometry) getAttribute(Attribute.BOUNDING_GEOMETRY))
                         .asRectangle();
 
                 CollisionShape shape = new BoxShape(new Vector3f(
@@ -111,7 +107,9 @@ public class WeaponBehavior extends AbstractBehavior {
                         (float) (destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                                new Vector3f(pos.getX(), pos.getY(), 0), 1)));
+                                new Vector3f(pos.getX() + destRect.getWidth()
+                                        / 2.0f, pos.getY()
+                                        + destRect.getHeight() / 2.0f, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);
@@ -120,9 +118,10 @@ public class WeaponBehavior extends AbstractBehavior {
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(getOwner().getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 1));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
-                LOG.info(getOwner().getName() + ": Added weapon physics.");
+
+                getOwner().addBehavior(new PhysicsBehavior(getOwner(), rb));
             }
         }
 

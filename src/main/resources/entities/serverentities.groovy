@@ -46,7 +46,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 1));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
@@ -78,7 +78,7 @@ import javax.vecmath.Vector3f;
          body.setMassFromShapes();*/
                 
                 CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f), 
-                (float)(destRect.getRadius() / 2.0f), 0));
+                (float)(destRect.getRadius() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -90,7 +90,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 1));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
@@ -101,19 +101,21 @@ import javax.vecmath.Vector3f;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.addBehavior(new BulletBehavior(entity,10));
                 
-                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
                 float mass = 1.0f;
                 Vector3f inertia = new Vector3f();
                 shape.calculateLocalInertia(mass, inertia);
-                RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
+                RigidBodyConstructionInfo rbci = new RigidBodyConstructionInfo(
                         mass, state, shape, inertia);
-                RigidBody rb = new RigidBody(fallRigidBodyCI);
+                rbci.friction = 0.0f;
+                rbci.linearDamping = 0.0f;
+                RigidBody rb = new RigidBody(rbci);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 1));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
@@ -146,7 +148,7 @@ import javax.vecmath.Vector3f;
                 def destRect = new Rectangle(0, 0, 32.0f, 32.0f)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
-                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -158,7 +160,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 1));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
@@ -170,7 +172,7 @@ import javax.vecmath.Vector3f;
                 entity.addBehavior(new HealthKitBehavior(entity, 10));
                 
                 
-                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -182,7 +184,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 1));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
@@ -215,7 +217,7 @@ import javax.vecmath.Vector3f;
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());
                 entity.addBehavior(new GrenadeBehavior(entity));
                 
-                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 0));
+                CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -227,7 +229,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 1));
+                rb.setAngularFactor(new Vector3f(0, 0, 0));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
