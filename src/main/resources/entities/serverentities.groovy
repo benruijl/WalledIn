@@ -1,5 +1,6 @@
 import walledin.engine.math.*
 import walledin.engine.physics.*
+import walledin.game.*
 import walledin.game.entity.*
 import walledin.game.entity.behaviors.logic.*
 
@@ -47,7 +48,8 @@ import javax.vecmath.Vector3f;
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
                 rb.setAngularFactor(new Vector3f(0, 0, 0));
-                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.PLAYER,
+                    CollisionInformation.ALL);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
             } as EntityFunction,
@@ -74,7 +76,8 @@ import javax.vecmath.Vector3f;
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
                 rb.setAngularFactor(new Vector3f(0, 0, 0));
-                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.BULLET,
+                        CollisionInformation.ALL);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
             } as EntityFunction,
@@ -99,7 +102,8 @@ import javax.vecmath.Vector3f;
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
                 rb.setAngularFactor(new Vector3f(0, 0, 0));
-                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.BULLET,
+                        CollisionInformation.ALL);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
             } as EntityFunction,
@@ -126,7 +130,8 @@ import javax.vecmath.Vector3f;
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
                 rb.setAngularFactor(new Vector3f(0, 0, 0));
-                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.BULLET,
+                        CollisionInformation.ALL);
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
             } as EntityFunction,
             
@@ -151,7 +156,8 @@ import javax.vecmath.Vector3f;
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
                 rb.setAngularFactor(new Vector3f(0, 0, 0));
-                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.ITEM,
+                        (short)(CollisionInformation.PLAYER | CollisionInformation.TILE));
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
             } as EntityFunction,
@@ -175,7 +181,8 @@ import javax.vecmath.Vector3f;
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
                 rb.setAngularFactor(new Vector3f(0, 0, 0));
-                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.ITEM,
+                        (short)(CollisionInformation.PLAYER | CollisionInformation.TILE));
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));
             } as EntityFunction,
@@ -188,7 +195,7 @@ import javax.vecmath.Vector3f;
             } as EntityFunction,
             
             (Family.GRENADE_LAUNCHER): { entity ->
-                entity.addBehavior(new WeaponBehavior(entity, 10, 200000.0f, Family.FOAMNADE));
+                entity.addBehavior(new WeaponBehavior(entity, 10, 200.0f, Family.FOAMNADE));
             } as EntityFunction,
             
             (Family.FOAMGUN): { entity ->

@@ -30,6 +30,7 @@ import walledin.engine.math.AbstractGeometry;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.physics.PhysicsManager;
+import walledin.game.CollisionInformation;
 import walledin.game.EntityManager;
 import walledin.game.entity.AbstractBehavior;
 import walledin.game.entity.Attribute;
@@ -119,7 +120,13 @@ public class WeaponBehavior extends AbstractBehavior {
                 rb.setUserPointer(getOwner().getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
                 rb.setAngularFactor(new Vector3f(0, 0, 0));
-                PhysicsManager.getInstance().getWorld().addRigidBody(rb);
+                PhysicsManager
+                        .getInstance()
+                        .getWorld()
+                        .addRigidBody(
+                                rb,
+                                CollisionInformation.WEAPON,
+                                (short) (CollisionInformation.PLAYER | CollisionInformation.TILE));
 
                 getOwner().addBehavior(new PhysicsBehavior(getOwner(), rb));
             }

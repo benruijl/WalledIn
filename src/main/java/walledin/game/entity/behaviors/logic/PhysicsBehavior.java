@@ -58,6 +58,7 @@ public class PhysicsBehavior extends AbstractBehavior {
                     pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
                             .getHeight() / 2.0f));
 
+                    
                     body.setWorldTransform(new Transform(new Matrix4f(body
                             .getOrientation(new Quat4f()),
                             new Vector3f(pos.getX(), pos.getY(), 0), 1)));
