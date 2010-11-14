@@ -100,7 +100,7 @@ public class ServerList extends ListView<ServerData> implements
     @Override
     protected void onListItemClicked(final ServerData item) {
         /* If clicked on server, load the game */
-        clientLogicManager.getClient().connectToServer(item);
+        clientLogicManager.getClient().connectToServer(item.getAddress());
 
         if (clientLogicManager.getClient().isConnected()) {
 

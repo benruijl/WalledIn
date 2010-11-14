@@ -278,24 +278,31 @@ public final class Client implements NetworkEventListener {
             LOG.warn("IOException", e);
         }
     }
+    
+    /**
+     * Connects to a game server. If already connected to a server, it will
+     * disconnect if the server is a different one. If the server is the same,
+     * it will do nothing.
+     */
+    public void connectToServer(final String address) {
+        connectToServer(new InetSocketAddress(address, 1234)); // FIXME: port hardcoded
+    }
 
     /**
      * Connects to a game server. If already connected to a server, it will
      * disconnect if the server is a different one. If the server is the same,
      * it will do nothing.
      */
-    public void connectToServer(final ServerData server) {
+    public void connectToServer(final SocketAddress address) {
         if (connected
-                && channel.socket().getRemoteSocketAddress() == server
-                        .getAddress()) {
+                && channel.socket().getRemoteSocketAddress() == address) {
             return;
         }
 
         try {
             lastLoginTry = System.currentTimeMillis();
 
-            LOG.info("Connecting to server " + server.getAddress());
-            host = server.getAddress();
+            LOG.info("Connecting to server " + address);
             username = System.getProperty("user.name");
 
             /* Reset some variables. */
@@ -304,7 +311,7 @@ public final class Client implements NetworkEventListener {
             // always try to disconnect. Does nothing if not connected
             channel.disconnect();
             channel.configureBlocking(false);
-            channel.connect(host);
+            channel.connect(address);
 
             // set the last update to this timed
             lastUpdate = System.currentTimeMillis();

@@ -33,6 +33,10 @@ public class TextBox extends AbstractScreen implements ScreenKeyEventListener,
         show();
     }
 
+    public String getText() {
+        return text.toString();
+    }
+
     @Override
     public void onMouseDown(ScreenMouseEvent e) {
         // TODO Auto-generated method stub
