@@ -20,6 +20,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.input;
 
-public interface MouseEventListener {
+import java.awt.event.KeyEvent;
+
+public interface InputEventListener {
     void onMouseClicked(MouseEvent event);
+    void onKeyRelease(KeyEvent key);
 }

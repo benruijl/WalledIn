@@ -30,6 +30,7 @@ import walledin.engine.gui.ScreenKeyEvent;
 import walledin.engine.gui.ScreenKeyEventListener;
 import walledin.engine.gui.ScreenManager;
 import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.gui.components.TextBox;
 import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
@@ -41,6 +42,7 @@ public class ServerListScreen extends AbstractScreen implements
     @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
     private final AbstractScreen serverListWidget;
+    private final TextBox ipWidget;
     private final ClientLogicManager clientLogicManager;
 
     public ServerListScreen(final ScreenManager manager,
@@ -49,6 +51,8 @@ public class ServerListScreen extends AbstractScreen implements
         addKeyEventListener(this);
         this.clientLogicManager = clientLogicManager;
 
+        ipWidget = new TextBox(this, "localhost", new Vector2f(100, 450), 230, 20);
+        addChild(ipWidget);
         serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400),
                 clientLogicManager);
         serverListWidget.setPosition(new Vector2f(100, 0));
@@ -99,6 +103,12 @@ public class ServerListScreen extends AbstractScreen implements
 
     @Override
     public void initialize() {
+    }
+
+    @Override
+    public void onKeyUp(ScreenKeyEvent e) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

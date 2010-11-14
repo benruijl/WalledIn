@@ -29,4 +29,6 @@ public interface ScreenKeyEventListener {
      */
     void onKeyDown(ScreenKeyEvent e);
 
+    void onKeyUp(ScreenKeyEvent e);
+
 }
