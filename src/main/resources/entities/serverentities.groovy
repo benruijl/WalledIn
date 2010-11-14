@@ -4,7 +4,7 @@ import walledin.game.*
 import walledin.game.entity.*
 import walledin.game.entity.behaviors.logic.*
 
-import com.bulletphysics.collision.shapes.CylinderShape;
+import com.bulletphysics.collision.shapes.CylinderShapeZ;
 import com.bulletphysics.collision.shapes.BoxShape;
 import com.bulletphysics.collision.shapes.CollisionShape;
 import com.bulletphysics.dynamics.RigidBody;
@@ -62,8 +62,8 @@ import javax.vecmath.Vector3f;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.addBehavior(new FoamBulletBehavior(entity));
                 
-                CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f), 
-                        (float)(destRect.getRadius() / 2.0f), 2));
+                CollisionShape shape = new CylinderShapeZ(new Vector3f((float)(destRect.getRadius()), 
+                        (float)(destRect.getRadius()), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
@@ -116,14 +116,13 @@ import javax.vecmath.Vector3f;
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());
                 
-                CollisionShape shape = new CylinderShape(new Vector3f((float)(destRect.getRadius() / 2.0f),
-                        (float)(destRect.getRadius() / 2.0f), 2));
+                CollisionShape shape = new CylinderShapeZ(new Vector3f((float)(destRect.getRadius()),
+                        (float)(destRect.getRadius()), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                         new Vector3f(0, 0, 0), 1)));
                 float mass = 0.0f; // standing still
                 Vector3f inertia = new Vector3f();
-                shape.calculateLocalInertia(mass, inertia);
                 RigidBodyConstructionInfo fallRigidBodyCI = new RigidBodyConstructionInfo(
                         mass, state, shape, inertia);
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
