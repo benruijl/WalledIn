@@ -546,7 +546,8 @@ public final class GameLogicManager implements GameStateListener,
         /* Initialize physics and create physical world. */
         // TODO: calculate from map
         PhysicsManager.getInstance().initialize(
-                new Rectangle(0, 0, 64 * 32, 48 * 32));
+                new Rectangle(0, 0, 64 * 32, 48 * 32),
+                new GameCollisionDispatcher(entityManager));
 
         /* Add a generic contact resolver. */
         PhysicsManager.getInstance().addListener(
