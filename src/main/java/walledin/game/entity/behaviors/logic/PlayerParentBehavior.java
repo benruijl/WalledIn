@@ -27,6 +27,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 public class PlayerParentBehavior extends AbstractBehavior {
+    private static final Vector2f WEAPON_OFFSET = new Vector2f(35.0f, 20.0f);
 
     public PlayerParentBehavior(final Entity owner) {
         super(owner);
@@ -58,8 +59,7 @@ public class PlayerParentBehavior extends AbstractBehavior {
             weapon.setAttribute(Attribute.CURSOR_POS, cursorPos);
             break;
         case POSITION:
-            weapon.setAttribute(Attribute.POSITION,
-                    pos.add(new Vector2f(35.0f, 20.0f)));
+            weapon.setAttribute(Attribute.POSITION, pos.add(WEAPON_OFFSET));
             break;
         case VELOCITY:
             weapon.setAttribute(Attribute.VELOCITY, vel);

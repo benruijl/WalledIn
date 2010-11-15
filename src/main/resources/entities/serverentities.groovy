@@ -32,6 +32,7 @@ import javax.vecmath.Vector3f;
                 
                 // FIXME correct the drawing instead of the hacking the bounding box
                 def destRect = new Rectangle(0, 0, 44.0f, 43.0f);
+                destRect = destRect.scaleSize((float) 1/ClientLogicManager.PIXELS_PER_METER)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
                 CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), 
@@ -84,6 +85,7 @@ import javax.vecmath.Vector3f;
             
             (Family.HANDGUN_BULLET): { entity ->
                 def destRect = new Rectangle(0, 0, 22.0f, 11.0f)
+                destRect = destRect.scaleSize((float) 1/ClientLogicManager.PIXELS_PER_METER)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.addBehavior(new BulletBehavior(entity,10));
                 
@@ -140,6 +142,7 @@ import javax.vecmath.Vector3f;
             
             (Family.ARMOURKIT): { entity ->
                 def destRect = new Rectangle(0, 0, 32.0f, 32.0f)
+                destRect = destRect.scaleSize((float) 1/ClientLogicManager.PIXELS_PER_METER)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 
                 CollisionShape shape = new BoxShape(new Vector3f((float)(destRect.getWidth() / 2.0f), (float)(destRect.getHeight() / 2.0f), 2));
@@ -163,6 +166,7 @@ import javax.vecmath.Vector3f;
             
             (Family.HEALTHKIT): { entity ->
                 def destRect = new Rectangle(0, 0, 32.0f, 32.0f)
+                destRect = destRect.scaleSize((float) 1/ClientLogicManager.PIXELS_PER_METER)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.addBehavior(new HealthKitBehavior(entity, 10));
                 
@@ -188,6 +192,7 @@ import javax.vecmath.Vector3f;
             
             (Family.HANDGUN): { entity ->
                 def destRect = new Rectangle(0, 0, 40.0f, 21.0f)
+                destRect = destRect.scaleSize((float) 1/ClientLogicManager.PIXELS_PER_METER)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());
                 entity.addBehavior(new WeaponBehavior(entity, 10, Family.HANDGUN_BULLET));
@@ -199,6 +204,7 @@ import javax.vecmath.Vector3f;
             
             (Family.FOAMGUN): { entity ->
                 def destRect = new Rectangle(0, 0, 80.0f, 21.0f)
+                destRect = destRect.scaleSize((float) 1/ClientLogicManager.PIXELS_PER_METER)
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());
                 entity.addBehavior(new WeaponBehavior(entity, 4, Family.FOAMGUN_BULLET));
@@ -208,6 +214,7 @@ import javax.vecmath.Vector3f;
             
             (Family.FOAMNADE): { entity ->
                 def destRect = new Rectangle(0, 0, 32.0f, 32.0f)
+                destRect = destRect.scaleSize((float) 1/ClientLogicManager.PIXELS_PER_METER)
                 //entity.addBehavior(new PhysicsBehavior(entity, 10, true, false));
                 entity.setAttribute(Attribute.BOUNDING_GEOMETRY, destRect);
                 entity.setAttribute(Attribute.VELOCITY, new Vector2f());

@@ -23,6 +23,7 @@ package walledin.game.entity.behaviors.render;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -52,6 +53,7 @@ public class PlayerRenderBehavior extends RenderBehavior {
         renderer.pushMatrix();
 
         pos = (Vector2f) getAttribute(Attribute.POSITION);
+        pos = pos.scale(ClientLogicManager.PIXELS_PER_METER);
         renderer.translate(pos);
 
         renderer.scale(scale);

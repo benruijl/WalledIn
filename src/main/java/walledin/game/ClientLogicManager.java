@@ -63,6 +63,12 @@ import walledin.util.Utils;
  */
 public final class ClientLogicManager implements RenderListener,
         EntityUpdateListener {
+    /**
+     * Amount of pixels per meter. Server side everything is in meters. The
+     * client converts this to pixels
+     */
+    public static final float PIXELS_PER_METER = 32.0f;
+    
     /** Logger. */
     private static final Logger LOG = Logger
             .getLogger(ClientLogicManager.class);

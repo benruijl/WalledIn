@@ -20,7 +20,7 @@ import com.bulletphysics.linearmath.Transform;
 
 public class PhysicsBehavior extends AbstractBehavior {
     private static final Logger LOG = Logger.getLogger(PhysicsBehavior.class);
-    private static final Vector3f GRAVITY = new Vector3f(0, 40.0f, 0);
+    private static final Vector2f GRAVITY = new Vector2f(0, 40.0f);
     private RigidBody body;
     private boolean doGravity = true;
     private boolean internalUpdate = false;
@@ -45,8 +45,7 @@ public class PhysicsBehavior extends AbstractBehavior {
         /* FIXME: wrong message name! */
         if (messageType == MessageType.APPLY_FORCE) {
             Vector2f imp = (Vector2f) data;
-            body.applyImpulse(new Vector3f(imp.getX(), imp.getY(), 0),
-                    new Vector3f());
+            applyForce(imp);
         }
 
         if (messageType == MessageType.ATTRIBUTE_SET) {
@@ -76,13 +75,18 @@ public class PhysicsBehavior extends AbstractBehavior {
         }
     }
 
+    private void applyForce(Vector2f imp) {
+        // Apply the force at the center of the mass
+        body.applyForce(new Vector3f(imp.getX(), imp.getY(), 0),
+                new Vector3f());
+    }
+
     @Override
     public void onUpdate(double delta) {
         if (body != null) {
 
             if (doGravity) {
-                // apply at center of mass
-                body.applyImpulse(GRAVITY, new Vector3f());
+                applyForce(GRAVITY);
             }
 
             /* Correct the position. */

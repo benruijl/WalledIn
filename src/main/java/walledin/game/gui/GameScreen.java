@@ -86,8 +86,9 @@ public class GameScreen extends AbstractScreen implements
             final Entity player = clientLogicManager.getEntityManager().get(
                     clientLogicManager.getPlayerName());
             if (player != null) {
-                getManager().getRenderer().centerAround(
-                        (Vector2f) player.getAttribute(Attribute.POSITION));
+                Vector2f pos = (Vector2f) player.getAttribute(Attribute.POSITION);
+                pos = pos.scale(ClientLogicManager.PIXELS_PER_METER);
+                getManager().getRenderer().centerAround(pos);
             }
         }
 

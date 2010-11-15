@@ -23,6 +23,7 @@ package walledin.game.entity.behaviors.render;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -58,7 +59,8 @@ public class WeaponRenderBehavior extends RenderBehavior {
     private void render(final Renderer renderer) {
         renderer.pushMatrix();
 
-        final Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+        Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+        pos = pos.scale(ClientLogicManager.PIXELS_PER_METER);
         renderer.translate(pos);
 
         if (Utils

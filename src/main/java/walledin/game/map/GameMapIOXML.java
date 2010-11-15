@@ -29,6 +29,7 @@ import java.util.Set;
 import org.w3c.dom.Element;
 
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.EntityManager;
 import walledin.game.ItemInfo;
 import walledin.game.entity.Attribute;
@@ -98,10 +99,10 @@ public final class GameMapIOXML implements GameMapIO {
             final int y = Integer.parseInt(el.getAttribute("y"));
             final int respawnTime = Integer
                     .parseInt(el.getAttribute("respawn"));
-
+            Vector2f pos = new Vector2f(x, y).scale(tileWidth);
+            pos = pos.scale(1 / ClientLogicManager.PIXELS_PER_METER);
             final ItemInfo item = new ItemInfo(
-                    Enum.valueOf(Family.class, type),
-                    new Vector2f(x, y).scale(tileWidth), respawnTime);
+                    Enum.valueOf(Family.class, type), pos, respawnTime);
 
             itList.add(item);
         }

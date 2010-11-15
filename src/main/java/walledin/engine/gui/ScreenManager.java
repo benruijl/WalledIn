@@ -34,7 +34,9 @@ import walledin.engine.Renderer;
 import walledin.engine.input.Input;
 import walledin.engine.input.InputEventListener;
 import walledin.engine.input.MouseEvent;
+import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
+import walledin.game.ClientLogicManager;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
@@ -205,8 +207,9 @@ public class ScreenManager implements InputEventListener {
     public final void update(final double delta) {
         /* Update cursor position */
         if (cursor != null) {
-            cursor.setAttribute(Attribute.POSITION, Input.getInstance()
-                    .getMousePos().asVector2f());
+            Vector2f pos = Input.getInstance().getMousePos().asVector2f();
+            pos = pos.scale(1/ClientLogicManager.PIXELS_PER_METER);
+            cursor.setAttribute(Attribute.POSITION, pos);
         }
 
         final Set<Integer> keysDown = Input.getInstance().getKeysDown();

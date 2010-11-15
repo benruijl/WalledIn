@@ -42,8 +42,8 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
         ContactListener {
     private static final Logger LOG = Logger
             .getLogger(PlayerControlBehaviour.class);
-    private static final float MOVE_SPEED = 10.0f;
-    private static final float JUMP_SPEED = 20.0f;
+    private static final float MOVE_SPEED = 3.0f; // meter/second or about 10 kph
+    private static final float JUMP_SPEED = 2.0f; // meter/second
     private boolean canJump;
     private Set<PlayerAction> playerActions;
 
@@ -112,10 +112,11 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
         // change orientation if shooting in other directory
         if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)
                 || playerActions.contains(PlayerAction.THROW_GRENADE)) {
-            setAttribute(
-                    Attribute.ORIENTATION_ANGLE,
-                    ((Vector2f) getAttribute(Attribute.CURSOR_POS)).getX() < ((Vector2f) getAttribute(Attribute.POSITION))
-                            .getX() ? (float) Math.PI : 0.0f);
+            float cursorX = ((Vector2f) getAttribute(Attribute.CURSOR_POS))
+                    .getX();
+            float posX = ((Vector2f) getAttribute(Attribute.POSITION)).getX();
+            setAttribute(Attribute.ORIENTATION_ANGLE,
+                    cursorX < posX ? (float) Math.PI : 0.0f);
         }
 
         if (playerActions.contains(PlayerAction.SHOOT_PRIMARY)) {
@@ -132,8 +133,7 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
             weapon.sendMessage(MessageType.SHOOT, getOwner());
         }
 
-        getOwner().sendMessage(MessageType.APPLY_FORCE,
-                new Vector2f(x * 10.0f, y * 10.0f));
+        getOwner().sendMessage(MessageType.APPLY_FORCE, new Vector2f(x, y));
         canJump = false;
     }
 

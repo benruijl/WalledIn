@@ -217,7 +217,8 @@ public final class GameLogicManager implements GameStateListener,
 
         // randomly choose a point to spawn the player
         final SpawnPoint p = points.get(rng.nextInt(points.size()));
-        player.setAttribute(Attribute.POSITION, p.getPos());
+        player.setAttribute(Attribute.POSITION,
+                p.getPos().scale(1/ClientLogicManager.PIXELS_PER_METER));
         player.sendMessage(MessageType.RESTORE_HEALTH, 100); // FIXME
     }
 
@@ -356,16 +357,17 @@ public final class GameLogicManager implements GameStateListener,
          */
         for (final Tile tile : tiles) {
             if (tile.getType().isSolid()) {
-                staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
-                        .getY() * tileWidth / playerSize)] = true;
+                float tileX = tile.getX() * (1/ClientLogicManager.PIXELS_PER_METER);
+                float tileY = tile.getY() * (1/ClientLogicManager.PIXELS_PER_METER);
+                staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile.getY() * tileWidth / playerSize)] = true;
 
                 CollisionShape tileShape = new BoxShape(new Vector3f(
                         tileWidth / 2.0f, tileWidth / 2.0f, 21));
                 DefaultMotionState tileMotionState = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
-                                new Vector3f(tile.getX() * tileWidth
-                                        + tileWidth / 2.0f, tile.getY()
-                                        * tileWidth + tileWidth / 2.0f, 0), 1)));
+                                new Vector3f(tileX * tileWidth + tileWidth
+                                        / 2.0f, tileY * tileWidth + tileWidth
+                                        / 2.0f, 0), 1)));
                 RigidBodyConstructionInfo tileRigidBodyCI = new RigidBodyConstructionInfo(
                         0, tileMotionState, tileShape, new Vector3f(0, 0, 0));
                 RigidBody tileRigidBody = new RigidBody(tileRigidBodyCI);
@@ -395,8 +397,9 @@ public final class GameLogicManager implements GameStateListener,
      */
     private boolean detectWalledIn(final Entity player) {
         final float playerSize = 44; // FIXME: hardcoded
-        final Vector2f playerPos = (Vector2f) player
+        Vector2f playerPos = (Vector2f) player
                 .getAttribute(Attribute.POSITION);
+        playerPos = playerPos.scale(ClientLogicManager.PIXELS_PER_METER);
 
         /* Use the static field as a base for new field. */
         final boolean[][] field = Utils.clone2DArray(staticField);
@@ -404,8 +407,9 @@ public final class GameLogicManager implements GameStateListener,
         /* Check the foam particles. */
         for (final Entity ent : entityManager.getEntities().values()) {
             if (ent.getFamily() == Family.FOAM_PARTICLE) {
-                final Vector2f pos = (Vector2f) ent
+                Vector2f pos = (Vector2f) ent
                         .getAttribute(Attribute.POSITION);
+                pos = pos.scale(ClientLogicManager.PIXELS_PER_METER);
                 field[(int) (pos.getX() / playerSize)][(int) (pos.getY() / playerSize)] = true;
             }
         }

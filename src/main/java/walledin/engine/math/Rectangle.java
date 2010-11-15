@@ -109,6 +109,10 @@ public class Rectangle extends AbstractGeometry {
     public Rectangle scaleSize(final Vector2f scale) {
         return new Rectangle(x, y, width * scale.getX(), height * scale.getY());
     }
+    
+    public Rectangle scaleSize(final float scale) {
+        return new Rectangle(x, y, width * scale, height * scale);
+    }
 
     public Rectangle scaleAll(final Vector2f scale) {
         return new Rectangle(x * scale.getX(), y * scale.getY(), width

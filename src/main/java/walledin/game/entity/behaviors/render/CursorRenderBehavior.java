@@ -23,6 +23,7 @@ package walledin.game.entity.behaviors.render;
 import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
+import walledin.game.ClientLogicManager;
 import walledin.game.ZValue;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
@@ -42,10 +43,11 @@ public class CursorRenderBehavior extends RenderBehavior {
         if (messageType == MessageType.RENDER) {
             final Renderer renderer = (Renderer) data;
             // FIXME: Do this with TexturePartManager
+            Vector2f pos = (Vector2f) getAttribute(Attribute.POSITION);
+            pos = pos.scale(ClientLogicManager.PIXELS_PER_METER);
             renderer.drawRect("tex_items", new Rectangle(0, 0, 63.5f / 1024.0f,
                     63.5f / 512.0f), new Rectangle(-16, -16, CURSOR_SIZE,
-                    CURSOR_SIZE)
-                    .translate((Vector2f) getAttribute(Attribute.POSITION)));
+                    CURSOR_SIZE).translate(pos));
         }
 
         super.onMessage(messageType, data);
