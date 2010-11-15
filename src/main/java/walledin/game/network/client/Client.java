@@ -141,10 +141,6 @@ public final class Client implements NetworkEventListener {
         final List<ServerData> servers = new ArrayList<ServerData>(
                 lanServerList);
         servers.addAll(internetServerList);
-
-        /* TODO: remove */
-        servers.add(new ServerData(new InetSocketAddress("localhost", 1234),
-                "localhost_hack", 0, 3, GameMode.DEATHMATCH));
         return servers;
     }
 
