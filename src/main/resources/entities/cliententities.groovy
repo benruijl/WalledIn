@@ -13,7 +13,7 @@ def texturePartManager = TexturePartManager.getInstance()
 def itemsTexture = "tex_items"
 textureManager.loadFromURL(Utils.getClasspathURL("game.png"), itemsTexture);
 
-texturePartManager.createTexturePart("foambullet", itemsTexture, new Rectangle(340, 212, 24, 24))
+texturePartManager.createTexturePart("foambullet", itemsTexture, new Rectangle(338, 212, 25, 25))
 texturePartManager.createTexturePart("handgunbullet", itemsTexture, new Rectangle(205, 152, 44, 22))
 texturePartManager.createTexturePart("armorkit", itemsTexture, new Rectangle(384, 64, 64, 64))
 texturePartManager.createTexturePart("healthkit", itemsTexture, new Rectangle(320, 64, 64, 64))

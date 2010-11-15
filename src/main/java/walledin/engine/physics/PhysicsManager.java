@@ -39,7 +39,7 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 
 public final class PhysicsManager {
     private static final Logger LOG = Logger.getLogger(PhysicsManager.class);
-    private static final float TIME_STEP = 1.0f / 60.0f;
+    private static final float TIME_STEP = 1.0f / 40.0f;
     private static final int ITERATION = 10;
     private static PhysicsManager ref = null;
 

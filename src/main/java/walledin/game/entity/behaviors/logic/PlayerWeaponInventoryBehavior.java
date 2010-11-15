@@ -62,8 +62,6 @@ public class PlayerWeaponInventoryBehavior extends AbstractBehavior {
             final Entity weapon = (Entity) data;
            
             if (weapon.getFamily().getParent() == Family.WEAPON) {
-                LOG.info("Weapon collided: " + weapon.getName());
-                
                 if (!getOwner().hasAttribute(Attribute.ACTIVE_WEAPON)
                         || getOwner().getAttribute(Attribute.ACTIVE_WEAPON) != weapon) {
 
