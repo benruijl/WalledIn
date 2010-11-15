@@ -20,7 +20,9 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  */
 package walledin.engine.gui;
 
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,14 +32,14 @@ import org.apache.log4j.Logger;
 import walledin.engine.Font;
 import walledin.engine.Renderer;
 import walledin.engine.input.Input;
+import walledin.engine.input.InputEventListener;
 import walledin.engine.input.MouseEvent;
-import walledin.engine.input.MouseEventListener;
 import walledin.engine.math.Vector2i;
 import walledin.game.entity.Attribute;
 import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
-public class ScreenManager implements MouseEventListener {
+public class ScreenManager implements InputEventListener {
     /** Logger. */
     private static final Logger LOG = Logger.getLogger(ScreenManager.class);
 
@@ -65,6 +67,8 @@ public class ScreenManager implements MouseEventListener {
     private boolean mouseClicked;
     /** Click position. */
     private Vector2i clickedPosition;
+    /** List of released keys. */
+    private final Set<Integer> releasedKeys;
 
     /**
      * Creates a screen manager.
@@ -80,6 +84,7 @@ public class ScreenManager implements MouseEventListener {
         focusedScreen = root;
 
         typedScreens = new ConcurrentHashMap<ScreenType, AbstractScreen>();
+        releasedKeys = new HashSet<Integer>();
 
         fonts = new HashMap<FontType, Font>();
         this.renderer = renderer;
@@ -214,6 +219,12 @@ public class ScreenManager implements MouseEventListener {
                 getFocusedScreen().sendKeyDownMessage(
                         new ScreenKeyEvent(Input.getInstance().getKeysDown()));
             }
+
+            if (releasedKeys.size() > 0) {
+                getFocusedScreen().sendKeyUpMessage(
+                        new ScreenKeyEvent(releasedKeys));
+                releasedKeys.clear();
+            }
         }
 
         /*
@@ -230,6 +241,9 @@ public class ScreenManager implements MouseEventListener {
                 if (screen != null) {
                     screen.sendMouseClickedMessage(new ScreenMouseEvent(screen,
                             clickedPosition.asVector2f()));
+
+                    /* Set the clicked screen as the active one. */
+                    // setFocusedScreen(screen);
                 }
 
                 mouseClicked = false;
@@ -351,5 +365,10 @@ public class ScreenManager implements MouseEventListener {
         addScreen(diag);
         diag.show();
         diag.setFocus();
+    }
+
+    @Override
+    public void onKeyRelease(KeyEvent key) {
+        releasedKeys.add((int) key.getKeyChar());
     }
 }

@@ -42,6 +42,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.ServerData;
+import walledin.game.network.messages.game.ConsoleUpdateMessage;
 import walledin.game.network.messages.game.GamestateMessage;
 import walledin.game.network.messages.game.GetPlayerInfoMessage;
 import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
@@ -300,6 +301,20 @@ public class Server implements NetworkEventListener {
     }
 
     /**
+     * Sends a console message to all players
+     * 
+     * @param string
+     *            The message
+     * @throws IOException
+     */
+    public void sendConsoleUpdate(String message) throws IOException {
+        for (final PlayerConnection connection : players.values()) {
+            networkWriter.sendMessage(channel, connection.getAddress(),
+                    new ConsoleUpdateMessage(message));
+        }
+    }
+
+    /**
      * Removes the player and player specific entities, like their cursor.
      * 
      * @param address
@@ -473,6 +488,12 @@ public class Server implements NetworkEventListener {
     @Override
     public void receivedMessage(final SocketAddress address,
             final GetPlayerInfoResponseMessage message) {
+        // ignore
+    }
+
+    @Override
+    public void receivedMessage(SocketAddress address,
+            ConsoleUpdateMessage message) {
         // ignore
     }
 }

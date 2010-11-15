@@ -48,6 +48,7 @@ public abstract class AbstractGameMessage implements NetworkMessage {
         result.put((byte) 5, LoginResponseMessage.class);
         result.put((byte) 6, LogoutMessage.class);
         result.put((byte) 7, TeamSelectMessage.class);
+        result.put((byte) 8, ConsoleUpdateMessage.class);
         return result;
     }
 

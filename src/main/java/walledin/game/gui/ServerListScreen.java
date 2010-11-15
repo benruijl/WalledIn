@@ -29,18 +29,25 @@ import walledin.engine.gui.AbstractScreen;
 import walledin.engine.gui.ScreenKeyEvent;
 import walledin.engine.gui.ScreenKeyEventListener;
 import walledin.engine.gui.ScreenManager;
+import walledin.engine.gui.ScreenMouseEvent;
+import walledin.engine.gui.ScreenMouseEventListener;
 import walledin.engine.gui.ScreenManager.ScreenType;
+import walledin.engine.gui.components.Button;
+import walledin.engine.gui.components.TextBox;
 import walledin.engine.input.Input;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.game.ClientLogicManager;
+import walledin.game.gamemode.GameMode;
 import walledin.game.gui.components.ServerList;
 
 public class ServerListScreen extends AbstractScreen implements
-        ScreenKeyEventListener {
+        ScreenKeyEventListener, ScreenMouseEventListener {
     @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(ServerListScreen.class);
     private final AbstractScreen serverListWidget;
+    private final TextBox ipWidget;
+    private final Button ipButtonWidget;
     private final ClientLogicManager clientLogicManager;
 
     public ServerListScreen(final ScreenManager manager,
@@ -48,6 +55,14 @@ public class ServerListScreen extends AbstractScreen implements
         super(manager, null, 0);
         addKeyEventListener(this);
         this.clientLogicManager = clientLogicManager;
+
+        ipWidget = new TextBox(this, "localhost", new Vector2f(100, 450), 230,
+                20);
+        addChild(ipWidget);
+
+        ipButtonWidget = new Button(this, "Connect", new Vector2f(350, 450));
+        ipButtonWidget.addMouseEventListener(this);
+        addChild(ipButtonWidget);
 
         serverListWidget = new ServerList(this, new Rectangle(0, 0, 500, 400),
                 clientLogicManager);
@@ -99,6 +114,36 @@ public class ServerListScreen extends AbstractScreen implements
 
     @Override
     public void initialize() {
+    }
+
+    @Override
+    public void onKeyUp(ScreenKeyEvent e) {
+    }
+
+    @Override
+    public void onMouseDown(ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseHover(ScreenMouseEvent e) {
+    }
+
+    @Override
+    public void onMouseClicked(ScreenMouseEvent e) {
+        /* If clicked on server, load the game */
+        clientLogicManager.getClient().connectToServer(ipWidget.getText());
+
+        if (clientLogicManager.getClient().isConnected()) {
+
+            /*
+             * WARNING: this does not check the game mode, and therefore doesn't
+             * display the team screen.
+             */
+            getManager().getScreen(ScreenType.GAME).initialize();
+            getManager().getScreen(ScreenType.GAME).show();
+
+            hide();
+        }
     }
 
 }

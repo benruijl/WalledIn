@@ -22,6 +22,7 @@ package walledin.game.network;
 
 import java.net.SocketAddress;
 
+import walledin.game.network.messages.game.ConsoleUpdateMessage;
 import walledin.game.network.messages.game.GamestateMessage;
 import walledin.game.network.messages.game.GetPlayerInfoMessage;
 import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
@@ -62,4 +63,7 @@ public interface NetworkEventListener {
 
     void receivedMessage(SocketAddress address,
             GetPlayerInfoResponseMessage message);
+
+    void receivedMessage(SocketAddress address,
+            ConsoleUpdateMessage message);
 }
