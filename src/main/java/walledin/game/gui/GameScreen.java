@@ -102,17 +102,21 @@ public class GameScreen extends AbstractScreen implements
 
     @Override
     public void onKeyDown(final ScreenKeyEvent e) {
+    }
+
+    @Override
+    public void initialize() {
+    }
+
+    @Override
+    public void onKeyUp(ScreenKeyEvent e) {
         if (e.getKeys().contains(KeyEvent.VK_ESCAPE)) {
             Input.getInstance().setKeyUp(KeyEvent.VK_ESCAPE);
 
             getManager().getScreen(ScreenType.SERVER_LIST).show();
             hide();
         }
-
-    }
-
-    @Override
-    public void initialize() {
+        
     }
 
 }

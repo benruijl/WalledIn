@@ -51,13 +51,13 @@ public final class Input implements KeyListener, MouseListener,
     private final Set<Integer> keysDown;
     private final Set<Integer> buttonsDown;
     private Vector2i mousePos;
-    private final List<MouseEventListener> listeners;
+    private final List<InputEventListener> listeners;
 
     private Input() {
         keysDown = new HashSet<Integer>();
         buttonsDown = new HashSet<Integer>();
         mousePos = new Vector2i();
-        listeners = new ArrayList<MouseEventListener>();
+        listeners = new ArrayList<InputEventListener>();
     }
 
     @Override
@@ -73,7 +73,7 @@ public final class Input implements KeyListener, MouseListener,
         return ref;
     }
 
-    public void addListener(final MouseEventListener listener) {
+    public void addListener(final InputEventListener listener) {
         listeners.add(listener);
     }
 
@@ -88,6 +88,10 @@ public final class Input implements KeyListener, MouseListener,
 
     @Override
     public void keyReleased(final KeyEvent e) {
+        for (final InputEventListener listener : listeners) {
+            listener.onKeyRelease(e);
+        }
+
         keysDown.remove(e.getKeyCode());
     }
 
@@ -150,7 +154,7 @@ public final class Input implements KeyListener, MouseListener,
     public void mouseClicked(final MouseEvent e) {
         mousePos = new Vector2i(e.getX(), e.getY());
 
-        for (final MouseEventListener listener : listeners) {
+        for (final InputEventListener listener : listeners) {
             listener.onMouseClicked(new walledin.engine.input.MouseEvent(
                     mousePos));
         }

@@ -475,14 +475,25 @@ public final class GameLogicManager implements GameStateListener,
             if (info.isDead()) {
                 killPlayer(info.getPlayer().getName());
 
-                final String killerName = (String) info.getPlayer()
+                final String killerEntityName = (String) info.getPlayer()
                         .getAttribute(Attribute.LAST_DAMAGE);
-
-                if (killerName != null
-                        && !killerName.equals(info.getPlayer().getName())) {
+                final String playerEntityName = info.getPlayer().getName();
+                final String killerName = (String) entityManager.get(
+                        killerEntityName).getAttribute(Attribute.PLAYER_NAME);
+                final String playerName = (String) entityManager.get(
+                        playerEntityName).getAttribute(Attribute.PLAYER_NAME);
+                try {
+                    server.sendConsoleUpdate(killerName + " killed "
+                            + playerName);
+                } catch (IOException e) {
+                    LOG.warn("IOException when sending ConsoleUpdate", e);
+                }
+                if (killerEntityName != null
+                        && !killerEntityName.equals(info.getPlayer().getName())) {
                     /* Add points to the killer of this player. */
                     for (final PlayerInfo killerInfo : players.values()) {
-                        if (killerInfo.getPlayer().getName().equals(killerName)) {
+                        if (killerInfo.getPlayer().getName()
+                                .equals(killerEntityName)) {
                             killerInfo.increaseKillCount();
                         }
                     }
@@ -546,7 +557,8 @@ public final class GameLogicManager implements GameStateListener,
         /* Initialize physics and create physical world. */
         // TODO: calculate from map
         PhysicsManager.getInstance().initialize(
-                new Rectangle(0, 0, 64 * 32, 48 * 32));
+                new Rectangle(0, 0, 64 * 32, 48 * 32),
+                new GameCollisionDispatcher(entityManager));
 
         /* Add a generic contact resolver. */
         PhysicsManager.getInstance().addListener(

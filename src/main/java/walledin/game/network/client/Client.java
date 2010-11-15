@@ -44,6 +44,7 @@ import walledin.game.network.NetworkEventListener;
 import walledin.game.network.NetworkMessageReader;
 import walledin.game.network.NetworkMessageWriter;
 import walledin.game.network.ServerData;
+import walledin.game.network.messages.game.ConsoleUpdateMessage;
 import walledin.game.network.messages.game.GamestateMessage;
 import walledin.game.network.messages.game.GetPlayerInfoMessage;
 import walledin.game.network.messages.game.GetPlayerInfoResponseMessage;
@@ -140,10 +141,6 @@ public final class Client implements NetworkEventListener {
         final List<ServerData> servers = new ArrayList<ServerData>(
                 lanServerList);
         servers.addAll(internetServerList);
-
-        /* TODO: remove */
-        servers.add(new ServerData(new InetSocketAddress("localhost", 1234),
-                "localhost_hack", 0, 3, GameMode.DEATHMATCH));
         return servers;
     }
 
@@ -282,24 +279,31 @@ public final class Client implements NetworkEventListener {
             LOG.warn("IOException", e);
         }
     }
+    
+    /**
+     * Connects to a game server. If already connected to a server, it will
+     * disconnect if the server is a different one. If the server is the same,
+     * it will do nothing.
+     */
+    public void connectToServer(final String address) {
+        connectToServer(new InetSocketAddress(address, 1234)); // FIXME: port hardcoded
+    }
 
     /**
      * Connects to a game server. If already connected to a server, it will
      * disconnect if the server is a different one. If the server is the same,
      * it will do nothing.
      */
-    public void connectToServer(final ServerData server) {
+    public void connectToServer(final SocketAddress address) {
         if (connected
-                && channel.socket().getRemoteSocketAddress() == server
-                        .getAddress()) {
+                && channel.socket().getRemoteSocketAddress() == address) {
             return;
         }
 
         try {
             lastLoginTry = System.currentTimeMillis();
 
-            LOG.info("Connecting to server " + server.getAddress());
-            host = server.getAddress();
+            LOG.info("Connecting to server " + address);
             username = System.getProperty("user.name");
 
             /* Reset some variables. */
@@ -308,7 +312,7 @@ public final class Client implements NetworkEventListener {
             // always try to disconnect. Does nothing if not connected
             channel.disconnect();
             channel.configureBlocking(false);
-            channel.connect(host);
+            channel.connect(address);
 
             // set the last update to this timed
             lastUpdate = System.currentTimeMillis();
@@ -480,6 +484,12 @@ public final class Client implements NetworkEventListener {
                     + " the server: " + message.getErrorCode());
             break;
         }
+    }
+
+    @Override
+    public void receivedMessage(SocketAddress address,
+            ConsoleUpdateMessage message) {
+        LOG.info("Server: " + message.getMessage());
     }
 
     @Override

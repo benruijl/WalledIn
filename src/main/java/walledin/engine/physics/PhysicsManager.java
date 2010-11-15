@@ -23,8 +23,6 @@ package walledin.engine.physics;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector3f;
-
 import org.apache.log4j.Logger;
 
 import walledin.engine.math.Rectangle;
@@ -37,7 +35,6 @@ import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
 import com.bulletphysics.collision.narrowphase.ManifoldPoint;
 import com.bulletphysics.collision.narrowphase.PersistentManifold;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
-import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 
 public final class PhysicsManager {
@@ -69,7 +66,7 @@ public final class PhysicsManager {
         remove = new ArrayList<CollisionObject>();
     }
 
-    public boolean initialize(final Rectangle worldRect) {
+    public boolean initialize(final Rectangle worldRect, final CollisionDispatcher dispatcher) {
         this.worldRect = worldRect;
 
         // Build the broadphase
@@ -77,8 +74,6 @@ public final class PhysicsManager {
 
         // Set up the collision configuration and dispatcher
         final DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
-        final CollisionDispatcher dispatcher = new CollisionDispatcher(
-                collisionConfiguration);
 
         // The actual physics solver
         final SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();

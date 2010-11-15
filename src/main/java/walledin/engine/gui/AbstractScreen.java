@@ -562,6 +562,25 @@ public abstract class AbstractScreen {
             }
         }
     }
+    
+    /**
+     * Sends the key up message when a key is pressed and this screen has the
+     * focus. The message will be sent to the children as well.
+     * 
+     * @param e
+     *            Event message
+     */
+    public final void sendKeyUpMessage(final ScreenKeyEvent e) {
+        for (final ScreenKeyEventListener listener : keyListeners) {
+            listener.onKeyUp(e);
+        }
+
+        for (final AbstractScreen screen : children) {
+            if (screen.isVisible()) {
+                screen.sendKeyUpMessage(e);
+            }
+        }
+    }
 
     /**
      * Checks if this screen has the focus.
