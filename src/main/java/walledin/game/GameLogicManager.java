@@ -332,13 +332,13 @@ public final class GameLogicManager implements GameStateListener,
      */
     private void buildStaticField() {
         /* Do a + 1 do avoid rounding errors */
-        final float width = (Integer) map.getAttribute(Attribute.WIDTH) + 1;
-        final float height = (Integer) map.getAttribute(Attribute.HEIGHT) + 1;
+        final float width = (Integer) map.getAttribute(Attribute.WIDTH);
+        final float height = (Integer) map.getAttribute(Attribute.HEIGHT);
         final float playerSize = 44; // FIXME: hardcoded
         final float tileWidth = (Float) map.getAttribute(Attribute.TILE_WIDTH);
 
-        staticField = new boolean[(int) (width * tileWidth / playerSize)][(int) (height
-                * tileWidth / playerSize)];
+        staticField = new boolean[(int) Math.ceil(width * tileWidth
+                / playerSize)][(int) Math.ceil(height * tileWidth / playerSize)];
         @SuppressWarnings("unchecked")
         final List<Tile> tiles = (List<Tile>) map.getAttribute(Attribute.TILES);
 
@@ -349,7 +349,8 @@ public final class GameLogicManager implements GameStateListener,
         for (final Tile tile : tiles) {
             if (tile.getType().isSolid()) {
                 staticField[(int) (tile.getX() * tileWidth / playerSize)][(int) (tile
-                        .getY() * tileWidth / playerSize)] = true;
+                        .getY()
+                        * tileWidth / playerSize)] = true;
             }
         }
 
@@ -374,8 +375,9 @@ public final class GameLogicManager implements GameStateListener,
         /* Check the foam particles. */
         for (final Entity ent : entityManager.getEntities().values()) {
             if (ent.getFamily() == Family.FOAM_PARTICLE) {
-                final Vector2f pos = (Vector2f) ent
-                        .getAttribute(Attribute.POSITION);
+                Vector2f pos = ((Vector2f) ent.getAttribute(Attribute.POSITION));
+                field[(int) (pos.getX() / playerSize)][(int) (pos.getY() / playerSize)] = true;
+                pos = pos.add(new Vector2f(32, 32)); // FIXME: hardcoded
                 field[(int) (pos.getX() / playerSize)][(int) (pos.getY() / playerSize)] = true;
             }
         }
@@ -388,9 +390,9 @@ public final class GameLogicManager implements GameStateListener,
             outputMobilityMap(field);
         }
 
-        if (!canReachDistance(minimalWalledInSpace,
-                playerPos.scale(1 / playerSize).asVector2i(),
-                playerPos.scale(1 / playerSize).asVector2i(), field)) {
+        if (!canReachDistance(minimalWalledInSpace, playerPos.scale(
+                1 / playerSize).asVector2i(), playerPos.scale(1 / playerSize)
+                .asVector2i(), field)) {
             return true;
         }
 
@@ -448,8 +450,13 @@ public final class GameLogicManager implements GameStateListener,
                 final String killerEntityName = (String) info.getPlayer()
                         .getAttribute(Attribute.LAST_DAMAGE);
                 final String playerEntityName = info.getPlayer().getName();
-                final String killerName = (String) entityManager.get(
-                        killerEntityName).getAttribute(Attribute.PLAYER_NAME);
+
+                String killerName = "Something"; // temporary name
+
+                if (killerEntityName != null) {
+                    killerName = (String) entityManager.get(killerEntityName)
+                            .getAttribute(Attribute.PLAYER_NAME);
+                }
                 final String playerName = (String) entityManager.get(
                         playerEntityName).getAttribute(Attribute.PLAYER_NAME);
                 try {
@@ -462,8 +469,8 @@ public final class GameLogicManager implements GameStateListener,
                         && !killerEntityName.equals(info.getPlayer().getName())) {
                     /* Add points to the killer of this player. */
                     for (final PlayerInfo killerInfo : players.values()) {
-                        if (killerInfo.getPlayer().getName()
-                                .equals(killerEntityName)) {
+                        if (killerInfo.getPlayer().getName().equals(
+                                killerEntityName)) {
                             killerInfo.increaseKillCount();
                         }
                     }
@@ -541,11 +548,11 @@ public final class GameLogicManager implements GameStateListener,
         // this name will be sent to the client
         map.setAttribute(Attribute.MAP_NAME, mapName);
 
-        staticObjectsTree = new QuadTree(new Rectangle(0, 0,
-                (Integer) map.getAttribute(Attribute.WIDTH)
-                        * (Float) map.getAttribute(Attribute.TILE_WIDTH),
-                (Integer) map.getAttribute(Attribute.HEIGHT)
-                        * (Float) map.getAttribute(Attribute.TILE_WIDTH)));
+        staticObjectsTree = new QuadTree(new Rectangle(0, 0, (Integer) map
+                .getAttribute(Attribute.WIDTH)
+                * (Float) map.getAttribute(Attribute.TILE_WIDTH), (Integer) map
+                .getAttribute(Attribute.HEIGHT)
+                * (Float) map.getAttribute(Attribute.TILE_WIDTH)));
 
         /* Build the static movability field. */
         buildStaticField();
