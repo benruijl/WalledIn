@@ -45,7 +45,6 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
     private static final float MOVE_SPEED = 10.0f;
     private static final float JUMP_SPEED = 20.0f;
     private boolean canJump;
-    private int colCount;
     private Set<PlayerAction> playerActions;
 
     public PlayerControlBehaviour(final Entity owner) {
@@ -91,7 +90,6 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
         if (playerActions.contains(PlayerAction.WALK_RIGHT)) {
             x += MOVE_SPEED;
             setAttribute(Attribute.ORIENTATION_ANGLE, Float.valueOf(0));
-
         }
 
         if (playerActions.contains(PlayerAction.WALK_LEFT)) {
@@ -150,21 +148,8 @@ public class PlayerControlBehaviour extends AbstractBehavior implements
             return;
         }
 
-        if (point.normalWorldOnB.y >= -1) {
+        if (point.normalWorldOnB.y > 0) {
             canJump = true;
-            colCount++;
         }
-
     }
-
-    /*
-     * @Override public void remove(ContactPoint point) { if
-     * (point.shape1.m_body.m_userData != getOwner().getName() &&
-     * point.shape2.m_body.m_userData != getOwner().getName()) { return; }
-     * 
-     * colCount--;
-     * 
-     * if (colCount <= 0) { canJump = false; } }
-     */
-
 }
