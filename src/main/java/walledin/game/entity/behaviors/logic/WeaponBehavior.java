@@ -104,8 +104,8 @@ public class WeaponBehavior extends AbstractBehavior {
                         .asRectangle();
 
                 CollisionShape shape = new BoxShape(new Vector3f(
-                        (float) (destRect.getWidth() / 2.0f),
-                        (float) (destRect.getHeight() / 2.0f), 2));
+                        (float) (destRect.getWidth() / 2.0f), (float) (destRect
+                                .getHeight() / 2.0f), 2));
                 DefaultMotionState state = new DefaultMotionState(
                         new Transform(new Matrix4f(new Quat4f(0, 0, 0, 1),
                                 new Vector3f(pos.getX() + destRect.getWidth()
@@ -119,7 +119,7 @@ public class WeaponBehavior extends AbstractBehavior {
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(getOwner().getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager
                         .getInstance()
                         .getWorld()
@@ -171,8 +171,10 @@ public class WeaponBehavior extends AbstractBehavior {
 
                 bullet.setAttribute(Attribute.POSITION, bulletPosition);
                 bullet.setAttribute(Attribute.TARGET, target);
-                bullet.setAttribute(Attribute.ORIENTATION_ANGLE,
-                        getAttribute(Attribute.ORIENTATION_ANGLE));
+                bullet.setAttribute(Attribute.ORIENTATION_ANGLE, (float) Math
+                        .atan2(target.getY() - bulletPosition.getY(), target
+                                .getX()
+                                - bulletPosition.getX()));
                 bullet.setAttribute(Attribute.OWNED_BY,
                         getAttribute(Attribute.OWNED_BY));
                 bullet.sendMessage(MessageType.APPLY_FORCE, bulletAcceleration);

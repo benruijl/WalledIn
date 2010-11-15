@@ -47,7 +47,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.PLAYER,
                     CollisionInformation.ALL);
                 
@@ -75,7 +75,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.BULLET,
                         CollisionInformation.ALL);
                 
@@ -101,7 +101,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(rbci);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.BULLET,
                         CollisionInformation.ALL);
                 
@@ -128,7 +128,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.BULLET,
                         CollisionInformation.ALL);
                 entity.addBehavior(new PhysicsBehavior(entity, rb, false));
@@ -154,7 +154,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.ITEM,
                         (short)(CollisionInformation.PLAYER | CollisionInformation.TILE));
                 
@@ -179,7 +179,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb, CollisionInformation.ITEM,
                         (short)(CollisionInformation.PLAYER | CollisionInformation.TILE));
                 
@@ -225,7 +225,7 @@ import javax.vecmath.Vector3f;
                 RigidBody rb = new RigidBody(fallRigidBodyCI);
                 rb.setUserPointer(entity.getName());
                 rb.setLinearFactor(new Vector3f(1, 1, 0));
-                rb.setAngularFactor(new Vector3f(0, 0, 0));
+                rb.setAngularFactor(new Vector3f(0, 0, 1));
                 PhysicsManager.getInstance().getWorld().addRigidBody(rb);
                 
                 entity.addBehavior(new PhysicsBehavior(entity, rb));

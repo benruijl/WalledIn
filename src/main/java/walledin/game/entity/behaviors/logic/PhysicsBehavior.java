@@ -15,6 +15,7 @@ import walledin.game.entity.Entity;
 import walledin.game.entity.MessageType;
 
 import com.bulletphysics.dynamics.RigidBody;
+import com.bulletphysics.linearmath.QuaternionUtil;
 import com.bulletphysics.linearmath.Transform;
 
 public class PhysicsBehavior extends AbstractBehavior {
@@ -58,9 +59,17 @@ public class PhysicsBehavior extends AbstractBehavior {
                     pos = pos.add(new Vector2f(rect.getWidth() / 2.0f, rect
                             .getHeight() / 2.0f));
 
-                    
-                    body.setWorldTransform(new Transform(new Matrix4f(body
-                            .getOrientation(new Quat4f()),
+                    Quat4f rot = new Quat4f();
+
+                    if (getOwner().hasAttribute(Attribute.ORIENTATION_ANGLE)) {
+                        final float angle = (Float) getAttribute(Attribute.ORIENTATION_ANGLE);
+                        QuaternionUtil.setRotation(rot, new Vector3f(0, 0, 1),
+                                angle);
+                    } else {
+                        body.getOrientation(rot);
+                    }
+
+                    body.setWorldTransform(new Transform(new Matrix4f(rot,
                             new Vector3f(pos.getX(), pos.getY(), 0), 1)));
                 }
             }
@@ -72,8 +81,8 @@ public class PhysicsBehavior extends AbstractBehavior {
         if (body != null) {
 
             if (doGravity) {
-                body.applyImpulse(GRAVITY, new Vector3f()); // apply at center
-                                                            // of mass
+                // apply at center of mass
+                body.applyImpulse(GRAVITY, new Vector3f());
             }
 
             /* Correct the position. */
@@ -82,7 +91,7 @@ public class PhysicsBehavior extends AbstractBehavior {
 
             Vector3f pos3D = body.getCenterOfMassPosition(new Vector3f());
             Vector3f vel3D = body.getLinearVelocity(new Vector3f());
-            Vector3f ang3D = body.getAngularVelocity(new Vector3f());
+            Quat4f angleQuat = body.getOrientation(new Quat4f());
 
             Vector2f pos = new Vector2f(pos3D.x - rect.getWidth() / 2.0f,
                     pos3D.y - rect.getHeight() / 2.0f);
@@ -90,7 +99,8 @@ public class PhysicsBehavior extends AbstractBehavior {
             internalUpdate = true;
             setAttribute(Attribute.POSITION, pos);
             setAttribute(Attribute.VELOCITY, new Vector2f(vel3D.x, vel3D.y));
-            //setAttribute(Attribute.ORIENTATION_ANGLE, ang3D.z);
+            // setAttribute(Attribute.ORIENTATION_ANGLE, QuaternionUtil
+            // .getAngle(angleQuat));
             internalUpdate = false;
         }
     }
