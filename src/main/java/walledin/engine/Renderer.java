@@ -369,7 +369,7 @@ public class Renderer implements GLEventListener {
             final ColorRGB color) {
         gl.glColor3f(color.getR(), color.getG(), color.getB());
 
-        gl.glBegin(GL.GL_LINE);
+        gl.glBegin(GL.GL_LINES);
         gl.glVertex2f(begin.getX(), begin.getY());
         gl.glVertex2f(end.getX(), end.getY());
         gl.glEnd();

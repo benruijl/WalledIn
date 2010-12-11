@@ -21,14 +21,14 @@ public class PhysicsDebugger implements RenderListener {
     public PhysicsDebugger() {
         renderer.initialize("Debug", 800, 600, false);
         renderer.addListener(this);
-        
+
         debugDrawer = new DebugDrawer(renderer);
 
-        PhysicsManager.getInstance().registerDebugDrawer(debugDrawer
-                );
-        
-        debugDrawer.setDebugMode(1);
-        
+        PhysicsManager.getInstance().registerDebugDrawer(debugDrawer);
+
+        /* Sets the debug mode to drawing wireframe models. */
+        debugDrawer.setDebugMode(2);
+
         renderer.beginLoop();
     }
 
