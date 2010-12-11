@@ -97,7 +97,7 @@ public class Renderer implements GLEventListener {
      * @author Ben Ruijl
      * 
      */
-    private static final class ColorRGB {
+    public static final class ColorRGB {
         private final float r, g, b;
 
         public ColorRGB(final float r, final float g, final float b) {
@@ -353,6 +353,26 @@ public class Renderer implements GLEventListener {
     public void stopBulkDraw() {
         gl.glEnd();
         bulkDraw = false;
+    }
+
+    /**
+     * Draws a line segment.
+     * 
+     * @param begin
+     *            Start of line
+     * @param end
+     *            End of line
+     * @param color
+     *            Color of line
+     */
+    public final void drawLineSegment(final Vector2f begin, final Vector2f end,
+            final ColorRGB color) {
+        gl.glColor3f(color.getR(), color.getG(), color.getB());
+
+        gl.glBegin(GL.GL_LINE);
+        gl.glVertex2f(begin.getX(), begin.getY());
+        gl.glVertex2f(end.getX(), end.getY());
+        gl.glEnd();
     }
 
     /**
