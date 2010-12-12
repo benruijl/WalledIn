@@ -38,6 +38,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.codehaus.groovy.control.CompilationFailedException;
 
+import walledin.engine.Renderer;
 import walledin.engine.math.Rectangle;
 import walledin.engine.math.Vector2f;
 import walledin.engine.math.Vector2i;
@@ -563,6 +564,9 @@ public final class GameLogicManager implements GameStateListener,
         /* Add a generic contact resolver. */
         PhysicsManager.getInstance().addListener(
                 new ContactHandler(entityManager));
+
+        /* Add a physics debugger. */
+        PhysicsDebugger debugger = new PhysicsDebugger();
 
         /*
          * Build the static movability field and add static bodies to the
