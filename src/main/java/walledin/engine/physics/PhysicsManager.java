@@ -66,7 +66,8 @@ public final class PhysicsManager {
         remove = new ArrayList<CollisionObject>();
     }
 
-    public boolean initialize(final Rectangle worldRect, final CollisionDispatcher dispatcher) {
+    public boolean initialize(final Rectangle worldRect,
+            final CollisionDispatcher dispatcher) {
         this.worldRect = worldRect;
 
         // Build the broadphase
@@ -89,6 +90,20 @@ public final class PhysicsManager {
 
     public DiscreteDynamicsWorld getWorld() {
         return world;
+    }
+
+    /**
+     * Registers a debug drawer.
+     * 
+     * @param debugDrawer
+     *            Debug drawer
+     */
+    public void registerDebugDrawer(DebugDrawer debugDrawer) {
+        if (world != null) {
+            world.setDebugDrawer(debugDrawer);
+        } else {
+            LOG.warn("World is not initialized yet.");
+        }
     }
 
     /**
